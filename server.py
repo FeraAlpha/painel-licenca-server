@@ -12,12 +12,14 @@ KEY_PUB = "public.pem"
 # Criar pasta data se não existir
 os.makedirs("data", exist_ok=True)
 
+# Inicializar banco
 def init_db():
     conn = sqlite3.connect(DB)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS licenses
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, fingerprint TEXT, username TEXT,
-                  issued_at INTEGER, expires_at INTEGER, payload TEXT)''')
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, fingerprint TEXT,
+                  username TEXT, issued_at INTEGER, expires_at INTEGER, 
+                  payload TEXT)''')
     conn.commit()
     conn.close()
 
@@ -30,16 +32,17 @@ def load_users():
 def save_users(data):
     os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
     with open(USERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 init_db()
 
-# AQUI ESTAVA O ERRO → CORRIGIDO
+# CORRIGIDO — ESSA LINHA É O QUE FALTAVA
 app = Flask(__name__, template_folder='templates')
 
 def sign_payload(payload_bytes):
     with open(KEY_PRIV, "rb") as f:
         priv = RSA.import_key(f.read())
+
     h = SHA256.new(payload_bytes)
     sig = pkcs1_15.new(priv).sign(h)
     return sig
@@ -51,33 +54,37 @@ def home():
 @app.route("/activate", methods=["POST"])
 def activate():
     data = request.json or {}
+
     username = data.get("username")
     password = data.get("password")
     fingerprint = data.get("fingerprint")
 
     if not username or not password or not fingerprint:
-        return jsonify({"error": "username, password and fingerprint required"}), 400
+        return jsonify({"error":"username, password and fingerprint required"}), 400
 
     users = load_users().get("users", [])
     user = None
+
     for u in users:
         if u.get("username") == username and u.get("password") == password:
             user = u
             break
 
     if not user:
-        return jsonify({"status": "error", "reason": "invalid credentials"}), 403
+        return jsonify({"status":"error","reason":"invalid credentials"}), 403
 
     now = int(time.time())
     expires_at = user.get("expires_at")
-    if expires_at and expires_at < now:
-        return jsonify({"status": "error", "reason": "expired"}), 403
 
+    if expires_at and expires_at < now:
+        return jsonify({"status":"error","reason":"expired"}), 403
+
+    # Primeira ativação
     if not user.get("device_id"):
         user["device_id"] = fingerprint
         save_users({"users": users})
     elif user.get("device_id") != fingerprint:
-        return jsonify({"status": "error", "reason": "device_mismatch"}), 403
+        return jsonify({"status":"error","reason":"device_mismatch"}), 403
 
     issued = now
     expires = expires_at or (issued + 365 * 86400)
@@ -98,12 +105,20 @@ def activate():
         "expires_at": expires
     })
 
+# ADMIN
 from functools import wraps
 
 def check_admin(a):
     ADMIN_USER = os.getenv("ADMIN_USER", "admin")
     ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
-    return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
+
+    return (
+        a
+        and hasattr(a, "username")
+        and hasattr(a, "password")
+        and a.username == ADMIN_USER
+        and a.password == ADMIN_PASS
+    )
 
 def need_admin(f):
     @wraps(f)
@@ -138,6 +153,7 @@ def admin_generate():
         "device_id": None,
         "expires_at": expires_at
     })
+
     save_users(data)
 
     return ("", 302, {"Location": "/admin"})
@@ -151,6 +167,6 @@ def admin_delete(index):
         save_users(data)
     return ("", 302, {"Location": "/admin"})
 
-# CORRIGIDO TAMBÉM AQUI
+# CORRIGIDO AQUI TAMBÉM
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
