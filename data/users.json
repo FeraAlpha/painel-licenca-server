@@ -1,11 +1,7 @@
-{
-  "users": [
-    {
-      "username": "admin",
-      "password": "1234",
-      "key": "FERA-ADMIN-001",
-      "device_id": null,
-      "expires_at": 1999999999
-    }
-  ]
-}
+curl -X POST "https://painel-licenca-server.onrender.com/activate" \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "admin",
+  "password": "1234",
+  "fingerprint": "FERA-ADMIN-001"
+}'
