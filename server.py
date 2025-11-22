@@ -35,7 +35,7 @@ def save_users(data):
 init_db()
 
 # AQUI ESTAVA O ERRO → CORRIGIDO
-app = Flask(_name_, template_folder='templates')
+app = Flask(__name__, template_folder='templates')
 
 def sign_payload(payload_bytes):
     with open(KEY_PRIV, "rb") as f:
@@ -152,5 +152,5 @@ def admin_delete(index):
     return ("", 302, {"Location": "/admin"})
 
 # CORRIGIDO TAMBÉM AQUI
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
