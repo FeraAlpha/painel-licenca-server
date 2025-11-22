@@ -8,3 +8,25 @@
     }
   ]
 }
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "1234",
+      "key": "FERA-123-ABC",
+      "device_id": null
+    },
+    {
+      "username": "leandro",
+      "password": "senha123",
+      "key": "FERA-777-LEANDRO",
+      "device_id": null
+    },
+    {
+      "username": "cliente1",
+      "password": "321",
+      "key": "FERA-CLIENTE1-159",
+      "device_id": null
+    }
+  ]
+}
