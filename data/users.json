@@ -1,35 +1,11 @@
 {
-  "username": "user1",
-  "password": "1111",
-  "key": "FERA-USER1-001",
-  "device_id": null,
-  "expires_at": 1999999999
-},
-{
-  "username": "user2",
-  "password": "2222",
-  "key": "FERA-USER2-002",
-  "device_id": null,
-  "expires_at": 1999999999
-},
-{
-  "username": "user3",
-  "password": "3333",
-  "key": "FERA-USER3-003",
-  "device_id": null,
-  "expires_at": 1999999999
-},
-{
-  "username": "user4",
-  "password": "4444",
-  "key": "FERA-USER4-004",
-  "device_id": null,
-  "expires_at": 1999999999
-},
-{
-  "username": "user5",
-  "password": "5555",
-  "key": "FERA-USER5-005",
-  "device_id": null,
-  "expires_at": 1999999999
+  "users": [
+    {
+      "username": "admin",
+      "password": "1234",
+      "key": "FERA-ADMIN-001",
+      "device_id": null,
+      "expires_at": 1999999999
+    }
+  ]
 }
