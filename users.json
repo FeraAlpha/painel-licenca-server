@@ -1,0 +1,64 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "1234",
+      "key": "FERA-ADMIN-001",
+      "device_id": null
+    },
+    {
+      "username": "leandro",
+      "password": "senha123",
+      "key": "FERA-LEANDRO-002",
+      "device_id": null
+    },
+    {
+      "username": "user1",
+      "password": "1111",
+      "key": "FERA-USER1-003",
+      "device_id": null
+    },
+    {
+      "username": "user2",
+      "password": "2222",
+      "key": "FERA-USER2-004",
+      "device_id": null
+    },
+    {
+      "username": "user3",
+      "password": "3333",
+      "key": "FERA-USER3-005",
+      "device_id": null
+    },
+    {
+      "username": "user4",
+      "password": "4444",
+      "key": "FERA-USER4-006",
+      "device_id": null
+    },
+    {
+      "username": "user5",
+      "password": "5555",
+      "key": "FERA-USER5-007",
+      "device_id": null
+    },
+    {
+      "username": "user6",
+      "password": "6666",
+      "key": "FERA-USER6-008",
+      "device_id": null
+    },
+    {
+      "username": "user7",
+      "password": "7777",
+      "key": "FERA-USER7-009",
+      "device_id": null
+    },
+    {
+      "username": "user8",
+      "password": "8888",
+      "key": "FERA-USER8-010",
+      "device_id": null
+    }
+  ]
+}
