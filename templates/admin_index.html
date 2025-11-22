@@ -1,1 +1,62 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <title>Painel Admin - Gerar Keys</title>
+  <style>
+    body{font-family:Arial;padding:18px;background:#111;color:#eee}
+    .box{background:#1b1b1b;padding:12px;border-radius:6px;margin-bottom:12px}
+    input{padding:6px;margin:6px 0;width:100%}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #333}
+    .btn{background:#2a9d8f;padding:8px;color:white;border-radius:4px;border:none}
+    .danger{background:#e76f51;padding:8px;color:white;border:none;border-radius:4px}
+  </style>
+</head>
+<body>
+  <h2>Painel Admin — Gerar Keys</h2>
 
+  <div class="box">
+    <form method="post" action="/admin/generate">
+      <label>Usuário</label>
+      <input name="username" placeholder="username">
+
+      <label>Senha</label>
+      <input name="password" placeholder="senha">
+
+      <label>Prefixo</label>
+      <input name="prefix" value="FERA">
+
+      <label>Expiração (dias)</label>
+      <input type="number" name="expire_days" value="365">
+
+      <button class="btn">Gerar Key</button>
+    </form>
+  </div>
+
+  <div class="box">
+    <h3>Usuários cadastrados</h3>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>User</th><th>Key</th><th>Device</th><th>Expira</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ loop.index0 }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.key }}</td>
+          <td>{{ u.device_id }}</td>
+          <td>{{ u.expires_at }}</td>
+          <td>
+            <form method="post" action="/admin/delete/{{ loop.index0 }}">
+              <button class="danger">Apagar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
