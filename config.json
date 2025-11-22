@@ -1,1 +1,10 @@
-{ "config": true }
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "1234",
+      "key": "FERA-123-ABC",
+      "device_id": null
+    }
+  ]
+}
