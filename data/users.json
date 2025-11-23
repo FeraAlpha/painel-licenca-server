@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "username": "admin",
+      "username": "Admin",
       "password": "1234",
       "key": "FERA-ADMIN-001",
       "device_id": null,
