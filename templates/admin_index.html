@@ -47,8 +47,7 @@
           <td>{{ u.username }}</td>
           <td>{{ u.key }}</td>
           <td>{{ u.device_id }}</td>
-          <td>Expira em: {{ datetime.fromtimestamp(u.expires_at).strftime("%d/%m/%Y") }}</td>
-
+          <td>{{ u.expires_at }}</td>
           <td>
             <form method="post" action="/admin/delete/{{ loop.index0 }}">
               <button class="danger">Apagar</button>
