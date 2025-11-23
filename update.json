@@ -1,6 +1,6 @@
 {
   "version": "1.0",
   "versionCode": 1,
-  "zipUrl": "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/FeraAlphaPanel.zip",
-  "changelog": "Versão inicial do FeraAlphaPanel."
+  "zipUrl": "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/painel-latencia.zip",
+  "changelog": "Primeira versão do Painel Latência."
 }
