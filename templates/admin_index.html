@@ -2,18 +2,18 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel Cinza</title>
+<title>Fera Alpha — Painel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <style>
   :root{
-    --bg:#dcdfe3;               /* cinza suave */
+    --bg:#c5c9ce;               /* CINZA MAIS ESCURO */
     --card:#f3f4f6;             /* cinza claro */
     --border:#cfd2d6;
-    --text:#2a2f35;             /* cinza escuro suave */
+    --text:#2a2f35;
     --text-light:#59616a;
-    --accent:#2f6fed;           /* azul profissional */
-    --danger:#d93c3c;           /* vermelho elegante */
+    --accent:#2f6fed;
+    --danger:#d93c3c;
     --radius:10px;
   }
 
@@ -26,15 +26,9 @@
   }
 
   h1{
-    font-size:24px;
+    font-size:26px;
     font-weight:700;
-    margin-bottom:4px;
-  }
-
-  .sub{
-    color:var(--text-light);
-    margin-bottom:20px;
-    font-size:14px;
+    margin-bottom:14px;
   }
 
   .card{
@@ -81,13 +75,6 @@
   .btn-danger{
     background:var(--danger);
     color:white;
-  }
-
-  .header-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:14px;
   }
 
   table{
@@ -148,8 +135,7 @@
 
 <body>
 
-<h1>Fera Alpha — Painel Cinza Premium</h1>
-<div class="sub">Gerenciamento de keys e usuários — estilo profissional e moderno</div>
+<h1>Fera Alpha — Painel</h1>
 
 <!-- Criar Key -->
 <div class="card">
@@ -172,12 +158,9 @@
   </form>
 </div>
 
-
 <!-- Lista -->
 <div class="card">
-  <div class="header-row">
-    <h2 style="font-size:18px">Usuários cadastrados</h2>
-  </div>
+  <h2 style="font-size:18px">Usuários cadastrados</h2>
 
   <table>
     <thead>
@@ -207,7 +190,6 @@
           {% if u.expires_at %}
             {% set now = (datetime.now().timestamp()) %}
             {% set diff = (u.expires_at - now) / 86400 %}
-
             {% if diff < 0 %}
               <span class="badge badge-exp">Expirado</span>
             {% elif diff < 7 %}
@@ -233,4 +215,4 @@
 </div>
 
 </body>
-</html>
+            </html>
