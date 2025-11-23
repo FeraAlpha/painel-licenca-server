@@ -1,357 +1,222 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8"/>
-  <title>Painel Fera Alpha — Gerar Keys</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <style>
-    :root{
-      --bg:#0b0b0b;
-      --panel:#141414;
-      --panel-2:#1b1b1b;
-      --accent:#00e676; /* neon green */
-      --muted:#9aa0a6;
-      --danger:#ff6b55;
-      --card-radius:8px;
-      --gap:12px;
-      --text:#eaeaea;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter,Arial,Helvetica,sans-serif;
-      background:linear-gradient(180deg,#040404 0%, #0b0b0b 100%);
-      color:var(--text);
-      padding:18px;
-    }
+<meta charset="utf-8"/>
+<title>Fera Alpha — Painel l</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:18px;
-    }
-    .brand{
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-    .logo{
-      width:46px;
-      height:46px;
-      border-radius:10px;
-      background:linear-gradient(135deg,#042, #0b4);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:800;
-      color:#001;
-      box-shadow:0 6px 20px rgba(0,230,118,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-    h1{font-size:18px;margin:0}
-    .subtitle{color:var(--muted);font-size:13px}
+<style>
+  :root{
+    --bg:#f5f7fa;
+    --card:#ffffff;
+    --border:#e1e4e8;
+    --text:#2c3e50;
+    --text-light:#66737f;
+    --accent:#276ef1;      /* Azul profissional */
+    --danger:#d64545;      /* Vermelho soft */
+    --radius:10px;
+  }
 
-    .controls{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .search{
-      background:var(--panel-2);
-      border:1px solid #101010;
-      padding:8px 10px;
-      color:var(--text);
-      border-radius:8px;
-      min-width:220px;
-    }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial;}
 
-    .box{
-      background:var(--panel);
-      padding:14px;
-      border-radius:var(--card-radius);
-      margin-bottom:16px;
-      box-shadow:0 4px 18px rgba(0,0,0,0.6);
-    }
+  body{
+    background:var(--bg);
+    padding:24px;
+    color:var(--text);
+  }
 
-    form label{display:block;font-size:12px;color:var(--muted);margin-top:6px}
-    form input[type="text"], form input[type="password"], form input[type="number"]{
-      width:100%;
-      padding:9px 10px;
-      margin-top:6px;
-      border-radius:6px;
-      border:1px solid #151515;
-      background:transparent;
-      color:var(--text);
-      outline:none;
-    }
-    .row{display:flex;gap:10px}
-    .col{flex:1}
+  h1{font-size:24px;font-weight:700;margin-bottom:4px;}
+  .sub{color:var(--text-light);margin-bottom:20px;}
 
-    .btn{
-      background:var(--accent);
-      color:#021;
-      padding:9px 12px;
-      border-radius:8px;
-      border:none;
-      font-weight:700;
-      cursor:pointer;
-    }
-    .btn.secondary{
-      background:transparent;
-      color:var(--muted);
-      border:1px solid #202020;
-      font-weight:600;
-    }
-    .btn-danger{
-      background:var(--danger);
-      color:white;
-      border:none;
-      padding:8px 10px;
-      border-radius:6px;
-      cursor:pointer;
-    }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:20px;
+    border-radius:var(--radius);
+    margin-bottom:20px;
+  }
 
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    thead th{font-weight:700;font-size:13px;text-align:left;padding:10px;border-bottom:1px solid #111;color:var(--muted)}
-    tbody td{padding:10px;border-bottom:1px solid #111;font-size:13px;color:var(--text)}
-    tbody tr{background:transparent}
-    tbody tr:nth-child(even){background:#0f0f0f}
-    .small{font-size:12px;color:var(--muted)}
+  label{
+    font-size:14px;
+    color:var(--text-light);
+    margin-bottom:4px;
+    display:block;
+  }
 
-    .badge{
-      display:inline-block;
-      padding:5px 8px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:12px;
-    }
-    .badge.ok{background:rgba(0,230,118,0.12); color:var(--accent); border:1px solid rgba(0,230,118,0.18)}
-    .badge.warn{background:rgba(255,200,30,0.08); color:#ffd54a; border:1px solid rgba(255,200,30,0.08)}
-    .badge.exp{background:rgba(255,107,85,0.08); color:var(--danger); border:1px solid rgba(255,107,85,0.08)}
+  input{
+    width:100%;
+    padding:10px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    margin-bottom:12px;
+    font-size:14px;
+  }
 
-    .actions{display:flex;gap:8px;align-items:center}
+  .btn{
+    padding:10px 16px;
+    border:none;
+    border-radius:6px;
+    font-weight:600;
+    cursor:pointer;
+  }
 
-    .muted-col{color:var(--muted)}
-    .copy-btn{background:#222;border:1px solid #2e2e2e;color:var(--muted);padding:6px 8px;border-radius:6px;cursor:pointer}
-    .copy-btn:hover{color:var(--text)}
+  .btn-primary{
+    background:var(--accent);
+    color:white;
+  }
 
-    .top-info{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:13px}
+  .btn-danger{
+    background:var(--danger);
+    color:white;
+  }
 
-    @media (max-width:720px){
-      .controls{flex-direction:column;align-items:stretch}
-      .search{width:100%}
-      thead{display:none}
-      tbody td{display:block;padding:10px 6px}
-      tbody td:before{content:attr(data-label);display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-      .actions{margin-top:8px}
-    }
+  .header-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
 
-  </style>
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+  }
+
+  thead th{
+    text-align:left;
+    padding:10px;
+    font-weight:600;
+    background:#f0f2f5;
+    border-bottom:1px solid var(--border);
+    color:var(--text-light);
+  }
+
+  tbody td{
+    padding:10px;
+    border-bottom:1px solid var(--border);
+  }
+
+  tbody tr:hover{
+    background:#fafafa;
+  }
+
+  .badge{
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
+  }
+
+  .badge-ok{
+    background:#e6f4ea;
+    color:#1b7f3d;
+  }
+
+  .badge-warn{
+    background:#fff6e5;
+    color:#b07d2d;
+  }
+
+  .badge-exp{
+    background:#fdecea;
+    color:#b23a3a;
+  }
+
+  .copy{
+    color:var(--accent);
+    cursor:pointer;
+    font-weight:600;
+    margin-left:6px;
+  }
+
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo">FERA</div>
-      <div>
-        <h1>Painel Fera Alpha</h1>
-        <div class="subtitle">Gerar / gerenciar keys — estilo gamer</div>
-      </div>
-    </div>
 
-    <div class="controls">
-      <input id="search" class="search" placeholder="🔎 Buscar por usuário, key..." />
-      <button id="sortBtn" class="btn secondary" title="Ordenar por expiração">Ordenar: Expiração ⬆</button>
-    </div>
-  </header>
+<h1>Fera Alpha — Painel Profissional</h1>
+<div class="sub">Gerenciamento corporativo de Keys e usuários</div>
 
-  <div class="box">
-    <form method="post" action="/admin/generate">
-      <div class="row">
-        <div class="col">
-          <label>Usuário</label>
-          <input name="username" placeholder="username" required>
-        </div>
-        <div class="col">
-          <label>Senha</label>
-          <input name="password" placeholder="senha" required>
-        </div>
-      </div>
+<!-- Criar Key -->
+<div class="card">
+  <h2 style="font-size:18px;margin-bottom:10px;">Gerar nova key</h2>
 
-      <div class="row" style="margin-top:8px">
-        <div style="flex:0 0 200px">
-          <label>Prefixo</label>
-          <input name="prefix" value="FERA">
-        </div>
-        <div style="flex:0 0 160px">
-          <label>Expiração (dias)</label>
-          <input type="number" name="expire_days" value="30" min="1">
-        </div>
-        <div style="flex:1;display:flex;align-items:flex-end;gap:8px">
-          <button class="btn" type="submit">Gerar Key</button>
-          <button type="button" class="btn secondary" onclick="setPreset(7)">7d</button>
-          <button type="button" class="btn secondary" onclick="setPreset(30)">30d</button>
-          <button type="button" class="btn secondary" onclick="setPreset(365)">1y</button>
-        </div>
-      </div>
-    </form>
+  <form method="post" action="/admin/generate">
+    <label>Usuário</label>
+    <input type="text" name="username" placeholder="ex: cliente01" required>
+
+    <label>Senha</label>
+    <input type="text" name="password" placeholder="senha do cliente" required>
+
+    <label>Prefixo</label>
+    <input type="text" name="prefix" value="FERA">
+
+    <label>Expiração (dias)</label>
+    <input type="number" name="expire_days" value="30">
+
+    <button class="btn btn-primary">Gerar Key</button>
+  </form>
+</div>
+
+
+<!-- Lista -->
+<div class="card">
+  <div class="header-row">
+    <h2 style="font-size:18px">Usuários cadastrados</h2>
   </div>
 
-  <div class="box">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h3 style="margin:0">Usuários cadastrados</h3>
-      <div class="top-info">
-        <div class="muted-col">Total: <span id="totalCount">0</span></div>
-        <div class="muted-col">Data: <span id="nowDate"></span></div>
-      </div>
-    </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuário</th>
+        <th>Key</th>
+        <th>Device</th>
+        <th>Expiração</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ loop.index0 }}</td>
+        <td>{{ u.username }}</td>
+        <td>
+          {{ u.key }}
+          <span class="copy" onclick="navigator.clipboard.writeText('{{ u.key }}')">copiar</span>
+        </td>
+        <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-    <table id="usersTable" aria-live="polite">
-      <thead>
-        <tr>
-          <th style="width:40px">ID</th>
-          <th>User</th>
-          <th>Key</th>
-          <th style="width:160px">Device</th>
-          <th style="width:160px">Expira</th>
-          <th style="width:160px"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for u in users %}
-        <tr data-username="{{ u.username | default('') }}" data-key="{{ u.key | default('') }}" data-expires="{{ u.expires_at | default(0) }}">
-          <td data-label="ID">{{ loop.index0 }}</td>
-          <td data-label="User">{{ u.username }}</td>
-          <td data-label="Key">
-            <code class="small">{{ u.key }}</code>
-          </td>
-          <td data-label="Device" class="muted-col">{{ u.device_id if u.device_id else "—" }}</td>
-          <td data-label="Expira" class="small">
-            <!-- JS vai formatar -->
-            <span class="expText">Carregando...</span>
-            <div class="small" style="margin-top:6px"><span class="daysLeft"></span></div>
-          </td>
-          <td data-label="" class="actions">
-            <button class="copy-btn" onclick="copyKey(this)">Copiar</button>
+        <td>
+          {% if u.expires_at %}
+            {% set now = (datetime.now().timestamp()) %}
+            {% set diff = (u.expires_at - now) / 86400 %}
 
-            <form method="post" action="/admin/delete/{{ loop.index0 }}" style="display:inline">
-              <button class="btn-danger" type="submit" onclick="return confirm('Apagar este usuário?')">Apagar</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            {% if diff < 0 %}
+              <span class="badge badge-exp">Expirado</span>
+            {% elif diff < 7 %}
+              <span class="badge badge-warn">{{ diff|round }} dias</span>
+            {% else %}
+              <span class="badge badge-ok">{{ diff|round }} dias</span>
+            {% endif %}
 
-  <script>
-    // Helpers
-    function humanDateFromSeconds(s) {
-      s = Number(s) || 0;
-      if (!s) return null;
-      const d = new Date(s * 1000);
-      const dd = String(d.getDate()).padStart(2,'0');
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const yy = d.getFullYear();
-      return `${dd}/${mm}/${yy}`;
-    }
+          {% else %}
+            <span class="badge badge-ok">Ilimitada</span>
+          {% endif %}
+        </td>
 
-    function daysRemaining(s) {
-      s = Number(s) || 0;
-      if (!s) return null;
-      const diff = Math.floor((s*1000 - Date.now()) / 86400000); // days
-      return diff;
-    }
+        <td>
+          <form method="post" action="/admin/delete/{{ loop.index0 }}">
+            <button class="btn btn-danger">Excluir</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-    // Format all rows (dates and badges)
-    function formatRows() {
-      const rows = document.querySelectorAll('#usersTable tbody tr');
-      let count = 0;
-      rows.forEach(r => {
-        const expires = Number(r.dataset.expires) || 0;
-        const expTextEl = r.querySelector('.expText');
-        const daysEl = r.querySelector('.daysLeft');
-        if (expires && expires > 0) {
-          expTextEl.textContent = 'Expira em: ' + humanDateFromSeconds(expires);
-          const days = daysRemaining(expires);
-          if (days < 0) {
-            daysEl.innerHTML = '<span class="badge exp">expirado</span>';
-          } else if (days <= 7) {
-            daysEl.innerHTML = '<span class="badge warn">'+days+' dias</span>';
-          } else {
-            daysEl.innerHTML = '<span class="badge ok">'+days+' dias</span>';
-          }
-        } else {
-          expTextEl.textContent = 'Perpétua';
-          daysEl.innerHTML = '<span class="badge ok">sem expiração</span>';
-        }
-        count++;
-      });
-      document.getElementById('totalCount').textContent = count;
-      document.getElementById('nowDate').textContent = new Date().toLocaleString();
-    }
-
-    // Copy key
-    function copyKey(btn) {
-      const tr = btn.closest('tr');
-      const key = tr.dataset.key || '';
-      if (!key) return alert('Key vazia');
-      navigator.clipboard.writeText(key).then(()=>{
-        btn.textContent = 'Copiado';
-        setTimeout(()=> btn.textContent = 'Copiar', 1200);
-      });
-    }
-
-    // Search filter
-    document.getElementById('search').addEventListener('input', function(){
-      const q = this.value.trim().toLowerCase();
-      const rows = document.querySelectorAll('#usersTable tbody tr');
-      rows.forEach(r=>{
-        const name = (r.dataset.username||'').toLowerCase();
-        const key = (r.dataset.key||'').toLowerCase();
-        const ok = (name.includes(q) || key.includes(q));
-        r.style.display = ok ? '' : 'none';
-      });
-      // update count
-      const visible = Array.from(document.querySelectorAll('#usersTable tbody tr')).filter(x=> x.style.display !== 'none').length;
-      document.getElementById('totalCount').textContent = visible;
-    });
-
-    // Preset days
-    function setPreset(days){
-      const el = document.querySelector('input[name="expire_days"]');
-      el.value = days;
-    }
-
-    // Sort by expiration (toggle)
-    let sortAsc = true;
-    document.getElementById('sortBtn').addEventListener('click', ()=>{
-      sortAsc = !sortAsc;
-      sortByExpiry(sortAsc);
-      document.getElementById('sortBtn').textContent = 'Ordenar: Expiração ' + (sortAsc ? '⬆' : '⬇');
-    });
-
-    function sortByExpiry(asc=true){
-      const tbody = document.querySelector('#usersTable tbody');
-      const rows = Array.from(tbody.querySelectorAll('tr'));
-      rows.sort((a,b)=>{
-        const ax = Number(a.dataset.expires)||0;
-        const bx = Number(b.dataset.expires)||0;
-        // if 0 (no expiration) put last
-        if (ax === bx) return 0;
-        if (ax === 0) return 1;
-        if (bx === 0) return -1;
-        return asc ? ax - bx : bx - ax;
-      });
-      rows.forEach(r=> tbody.appendChild(r));
-    }
-
-    // init
-    window.addEventListener('DOMContentLoaded', ()=>{
-      formatRows();
-      // default sort ascending by expiration (nearest first)
-      sortByExpiry(true);
-    });
-  </script>
 </body>
-</html>
+            </html>
