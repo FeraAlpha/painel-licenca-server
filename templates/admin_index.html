@@ -47,8 +47,6 @@
           <td>{{ u.username }}</td>
           <td>{{ u.key }}</td>
           <td>{{ u.device_id }}</td>
-          
-          <!-- AQUI FOI ALTERADO PARA FORMATAR A DATA -->
           <td>Expira em: {{ datetime.fromtimestamp(u.expires_at).strftime("%d/%m/%Y") }}</td>
 
           <td>
