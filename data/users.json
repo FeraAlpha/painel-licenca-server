@@ -1,8 +1,9 @@
 {
   "users": [
     {
-      "username": "Admin",
+      "username": "admin",
       "password": "1234",
+      "key": "FERA-ADMIN-001",
       "device_id": null,
       "expires_at": 1999999999
     }
