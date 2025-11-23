@@ -1,216 +1,213 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-<meta charset="utf-8"/>
-<title>Fera Alpha — Painel</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="utf-8"/>
 
-<style>
-  :root{
-    --bg:#bfc3c9; 
-    --card:#ffffff;
-    --border:#d0d3d6;
-    --text:#2b2f33;
-    --text-light:#6d7480;
-    --accent:#2f6fed;
-    --danger:#d93c3c;
-    --radius:14px;
-  }
+    <!-- 🔥 ANTI-CACHE (OBRIGATÓRIO PARA MUDANÇAS APARECEREM) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
-  *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial;}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  body{
-    background:var(--bg);
-    padding:28px;
-    color:var(--text);
-  }
+    <title>Fera Alpha — Painel</title>
 
-  h1{
-    font-size:30px;
-    font-weight:700;
-    margin-bottom:20px;
-  }
+    <style>
+        :root{
+            --bg:#bfc3c9;        /* Fundo cinza mais escuro */
+            --card:#ffffff;      /* Cartões brancos */
+            --border:#d0d3d6;
+            --text:#2b2f33;
+            --text-light:#6d7480;
+            --accent:#2f6fed;    /* Botão azul */
+            --danger:#d93c3c;    /* Botão vermelho */
+            --radius:14px;
+        }
 
-  h2{
-    margin-bottom:16px;
-    font-size:20px;
-    font-weight:700;
-    color:var(--text);
-  }
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
 
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    padding:24px;
-    border-radius:var(--radius);
-    margin-bottom:28px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.12);
-  }
+        body{
+            background:var(--bg);
+            padding:28px;
+            color:var(--text);
+        }
 
-  label{
-    font-size:14px;
-    font-weight:600;
-    color:var(--text-light);
-    display:block;
-    margin-bottom:4px;
-  }
+        h1{
+            font-size:30px;
+            font-weight:700;
+            margin-bottom:25px;
+        }
 
-  input{
-    width:100%;
-    padding:12px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    margin-bottom:14px;
-    font-size:15px;
-    background:white;
-    color:var(--text);
-  }
+        .card{
+            background:var(--card);
+            padding:22px;
+            border-radius:var(--radius);
+            border:1px solid var(--border);
+            margin-bottom:28px;
+            max-width:600px;
+            box-shadow:0 3px 8px rgba(0,0,0,0.10);
+        }
 
-  .btn{
-    padding:12px 22px;
-    border:none;
-    border-radius:8px;
-    font-weight:700;
-    cursor:pointer;
-    font-size:15px;
-  }
+        label{
+            font-size:15px;
+            font-weight:600;
+            margin-top:12px;
+            display:block;
+            color:var(--text-light);
+        }
 
-  .btn-primary{background:var(--accent);color:white;}
-  .btn-danger{background:var(--danger);color:white;}
+        input{
+            padding:12px;
+            width:100%;
+            border-radius:var(--radius);
+            border:1px solid var(--border);
+            margin-top:6px;
+            margin-bottom:10px;
+            font-size:15px;
+        }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:15px;
-  }
+        .btn{
+            background:var(--accent);
+            color:#fff;
+            padding:14px;
+            border:none;
+            border-radius:var(--radius);
+            font-size:16px;
+            font-weight:600;
+            width:100%;
+            cursor:pointer;
+        }
 
-  thead th{
-    text-align:left;
-    padding:12px;
-    font-weight:700;
-    background:#eceff1;
-    color:var(--text-light);
-    border-bottom:1px solid var(--border);
-  }
+        .btn-danger{
+            background:var(--danger);
+            color:#fff;
+            padding:10px 16px;
+            border:none;
+            border-radius:var(--radius);
+            cursor:pointer;
+            font-size:15px;
+        }
 
-  tbody td{
-    padding:12px;
-    border-bottom:1px solid var(--border);
-  }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:10px;
+        }
 
-  tbody tr:hover{
-    background:#e7e9ec;
-  }
+        th{
+            text-align:left;
+            background:#eff2f5;
+            padding:12px;
+            border-bottom:1px solid var(--border);
+            font-size:14px;
+        }
 
-  .badge{
-    padding:7px 14px;
-    border-radius:22px;
-    font-size:13px;
-    font-weight:700;
-    display:inline-block;
-  }
+        td{
+            padding:12px;
+            border-bottom:1px solid var(--border);
+            font-size:14px;
+            word-break:break-word;
+        }
 
-  .badge-ok{background:#d5f6db;color:#0d7a2e;}
-  .badge-warn{background:#fff1c9;color:#916c18;}
-  .badge-exp{background:#ffd5d5;color:#b50f0f;}
+        .badge{
+            background:#b4f2c0;
+            padding:6px 14px;
+            border-radius:30px;
+            font-size:13px;
+            font-weight:600;
+            color:#1c5d2c;
+            display:inline-block;
+            text-align:center;
+            min-width:70px;
+        }
 
-  .copy{
-    color:var(--accent);
-    cursor:pointer;
-    font-weight:700;
-    margin-left:6px;
-  }
-</style>
+        .copy{
+            color:#2f6fed;
+            text-decoration:underline;
+            cursor:pointer;
+            font-size:13px;
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>Fera Alpha — Painel</h1>
+    <h1>Fera Alpha — Painel</h1>
 
-<!-- Criar Key -->
-<div class="card">
-  <h2>Gerar nova key</h2>
+    <!-- CARD GERAR NOVA KEY -->
+    <div class="card">
+        <h2 style="margin-bottom:15px;">Gerar nova key</h2>
 
-  <form method="post" action="/admin/generate">
-    <label>Usuário</label>
-    <input type="text" name="username" placeholder="ex: cliente01" required>
+        <form method="post" action="/admin/generate">
 
-    <label>Senha</label>
-    <input type="text" name="password" placeholder="senha do cliente" required>
+            <label>Usuário</label>
+            <input name="username" placeholder="ex: cliente01">
 
-    <label>Prefixo</label>
-    <input type="text" name="prefix" value="FERA">
+            <label>Senha</label>
+            <input name="password" placeholder="senha do cliente">
 
-    <label>Expiração (dias)</label>
-    <input type="number" name="expire_days" value="30">
+            <label>Prefixo</label>
+            <input name="prefix" value="FERA">
 
-    <button class="btn btn-primary">Gerar Key</button>
-  </form>
-</div>
+            <label>Expiração (dias)</label>
+            <input name="expire_days" type="number" value="30">
 
-<!-- Lista -->
-<div class="card">
-  <h2>Usuários cadastrados</h2>
+            <button class="btn">Gerar Key</button>
+        </form>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Usuário</th>
-        <th>Key</th>
-        <th>Device</th>
-        <th>Expiração</th>
-        <th>Ação</th>
-      </tr>
-    </thead>
+    <!-- CARD TABELA -->
+    <div class="card">
+        <h2 style="margin-bottom:15px;">Usuários cadastrados</h2>
 
-    <tbody>
-      {% for u in users %}
-      <tr>
-        <td>{{ loop.index0 }}</td>
-        <td>{{ u.username }}</td>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>Key</th>
+                    <th>Device</th>
+                    <th>Expiração</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
 
-        <td>
-          {{ u.key }}
-          <span class="copy" onclick="navigator.clipboard.writeText('{{ u.key }}')">copiar</span>
-        </td>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ loop.index0 }}</td>
+                    <td>{{ u.username }}</td>
 
-        <td>{{ u.device_id if u.device_id else '-' }}</td>
+                    <td>
+                        {{ u.key }}  
+                        <br>
+                        <span class="copy" onclick="navigator.clipboard.writeText('{{u.key}}')">copiar</span>
+                    </td>
 
-        <td>
-          {% if u.expires_at %}
-            {% set now = (datetime.now().timestamp()) %}
-            {% set diff = (u.expires_at - now) / 86400 %}
+                    <td>{{ u.device_id or "-" }}</td>
 
-            {% if diff < 0 %}
-              <span class="badge badge-exp">Expirado</span>
+                    <td>
+                        <span class="badge">
+                            {{ "%.1f"|format((u.expires_at - (datetime.utcnow().timestamp())) / 86400) }} dias
+                        </span>
+                    </td>
 
-            {% elif diff < 3 %}
-              <span class="badge badge-exp">Expira em {{ diff|round }} dias</span>
+                    <td>
+                        <form method="post" action="/admin/delete/{{ loop.index0 }}">
+                            <button class="btn-danger">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-            {% elif diff < 7 %}
-              <span class="badge badge-warn">{{ diff|round }} dias</span>
-
-            {% else %}
-              <span class="badge badge-ok">{{ diff|round }} dias</span>
-
-            {% endif %}
-          {% else %}
-            <span class="badge badge-ok">Ilimitada</span>
-          {% endif %}
-        </td>
-
-        <td>
-          <form method="post" action="/admin/delete/{{ loop.index0 }}">
-            <button class="btn btn-danger">Excluir</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-</div>
+    </div>
 
 </body>
-            </html>
+</html>
