@@ -3,6 +3,8 @@ import json, os, time, base64, sqlite3
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
+from datetime import datetime
+from functools import wraps
 
 DB = "data/licenses.db"
 USERS_FILE = "data/users.json"
@@ -34,7 +36,6 @@ def save_users(data):
 
 init_db()
 
-# AQUI CORRIGIDO — USAR __name__
 app = Flask(__name__, template_folder='templates')
 
 def sign_payload(payload_bytes):
@@ -43,6 +44,9 @@ def sign_payload(payload_bytes):
     h = SHA256.new(payload_bytes)
     sig = pkcs1_15.new(priv).sign(h)
     return sig
+
+
+# ======================== ROTAS PRINCIPAIS ========================
 
 @app.route("/")
 def home():
@@ -60,6 +64,7 @@ def activate():
 
     users = load_users().get("users", [])
     user = None
+
     for u in users:
         if u.get("username") == username and u.get("password") == password:
             user = u
@@ -70,6 +75,7 @@ def activate():
 
     now = int(time.time())
     expires_at = user.get("expires_at")
+
     if expires_at and expires_at < now:
         return jsonify({"status": "error", "reason": "expired"}), 403
 
@@ -98,7 +104,8 @@ def activate():
         "expires_at": expires
     })
 
-from functools import wraps
+
+# ======================== ADMIN ========================
 
 def check_admin(a):
     ADMIN_USER = os.getenv("ADMIN_USER", "admin")
@@ -110,25 +117,39 @@ def need_admin(f):
     def inner(*args, **kwargs):
         auth = request.authorization
         if not check_admin(auth):
-            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm="Login Required"'})
+            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Login Required\"'})
         return f(*args, **kwargs)
     return inner
 
+
+# ---------- PAINEL ADMIN -----------
 @app.route("/admin")
 @need_admin
 def admin():
-    return render_template("admin_index.html", users=users, datetime=datetime)
+    data = load_users()
+    users = data.get("users", [])
 
+    return render_template(
+        "admin_index.html",
+        users=users,
+        datetime=datetime   # ← NECESSÁRIO PARA FORMATAR DATA
+    )
+
+
+# ---------- GERAR KEY -----------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
 def admin_generate():
     username = request.form.get("username") or ""
     password = request.form.get("password") or ""
     prefix = request.form.get("prefix") or "FERA"
-    expire_days = int(request.form.get("expire_days") or 365)
+    expire_days = int(request.form.get("expire_days") or 30)
 
-    key = prefix + "-" + os.urandom(6).hex().upper()
-    expires_at = int(time.time()) + expire_days * 86400 if expire_days > 0 else None
+    # Key curta
+    key = prefix + "-" + os.urandom(5).hex().upper()
+
+    # Expiração
+    expires_at = int(time.time()) + expire_days * 86400
 
     data = load_users()
     data["users"].append({
@@ -138,10 +159,12 @@ def admin_generate():
         "device_id": None,
         "expires_at": expires_at
     })
-    save_users(data)
 
+    save_users(data)
     return ("", 302, {"Location": "/admin"})
 
+
+# ---------- APAGAR USER -----------
 @app.route("/admin/delete/<int:index>", methods=["POST"])
 @need_admin
 def admin_delete(index):
@@ -151,6 +174,7 @@ def admin_delete(index):
         save_users(data)
     return ("", 302, {"Location": "/admin"})
 
-# CORRETO FINAL
+
+# ---------- RUN ----------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
