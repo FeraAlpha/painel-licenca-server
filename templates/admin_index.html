@@ -1,213 +1,217 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="utf-8"/>
+<meta charset="utf-8"/>
+<title>Fera Alpha — Painel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <!-- 🔥 ANTI-CACHE (OBRIGATÓRIO PARA MUDANÇAS APARECEREM) -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+<style>
+  :root{
+    --bg:#c3c7cc;
+    --card:#f5f6f7;
+    --border:#c6c9cd;
+    --text:#2b2f33;
+    --text-light:#687078;
+    --accent:#2f6fed;
+    --danger:#d93c3c;
+    --radius:12px;
+  }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial;}
 
-    <title>Fera Alpha — Painel</title>
+  body{
+    background:var(--bg);
+    padding:26px;
+    color:var(--text);
+  }
 
-    <style>
-        :root{
-            --bg:#bfc3c9;        /* Fundo cinza mais escuro */
-            --card:#ffffff;      /* Cartões brancos */
-            --border:#d0d3d6;
-            --text:#2b2f33;
-            --text-light:#6d7480;
-            --accent:#2f6fed;    /* Botão azul */
-            --danger:#d93c3c;    /* Botão vermelho */
-            --radius:14px;
-        }
+  h1{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:18px;
+  }
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, sans-serif;
-        }
+  h2{
+    margin-bottom:14px;
+    font-size:20px;
+    font-weight:700;
+  }
 
-        body{
-            background:var(--bg);
-            padding:28px;
-            color:var(--text);
-        }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:22px;
+    border-radius:var(--radius);
+    margin-bottom:26px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
+  }
 
-        h1{
-            font-size:30px;
-            font-weight:700;
-            margin-bottom:25px;
-        }
+  label{
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-light);
+    margin-bottom:4px;
+    display:block;
+  }
 
-        .card{
-            background:var(--card);
-            padding:22px;
-            border-radius:var(--radius);
-            border:1px solid var(--border);
-            margin-bottom:28px;
-            max-width:600px;
-            box-shadow:0 3px 8px rgba(0,0,0,0.10);
-        }
+  input{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    margin-bottom:12px;
+    font-size:14px;
+    background:white;
+    color:var(--text);
+  }
 
-        label{
-            font-size:15px;
-            font-weight:600;
-            margin-top:12px;
-            display:block;
-            color:var(--text-light);
-        }
+  .btn{
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:15px;
+  }
 
-        input{
-            padding:12px;
-            width:100%;
-            border-radius:var(--radius);
-            border:1px solid var(--border);
-            margin-top:6px;
-            margin-bottom:10px;
-            font-size:15px;
-        }
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-danger{background:var(--danger);color:white;}
 
-        .btn{
-            background:var(--accent);
-            color:#fff;
-            padding:14px;
-            border:none;
-            border-radius:var(--radius);
-            font-size:16px;
-            font-weight:600;
-            width:100%;
-            cursor:pointer;
-        }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+  }
 
-        .btn-danger{
-            background:var(--danger);
-            color:#fff;
-            padding:10px 16px;
-            border:none;
-            border-radius:var(--radius);
-            cursor:pointer;
-            font-size:15px;
-        }
+  thead th{
+    text-align:left;
+    padding:12px;
+    font-weight:700;
+    background:#e8e9ec;
+    border-bottom:1px solid var(--border);
+    color:var(--text-light);
+  }
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:10px;
-        }
+  tbody td{
+    padding:12px;
+    border-bottom:1px solid var(--border);
+  }
 
-        th{
-            text-align:left;
-            background:#eff2f5;
-            padding:12px;
-            border-bottom:1px solid var(--border);
-            font-size:14px;
-        }
+  tbody tr:hover{
+    background:#e4e6ea;
+  }
 
-        td{
-            padding:12px;
-            border-bottom:1px solid var(--border);
-            font-size:14px;
-            word-break:break-word;
-        }
+  .badge{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    display:inline-block;
+  }
 
-        .badge{
-            background:#b4f2c0;
-            padding:6px 14px;
-            border-radius:30px;
-            font-size:13px;
-            font-weight:600;
-            color:#1c5d2c;
-            display:inline-block;
-            text-align:center;
-            min-width:70px;
-        }
+  .badge-ok{background:#d7f5dd;color:#177a30;}
+  .badge-warn{background:#fff3c9;color:#8a6c1e;}
+  .badge-exp{background:#ffe1e1;color:#b32828;}
 
-        .copy{
-            color:#2f6fed;
-            text-decoration:underline;
-            cursor:pointer;
-            font-size:13px;
-        }
-    </style>
+  .copy{
+    color:var(--accent);
+    cursor:pointer;
+    font-weight:600;
+    margin-left:6px;
+  }
+</style>
 </head>
 
 <body>
 
-    <h1>Fera Alpha — Painel</h1>
+<h1>Fera Alpha — Painel</h1>
 
-    <!-- CARD GERAR NOVA KEY -->
-    <div class="card">
-        <h2 style="margin-bottom:15px;">Gerar nova key</h2>
+<!-- Criar Key -->
+<div class="card">
+  <h2>Gerar nova key</h2>
 
-        <form method="post" action="/admin/generate">
+  <form method="post" action="/admin/generate">
+    <label>Usuário</label>
+    <input type="text" name="username" placeholder="ex: cliente01" required>
 
-            <label>Usuário</label>
-            <input name="username" placeholder="ex: cliente01">
+    <label>Senha</label>
+    <input type="text" name="password" placeholder="senha do cliente" required>
 
-            <label>Senha</label>
-            <input name="password" placeholder="senha do cliente">
+    <label>Prefixo</label>
+    <input type="text" name="prefix" value="FERA">
 
-            <label>Prefixo</label>
-            <input name="prefix" value="FERA">
+    <label>Expiração (dias)</label>
+    <input type="number" name="expire_days" value="30">
 
-            <label>Expiração (dias)</label>
-            <input name="expire_days" type="number" value="30">
+    <button class="btn btn-primary">Gerar Key</button>
+  </form>
+</div>
 
-            <button class="btn">Gerar Key</button>
-        </form>
-    </div>
 
-    <!-- CARD TABELA -->
-    <div class="card">
-        <h2 style="margin-bottom:15px;">Usuários cadastrados</h2>
+<!-- Lista -->
+<div class="card">
+  <h2>Usuários cadastrados</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuário</th>
-                    <th>Key</th>
-                    <th>Device</th>
-                    <th>Expiração</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuário</th>
+        <th>Key</th>
+        <th>Device</th>
+        <th>Expiração</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
 
-            <tbody>
-                {% for u in users %}
-                <tr>
-                    <td>{{ loop.index0 }}</td>
-                    <td>{{ u.username }}</td>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ loop.index0 }}</td>
+        <td>{{ u.username }}</td>
 
-                    <td>
-                        {{ u.key }}  
-                        <br>
-                        <span class="copy" onclick="navigator.clipboard.writeText('{{u.key}}')">copiar</span>
-                    </td>
+        <td>
+          {{ u.key }}
+          <span class="copy" onclick="navigator.clipboard.writeText('{{ u.key }}')">copiar</span>
+        </td>
 
-                    <td>{{ u.device_id or "-" }}</td>
+        <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-                    <td>
-                        <span class="badge">
-                            {{ "%.1f"|format((u.expires_at - (datetime.utcnow().timestamp())) / 86400) }} dias
-                        </span>
-                    </td>
+        <td>
+          {% if u.expires_at %}
+            {% set now = (datetime.now().timestamp()) %}
+            {% set diff = (u.expires_at - now) / 86400 %}
 
-                    <td>
-                        <form method="post" action="/admin/delete/{{ loop.index0 }}">
-                            <button class="btn-danger">Excluir</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% if diff < 0 %}
+              <span class="badge badge-exp">Expirado</span>
 
-    </div>
+            {% elif diff < 3 %}
+              <span class="badge badge-exp">Expira em {{ diff|round }} dias</span>
+
+            {% elif diff < 7 %}
+              <span class="badge badge-warn">{{ diff|round }} dias</span>
+
+            {% else %}
+              <span class="badge badge-ok">{{ diff|round }} dias</span>
+
+            {% endif %}
+          {% else %}
+            <span class="badge badge-ok">Ilimitada</span>
+          {% endif %}
+        </td>
+
+        <td>
+          <form method="post" action="/admin/delete/{{ loop.index0 }}">
+            <button class="btn btn-danger">Excluir</button>
+          </form>
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
 
 </body>
-</html>
+            </html>
