@@ -117,7 +117,7 @@ def need_admin(f):
 @app.route("/admin")
 @need_admin
 def admin():
-    return render_template("admin_index.html", users=load_users()["users"])
+    return render_template("admin_index.html", users=users, datetime=datetime)
 
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
