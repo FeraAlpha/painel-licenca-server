@@ -7,41 +7,48 @@
 
 <style>
   :root{
-    --bg:#c5c9ce;               /* CINZA MAIS ESCURO */
-    --card:#f3f4f6;             /* cinza claro */
-    --border:#cfd2d6;
-    --text:#2a2f35;
-    --text-light:#59616a;
+    --bg:#c3c7cc;               /* fundo cinza mais escuro */
+    --card:#f5f6f7;             /* cartão cinza claro */
+    --border:#c6c9cd;
+    --text:#2b2f33;
+    --text-light:#687078;
     --accent:#2f6fed;
     --danger:#d93c3c;
-    --radius:10px;
+    --radius:12px;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial;}
 
   body{
     background:var(--bg);
-    padding:24px;
+    padding:26px;
     color:var(--text);
   }
 
   h1{
-    font-size:26px;
+    font-size:28px;
     font-weight:700;
+    margin-bottom:18px;
+  }
+
+  h2{
     margin-bottom:14px;
+    font-size:20px;
+    font-weight:700;
   }
 
   .card{
     background:var(--card);
     border:1px solid var(--border);
-    padding:20px;
+    padding:22px;
     border-radius:var(--radius);
-    margin-bottom:20px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.07);
+    margin-bottom:26px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
   }
 
   label{
     font-size:14px;
+    font-weight:600;
     color:var(--text-light);
     margin-bottom:4px;
     display:block;
@@ -49,9 +56,9 @@
 
   input{
     width:100%;
-    padding:10px;
+    padding:12px;
     border:1px solid var(--border);
-    border-radius:6px;
+    border-radius:7px;
     margin-bottom:12px;
     font-size:14px;
     background:white;
@@ -59,23 +66,16 @@
   }
 
   .btn{
-    padding:10px 16px;
+    padding:12px 20px;
     border:none;
-    border-radius:6px;
-    font-weight:600;
+    border-radius:8px;
+    font-weight:700;
     cursor:pointer;
-    font-size:14px;
+    font-size:15px;
   }
 
-  .btn-primary{
-    background:var(--accent);
-    color:white;
-  }
-
-  .btn-danger{
-    background:var(--danger);
-    color:white;
-  }
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-danger{background:var(--danger);color:white;}
 
   table{
     width:100%;
@@ -85,44 +85,33 @@
 
   thead th{
     text-align:left;
-    padding:10px;
-    font-weight:600;
-    background:#e7e9ee;
+    padding:12px;
+    font-weight:700;
+    background:#e8e9ec;
     border-bottom:1px solid var(--border);
     color:var(--text-light);
   }
 
   tbody td{
-    padding:10px;
+    padding:12px;
     border-bottom:1px solid var(--border);
   }
 
   tbody tr:hover{
-    background:#e9ebef;
+    background:#e4e6ea;
   }
 
   .badge{
-    padding:4px 10px;
+    padding:6px 12px;
     border-radius:20px;
-    font-size:12px;
+    font-size:13px;
     font-weight:600;
     display:inline-block;
   }
 
-  .badge-ok{
-    background:#d6f5df;
-    color:#1a7431;
-  }
-
-  .badge-warn{
-    background:#fff2cd;
-    color:#9a742b;
-  }
-
-  .badge-exp{
-    background:#f8d7da;
-    color:#b02a37;
-  }
+  .badge-ok{background:#d7f5dd;color:#177a30;}
+  .badge-warn{background:#fff3c9;color:#8a6c1e;}
+  .badge-exp{background:#ffe1e1;color:#b32828;}
 
   .copy{
     color:var(--accent);
@@ -137,9 +126,9 @@
 
 <h1>Fera Alpha — Painel</h1>
 
-<!-- Criar Key -->
+<!-- Gerar Key -->
 <div class="card">
-  <h2 style="font-size:18px;margin-bottom:10px;">Gerar nova key</h2>
+  <h2>Gerar nova key</h2>
 
   <form method="post" action="/admin/generate">
     <label>Usuário</label>
@@ -158,9 +147,10 @@
   </form>
 </div>
 
+
 <!-- Lista -->
 <div class="card">
-  <h2 style="font-size:18px">Usuários cadastrados</h2>
+  <h2>Usuários cadastrados</h2>
 
   <table>
     <thead>
@@ -170,9 +160,10 @@
         <th>Key</th>
         <th>Device</th>
         <th>Expiração</th>
-        <th></th>
+        <th>Ação</th>
       </tr>
     </thead>
+
     <tbody>
       {% for u in users %}
       <tr>
@@ -190,12 +181,19 @@
           {% if u.expires_at %}
             {% set now = (datetime.now().timestamp()) %}
             {% set diff = (u.expires_at - now) / 86400 %}
+
             {% if diff < 0 %}
               <span class="badge badge-exp">Expirado</span>
+
+            {% elif diff < 3 %}
+              <span class="badge badge-exp">Expira em {{ diff|round }} dias</span>
+
             {% elif diff < 7 %}
               <span class="badge badge-warn">{{ diff|round }} dias</span>
+
             {% else %}
               <span class="badge badge-ok">{{ diff|round }} dias</span>
+
             {% endif %}
           {% else %}
             <span class="badge badge-ok">Ilimitada</span>
@@ -211,8 +209,4 @@
       </tr>
       {% endfor %}
     </tbody>
-  </table>
-</div>
-
-</body>
-            </html>
+            </table>
