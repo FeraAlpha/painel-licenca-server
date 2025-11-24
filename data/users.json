@@ -69,6 +69,13 @@
       "key": "FERA-CLIENT-010",
       "device_id": null,
       "expires_at": 1769800000
+    },
+    {
+      "username": "fera",
+      "password": "123",
+      "key": "FERA-A28B4DA1",
+      "device_id": null,
+      "expires_at": 1766548870
     }
   ]
 }
