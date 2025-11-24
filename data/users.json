@@ -15,13 +15,6 @@
       "expires_at": 1769800000
     },
     {
-      "username": "client04",
-      "password": "1234",
-      "key": "FERA-CLIENT-004",
-      "device_id": null,
-      "expires_at": 1769800000
-    },
-    {
       "username": "client05",
       "password": "1234",
       "key": "FERA-CLIENT-005",
