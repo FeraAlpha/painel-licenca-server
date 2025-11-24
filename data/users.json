@@ -20,6 +20,13 @@
       "key": "FERA-DE22CA40",
       "device_id": "b23e596f1eff65895d261a7280550da4",
       "expires_at": 1766559401
+    },
+    {
+      "username": "fera",
+      "password": "1",
+      "key": "FERA-0E4ACE0B",
+      "device_id": null,
+      "expires_at": 1766561024
     }
   ]
 }
