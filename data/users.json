@@ -1,11 +1,74 @@
 {
   "users": [
     {
-      "username": "fera",
+      "username": "client01",
       "password": "1234",
-      "key": "FERA-ADMIN-001",
+      "key": "FERA-CLIENT-001",
       "device_id": null,
-      "expires_at": 1999999999
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client02",
+      "password": "1234",
+      "key": "FERA-CLIENT-002",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client03",
+      "password": "1234",
+      "key": "FERA-CLIENT-003",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client04",
+      "password": "1234",
+      "key": "FERA-CLIENT-004",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client05",
+      "password": "1234",
+      "key": "FERA-CLIENT-005",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client06",
+      "password": "1234",
+      "key": "FERA-CLIENT-006",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client07",
+      "password": "1234",
+      "key": "FERA-CLIENT-007",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client08",
+      "password": "1234",
+      "key": "FERA-CLIENT-008",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client09",
+      "password": "1234",
+      "key": "FERA-CLIENT-009",
+      "device_id": null,
+      "expires_at": 1769800000
+    },
+    {
+      "username": "client10",
+      "password": "1234",
+      "key": "FERA-CLIENT-010",
+      "device_id": null,
+      "expires_at": 1769800000
     }
   ]
 }
