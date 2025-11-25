@@ -83,6 +83,13 @@
       "key": "FERA-81324E93",
       "device_id": "e6271d2b3975a57dbc76ced23d9d7ebe",
       "expires_at": 1766690120
+    },
+    {
+      "username": "mattheus.andrade",
+      "password": "Spfc@9811",
+      "key": "FERA-DBEF8331",
+      "device_id": null,
+      "expires_at": 1795634601
     }
   ]
 }
