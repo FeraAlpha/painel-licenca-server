@@ -15,13 +15,11 @@ KEY_PUB = "public.pem"
 #   CONFIG GITHUB
 # ------------------------------
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = "FeraAlpha/painel-latencia-servidor"       # CORRIGIDO
+GITHUB_REPO = "FeraAlpha/painel-licenca-server"
 GITHUB_FILE_PATH = "data/users.json"
 GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE_PATH}"
 
-# criar pasta
 os.makedirs("data", exist_ok=True)
-
 
 # ------------------------------
 #   BANCO SQL
@@ -30,39 +28,34 @@ def init_db():
     conn = sqlite3.connect(DB)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS licenses
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, fingerprint TEXT, username TEXT,
-                  issued_at INTEGER, expires_at INTEGER, payload TEXT)''')
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  fingerprint TEXT, username TEXT,
+                  issued_at INTEGER, expires_at INTEGER,
+                  payload TEXT)''')
     conn.commit()
     conn.close()
 
 init_db()
 
-
 # ------------------------------
-#   USERS JSON
+#   ARQUIVOS LOCAIS
 # ------------------------------
 def load_users():
     if not os.path.exists(USERS_FILE):
         return {"users": []}
-
-    try:
-        with open(USERS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return {"users": []}
-
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 def save_users_local(data):
     with open(USERS_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
-
 # ------------------------------
-#   SYNC → GITHUB
+#   SALVAR NO GITHUB
 # ------------------------------
 def save_users_github(data):
     if not GITHUB_TOKEN:
-        print("❌ Sem GITHUB_TOKEN — salvando somente local.")
+        print("❌ Sem token do GitHub — salvando somente local.")
         return
 
     try:
@@ -77,12 +70,12 @@ def save_users_github(data):
     content = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
 
     payload = {
-        "message": "Painel Sync",
+        "message": "Painel update users.json",
         "content": content,
         "sha": sha
     }
 
-    res = requests.put(
+    response = requests.put(
         GITHUB_API_URL,
         headers={
             "Authorization": f"Bearer {GITHUB_TOKEN}",
@@ -91,42 +84,35 @@ def save_users_github(data):
         json=payload
     )
 
-    if res.status_code not in (200, 201):
-        print("❌ Erro ao enviar para GitHub:", res.text)
+    if response.status_code in (200, 201):
+        print("✅ GitHub sincronizado!")
     else:
-        print("✅ GitHub sincronizado")
-
+        print("❌ Falha GitHub:", response.text)
 
 def save_users(data):
     save_users_local(data)
     save_users_github(data)
 
-
 # ------------------------------
-#   Assinatura RSA
+#   ASSINATURA RSA
 # ------------------------------
 def sign_payload(payload_bytes):
     with open(KEY_PRIV, "rb") as f:
         priv = RSA.import_key(f.read())
-
     h = SHA256.new(payload_bytes)
-    sig = pkcs1_15.new(priv).sign(h)
-    return sig
-
+    return pkcs1_15.new(priv).sign(h)
 
 # ------------------------------
-#   APP
+#   FLASK
 # ------------------------------
-app = Flask(__name__, template_folder='templates')   # CORRIGIDO
-
+app = Flask(__name__, template_folder='templates')
 
 @app.route("/")
 def home():
     return "Painel Licença OK", 200
 
-
 # ------------------------------
-#   CLIENTE → Ativação
+#   ATIVAÇÃO (CLIENTE)
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -138,7 +124,8 @@ def activate():
     if not username or not password or not fingerprint:
         return jsonify({"error": "missing_fields"}), 400
 
-    users = load_users().get("users", [])
+    users = load_users()["users"]
+
     user = next((u for u in users if u["username"] == username and u["password"] == password), None)
 
     if not user:
@@ -171,26 +158,24 @@ def activate():
         "expires_at": user["expires_at"]
     })
 
-
 # ------------------------------
-#   ADMIN LOGIN
+#   ADMIN
 # ------------------------------
 def check_admin(a):
     ADMIN_USER = os.getenv("ADMIN_USER", "admin")
     ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
     return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
 
-
 def need_admin(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         auth = request.authorization
         if not check_admin(auth):
-            return ("Unauthorized", 401,
-                    {"WWW-Authenticate": 'Basic realm="Login Required"'})
+            return ("Unauthorized", 401, {
+                "WWW-Authenticate": 'Basic realm="Painel Admin"'
+            })
         return f(*args, **kwargs)
     return wrapper
-
 
 @app.route("/admin")
 @need_admin
@@ -198,9 +183,8 @@ def admin():
     data = load_users()
     return render_template("admin_index.html", users=data["users"], datetime=datetime)
 
-
 # ------------------------------
-#   GERAR USUÁRIO
+#   GERAR KEY
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -210,20 +194,20 @@ def admin_generate():
     prefix = request.form.get("prefix") or "FERA"
     expire_days = int(request.form.get("expire_days") or 30)
 
+    key = prefix + "-" + os.urandom(4).hex().upper()
     expires_at = int(time.time()) + expire_days * 86400
 
     data = load_users()
     data["users"].append({
         "username": username,
         "password": password,
-        "key": prefix + "-" + os.urandom(3).hex().upper(),
+        "key": key,
         "device_id": None,
         "expires_at": expires_at
     })
 
     save_users(data)
     return ("", 302, {"Location": "/admin"})
-
 
 # ------------------------------
 #   DELETAR
@@ -237,9 +221,49 @@ def admin_delete(index):
         save_users(data)
     return ("", 302, {"Location": "/admin"})
 
+# ------------------------------
+#   RENOVAR +30 DIAS
+# ------------------------------
+@app.route("/admin/renew/<int:index>", methods=["POST"])
+@need_admin
+def admin_renew(index):
+    data = load_users()
+
+    if 0 <= index < len(data["users"]):
+        now = int(time.time())
+        current = data["users"][index].get("expires_at") or now
+
+        if current < now:
+            new_exp = now + 30 * 86400
+        else:
+            new_exp = current + 30 * 86400
+
+        data["users"][index]["expires_at"] = new_exp
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-# RUN
+#   RESETAR KEY
+# ------------------------------
+@app.route("/admin/reset/<int:index>", methods=["POST"])
+@need_admin
+def admin_reset(index):
+    data = load_users()
+
+    if 0 <= index < len(data["users"]):
+        old_key = data["users"][index].get("key", "FERA-")
+        prefix = old_key.split("-")[0] or "FERA"
+
+        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
+
+        data["users"][index]["key"] = new_key
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   RUN
 # ------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
