@@ -4,7 +4,7 @@
       "username": "fera",
       "password": "123",
       "key": "FERA-399B2AA1",
-      "device_id": "b23e596f1eff65895d261a7280550da4",
+      "device_id": null,
       "expires_at": 1769202081
     },
     {
@@ -108,9 +108,9 @@
     {
       "username": "floquinhoaps",
       "password": "gabriel2018%",
-      "key": "FERA-436661BA",
+      "key": "FERA-160F7F93",
       "device_id": null,
-      "expires_at": 1766701942
+      "expires_at": 1766701890
     }
   ]
 }
