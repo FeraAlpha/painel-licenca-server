@@ -1,722 +1,392 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-<meta charset="utf-8" />
-<title>Fera Alpha Keys</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<!-- jsPDF CDN para export PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<meta charset="utf-8"/>
+<title>Fera Alpha — Painel (Keys)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
 <style>
   :root{
-    --bg:#e6e8ea;
-    --card:#fdfdfd;
-    --border:#d6d9dc;
-    --text:#22272b;
-    --muted:#6d777d;
+    --bg:#cfd4d8;
+    --card:#f5f6f7;
+    --border:#c6c9cd;
+    --text:#2b2f33;
+    --text-light:#687078;
     --accent:#2f6fed;
     --danger:#d93c3c;
     --ok:#177a30;
     --radius:12px;
-    --sidebar:#ffffff;
   }
-  *{box-sizing:border-box}
-  body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);margin:0}
-  .app{display:flex;min-height:100vh}
-  /* Sidebar */
-  .sidebar{width:220px;background:var(--sidebar);border-right:1px solid var(--border);padding:18px;position:sticky;top:0;height:100vh}
-  .sidebar h2{font-size:18px;margin:0 0 8px}
-  .nav{display:flex;flex-direction:column;gap:6px}
-  .nav a{padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--text);font-weight:600}
-  .nav a:hover{background:#f1f4fb;color:var(--accent)}
-  .content{flex:1;padding:18px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-  .topLeft{display:flex;gap:12px;align-items:center}
-  h1{font-size:20px;margin:0}
-  .status{display:flex;gap:8px;align-items:center}
-  .card{background:var(--card);border:1px solid var(--border);padding:14px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
-  .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
-  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Inter, Arial, sans-serif}
+
+  body{
+    background:var(--bg);
+    padding:18px;
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+
+  h1{font-size:22px;font-weight:700}
+
+  .status{display:flex;gap:12px;align-items:center}
+
+  .card{background:var(--card);border:1px solid var(--border);padding:18px;border-radius:var(--radius);margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+
+  label{display:block;font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:6px}
+  input, select{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;background:white;color:var(--text)}
+
+  .btn{padding:10px 14px;border-radius:9px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:var(--accent);color:white}
+  .btn-danger{background:var(--danger);color:white}
+  .btn-ghost{background:transparent;border:1px solid var(--border)}
+
+  .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .small{font-size:13px;color:var(--text-light)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{background:#eceff1;padding:12px;text-align:left;border-bottom:1px solid var(--border);font-weight:700;color:var(--text-light)}
+  tbody td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  tbody tr:hover{background:#eef2f5}
+
+  .badge{padding:6px 10px;border-radius:18px;font-size:13px;font-weight:700;display:inline-block}
+  .badge-ok{background:#d7f5dd;color:var(--ok)}
+  .badge-warn{background:#fff3c9;color:#8a6c1e}
+  .badge-exp{background:#ffe1e1;color:#b32828}
+
+  .copy{color:var(--accent);cursor:pointer;font-weight:700;margin-left:8px}
+  .actions{display:flex;gap:8px}
+
+  /* Dashboard cards */
   .dash{display:flex;gap:12px;margin-bottom:12px}
   .dash .stat{flex:1;padding:12px;border-radius:10px;background:#fff;border:1px solid var(--border);text-align:center}
-  .muted{color:var(--muted);font-size:13px}
-  label{display:block;font-weight:700;color:var(--muted);font-size:13px;margin-top:8px}
-  input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:6px}
-  .btn{display:inline-block;padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
-  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
-  .btn.danger{background:var(--danger)}  
-  table{width:100%;border-collapse:collapse;margin-top:10px}
-  thead th{background:#f3f5f7;padding:10px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
-  tbody td{padding:10px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:14px}
-  .copy{color:var(--accent);cursor:pointer;margin-left:8px;font-weight:700}
-  .badge{display:inline-block;padding:6px 10px;border-radius:16px;font-weight:700;font-size:13px}
-  .badge.ok{background:#d7f5dd;color:var(--ok)}
-  .badge.warn{background:#fff3c9;color:#8a6c1e}
-  .badge.exp{background:#ffe1e1;color:#b32828}
-  /* modal */
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:2000}
-  .modal .box{background:var(--card);padding:18px;border-radius:10px;width:100%;max-width:640px;box-shadow:0 6px 30px rgba(0,0,0,0.25)}
-  /* toast */
-  .toasts{position:fixed;right:18px;bottom:18px;z-index:2500;display:flex;flex-direction:column;gap:8px}
-  .toast{background:#fff;padding:10px 12px;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.12)}
-  /* pagination */
-  .pagination{display:flex;gap:8px;align-items:center;margin-top:12px}
-  .skeleton{height:12px;background:#eee;border-radius:6px;margin-bottom:8px}
-  /* dark */
-  body.dark{background:#0c0f12;color:#e6eef3}
-  body.dark .card{background:#121416;border-color:#22272b}
-  body.dark input, body.dark select{background:#0f1416;border-color:#262b2e;color:#e6eef3}
-  body.dark .sidebar{background:#0f1416;border-color:#262b2e}
+  .stat h3{font-size:20px;margin-bottom:6px}
+  .muted{color:var(--text-light)}
+
+  /* Search input */
+  .searchWrap{margin-bottom:12px}
+
+  /* Dark mode */
+  body.dark{--bg:#0e1113;--card:#121417;--border:#25292d;--text:#e6ecef;--text-light:#9aa4ab}
+
+  /* Responsive tweaks */
+  @media (max-width:600px){h1{font-size:18px}.card{padding:12px}}
 </style>
 </head>
+
 <body>
+<header>
+  <div>
+    <h1>Fera Alpha — Painel (PRO)</h1>
+    <div class="small">Painel de administração — Gerencie keys, veja logs e métricas</div>
+  </div>
 
-<div class="app">
+  <div class="status">
+    <div id="serverStatus" class="card small" style="padding:8px 12px;min-width:140px;text-align:center;">Verificando servidor...</div>
+    <button class="btn btn-ghost" onclick="toggleDark()" id="darkBtn">🌙 Tema</button>
+  </div>
+</header>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar card">
-    <h2>Fera Alpha Keys</h2>
-    <div class="muted" style="margin-bottom:12px;font-size:13px">Painel administrativo</div>
-    <nav class="nav">
-      <a href="#" data-target="dash" onclick="navTo(event)">Dashboard</a>
-      <a href="#" data-target="generate" onclick="navTo(event)">Gerar Key</a>
-      <a href="#" data-target="users" onclick="navTo(event)">Usuários</a>
-      <a href="#" data-target="logs" onclick="navTo(event)">Logs</a>
-      <a href="#" data-target="settings" onclick="navTo(event)">Configurações</a>
-    </nav>
+<!-- Dashboard + Form -->
+<div class="grid">
 
-    <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
-
-    <div style="display:flex;gap:8px">
-      <button class="btn ghost" onclick="exportCsv()">Exportar CSV</button>
-      <button class="btn ghost" onclick="exportPdf()">Exportar PDF</button>
+  <div>
+    <div class="dash">
+      <div class="stat card">
+        <h3 id="totalUsers">0</h3>
+        <div class="muted">Total de usuários</div>
+      </div>
+      <div class="stat card">
+        <h3 id="activeUsers">0</h3>
+        <div class="muted">Ativos</div>
+      </div>
+      <div class="stat card">
+        <h3 id="expiredUsers">0</h3>
+        <div class="muted">Expirados</div>
+      </div>
     </div>
 
-    <div style="margin-top:12px">
-      <div class="muted" style="font-size:12px">Token admin</div>
-      <input id="adminToken" placeholder="Bearer token (opcional)">
-      <div style="margin-top:8px;font-size:12px;color:var(--muted)">Preencha se sua API exigir Authorization.</div>
+    <div class="card">
+      <h2 style="margin-bottom:10px">Gerar nova key</h2>
+      <form id="formGenerate" method="post" action="/admin/generate">
+        <label>Usuário</label>
+        <input type="text" name="username" placeholder="ex: cliente01" required>
+
+        <label>Senha</label>
+        <input type="text" name="password" placeholder="senha do cliente" required>
+
+        <label>Prefixo</label>
+        <input type="text" name="prefix" value="FERA">
+
+        <label>Expiração (dias)</label>
+        <input type="number" name="expire_days" value="30" min="0">
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary">Gerar Key</button>
+          <button type="button" class="btn btn-ghost" onclick="openLogs()">Ver Logs</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Search + Table actions -->
+    <div class="card">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <input id="searchUser" placeholder="Buscar usuário, key ou device" />
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="refreshUsers()">↻ Atualizar</button>
+          <button class="btn btn-ghost" onclick="downloadCsv()">📥 Exportar CSV</button>
+        </div>
+      </div>
+
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th style="cursor:pointer" onclick="sortTable(0)">ID ⬍</th>
+            <th style="cursor:pointer" onclick="sortTable(1)">Usuário ⬍</th>
+            <th>Key</th>
+            <th>Device</th>
+            <th style="cursor:pointer" onclick="sortTable(4)">Expiração ⬍</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Exemplo de render server-side (Jinja/Python). Mantive placeholders para integração -->
+          {% for u in users %}
+          <tr data-expires="{{ u.expires_at if u.expires_at else '' }}">
+            <td>{{ loop.index0 }}</td>
+            <td>{{ u.username }}</td>
+            <td>
+              {{ u.key }}
+              <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
+            </td>
+            <td>{{ u.device_id if u.device_id else '-' }}</td>
+            <td class="expCell"> <!-- Será populado por JS -->
+              <span class="badge badge-ok">Ilimitada</span>
+            </td>
+            <td>
+              <div class="actions">
+                <form method="post" action="/admin/renew/{{ loop.index0 }}">
+                  <button type="submit" class="btn btn-primary">Renovar +30</button>
+                </form>
+
+                <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirmarExclusao(this)">
+                  <button class="btn btn-danger">Excluir</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Lateral direita com informações e atalhos -->
+  <aside>
+    <div class="card">
+      <h2>Atalhos / Informações</h2>
+      <p class="small">Rota ping usada para status do servidor: <code>/ping</code></p>
+      <p class="small">Rotas administrativas esperadas:</p>
+      <ul class="small">
+        <li><code>POST /admin/generate</code></li>
+        <li><code>POST /admin/renew/&lt;id&gt;</code></li>
+        <li><code>POST /admin/delete/&lt;id&gt;</code></li>
+      </ul>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
+
+      <h3 style="margin-bottom:8px">Logs recentes</h3>
+      <div id="logs" style="max-height:260px;overflow:auto;font-size:13px;color:var(--text-light)">Carregando logs...</div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
+
+      <button class="btn btn-primary" onclick="openModalConfig()">Configurações</button>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Sobre</h3>
+      <p class="small">Painel PRO com buscas, ordenação, dark mode, renovação e export. Teste em mobile e desktop.</p>
     </div>
   </aside>
 
-  <!-- CONTENT -->
-  <main class="content">
-
-    <!-- HEADER -->
-    <header>
-      <div class="topLeft">
-        <h1 id="title">Fera Alpha Keys</h1>
-        <div class="muted">Gerencie keys, lote, logs e histórico</div>
-      </div>
-
-      <div class="status">
-        <div id="serverStatus" class="card" style="padding:8px 12px;min-width:140px;text-align:center">— verificando —</div>
-        <button class="btn ghost" onclick="toggleDark()">🌙 Tema</button>
-      </div>
-    </header>
-
-    <!-- DASHBOARD -->
-    <section id="dash" class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div style="flex:1">
-          <div class="dash">
-            <div class="stat card"><h3 id="totalUsers">0</h3><div class="muted">Total</div></div>
-            <div class="stat card"><h3 id="activeUsers">0</h3><div class="muted">Ativos</div></div>
-            <div class="stat card"><h3 id="expiredUsers">0</h3><div class="muted">Expirados</div></div>
-          </div>
-          <div class="muted" style="font-size:13px">Últimas ações</div>
-          <div id="miniLogs" style="margin-top:8px"></div>
-        </div>
-
-        <div style="width:260px">
-          <div class="card" style="padding:10px">
-            <div class="muted" style="font-size:13px">Ações rápidas</div>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="btn" onclick="showGenerate()">Gerar Key</button>
-              <button class="btn ghost" onclick="showGenerateBatch()">Gerar Lote</button>
-            </div>
-            <div style="margin-top:10px">
-              <div class="muted">Buscar</div>
-              <input id="quickSearch" placeholder="Buscar usuário/key" oninput="applySearch()">
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- GENERATE -->
-    <section id="generate" style="margin-top:12px">
-      <div class="card">
-        <h2>Gerar nova key</h2>
-        <form id="formGenerate" onsubmit="return false">
-          <label>Usuário</label>
-          <input id="username" placeholder="ex: cliente01" value="cliente_padrao">
-
-          <label>Senha</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="password" placeholder="senha do cliente" value="senha123">
-            <button class="btn ghost" onclick="generateStrongPassword()">🔄 Gerar</button>
-            <button class="btn" onclick="generateAndCopy()">Gerar + Copiar</button>
-          </div>
-
-          <label>Prefixo</label>
-          <input id="prefix" value="FERA">
-
-          <label>Expiração (dias)</label>
-          <input id="expire_days" type="number" value="30" min="0">
-
-          <label>Tamanho da Key (caracteres)</label>
-          <input id="key_size" type="number" value="8" min="4" max="64">
-
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button class="btn" onclick="generateKey()">Gerar Key (AJAX)</button>
-            <button class="btn ghost" onclick="generateKeyAndCopy()">Gerar + Copiar</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Generate batch -->
-      <div class="card" style="margin-top:12px">
-        <h2>Gerar lote de keys</h2>
-        <label>Quantidade</label>
-        <input id="batch_qty" type="number" value="10" min="1" max="500">
-        <label>Tamanho da Key</label>
-        <input id="batch_size" type="number" value="8" min="4" max="64">
-        <label>Prefixo</label>
-        <input id="batch_prefix" value="FERA">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" onclick="generateBatch()">Gerar Lote</button>
-          <button class="btn ghost" onclick="copyBatch()">Copiar Tudo</button>
-        </div>
-        <pre id="batchOutput" style="margin-top:8px;padding:10px;background:#f6f7f8;height:120px;overflow:auto"></pre>
-      </div>
-    </section>
-
-    <!-- USERS TABLE -->
-    <section id="users" style="margin-top:12px">
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="searchUser" placeholder="Buscar usuário / key / device" oninput="applySearch()">
-            <button class="btn ghost" onclick="refresh()">↻ Atualizar</button>
-          </div>
-
-          <div style="display:flex;gap:8px">
-            <button class="btn ghost" onclick="exportCsv()">Exportar CSV</button>
-            <button class="btn ghost" onclick="exportPdf()">Exportar PDF</button>
-          </div>
-        </div>
-
-        <!-- skeleton while loading -->
-        <div id="tableSkeleton" style="margin-top:12px">
-          <div class="skeleton" style="width:60%"></div>
-          <div class="skeleton" style="width:90%"></div>
-          <div class="skeleton" style="width:100%;height:120px"></div>
-        </div>
-
-        <div id="tableWrap" style="display:none;margin-top:12px">
-          <table id="usersTable">
-            <thead>
-              <tr>
-                <th onclick="sortBy(0)">ID</th>
-                <th onclick="sortBy(1)">Usuário</th>
-                <th>Key</th>
-                <th>Device</th>
-                <th onclick="sortBy(4)">Expiração</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody id="usersBody">
-              <!-- rows injected by JS -->
-            </tbody>
-          </table>
-
-          <div class="pagination" id="pagination"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- LOGS -->
-    <section id="logs" style="margin-top:12px">
-      <div class="card">
-        <h2>Logs</h2>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <button class="btn ghost" onclick="filterLogs('all')">Todos</button>
-          <button class="btn ghost" onclick="filterLogs('sucesso')">Sucesso</button>
-          <button class="btn ghost" onclick="filterLogs('erro')">Erro</button>
-          <button class="btn ghost" onclick="filterLogs('device')">Device</button>
-        </div>
-        <div id="logsContainer" style="max-height:300px;overflow:auto"></div>
-      </div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="settings" style="margin-top:12px">
-      <div class="card">
-        <h2>Configurações</h2>
-        <label>API Base URL</label>
-        <input id="apiBase" placeholder="Ex: https://server.onrender.com" value="">
-        <label>Token Admin (opcional)</label>
-        <input id="cfgToken" placeholder="Bearer ..." value="">
-        <div style="margin-top:8px">
-          <button class="btn" onclick="saveConfig()">Salvar</button>
-          <button class="btn ghost" onclick="loadConfig()">Carregar</button>
-        </div>
-      </div>
-    </section>
-
-  </main>
 </div>
 
-<!-- MODAL EDIT / HISTORY -->
-<div id="modal" class="modal" style="display:none">
-  <div class="box">
-    <h3 id="modalTitle">Editar Usuário</h3>
-    <div id="modalBody"></div>
+<!-- Modal simples (exemplo) -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center">
+  <div style="background:var(--card);padding:16px;border-radius:10px;border:1px solid var(--border);width:90%;max-width:520px">
+    <h3>Configurações</h3>
+    <p class="small">Aqui você pode adicionar mais opções do painel (ex: webhook de logs, TTL padrão, templates de email).</p>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
-      <button class="btn" onclick="saveEdit()">Salvar</button>
-      <button class="btn ghost" onclick="closeModal()">Fechar</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
     </div>
   </div>
 </div>
 
-<!-- TOASTS -->
-<div class="toasts" id="toasts"></div>
-
 <script>
-/* -----------------------
-  CONFIGURAÇÃO / HELPERS
-   - Adapte `apiBase` para sua API
-   - Endpoints esperados:
-     POST /admin/generate -> { username, password, prefix, expire_days, key_size } => returns {key, username, expires_at, device_id}
-     POST /admin/generate-batch -> { qty, prefix, key_size } => returns [{key,username,...},...]
-     GET /admin/users -> returns list of users
-     POST /admin/renew/:id -> renew
-     POST /admin/delete/:id -> delete
-     GET /admin/logs -> returns logs
-------------------------*/
-
-let state = {
-  apiBase: '', // preencha ou salve via settings
-  token: '',
-  users: [],
-  perPage: 10,
-  sortCol: null,
-  sortDir: 'asc',
-  filter: '',
-  logs: [],
-  currentPage: 1
-};
-
-// Simple toast
-function toast(msg, ttl=3000){
-  const el = document.createElement('div'); el.className='toast'; el.innerText=msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(()=> el.remove(), ttl);
+// ---------- UTILIDADES ----------
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  document.getElementById('darkBtn').innerText = document.body.classList.contains('dark') ? '☀️ Claro' : '🌙 Tema';
 }
 
-// Save/load config
-function saveConfig(){
-  state.apiBase = document.getElementById('apiBase').value.trim();
-  state.token = document.getElementById('cfgToken').value.trim();
-  localStorage.setItem('fa_config', JSON.stringify({apiBase:state.apiBase,token:state.token}));
-  toast('Configurações salvas');
-}
-function loadConfig(){
-  const cfg = JSON.parse(localStorage.getItem('fa_config')||'{}');
-  if(cfg.apiBase) document.getElementById('apiBase').value = cfg.apiBase;
-  if(cfg.token) document.getElementById('cfgToken').value = cfg.token;
-  state.apiBase = cfg.apiBase || '';
-  state.token = cfg.token || '';
-  toast('Configurações carregadas');
-}
-
-/* -------------- UTIL: API fetch with token -------------- */
-function apiFetch(path, opts={}){
-  const base = (document.getElementById('apiBase').value || state.apiBase || '').replace(/\/$/,'');
-  const url = base ? base + path : path; // if base empty, assume relative
-  opts.headers = opts.headers || {};
-  const tokenField = document.getElementById('cfgToken').value.trim() || state.token;
-  if(tokenField) opts.headers['Authorization'] = tokenField;
-  if(!opts.headers['Content-Type'] && opts.body) opts.headers['Content-Type']='application/json';
-  return fetch(url, opts).then(r => r.ok ? r.json().catch(()=>({})) : r.json().then(j=>Promise.reject(j)));
-}
-
-/* -------------- SERVER STATUS -------------- */
+// Server status check
 async function checkServer(){
-  const s = document.getElementById('serverStatus');
+  const box = document.getElementById('serverStatus');
+  const start = performance.now();
   try{
-    const start = performance.now();
-    await apiFetch('/ping', {method:'GET'});
-    const ms = Math.round(performance.now()-start);
-    s.innerText = '🟢 Online — ' + ms + 'ms';
-    s.style.background = '#dff6e6';
+    const res = await fetch('/ping', {cache:'no-store'});
+    if(!res.ok) throw new Error('Erro');
+    const ms = Math.round(performance.now() - start);
+    box.innerHTML = '🟢 Online — ' + ms + 'ms';
+    box.style.background = '#d7f5dd'; box.style.color = 'var(--ok)';
   }catch(e){
-    s.innerText = '🔴 Offline';
-    s.style.background = '#ffecec';
+    box.innerHTML = '🔴 Offline';
+    box.style.background = '#ffe1e1'; box.style.color = '#b32828';
   }
 }
-setInterval(checkServer, 15000);
 checkServer();
+setInterval(checkServer, 15000); // atualiza a cada 15s
 
-/* -------------- GENERATE / BATCH -------------- */
-function generateStrongPassword(){
-  const p = Array.from(crypto.getRandomValues(new Uint8Array(12))).map(n => (n%36).toString(36)).join('').slice(-12);
-  document.getElementById('password').value = p;
-  toast('Senha forte gerada');
-}
+// Search filter
+document.getElementById('searchUser').addEventListener('input', function(){
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
+    tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
 
-async function generateKey(){
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-  const prefix = document.getElementById('prefix').value || 'FERA';
-  const expire_days = Number(document.getElementById('expire_days').value) || 0;
-  const key_size = Number(document.getElementById('key_size').value) || 8;
+// Sort table (simple)
+function sortTable(colIndex){
+  const table = document.getElementById('usersTable');
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const asc = table.getAttribute('data-sort-col') !== String(colIndex) || table.getAttribute('data-sort-dir') === 'desc';
 
-  // frontend simple validation
-  if(!username){ toast('Informe usuário'); return; }
-
-  // Attempt AJAX call to backend
-  try{
-    const res = await apiFetch('/admin/generate', {
-      method:'POST',
-      body: JSON.stringify({username,password,prefix,expire_days,key_size})
-    });
-    // expected response: { key, username, expires_at, device_id, id }
-    toast('Key criada: ' + res.key);
-    // add to local state & re-render
-    state.users.unshift(res);
-    renderTable();
-    showToastCopyOption(res.username, res.key);
-  }catch(err){
-    console.error(err);
-    toast('Erro ao gerar key');
-  }
-}
-
-async function generateKeyAndCopy(){
-  await generateKey();
-  // copy last created
-  if(state.users && state.users[0]){
-    copiarTudo(state.users[0].username, state.users[0].key);
-  }
-}
-
-// Generate + copy directly (client-only if server not available)
-async function generateAndCopy(){
-  const username = document.getElementById('username').value.trim();
-  const prefix = document.getElementById('prefix').value || 'FERA';
-  const key_size = Number(document.getElementById('key_size').value) || 8;
-  const key = prefix + '-' + randomString(key_size);
-  copiarTudo(username, key);
-  toast('Gerado e copiado localmente');
-}
-
-// BATCH generation (calls backend if available, otherwise local)
-async function generateBatch(){
-  const qty = Number(document.getElementById('batch_qty').value) || 10;
-  const size = Number(document.getElementById('batch_size').value) || 8;
-  const prefix = document.getElementById('batch_prefix').value || 'FERA';
-  try{
-    // try backend
-    const res = await apiFetch('/admin/generate-batch', {
-      method:'POST',
-      body: JSON.stringify({qty, prefix, key_size: size})
-    });
-    // res expected: [{username, key, expires_at, id},...]
-    document.getElementById('batchOutput').innerText = res.map((r,i)=>`${i+1}. ${r.username} - ${r.key}`).join('\n');
-    toast('Lote gerado no servidor');
-    // merge into local
-    state.users = res.concat(state.users);
-    renderTable();
-  }catch(e){
-    // fallback local generation
-    const arr = [];
-    for(let i=0;i<qty;i++){ const k = prefix + '-' + randomString(size); const u = prefix.toLowerCase() + (Date.now()%10000) + i; arr.push({username:u,key:k,expires_at:null,device_id:null,id:'local-'+Date.now()+i})}
-    document.getElementById('batchOutput').innerText = arr.map((r,i)=>`${i+1}. ${r.username} - ${r.key}`).join('\n');
-    state.users = arr.concat(state.users);
-    renderTable();
-    toast('Lote gerado localmente');
-  }
-}
-function copyBatch(){ const t = document.getElementById('batchOutput').innerText; navigator.clipboard.writeText(t); toast('Lote copiado'); }
-function randomString(len){ return crypto.getRandomValues(new Uint8Array(len)).map(n => (n%36).toString(36)).join('').slice(0,len).toUpperCase(); }
-
-/* -------------- USERS table rendering, pagination, search, sort -------------- */
-function renderTable(){
-  // hide skeleton
-  document.getElementById('tableSkeleton').style.display='none';
-  document.getElementById('tableWrap').style.display='block';
-
-  const tbody = document.getElementById('usersBody');
-  tbody.innerHTML = '';
-  // filter & sort
-  let rows = state.users.slice();
-  if(state.filter){
-    const q = state.filter.toLowerCase();
-    rows = rows.filter(r => (r.username||'').toLowerCase().includes(q) || (r.key||'').toLowerCase().includes(q) || (r.device_id||'').toLowerCase().includes(q));
-  }
-  if(state.sortCol !== null){
-    rows.sort((a,b)=>{
-      let A = Object.values(a)[state.sortCol] || '';
-      let B = Object.values(b)[state.sortCol] || '';
-      if(typeof A === 'string') A = A.toLowerCase();
-      if(typeof B === 'string') B = B.toLowerCase();
-      if(A < B) return state.sortDir === 'asc' ? -1 : 1;
-      if(A > B) return state.sortDir === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }
-  // pagination
-  const perPage = state.perPage;
-  const pages = Math.max(1, Math.ceil(rows.length / perPage));
-  if(state.currentPage > pages) state.currentPage = pages;
-  const start = (state.currentPage-1)*perPage;
-  const pageRows = rows.slice(start, start+perPage);
-
-  pageRows.forEach((u,idx)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${start + idx}</td>
-      <td><strong>${escapeHtml(u.username||'')}</strong></td>
-      <td>${escapeHtml(u.key||'')} <span class="copy" onclick="copySingle('${escapeJs(u.key||'')}', this)">copiar</span> <span class="copy" onclick="copiarTudo('${escapeJs(u.username||'')}','${escapeJs(u.key||'')}')">copiar tudo</span></td>
-      <td>${escapeHtml(u.device_id||'-')}</td>
-      <td class="expCell">${renderExpire(u.expires_at)}</td>
-      <td>
-        <button class="btn ghost" onclick="openEdit('${escapeJs(u.id)}')">Editar</button>
-        <button class="btn" onclick="renewUser('${escapeJs(u.id)}')">Renovar +30</button>
-        <button class="btn danger" onclick="deleteUser('${escapeJs(u.id)}')">Excluir</button>
-        <button class="btn ghost" onclick="openHistory('${escapeJs(u.username)}')">Histórico</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
+  rows.sort((a,b) => {
+    const A = a.children[colIndex].innerText.trim().toLowerCase();
+    const B = b.children[colIndex].innerText.trim().toLowerCase();
+    if(!isNaN(Date.parse(A)) || !isNaN(Date.parse(B))) return asc ? new Date(A)-new Date(B) : new Date(B)-new Date(A);
+    if(!isNaN(A) && !isNaN(B)) return asc ? (Number(A)-Number(B)) : (Number(B)-Number(A));
+    return asc ? A.localeCompare(B) : B.localeCompare(A);
   });
 
-  // pagination UI
-  const pg = document.getElementById('pagination'); pg.innerHTML = '';
-  for(let p=1;p<=pages;p++){
-    const b = document.createElement('button'); b.className='btn ghost'; b.style.padding='6px 10px'; b.innerText=p; if(p===state.currentPage) b.style.background='#eef4ff';
-    b.onclick = ()=>{ state.currentPage = p; renderTable(); };
-    pg.appendChild(b);
-  }
-
-  // counters
-  document.getElementById('totalUsers').innerText = state.users.length;
-  document.getElementById('activeUsers').innerText = state.users.filter(u => !isExpired(u.expires_at)).length;
-  document.getElementById('expiredUsers').innerText = state.users.filter(u => isExpired(u.expires_at)).length;
+  rows.forEach(r => tbody.appendChild(r));
+  table.setAttribute('data-sort-col', colIndex);
+  table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
 }
 
-// helpers
-function isExpired(exp){
-  if(!exp) return false;
+// Copy key with feedback
+function copiar(texto, el){
+  navigator.clipboard.writeText(texto).then(()=>{
+    const old = el.innerText;
+    el.innerText = 'copiado!';
+    setTimeout(()=> el.innerText = old, 1500);
+  }).catch(()=> alert('Falha ao copiar'));
+}
+
+// Confirm delete
+function confirmarExclusao(form){
+  if(confirm('Tem certeza que deseja excluir este usuário?')) return true;
+  return false;
+}
+
+// Modal helpers
+function openModalConfig(){document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').style.display='none'}
+
+function openLogs(){window.location.href='/admin/logs'}
+
+// Populate expiration badges client-side (quando o servidor deixar u.expires_at no data-expires)
+function renderExpiracoes(){
   const now = Date.now()/1000;
-  return (Number(exp) < now);
+  document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
+    const cell = tr.querySelector('.expCell');
+    const raw = tr.getAttribute('data-expires');
+    if(!raw){ cell.innerHTML = '<span class="badge badge-ok">Ilimitada</span>'; return; }
+
+    const exp = Number(raw);
+    if(!exp){ cell.innerHTML = '<span class="badge badge-ok">Ilimitada</span>'; return; }
+
+    const diffDays = Math.round((exp - now)/86400);
+    let html = '';
+    if(exp*1000 < Date.now()){
+      html = '<span class="badge badge-exp">Expirado</span>';
+    } else if(diffDays < 3){
+      html = '<span class="badge badge-exp">Expira em '+diffDays+' dias</span>';
+    } else if(diffDays < 7){
+      html = '<span class="badge badge-warn">'+diffDays+' dias</span>';
+    } else {
+      html = '<span class="badge badge-ok">'+diffDays+' dias</span>';
+    }
+    // também mostra a data exata
+    try{
+      const d = new Date(exp*1000);
+      const dd = d.toLocaleDateString('pt-BR');
+      html += ' <div class="small" style="display:inline-block;margin-left:8px;color:var(--text-light)">'+dd+'</div>'
+    }catch(e){}
+
+    cell.innerHTML = html;
+  });
 }
-function renderExpire(exp){
-  if(!exp) return `<span class="badge ok">Ilimitada</span>`;
+
+// Dashboard counters (assume server prints counts into hidden data attributes or we can calculate)
+function renderCounters(){
+  const rows = Array.from(document.querySelectorAll('#usersTable tbody tr'));
+  const total = rows.length;
+  let expired = 0; let active = 0;
   const now = Date.now()/1000;
-  const diff = Math.round((Number(exp)-now)/86400);
-  if(Number(exp)*1000 < Date.now()) return `<span class="badge exp">Expirado</span>`;
-  if(diff < 3) return `<span class="badge exp">Expira em ${diff} dias</span>`;
-  if(diff < 7) return `<span class="badge warn">${diff} dias</span>`;
-  return `<span class="badge ok">${diff} dias</span>`;
-}
-function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escapeJs(s){ return (s||'').replace(/'/g,"\\'").replace(/\"/g,'\\"'); }
-
-/* Copy functions */
-function copySingle(text, el){ navigator.clipboard.writeText(text).then(()=>{ const old = el.innerText; el.innerText='copiado!'; setTimeout(()=>el.innerText=old,1400); }); }
-function copiarTudo(user,key){ navigator.clipboard.writeText(`Usuário: ${user}\nKey: ${key}`); toast('Usuário + Key copiados'); }
-
-/* open edit modal */
-function openEdit(id){
-  const u = state.users.find(x=>String(x.id)===String(id));
-  if(!u) return toast('Usuário não encontrado');
-  document.getElementById('modalTitle').innerText = 'Editar: ' + (u.username||'');
-  document.getElementById('modalBody').innerHTML = `
-    <label>Usuário</label><input id="edit_username" value="${escapeHtml(u.username||'')}">
-    <label>Senha</label><input id="edit_password" placeholder="nova senha (opcional)">
-    <label>Expiração (timestamp ou vazio)</label><input id="edit_expires" value="${u.expires_at||''}">
-    <input type="hidden" id="edit_id" value="${u.id}">
-  `;
-  document.getElementById('modal').style.display='flex';
-}
-function closeModal(){ document.getElementById('modal').style.display='none'; }
-async function saveEdit(){
-  const id = document.getElementById('edit_id').value;
-  const username = document.getElementById('edit_username').value;
-  const password = document.getElementById('edit_password').value;
-  const expires = document.getElementById('edit_expires').value || null;
-  try{
-    const res = await apiFetch(`/admin/edit/${id}`, {method:'POST', body: JSON.stringify({username,password,expires})});
-    // update local
-    const idx = state.users.findIndex(x=>String(x.id)===String(id));
-    if(idx>-1) state.users[idx]=Object.assign(state.users[idx],res);
-    renderTable();
-    toast('Usuário salvo');
-    closeModal();
-  }catch(e){
-    // fallback: update locally
-    const idx = state.users.findIndex(x=>String(x.id)===String(id));
-    if(idx>-1){ state.users[idx].username=username; if(expires) state.users[idx].expires_at=expires; renderTable(); }
-    closeModal(); toast('Atualizado localmente (fallback)');
-  }
+  rows.forEach(r=>{
+    const raw = r.getAttribute('data-expires');
+    if(!raw){ active++; return; }
+    const exp = Number(raw);
+    if(exp && exp*1000 < Date.now()) expired++; else active++;
+  })
+  document.getElementById('totalUsers').innerText = total;
+  document.getElementById('activeUsers').innerText = active;
+  document.getElementById('expiredUsers').innerText = expired;
 }
 
-/* renew / delete */
-async function renewUser(id){
-  try{
-    await apiFetch(`/admin/renew/${id}`, {method:'POST'});
-    toast('Renovado +30 dias');
-    // ideally refresh user list
-    fetchUsers();
-  }catch(e){ toast('Erro ao renovar (fallback)'); }
-}
-async function deleteUser(id){
-  if(!confirm('Excluir usuário?')) return;
-  try{
-    await apiFetch(`/admin/delete/${id}`, {method:'POST'});
-    toast('Usuário excluído');
-    state.users = state.users.filter(x=>String(x.id)!==String(id));
-    renderTable();
-  }catch(e){ toast('Erro ao excluir'); }
-}
-
-/* -------------- HISTORY modal -------------- */
-async function openHistory(username){
-  try{
-    const data = await apiFetch(`/admin/logs?user=${encodeURIComponent(username)}`);
-    document.getElementById('modalTitle').innerText = 'Histórico: ' + username;
-    document.getElementById('modalBody').innerHTML = data.map(l => `<div style="padding:6px;border-bottom:1px solid var(--border)"><strong>${l.when}</strong> — ${escapeHtml(l.msg)}</div>`).join('') || '<div class="muted">Sem histórico</div>';
-    document.getElementById('modal').style.display='flex';
-  }catch(e){
-    document.getElementById('modalTitle').innerText = 'Histórico: ' + username;
-    document.getElementById('modalBody').innerHTML = '<div class="muted">Falha ao carregar (fallback vazio)</div>';
-    document.getElementById('modal').style.display='flex';
-  }
-}
-
-/* -------------- LOGS -------------- */
+// Simples fetch para logs (substitua rota se necessário)
 async function loadLogs(){
   try{
-    const data = await apiFetch('/admin/logs?limit=100');
-    state.logs = data;
-    renderLogs(data);
-    // mini logs
-    document.getElementById('miniLogs').innerHTML = data.slice(0,5).map(l=>`<div class="muted">${l.when} — ${escapeHtml(l.msg)}</div>`).join('');
+    const res = await fetch('/admin/logs?limit=50',{cache:'no-store'});
+    if(!res.ok) throw new Error('no');
+    const data = await res.json();
+    const el = document.getElementById('logs');
+    el.innerHTML = data.map(l => '<div style="padding:6px;border-bottom:1px solid var(--border)"><strong>'+l.when+'</strong> — '+l.msg+'</div>').join('');
   }catch(e){
-    document.getElementById('logsContainer').innerHTML = '<div class="muted">Falha ao carregar logs</div>';
+    document.getElementById('logs').innerText = 'Falha ao carregar logs';
   }
 }
-function renderLogs(list){
-  const container = document.getElementById('logsContainer');
-  container.innerHTML = '';
-  list.forEach(l=>{
-    const div = document.createElement('div');
-    div.style.padding='8px';
-    div.style.borderBottom='1px solid var(--border)';
-    div.innerHTML = `<strong>${l.when}</strong> — ${escapeHtml(l.msg)}`;
-    container.appendChild(div);
-  });
-}
-function filterLogs(type){
-  if(type==='all') renderLogs(state.logs);
-  else renderLogs(state.logs.filter(x=>x.type===type));
-}
 
-/* -------------- SEARCH / SORT / PAGINATION -------------- */
-function applySearch(){
-  const q = document.getElementById('searchUser').value.trim() || document.getElementById('quickSearch').value.trim();
-  state.filter = q;
-  state.currentPage = 1;
-  renderTable();
-}
-function sortBy(colIndex){
-  if(state.sortCol === colIndex) state.sortDir = state.sortDir==='asc' ? 'desc' : 'asc';
-  else { state.sortCol = colIndex; state.sortDir = 'asc'; }
-  renderTable();
-}
-function refresh(){ fetchUsers(); loadLogs(); toast('Atualizando...'); }
-
-/* -------------- EXPORT CSV / PDF -------------- */
-function exportCsv(){
+// CSV export
+function downloadCsv(){
   const rows = [['ID','Usuario','Key','Device','Expiracao']];
-  state.users.forEach((u,i)=> rows.push([i,u.username||'',u.key||'',u.device_id||'',u.expires_at||'']));
-  const csv = rows.map(r => r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='users.csv'; document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url); toast('CSV gerado');
-}
-async function exportPdf(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(16); doc.text('Fera Alpha Keys - Usuários', 14, 20);
-  doc.setFontSize(10);
-  let y = 30;
-  for(let i=0;i<Math.min(state.users.length,40);i++){
-    const u = state.users[i];
-    doc.text(`${i+1}. ${u.username} — ${u.key} — ${u.device_id||'-'}`, 14, y);
-    y+=6; if(y>270){ doc.addPage(); y=20; }
-  }
-  doc.save('users.pdf'); toast('PDF gerado');
+  document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
+    const cols = tr.querySelectorAll('td');
+    rows.push([cols[0].innerText.trim(),cols[1].innerText.trim(),cols[2].innerText.trim(),cols[3].innerText.trim(),cols[4].innerText.trim()]);
+  });
+  const csv = rows.map(r => r.map(c=>'"'+c.replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'users.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 
-/* -------------- NAV helpers -------------- */
-function navTo(e){
-  e.preventDefault();
-  const t = e.currentTarget.dataset.target;
-  document.getElementById('dash').scrollIntoView({behavior:'smooth'});
-  // show/hide as needed
-  ['dash','generate','users','logs','settings'].forEach(id => document.getElementById(id).style.display = (id===t ? 'block' : (id==='dash'? 'block' : 'none')));
-  if(t==='users'){ document.getElementById('users').scrollIntoView(); }
-}
-/* quick show helpers */
-function showGenerate(){ document.getElementById('generate').scrollIntoView({behavior:'smooth'}); }
-function showGenerateBatch(){ document.getElementById('generate').scrollIntoView({behavior:'smooth'}); }
+// Refresh users (recarrega a página ou faz fetch da API)
+function refreshUsers(){ location.reload(); }
 
-/* -------------- FETCH users from server -------------- */
-async function fetchUsers(){
-  // show skeleton
-  document.getElementById('tableSkeleton').style.display='block';
-  document.getElementById('tableWrap').style.display='none';
-  try{
-    const data = await apiFetch('/admin/users');
-    // expected array of {id,username,key,device_id,expires_at}
-    state.users = data;
-    renderTable();
-  }catch(e){
-    // fallback demo data
-    state.users = [
-      {id:'0',username:'fera',key:'FERA-41696E78',device_id:'b23e596f...',expires_at: Math.floor(Date.now()/1000) + 86400*29},
-      {id:'1',username:'tiotchoco',key:'FERA-410393F0',device_id:'-',expires_at: Math.floor(Date.now()/1000) + 86400*30},
-      {id:'2',username:'jcgamer',key:'FERA-74F0F43E',device_id:'-',expires_at: Math.floor(Date.now()/1000) + 86400*30},
-    ];
-    renderTable();
-    toast('Dados locais carregados (fallback)');
-  }
-}
-fetchUsers();
+// Initial renderers
+renderExpiracoes();
+renderCounters();
 loadLogs();
 
-/* Helper: show toast copy option for created key */
-function showToastCopyOption(username,key){
-  const el = document.createElement('div'); el.className='toast';
-  el.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div>Criado: ${username}</div><div style="margin-left:auto"><button class="btn ghost" onclick="copiarTudo('${escapeJs(username)}','${escapeJs(key)}')">Copiar</button></div></div>`;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(()=> el.remove(), 5000);
-}
-
-/* Misc: open history page modal (fallback uses logs loaded) */
-function escapeJs(s){ return (s||'').replace(/'/g,"\\'").replace(/\"/g,'\\"'); }
-
-/* initial UI state */
-document.getElementById('generate').style.display='block';
-['users','logs','settings'].forEach(id=> document.getElementById(id).style.display='none');
-
-/* small keyboard shortcuts for power users */
-document.addEventListener('keydown', (e)=>{
-  if(e.ctrlKey && e.key==='g') showGenerate();
-  if(e.ctrlKey && e.key==='l') document.getElementById('quickSearch').focus();
-});
 </script>
 </body>
 </html>
