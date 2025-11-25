@@ -12,15 +12,15 @@ KEY_PRIV = "private.pem"
 KEY_PUB = "public.pem"
 
 # ------------------------------
-#   CONFIGURAÇÕES GITHUB
+#   CONFIG GITHUB
 # ------------------------------
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = "FeraAlpha/painel-licenca-server"
+GITHUB_REPO = "FeraAlpha/painel-latencia-servidor"       # CORRIGIDO
 GITHUB_FILE_PATH = "data/users.json"
 GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE_PATH}"
 
+# criar pasta
 os.makedirs("data", exist_ok=True)
-os.makedirs("data/backups", exist_ok=True)
 
 
 # ------------------------------
@@ -35,145 +35,89 @@ def init_db():
     conn.commit()
     conn.close()
 
-
 init_db()
 
 
 # ------------------------------
-#   FUNÇÃO — WRITE ATÔMICO
-# ------------------------------
-def atomic_write(path, data_bytes):
-    tmp = path + ".tmp"
-    with open(tmp, "wb") as f:
-        f.write(data_bytes)
-        f.flush()
-        os.fsync(f.fileno())
-    os.replace(tmp, path)
-
-
-# ------------------------------
-#   USERS — LOAD RESILIENTE
+#   USERS JSON
 # ------------------------------
 def load_users():
-    # 1) tenta local
+    if not os.path.exists(USERS_FILE):
+        return {"users": []}
+
     try:
-        if os.path.exists(USERS_FILE):
-            with open(USERS_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-    except Exception as e:
-        print("❌ Erro lendo users.json local:", e)
+        with open(USERS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return {"users": []}
 
-    # 2) tenta pegar do GitHub
-    if GITHUB_TOKEN:
-        try:
-            r = requests.get(GITHUB_API_URL, headers={
-                "Authorization": f"Bearer {GITHUB_TOKEN}",
-                "Accept": "application/vnd.github+json"
-            }, timeout=10)
-            if r.ok:
-                info = r.json()
-                content = base64.b64decode(info.get("content", "")).decode()
-                data = json.loads(content)
 
-                # salva local como backup
-                atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
-                return data
-        except Exception as e:
-            print("❌ Falha ao recuperar users.json do GitHub:", e)
-
-    # fallback
-    return {"users": []}
+def save_users_local(data):
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
 
 # ------------------------------
-#   SAVE USERS — GITHUB + BACKUP
+#   SYNC → GITHUB
 # ------------------------------
-def save_users_github(data, retries=3):
+def save_users_github(data):
     if not GITHUB_TOKEN:
-        print("⚠  GITHUB_TOKEN não configurado, salvando somente local.")
-        return False
+        print("❌ Sem GITHUB_TOKEN — salvando somente local.")
+        return
 
-    # pega SHA atual
-    sha = None
     try:
         r = requests.get(GITHUB_API_URL, headers={
             "Authorization": f"Bearer {GITHUB_TOKEN}",
             "Accept": "application/vnd.github+json"
-        }, timeout=10)
-        if r.ok:
-            sha = r.json().get("sha")
+        })
+        sha = r.json().get("sha", None)
     except:
-        pass
+        sha = None
 
-    content_b64 = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
+    content = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
 
     payload = {
-        "message": "Painel → update users.json",
-        "content": content_b64
+        "message": "Painel Sync",
+        "content": content,
+        "sha": sha
     }
-    if sha:
-        payload["sha"] = sha
 
-    # envia com retries
-    for i in range(1, retries+1):
-        try:
-            res = requests.put(
-                GITHUB_API_URL,
-                headers={
-                    "Authorization": f"Bearer {GITHUB_TOKEN}",
-                    "Accept": "application/vnd.github+json"
-                },
-                json=payload,
-                timeout=10
-            )
-            if res.status_code in (200, 201):
-                print("✅ users.json sincronizado com GitHub")
-                return True
-            else:
-                print(f"❌ Falha GitHub [{res.status_code}]:", res.text)
-        except Exception as e:
-            print(f"❌ Tentativa {i} falhou:", e)
+    res = requests.put(
+        GITHUB_API_URL,
+        headers={
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github+json"
+        },
+        json=payload
+    )
 
-        time.sleep(1)
-
-    return False
+    if res.status_code not in (200, 201):
+        print("❌ Erro ao enviar para GitHub:", res.text)
+    else:
+        print("✅ GitHub sincronizado")
 
 
 def save_users(data):
-    # backup local
-    try:
-        ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-        atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
-    except Exception as e:
-        print("❌ Erro ao criar backup:", e)
-
-    # salva local
-    try:
-        atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
-    except Exception as e:
-        print("❌ Erro ao salvar local:", e)
-
-    # sincroniza
-    ok = save_users_github(data)
-    if not ok:
-        print("⚠  Não sincronizou com GitHub.")
+    save_users_local(data)
+    save_users_github(data)
 
 
 # ------------------------------
-#   ASSINATURA
+#   Assinatura RSA
 # ------------------------------
 def sign_payload(payload_bytes):
     with open(KEY_PRIV, "rb") as f:
         priv = RSA.import_key(f.read())
+
     h = SHA256.new(payload_bytes)
     sig = pkcs1_15.new(priv).sign(h)
     return sig
 
 
 # ------------------------------
-#   FLASK
+#   APP
 # ------------------------------
-app = Flask(_name_, template_folder='templates')
+app = Flask(__name__, template_folder='templates')   # CORRIGIDO
 
 
 @app.route("/")
@@ -182,7 +126,7 @@ def home():
 
 
 # ------------------------------
-#   CLIENTE
+#   CLIENTE → Ativação
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -208,7 +152,6 @@ def activate():
     if user["device_id"] is None:
         user["device_id"] = fingerprint
         save_users({"users": users})
-
     elif user["device_id"] != fingerprint:
         return jsonify({"status": "error", "reason": "device_mismatch"}), 403
 
@@ -243,7 +186,8 @@ def need_admin(f):
     def wrapper(*args, **kwargs):
         auth = request.authorization
         if not check_admin(auth):
-            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Login Required\"'})
+            return ("Unauthorized", 401,
+                    {"WWW-Authenticate": 'Basic realm="Login Required"'})
         return f(*args, **kwargs)
     return wrapper
 
@@ -256,7 +200,7 @@ def admin():
 
 
 # ------------------------------
-#   GERAR KEY
+#   GERAR USUÁRIO
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -266,38 +210,23 @@ def admin_generate():
     prefix = request.form.get("prefix") or "FERA"
     expire_days = int(request.form.get("expire_days") or 30)
 
-    key = prefix + "-" + os.urandom(4).hex().upper()
     expires_at = int(time.time()) + expire_days * 86400
 
     data = load_users()
-    users = data.get("users", [])
+    data["users"].append({
+        "username": username,
+        "password": password,
+        "key": prefix + "-" + os.urandom(3).hex().upper(),
+        "device_id": None,
+        "expires_at": expires_at
+    })
 
-    # evita duplicado — atualiza usuário existente
-    found = False
-    for u in users:
-        if u["username"] == username:
-            u["password"] = password
-            u["key"] = key
-            u["expires_at"] = expires_at
-            found = True
-            break
-
-    if not found:
-        users.append({
-            "username": username,
-            "password": password,
-            "key": key,
-            "device_id": None,
-            "expires_at": expires_at
-        })
-
-    data["users"] = users
     save_users(data)
     return ("", 302, {"Location": "/admin"})
 
 
 # ------------------------------
-#   DELETAR USUÁRIO
+#   DELETAR
 # ------------------------------
 @app.route("/admin/delete/<int:index>", methods=["POST"])
 @need_admin
@@ -310,7 +239,7 @@ def admin_delete(index):
 
 
 # ------------------------------
-#   RUN
+# RUN
 # ------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
