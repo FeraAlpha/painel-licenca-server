@@ -2,9 +2,8 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel (Keys)</title>
+<title>Fera Alpha — Painel (PRO)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
 <style>
   :root{
     --bg:#cfd4d8;
@@ -17,64 +16,36 @@
     --ok:#177a30;
     --radius:12px;
   }
-
   *{margin:0;padding:0;box-sizing:border-box;font-family:Inter, Arial, sans-serif}
-
-  body{
-    background:var(--bg);
-    padding:18px;
-    color:var(--text);
-    -webkit-font-smoothing:antialiased;
-  }
-
+  body{background:var(--bg);padding:18px;color:var(--text);-webkit-font-smoothing:antialiased;}
   header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
-
   h1{font-size:22px;font-weight:700}
-
   .status{display:flex;gap:12px;align-items:center}
-
   .card{background:var(--card);border:1px solid var(--border);padding:18px;border-radius:var(--radius);margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-
   label{display:block;font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:6px}
   input, select{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;background:white;color:var(--text)}
-
   .btn{padding:10px 14px;border-radius:9px;border:0;cursor:pointer;font-weight:700}
   .btn-primary{background:var(--accent);color:white}
   .btn-danger{background:var(--danger);color:white}
   .btn-ghost{background:transparent;border:1px solid var(--border)}
-
   .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
   @media (max-width:900px){.grid{grid-template-columns:1fr}}
-
   .small{font-size:13px;color:var(--text-light)}
-
   table{width:100%;border-collapse:collapse;font-size:14px}
   thead th{background:#eceff1;padding:12px;text-align:left;border-bottom:1px solid var(--border);font-weight:700;color:var(--text-light)}
   tbody td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle}
   tbody tr:hover{background:#eef2f5}
-
   .badge{padding:6px 10px;border-radius:18px;font-size:13px;font-weight:700;display:inline-block}
   .badge-ok{background:#d7f5dd;color:var(--ok)}
   .badge-warn{background:#fff3c9;color:#8a6c1e}
   .badge-exp{background:#ffe1e1;color:#b32828}
-
   .copy{color:var(--accent);cursor:pointer;font-weight:700;margin-left:8px}
-  .actions{display:flex;gap:8px}
-
-  /* Dashboard cards */
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
   .dash{display:flex;gap:12px;margin-bottom:12px}
   .dash .stat{flex:1;padding:12px;border-radius:10px;background:#fff;border:1px solid var(--border);text-align:center}
   .stat h3{font-size:20px;margin-bottom:6px}
   .muted{color:var(--text-light)}
-
-  /* Search input */
-  .searchWrap{margin-bottom:12px}
-
-  /* Dark mode */
   body.dark{--bg:#0e1113;--card:#121417;--border:#25292d;--text:#e6ecef;--text-light:#9aa4ab}
-
-  /* Responsive tweaks */
-  @media (max-width:600px){h1{font-size:18px}.card{padding:12px}}
 </style>
 </head>
 
@@ -91,40 +62,25 @@
   </div>
 </header>
 
-<!-- Dashboard + Form -->
 <div class="grid">
-
   <div>
     <div class="dash">
-      <div class="stat card">
-        <h3 id="totalUsers">0</h3>
-        <div class="muted">Total de usuários</div>
-      </div>
-      <div class="stat card">
-        <h3 id="activeUsers">0</h3>
-        <div class="muted">Ativos</div>
-      </div>
-      <div class="stat card">
-        <h3 id="expiredUsers">0</h3>
-        <div class="muted">Expirados</div>
-      </div>
+      <div class="stat card"><h3 id="totalUsers">0</h3><div class="muted">Total de usuários</div></div>
+      <div class="stat card"><h3 id="activeUsers">0</h3><div class="muted">Ativos</div></div>
+      <div class="stat card"><h3 id="expiredUsers">0</h3><div class="muted">Expirados</div></div>
     </div>
 
     <div class="card">
-      <h2 style="margin-bottom:10px">Gerar nova key</h2>
+      <h2>Gerar nova key</h2>
       <form id="formGenerate" method="post" action="/admin/generate">
         <label>Usuário</label>
         <input type="text" name="username" placeholder="ex: cliente01" required>
-
         <label>Senha</label>
         <input type="text" name="password" placeholder="senha do cliente" required>
-
         <label>Prefixo</label>
         <input type="text" name="prefix" value="FERA">
-
         <label>Expiração (dias)</label>
         <input type="number" name="expire_days" value="30" min="0">
-
         <div style="display:flex;gap:8px;align-items:center">
           <button class="btn btn-primary">Gerar Key</button>
           <button type="button" class="btn btn-ghost" onclick="openLogs()">Ver Logs</button>
@@ -132,7 +88,6 @@
       </form>
     </div>
 
-    <!-- Search + Table actions -->
     <div class="card">
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
         <div style="flex:1;min-width:220px">
@@ -148,16 +103,15 @@
       <table id="usersTable">
         <thead>
           <tr>
-            <th style="cursor:pointer" onclick="sortTable(0)">ID ⬍</th>
-            <th style="cursor:pointer" onclick="sortTable(1)">Usuário ⬍</th>
+            <th onclick="sortTable(0)">ID</th>
+            <th onclick="sortTable(1)">Usuário</th>
             <th>Key</th>
             <th>Device</th>
-            <th style="cursor:pointer" onclick="sortTable(4)">Expiração ⬍</th>
+            <th onclick="sortTable(4)">Expiração</th>
             <th>Ação</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Exemplo de render server-side (Jinja/Python). Mantive placeholders para integração -->
           {% for u in users %}
           <tr data-expires="{{ u.expires_at if u.expires_at else '' }}">
             <td>{{ loop.index0 }}</td>
@@ -167,16 +121,21 @@
               <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
             </td>
             <td>{{ u.device_id if u.device_id else '-' }}</td>
-            <td class="expCell"> <!-- Será populado por JS -->
-              <span class="badge badge-ok">Ilimitada</span>
-            </td>
+            <td class="expCell"></td>
             <td>
               <div class="actions">
-                <form method="post" action="/admin/renew/{{ loop.index0 }}">
+                <!-- Renovar +30: usa POST para /admin/renew/<id> -->
+                <form method="post" action="/admin/renew/{{ loop.index0 }}" style="display:inline-block;margin:0">
                   <button type="submit" class="btn btn-primary">Renovar +30</button>
                 </form>
 
-                <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirmarExclusao(this)">
+                <!-- Resetar Key: gera nova key para esse index -->
+                <form method="post" action="/admin/reset/{{ loop.index0 }}" style="display:inline-block;margin:0">
+                  <button type="submit" class="btn btn-ghost">Resetar Key</button>
+                </form>
+
+                <!-- Excluir -->
+                <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirmarExclusao(this)" style="display:inline-block;margin:0">
                   <button class="btn btn-danger">Excluir</button>
                 </form>
               </div>
@@ -186,43 +145,39 @@
         </tbody>
       </table>
     </div>
+
   </div>
 
-  <!-- Lateral direita com informações e atalhos -->
   <aside>
     <div class="card">
       <h2>Atalhos / Informações</h2>
       <p class="small">Rota ping usada para status do servidor: <code>/ping</code></p>
-      <p class="small">Rotas administrativas esperadas:</p>
       <ul class="small">
         <li><code>POST /admin/generate</code></li>
         <li><code>POST /admin/renew/&lt;id&gt;</code></li>
+        <li><code>POST /admin/reset/&lt;id&gt;</code></li>
         <li><code>POST /admin/delete/&lt;id&gt;</code></li>
       </ul>
 
       <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
-
       <h3 style="margin-bottom:8px">Logs recentes</h3>
       <div id="logs" style="max-height:260px;overflow:auto;font-size:13px;color:var(--text-light)">Carregando logs...</div>
-
       <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
-
       <button class="btn btn-primary" onclick="openModalConfig()">Configurações</button>
     </div>
 
     <div class="card" style="margin-top:12px">
       <h3>Sobre</h3>
-      <p class="small">Painel PRO com buscas, ordenação, dark mode, renovação e export. Teste em mobile e desktop.</p>
+      <p class="small">Painel com busca, ordenação, dark mode, renovação e reset de key.</p>
     </div>
   </aside>
-
 </div>
 
-<!-- Modal simples (exemplo) -->
+<!-- Modal -->
 <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center">
   <div style="background:var(--card);padding:16px;border-radius:10px;border:1px solid var(--border);width:90%;max-width:520px">
     <h3>Configurações</h3>
-    <p class="small">Aqui você pode adicionar mais opções do painel (ex: webhook de logs, TTL padrão, templates de email).</p>
+    <p class="small">Aqui você pode adicionar webhooks, TTL padrão, templates de email.</p>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
       <button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
     </div>
@@ -230,134 +185,83 @@
 </div>
 
 <script>
-// ---------- UTILIDADES ----------
-function toggleDark(){
-  document.body.classList.toggle('dark');
-  document.getElementById('darkBtn').innerText = document.body.classList.contains('dark') ? '☀️ Claro' : '🌙 Tema';
-}
-
-// Server status check
+function toggleDark(){document.body.classList.toggle('dark');document.getElementById('darkBtn').innerText = document.body.classList.contains('dark') ? '☀️ Claro' : '🌙 Tema';}
 async function checkServer(){
-  const box = document.getElementById('serverStatus');
-  const start = performance.now();
-  try{
-    const res = await fetch('/ping', {cache:'no-store'});
-    if(!res.ok) throw new Error('Erro');
-    const ms = Math.round(performance.now() - start);
-    box.innerHTML = '🟢 Online — ' + ms + 'ms';
-    box.style.background = '#d7f5dd'; box.style.color = 'var(--ok)';
-  }catch(e){
-    box.innerHTML = '🔴 Offline';
-    box.style.background = '#ffe1e1'; box.style.color = '#b32828';
-  }
+  const box = document.getElementById('serverStatus');const start = performance.now();
+  try{const res = await fetch('/ping',{cache:'no-store'}); if(!res.ok) throw 0; const ms = Math.round(performance.now()-start); box.innerHTML='🟢 Online — '+ms+'ms'; box.style.background='#d7f5dd'; box.style.color='var(--ok)';}
+  catch(e){box.innerHTML='🔴 Offline'; box.style.background='#ffe1e1'; box.style.color='#b32828';}
 }
-checkServer();
-setInterval(checkServer, 15000); // atualiza a cada 15s
+checkServer(); setInterval(checkServer,15000);
 
-// Search filter
 document.getElementById('searchUser').addEventListener('input', function(){
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
-    tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
-  });
+  const q=this.value.toLowerCase();
+  document.querySelectorAll('#usersTable tbody tr').forEach(tr=> tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none');
 });
 
-// Sort table (simple)
 function sortTable(colIndex){
-  const table = document.getElementById('usersTable');
-  const tbody = table.tBodies[0];
-  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const table=document.getElementById('usersTable'); const tbody=table.tBodies[0]; const rows=Array.from(tbody.querySelectorAll('tr'));
   const asc = table.getAttribute('data-sort-col') !== String(colIndex) || table.getAttribute('data-sort-dir') === 'desc';
-
-  rows.sort((a,b) => {
-    const A = a.children[colIndex].innerText.trim().toLowerCase();
-    const B = b.children[colIndex].innerText.trim().toLowerCase();
+  rows.sort((a,b)=>{
+    const A=a.children[colIndex].innerText.trim().toLowerCase(), B=b.children[colIndex].innerText.trim().toLowerCase();
     if(!isNaN(Date.parse(A)) || !isNaN(Date.parse(B))) return asc ? new Date(A)-new Date(B) : new Date(B)-new Date(A);
     if(!isNaN(A) && !isNaN(B)) return asc ? (Number(A)-Number(B)) : (Number(B)-Number(A));
     return asc ? A.localeCompare(B) : B.localeCompare(A);
   });
-
-  rows.forEach(r => tbody.appendChild(r));
-  table.setAttribute('data-sort-col', colIndex);
-  table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+  rows.forEach(r=>tbody.appendChild(r));
+  table.setAttribute('data-sort-col', colIndex); table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
 }
 
-// Copy key with feedback
 function copiar(texto, el){
-  navigator.clipboard.writeText(texto).then(()=>{
-    const old = el.innerText;
-    el.innerText = 'copiado!';
-    setTimeout(()=> el.innerText = old, 1500);
-  }).catch(()=> alert('Falha ao copiar'));
+  navigator.clipboard.writeText(texto).then(()=>{const old = el.innerText; el.innerText='copiado!'; setTimeout(()=>el.innerText=old,1500)}).catch(()=>alert('Falha ao copiar'));
 }
 
-// Confirm delete
-function confirmarExclusao(form){
-  if(confirm('Tem certeza que deseja excluir este usuário?')) return true;
-  return false;
-}
-
-// Modal helpers
+function confirmarExclusao(form){ if(!confirm('Tem certeza que deseja excluir este usuário?')) return false; return true; }
 function openModalConfig(){document.getElementById('modal').style.display='flex'}
 function closeModal(){document.getElementById('modal').style.display='none'}
-
 function openLogs(){window.location.href='/admin/logs'}
+function refreshUsers(){ location.reload(); }
+function downloadCsv(){
+  const rows=[['ID','Usuario','Key','Device','Expiracao']];
+  document.querySelectorAll('#usersTable tbody tr').forEach(tr=>{
+    const cols=tr.querySelectorAll('td');
+    rows.push([cols[0].innerText.trim(),cols[1].innerText.trim(),cols[2].innerText.trim(),cols[3].innerText.trim(),cols[4].innerText.trim()]);
+  });
+  const csv = rows.map(r=>r.map(c=>'"'+c.replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='users.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
 
-// Populate expiration badges client-side (quando o servidor deixar u.expires_at no data-expires)
+// Render expirations and counters
 function renderExpiracoes(){
   const now = Date.now()/1000;
-  document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
+  document.querySelectorAll('#usersTable tbody tr').forEach(tr=>{
     const cell = tr.querySelector('.expCell');
     const raw = tr.getAttribute('data-expires');
     if(!raw){ cell.innerHTML = '<span class="badge badge-ok">Ilimitada</span>'; return; }
-
     const exp = Number(raw);
     if(!exp){ cell.innerHTML = '<span class="badge badge-ok">Ilimitada</span>'; return; }
-
     const diffDays = Math.round((exp - now)/86400);
     let html = '';
-    if(exp*1000 < Date.now()){
-      html = '<span class="badge badge-exp">Expirado</span>';
-    } else if(diffDays < 3){
-      html = '<span class="badge badge-exp">Expira em '+diffDays+' dias</span>';
-    } else if(diffDays < 7){
-      html = '<span class="badge badge-warn">'+diffDays+' dias</span>';
-    } else {
-      html = '<span class="badge badge-ok">'+diffDays+' dias</span>';
-    }
-    // também mostra a data exata
-    try{
-      const d = new Date(exp*1000);
-      const dd = d.toLocaleDateString('pt-BR');
-      html += ' <div class="small" style="display:inline-block;margin-left:8px;color:var(--text-light)">'+dd+'</div>'
-    }catch(e){}
-
+    if(exp*1000 < Date.now()) html = '<span class="badge badge-exp">Expirado</span>';
+    else if(diffDays < 3) html = '<span class="badge badge-exp">Expira em '+diffDays+' dias</span>';
+    else if(diffDays < 7) html = '<span class="badge badge-warn">'+diffDays+' dias</span>';
+    else html = '<span class="badge badge-ok">'+diffDays+' dias</span>';
+    try{ const d = new Date(exp*1000); html += ' <div class="small" style="display:inline-block;margin-left:8px;color:var(--text-light)">'+d.toLocaleDateString('pt-BR')+'</div>'; }catch(e){}
     cell.innerHTML = html;
   });
 }
-
-// Dashboard counters (assume server prints counts into hidden data attributes or we can calculate)
 function renderCounters(){
   const rows = Array.from(document.querySelectorAll('#usersTable tbody tr'));
-  const total = rows.length;
-  let expired = 0; let active = 0;
-  const now = Date.now()/1000;
-  rows.forEach(r=>{
-    const raw = r.getAttribute('data-expires');
-    if(!raw){ active++; return; }
-    const exp = Number(raw);
-    if(exp && exp*1000 < Date.now()) expired++; else active++;
-  })
-  document.getElementById('totalUsers').innerText = total;
-  document.getElementById('activeUsers').innerText = active;
-  document.getElementById('expiredUsers').innerText = expired;
+  const total = rows.length; let expired=0, active=0; const now=Date.now()/1000;
+  rows.forEach(r=>{ const raw=r.getAttribute('data-expires'); if(!raw) { active++; return } const exp=Number(raw); if(exp && exp*1000 < Date.now()) expired++; else active++; });
+  document.getElementById('totalUsers').innerText = total; document.getElementById('activeUsers').innerText = active; document.getElementById('expiredUsers').innerText = expired;
 }
+renderExpiracoes(); renderCounters(); loadLogs();
 
-// Simples fetch para logs (substitua rota se necessário)
+// load logs
 async function loadLogs(){
   try{
     const res = await fetch('/admin/logs?limit=50',{cache:'no-store'});
-    if(!res.ok) throw new Error('no');
+    if(!res.ok) throw 0;
     const data = await res.json();
     const el = document.getElementById('logs');
     el.innerHTML = data.map(l => '<div style="padding:6px;border-bottom:1px solid var(--border)"><strong>'+l.when+'</strong> — '+l.msg+'</div>').join('');
@@ -365,28 +269,6 @@ async function loadLogs(){
     document.getElementById('logs').innerText = 'Falha ao carregar logs';
   }
 }
-
-// CSV export
-function downloadCsv(){
-  const rows = [['ID','Usuario','Key','Device','Expiracao']];
-  document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
-    const cols = tr.querySelectorAll('td');
-    rows.push([cols[0].innerText.trim(),cols[1].innerText.trim(),cols[2].innerText.trim(),cols[3].innerText.trim(),cols[4].innerText.trim()]);
-  });
-  const csv = rows.map(r => r.map(c=>'"'+c.replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob = new Blob([csv],{type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'users.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-}
-
-// Refresh users (recarrega a página ou faz fetch da API)
-function refreshUsers(){ location.reload(); }
-
-// Initial renderers
-renderExpiracoes();
-renderCounters();
-loadLogs();
-
 </script>
 </body>
 </html>
