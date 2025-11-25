@@ -27,6 +27,13 @@
       "key": "FERA-305A47B8",
       "device_id": "bd7ac41c6816c03ab2f4e151ee4b3d26",
       "expires_at": 1766669180
+    },
+    {
+      "username": "Rush7.exe",
+      "password": "Rush7.exe",
+      "key": "FERA-A2DF1267",
+      "device_id": null,
+      "expires_at": 1766675425
     }
   ]
 }
