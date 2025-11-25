@@ -1,13 +1,6 @@
 {
   "users": [
     {
-      "username": "client07",
-      "password": "1234",
-      "key": "FERA-CLIENT-007",
-      "device_id": null,
-      "expires_at": 1769800000
-    },
-    {
       "username": "fera",
       "password": "123",
       "key": "FERA-41696E78",
