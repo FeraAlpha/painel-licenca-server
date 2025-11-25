@@ -4,7 +4,7 @@
       "username": "fera",
       "password": "123",
       "key": "FERA-399B2AA1",
-      "device_id": "b23e596f1eff65895d261a7280550da4",
+      "device_id": null,
       "expires_at": 1769202081
     },
     {
@@ -13,6 +13,13 @@
       "key": "FERA-410393F0",
       "device_id": "3eebeff37edda3bf562115c4efbb0b83",
       "expires_at": 1766661620
+    },
+    {
+      "username": "jcgamer",
+      "password": "jcgameryt",
+      "key": "FERA-74F0F43E",
+      "device_id": "2a5c2b5518d84c09f8221fc20c9542ce",
+      "expires_at": 1766662639
     },
     {
       "username": "Joaozinho",
@@ -101,16 +108,16 @@
     {
       "username": "floquinhoaps",
       "password": "gabriel2018%",
-      "key": "FERA-436661BA",
+      "key": "FERA-160F7F93",
       "device_id": null,
-      "expires_at": 1766701942
+      "expires_at": 1766701890
     },
     {
-      "username": "Johnny",
-      "password": "082223a.",
-      "key": "FERA-89B06378",
+      "username": "isadoradesosi@gmail.com",
+      "password": "Desosi_100436",
+      "key": "FERA-6F4D048C",
       "device_id": null,
-      "expires_at": 1766702215
+      "expires_at": 1766702396
     }
   ]
 }
