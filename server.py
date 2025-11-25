@@ -20,6 +20,7 @@ GITHUB_FILE_PATH = "data/users.json"
 GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE_PATH}"
 
 os.makedirs("data", exist_ok=True)
+os.makedirs("data/backups", exist_ok=True)
 
 # ------------------------------
 #   BANCO SQL
@@ -29,8 +30,10 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS licenses
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  fingerprint TEXT, username TEXT,
-                  issued_at INTEGER, expires_at INTEGER,
+                  fingerprint TEXT,
+                  username TEXT,
+                  issued_at INTEGER,
+                  expires_at INTEGER,
                   payload TEXT)''')
     conn.commit()
     conn.close()
@@ -38,59 +41,96 @@ def init_db():
 init_db()
 
 # ------------------------------
-#   ARQUIVOS LOCAIS
+#   WRITE ATÔMICO
+# ------------------------------
+def atomic_write(path, data_bytes):
+    tmp = path + ".tmp"
+    with open(tmp, "wb") as f:
+        f.write(data_bytes)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+
+# ------------------------------
+#   LOAD USERS COM FAILSAFE
 # ------------------------------
 def load_users():
-    if not os.path.exists(USERS_FILE):
-        return {"users": []}
-    with open(USERS_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except:
+        print("❌ Erro lendo local, tentando GitHub...")
 
-def save_users_local(data):
-    with open(USERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+    # tenta github
+    if GITHUB_TOKEN:
+        try:
+            r = requests.get(GITHUB_API_URL, headers={
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github+json"
+            })
+            if r.ok:
+                info = r.json()
+                content = base64.b64decode(info.get("content", "")).decode()
+                data = json.loads(content)
+                atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
+                return data
+        except:
+            print("❌ Falha GitHub")
+
+    return {"users": []}
 
 # ------------------------------
-#   SALVAR NO GITHUB
+#   SAVE USERS (LOCAL + BACKUP + GITHUB)
 # ------------------------------
 def save_users_github(data):
     if not GITHUB_TOKEN:
-        print("❌ Sem token do GitHub — salvando somente local.")
-        return
+        print("⚠️ Sem token GitHub")
+        return False
 
     try:
-        r = requests.get(GITHUB_API_URL, headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json"
-        })
-        sha = r.json().get("sha", None)
+        res_info = requests.get(
+            GITHUB_API_URL,
+            headers={"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept":"application/vnd.github+json"}
+        )
+        sha = res_info.json().get("sha")
     except:
         sha = None
 
-    content = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
+    content_b64 = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
 
     payload = {
-        "message": "Painel update users.json",
-        "content": content,
-        "sha": sha
+        "message": "Painel sync users.json",
+        "content": content_b64
     }
+    if sha:
+        payload["sha"] = sha
 
-    response = requests.put(
-        GITHUB_API_URL,
-        headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json"
-        },
-        json=payload
-    )
+    try:
+        res = requests.put(
+            GITHUB_API_URL,
+            headers={"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github+json"},
+            json=payload
+        )
+        if res.status_code in (200, 201):
+            print("✅ GitHub atualizado!")
+            return True
+    except:
+        pass
 
-    if response.status_code in (200, 201):
-        print("✅ GitHub sincronizado!")
-    else:
-        print("❌ Falha GitHub:", response.text)
+    print("⚠️ Falha GitHub")
+    return False
+
 
 def save_users(data):
-    save_users_local(data)
+    # backup
+    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
+
+    # local
+    atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
+
+    # GitHub
     save_users_github(data)
 
 # ------------------------------
@@ -112,7 +152,7 @@ def home():
     return "Painel Licença OK", 200
 
 # ------------------------------
-#   ATIVAÇÃO (CLIENTE)
+#   CLIENTE
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -122,25 +162,24 @@ def activate():
     fingerprint = data.get("fingerprint")
 
     if not username or not password or not fingerprint:
-        return jsonify({"error": "missing_fields"}), 400
+        return jsonify({"error":"missing_fields"}), 400
 
     users = load_users()["users"]
-
     user = next((u for u in users if u["username"] == username and u["password"] == password), None)
 
     if not user:
-        return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
+        return jsonify({"status":"error","reason":"invalid_credentials"}), 403
 
     now = int(time.time())
 
     if user["expires_at"] < now:
-        return jsonify({"status": "error", "reason": "expired"}), 403
+        return jsonify({"status":"error","reason":"expired"}), 403
 
     if user["device_id"] is None:
         user["device_id"] = fingerprint
         save_users({"users": users})
     elif user["device_id"] != fingerprint:
-        return jsonify({"status": "error", "reason": "device_mismatch"}), 403
+        return jsonify({"status":"error","reason":"device_mismatch"}), 403
 
     payload = {
         "username": username,
@@ -149,42 +188,37 @@ def activate():
         "expires_at": user["expires_at"]
     }
 
-    payload_bytes = json.dumps(payload, separators=(',', ':')).encode()
-    sig = sign_payload(payload_bytes)
+    bytes_payload = json.dumps(payload, separators=(',',':')).encode()
+    sig = sign_payload(bytes_payload)
 
     return jsonify({
-        "payload": base64.b64encode(payload_bytes).decode(),
+        "payload": base64.b64encode(bytes_payload).decode(),
         "sig": base64.b64encode(sig).decode(),
         "expires_at": user["expires_at"]
     })
 
 # ------------------------------
-#   ADMIN
+#   ADMIN AUTH
 # ------------------------------
 def check_admin(a):
-    ADMIN_USER = os.getenv("ADMIN_USER", "admin")
-    ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
-    return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
+    return a and a.username == os.getenv("ADMIN_USER","admin") and a.password == os.getenv("ADMIN_PASS","1234")
 
 def need_admin(f):
     @wraps(f)
-    def wrapper(*args, **kwargs):
-        auth = request.authorization
-        if not check_admin(auth):
-            return ("Unauthorized", 401, {
-                "WWW-Authenticate": 'Basic realm="Painel Admin"'
-            })
+    def w(*args, **kwargs):
+        a = request.authorization
+        if not check_admin(a):
+            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Painel Admin\"'})
         return f(*args, **kwargs)
-    return wrapper
+    return w
 
 @app.route("/admin")
 @need_admin
 def admin():
-    data = load_users()
-    return render_template("admin_index.html", users=data["users"], datetime=datetime)
+    return render_template("admin_index.html", users=load_users()["users"], datetime=datetime)
 
 # ------------------------------
-#   GERAR KEY
+#   GERAR USER/KEY
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -192,53 +226,49 @@ def admin_generate():
     username = request.form.get("username")
     password = request.form.get("password")
     prefix = request.form.get("prefix") or "FERA"
-    expire_days = int(request.form.get("expire_days") or 30)
+    exp_days = int(request.form.get("expire_days") or 30)
 
-    key = prefix + "-" + os.urandom(4).hex().upper()
-    expires_at = int(time.time()) + expire_days * 86400
+    new_key = prefix + "-" + os.urandom(4).hex().upper()
+    expires_at = int(time.time()) + exp_days * 86400
 
     data = load_users()
-    data["users"].append({
-        "username": username,
-        "password": password,
-        "key": key,
-        "device_id": None,
-        "expires_at": expires_at
-    })
+    users = data["users"]
+
+    # se já existe → atualiza
+    exists = False
+    for u in users:
+        if u["username"] == username:
+            u["password"] = password
+            u["key"] = new_key
+            u["expires_at"] = expires_at
+            exists = True
+            break
+
+    if not exists:
+        users.append({
+            "username": username,
+            "password": password,
+            "key": new_key,
+            "device_id": None,
+            "expires_at": expires_at
+        })
 
     save_users(data)
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   DELETAR
-# ------------------------------
-@app.route("/admin/delete/<int:index>", methods=["POST"])
-@need_admin
-def admin_delete(index):
-    data = load_users()
-    if 0 <= index < len(data["users"]):
-        data["users"].pop(index)
-        save_users(data)
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
 #   RENOVAR +30 DIAS
 # ------------------------------
-@app.route("/admin/renew/<int:index>", methods=["POST"])
+@app.route("/admin/renew/<int:i>", methods=["POST"])
 @need_admin
-def admin_renew(index):
+def admin_renew(i):
     data = load_users()
+    users = data["users"]
 
-    if 0 <= index < len(data["users"]):
+    if 0 <= i < len(users):
         now = int(time.time())
-        current = data["users"][index].get("expires_at") or now
-
-        if current < now:
-            new_exp = now + 30 * 86400
-        else:
-            new_exp = current + 30 * 86400
-
-        data["users"][index]["expires_at"] = new_exp
+        cur = users[i]["expires_at"]
+        users[i]["expires_at"] = (now if cur < now else cur) + 30*86400
         save_users(data)
 
     return ("", 302, {"Location": "/admin"})
@@ -246,18 +276,30 @@ def admin_renew(index):
 # ------------------------------
 #   RESETAR KEY
 # ------------------------------
-@app.route("/admin/reset/<int:index>", methods=["POST"])
+@app.route("/admin/reset/<int:i>", methods=["POST"])
 @need_admin
-def admin_reset(index):
+def admin_reset_key(i):
     data = load_users()
+    users = data["users"]
 
-    if 0 <= index < len(data["users"]):
-        old_key = data["users"][index].get("key", "FERA-")
-        prefix = old_key.split("-")[0] or "FERA"
+    if 0 <= i < len(users):
+        prefix = users[i]["key"].split("-")[0]
+        users[i]["key"] = prefix + "-" + os.urandom(4).hex().upper()
+        save_users(data)
 
-        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
+    return ("", 302, {"Location": "/admin"})
 
-        data["users"][index]["key"] = new_key
+# ------------------------------
+#   RESETAR DEVICE
+# ------------------------------
+@app.route("/admin/reset_device/<int:i>", methods=["POST"])
+@need_admin
+def admin_reset_device(i):
+    data = load_users()
+    users = data["users"]
+
+    if 0 <= i < len(users):
+        users[i]["device_id"] = None
         save_users(data)
 
     return ("", 302, {"Location": "/admin"})
@@ -266,4 +308,4 @@ def admin_reset(index):
 #   RUN
 # ------------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT",10000)), debug=False)
