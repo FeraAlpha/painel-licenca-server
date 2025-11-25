@@ -41,6 +41,13 @@
       "key": "FERA-6D02E1E8",
       "device_id": null,
       "expires_at": 1766676766
+    },
+    {
+      "username": "diegovilao",
+      "password": "Lucas2015",
+      "key": "FERA-00D2ACAF",
+      "device_id": null,
+      "expires_at": 1850399950
     }
   ]
 }
