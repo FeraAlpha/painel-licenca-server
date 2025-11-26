@@ -72,17 +72,17 @@
 <div class="container">
     <h2>Gerador de Keys – Revendedor</h2>
 
-    <label>Usuário:</JCGAMER>
-    <input id="username" placeholder="Ex: joao, maria, user123">
+    <label>Usuário:</label>
+    <input id="username" value="jcgamer">
 
-    <label>Senha:</123>
-    <input id="password" placeholder="Senha da key">
+    <label>Senha:</label>
+    <input id="password" value="123">
 
-    <label>Dias:</30l>
+    <label>Dias:</label>
     <input id="days" type="number" value="30">
 
-    <label>Token do Revendedor:</revendedor_super_fera_2025>
-    <input id="token" placeholder="Seu token autorizado">
+    <label>Token do Revendedor:</label>
+    <input id="token" placeholder="Digite seu token autorizado">
 
     <button onclick="generate()">Gerar Key</button>
 
@@ -91,6 +91,7 @@
 
 <script>
 async function generate() {
+
     const data = {
         username: document.getElementById("username").value.trim(),
         password: document.getElementById("password").value.trim(),
