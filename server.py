@@ -7,13 +7,14 @@ from Crypto.Hash import SHA256
 from datetime import datetime
 from functools import wraps
 
-# ------------------------------
-#   CONFIGURAÇÕES
-# ------------------------------
 DB = "data/licenses.db"
 USERS_FILE = "data/users.json"
 KEY_PRIV = "private.pem"
+KEY_PUB = "public.pem"
 
+# ------------------------------
+#   CONFIG GITHUB
+# ------------------------------
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = "FeraAlpha/painel-licenca-server"
 GITHUB_FILE_PATH = "data/users.json"
@@ -23,18 +24,14 @@ os.makedirs("data", exist_ok=True)
 os.makedirs("data/backups", exist_ok=True)
 
 # ------------------------------
-#   INICIALIZAR BANCO SQL
+#   BANCO SQL
 # ------------------------------
 def init_db():
     conn = sqlite3.connect(DB)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS licenses
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  fingerprint TEXT,
-                  username TEXT,
-                  issued_at INTEGER,
-                  expires_at INTEGER,
-                  payload TEXT)''')
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, fingerprint TEXT, username TEXT,
+                  issued_at INTEGER, expires_at INTEGER, payload TEXT)''')
     conn.commit()
     conn.close()
 
@@ -67,10 +64,10 @@ def load_users():
             r = requests.get(GITHUB_API_URL, headers={
                 "Authorization": f"Bearer {GITHUB_TOKEN}",
                 "Accept": "application/vnd.github+json"
-            })
+            }, timeout=10)
             if r.ok:
-                file_info = r.json()
-                content = base64.b64decode(file_info["content"]).decode()
+                info = r.json()
+                content = base64.b64decode(info.get("content", "")).decode()
                 data = json.loads(content)
                 atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
                 return data
@@ -82,9 +79,9 @@ def load_users():
 # ------------------------------
 #   SAVE USERS
 # ------------------------------
-def save_users_github(data):
+def save_users_github(data, retries=3):
     if not GITHUB_TOKEN:
-        print("⚠ Nenhum token GitHub configurado.")
+        print("⚠️ Nenhum token GitHub configurado.")
         return False
 
     sha = None
@@ -98,22 +95,28 @@ def save_users_github(data):
     except:
         pass
 
-    encoded = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
+    content_b64 = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
 
-    payload = {"message": "update users.json", "content": encoded}
+    payload = {"message": "update users.json", "content": content_b64}
     if sha:
         payload["sha"] = sha
 
-    r = requests.put(
-        GITHUB_API_URL,
-        headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json"
-        },
-        json=payload
-    )
+    for _ in range(3):
+        try:
+            res = requests.put(
+                GITHUB_API_URL,
+                headers={
+                    "Authorization": f"Bearer {GITHUB_TOKEN}",
+                    "Accept": "application/vnd.github+json"
+                },
+                json=payload
+            )
+            if res.status_code in (200, 201):
+                return True
+        except:
+            pass
 
-    return r.status_code in (200, 201)
+    return False
 
 def save_users(data):
     ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
@@ -122,7 +125,7 @@ def save_users(data):
     save_users_github(data)
 
 # ------------------------------
-#   ASSINAR PAYLOAD
+#   ASSINATURA DIGITAL
 # ------------------------------
 def sign_payload(payload_bytes):
     with open(KEY_PRIV, "rb") as f:
@@ -132,17 +135,17 @@ def sign_payload(payload_bytes):
     return sig
 
 # ------------------------------
-#   INICIAR SERVIDOR
+#   FLASK + CORS
 # ------------------------------
-app = Flask(__name__)
-CORS(app)  # 🔥 PERMITE ACESSO DO GITHUB PAGES
+app = Flask(__name__, template_folder='templates')
+CORS(app)
 
 @app.route("/")
 def home():
     return "Painel Licença OK", 200
 
 # ------------------------------
-#   ATIVAÇÃO DO CLIENTE
+#   CLIENTE - ATIVAÇÃO
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -154,9 +157,8 @@ def activate():
     if not username or not password or not fingerprint:
         return jsonify({"error": "missing_fields"}), 400
 
-    users = load_users()["users"]
-    user = next((u for u in users
-                 if u["username"] == username and u["password"] == password), None)
+    users = load_users().get("users", [])
+    user = next((u for u in users if u["username"] == username and u["password"] == password), None)
 
     if not user:
         return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
@@ -178,29 +180,86 @@ def activate():
         "expires_at": user["expires_at"]
     }
 
-    p_bytes = json.dumps(payload).encode()
-    sig = sign_payload(p_bytes)
+    payload_bytes = json.dumps(payload, separators=(',', ':')).encode()
+    sig = sign_payload(payload_bytes)
 
     return jsonify({
-        "payload": base64.b64encode(p_bytes).decode(),
+        "payload": base64.b64encode(payload_bytes).decode(),
         "sig": base64.b64encode(sig).decode(),
         "expires_at": user["expires_at"]
     })
 
+# ------------------------------
+#   ADMIN
+# ------------------------------
+def check_admin(a):
+    ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+    ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
+    return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
 
-# ============================================================
-# ✅ ROTA DO REVENDEDOR /reseller/generate (a que você usa)
-# ============================================================
-@app.route("/reseller/generate", methods=["POST"])
-def reseller_generate():
+def need_admin(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        auth = request.authorization
+        if not check_admin(auth):
+            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Login Required\"'})
+        return f(*args, **kwargs)
+    return wrapper
 
-    RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
+@app.route("/admin")
+@need_admin
+def admin():
+    data = load_users()
+    return render_template("admin_index.html", users=data["users"], datetime=datetime)
 
-    token = request.form.get("token")
+# ------------------------------
+#   GERAR KEY ADMIN
+# ------------------------------
+@app.route("/admin/generate", methods=["POST"])
+@need_admin
+def admin_generate():
     username = request.form.get("username")
     password = request.form.get("password")
     prefix = request.form.get("prefix") or "FERA"
     expire_days = int(request.form.get("expire_days") or 30)
+
+    key = prefix + "-" + os.urandom(4).hex().upper()
+    expires_at = int(time.time()) + expire_days * 86400
+
+    data = load_users()
+    users = data["users"]
+
+    for u in users:
+        if u["username"] == username:
+            u["password"] = password
+            u["key"] = key
+            u["expires_at"] = expires_at
+            save_users(data)
+            return ("", 302, {"Location": "/admin"})
+
+    users.append({
+        "username": username,
+        "password": password,
+        "key": key,
+        "device_id": None,
+        "expires_at": expires_at
+    })
+
+    save_users(data)
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   ROTA DO REVENDEDOR
+# ------------------------------
+@app.route("/reseller/generate", methods=["POST"])
+def reseller_generate():
+    RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "revendedor_super_fera_2025")
+
+    token = request.form.get("token")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    expire_days = int(request.form.get("expire_days") or 30)
+    prefix = "FERA"
 
     if token != RESELLER_TOKEN:
         return jsonify({"error": "invalid_token"}), 403
@@ -238,9 +297,41 @@ def reseller_generate():
         "expires_at": expires_at
     })
 
+# ------------------------------
+#   RESETAR E DELETAR
+# ------------------------------
+@app.route("/admin/reset/<int:index>", methods=["POST"])
+@need_admin
+def admin_reset(index):
+    data = load_users()
+    if 0 <= index < len(data["users"]):
+        old_key = data["users"][index]["key"]
+        prefix = old_key.split("-")[0]
+        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
+        data["users"][index]["key"] = new_key
+        save_users(data)
+    return ("", 302, {"Location": "/admin"})
+
+@app.route("/admin/reset_device/<int:index>", methods=["POST"])
+@need_admin
+def admin_reset_device(index):
+    data = load_users()
+    if 0 <= index < len(data["users"]):
+        data["users"][index]["device_id"] = None
+        save_users(data)
+    return ("", 302, {"Location": "/admin"})
+
+@app.route("/admin/delete/<int:index>", methods=["POST"])
+@need_admin
+def admin_delete(index):
+    data = load_users()
+    if 0 <= index < len(data["users"]):
+        data["users"].pop(index)
+        save_users(data)
+    return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   EXECUTAR SERVIDOR
+#   RUN
 # ------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
