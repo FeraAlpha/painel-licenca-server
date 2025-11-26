@@ -106,9 +106,9 @@ async function generate() {
 
     try {
         const req = await fetch("https://painel-licenca-server.onrender.com/reseller/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+    method: "POST",
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams(data)
         });
