@@ -104,7 +104,7 @@ async function generate() {
         return;
     }
 
-    const req = await fetch("https://server.onrender.com/reseller/generate", {
+    const req = await fetch("https://painel-licenca-server.onrender.com/reseller/generate", {
         method: "POST",
         body: new URLSearchParams(data)
     });
