@@ -76,12 +76,12 @@
     <input id="username" value="jcgamer">
 
     <label>Senha:</label>
-    <input id="password" value="123">
+    <input id="password" value="321">
 
     <label>Dias:</label>
     <input id="days" type="number" value="30">
 
-    <label>Token do Revendedor:</iabel>
+    <label>Token do Revendedor:</label>
     <input id="token" placeholder="Digite seu token autorizado">
 
     <button onclick="generate()">Gerar Key</button>
@@ -104,15 +104,22 @@ async function generate() {
         return;
     }
 
-    const req = await fetch("https://painel-licenca-server.onrender.com/reseller/generate", {
-        method: "POST",
-        body: new URLSearchParams(data)
-    });
+    try {
+        const req = await fetch("https://painel-licenca-server.onrender.com/reseller/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(data)
+        });
 
-    const res = await req.json();
+        const res = await req.json();
+        document.getElementById("result").textContent = JSON.stringify(res, null, 2);
 
-    document.getElementById("result").textContent =
-        JSON.stringify(res, null, 2);
+    } catch (e) {
+        document.getElementById("result").textContent =
+            "❌ Erro ao conectar ao servidor.\nVerifique o Render.";
+    }
 }
 </script>
 
