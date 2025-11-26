@@ -17,9 +17,9 @@
     {
       "username": "jcgamer",
       "password": "123",
-      "key": "FERA-9F6D2F03",
+      "key": "FERA-1FA36E83",
       "device_id": "2a5c2b5518d84c09f8221fc20c9542ce",
-      "expires_at": 1766788873
+      "expires_at": 1766789190
     },
     {
       "username": "Joaozinho",
@@ -158,7 +158,7 @@
       "username": "Theodoro",
       "password": "Theodorotaniaterezinha1",
       "key": "FERA-2A933A89",
-      "device_id": "a62a6390db454bba9c18b56b6a4e40c0",
+      "device_id": null,
       "expires_at": 1795723995
     }
   ]
