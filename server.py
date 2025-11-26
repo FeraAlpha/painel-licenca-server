@@ -120,14 +120,11 @@ def save_users_github(data, retries=3):
 
 
 def save_users(data):
-    # backup
     ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
 
-    # local
     atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
 
-    # sync cloud
     save_users_github(data)
 
 
@@ -223,7 +220,7 @@ def admin():
 
 
 # ------------------------------
-#   GERAR KEY
+#   GERAR KEY (ADMIN)
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -239,7 +236,6 @@ def admin_generate():
     data = load_users()
     users = data["users"]
 
-    # evita duplicados
     for u in users:
         if u["username"] == username:
             u["password"] = password
@@ -258,6 +254,66 @@ def admin_generate():
 
     save_users(data)
     return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN)
+# ------------------------------
+@app.route("/reseller/generate", methods=["POST"])
+def reseller_generate():
+    """
+    Gera uma key externa para revendedores via token.
+    Não precisa autenticação admin. Seguro e separado.
+    """
+    RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
+
+    token = request.form.get("token")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    prefix = request.form.get("prefix") or "FERA"
+    expire_days = int(request.form.get("expire_days") or 30)
+
+    if token != RESELLER_TOKEN:
+        return jsonify({"error": "invalid_token"}), 403
+
+    if not username or not password:
+        return jsonify({"error": "missing_fields"}), 400
+
+    key = prefix + "-" + os.urandom(4).hex().upper()
+    expires_at = int(time.time()) + expire_days * 86400
+
+    data = load_users()
+    users = data["users"]
+
+    for u in users:
+        if u["username"] == username:
+            u["password"] = password
+            u["key"] = key
+            u["expires_at"] = expires_at
+            save_users(data)
+            return jsonify({
+                "ok": True,
+                "key": key,
+                "username": username,
+                "expires_at": expires_at
+            })
+
+    users.append({
+        "username": username,
+        "password": password,
+        "key": key,
+        "device_id": None,
+        "expires_at": expires_at
+    })
+
+    save_users(data)
+
+    return jsonify({
+        "ok": True,
+        "key": key,
+        "username": username,
+        "expires_at": expires_at
+    })
 
 
 # ------------------------------
