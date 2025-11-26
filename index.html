@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gerador de Key – Revendedor Fera Alpha</title>
 
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #0d0d0d;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 420px;
+        margin: 40px auto;
+        background: #151515;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 0 15px #00eaff40;
+        border: 1px solid #00eaff20;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #00eaff;
+    }
+    label {
+        font-weight: bold;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0 16px 0;
+        border-radius: 8px;
+        border: none;
+        background: #222;
+        color: #fff;
+        font-size: 15px;
+    }
+    button {
+        width: 100%;
+        padding: 14px;
+        background: #00eaff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #000;
+    }
+    button:hover {
+        background: #00c7dd;
+    }
+    #result {
+        margin-top: 20px;
+        padding: 15px;
+        background: #111;
+        border-radius: 8px;
+        border: 1px solid #00eaff40;
+        font-size: 14px;
+        white-space: pre-wrap;
+        color: #00ffea;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Gerador de Keys – Revendedor</h2>
+
+    <label>Usuário:</label>
+    <input id="username" placeholder="Ex: joao, maria, user123">
+
+    <label>Senha:</label>
+    <input id="password" placeholder="Senha da key">
+
+    <label>Dias:</label>
+    <input id="days" type="number" value="30">
+
+    <label>Token do Revendedor:</label>
+    <input id="token" placeholder="Seu token autorizado">
+
+    <button onclick="generate()">Gerar Key</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function generate() {
+    const data = {
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value.trim(),
+        expire_days: document.getElementById("days").value.trim(),
+        token: document.getElementById("token").value.trim()
+    };
+
+    if (!data.username || !data.password || !data.token) {
+        document.getElementById("result").textContent = "⚠ Preencha todos os campos.";
+        return;
+    }
+
+    const req = await fetch("https://server.onrender.com/reseller/generate", {
+        method: "POST",
+        body: new URLSearchParams(data)
+    });
+
+    const res = await req.json();
+
+    document.getElementById("result").textContent =
+        JSON.stringify(res, null, 2);
+}
+</script>
+
+</body>
+</html>
