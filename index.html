@@ -50,20 +50,57 @@
         font-weight: bold;
         cursor: pointer;
         color: #000;
+        transition: 0.2s;
     }
     button:hover {
         background: #00c7dd;
+        transform: scale(1.02);
     }
+
+    /* BOX RESULTADO BONITO */
     #result {
         margin-top: 20px;
-        padding: 15px;
-        background: #111;
-        border-radius: 8px;
+        padding: 18px;
+        background: #0f0f0f;
+        border-radius: 10px;
         border: 1px solid #00eaff40;
-        font-size: 14px;
-        white-space: pre-wrap;
-        color: #00ffea;
+        box-shadow: 0 0 12px #00eaff30;
+        display: none;
     }
+
+    .ok-title {
+        color: #00ffa6;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .key-box {
+        margin: 12px 0;
+        padding: 12px;
+        background: #101820;
+        border: 1px solid #00eaff60;
+        color: #00eaff;
+        text-align: center;
+        font-size: 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        box-shadow: 0 0 10px #00eaff40 inset;
+    }
+
+    .info-line {
+        color: #ccc;
+        margin: 4px 0;
+        font-size: 14px;
+    }
+
+    .error {
+        color: #ff4e4e;
+        font-weight: bold;
+        text-align: center;
+    }
+
 </style>
 </head>
 
@@ -99,8 +136,11 @@ async function generate() {
         token: document.getElementById("token").value.trim()
     };
 
+    const result = document.getElementById("result");
+    result.style.display = "block";
+
     if (!data.username || !data.password || !data.token) {
-        document.getElementById("result").textContent = "⚠ Preencha todos os campos.";
+        result.innerHTML = `<div class="error">⚠ Preencha todos os campos.</div>`;
         return;
     }
 
@@ -114,11 +154,25 @@ async function generate() {
         });
 
         const res = await req.json();
-        document.getElementById("result").textContent = JSON.stringify(res, null, 2);
 
-    } catch (e) {
-        document.getElementById("result").textContent =
-            "❌ Erro ao conectar ao servidor.\nVerifique o Render.";
+        if (!res.ok) {
+            result.innerHTML = `<div class="error">❌ Token inválido ou erro ao gerar key.</div>`;
+            return;
+        }
+
+        const dataExp = new Date(res.expires_at * 1000)
+            .toLocaleDateString("pt-BR");
+
+        result.innerHTML = `
+            <div class="ok-title">✔ Key Gerada com Sucesso!</div>
+            <div class="key-box">${res.generated_key}</div>
+
+            <div class="info-line"><b>Usuário:</b> ${res.username}</div>
+            <div class="info-line"><b>Expira em:</b> ${dataExp}</div>
+        `;
+
+    } catch (error) {
+        result.innerHTML = `<div class="error">❌ Erro ao conectar ao servidor. Verifique o Render.</div>`;
     }
 }
 </script>
