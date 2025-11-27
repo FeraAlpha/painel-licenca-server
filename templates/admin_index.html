@@ -2,11 +2,11 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel (Keys)</title>
+<title>Fera Alpha — Painel Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <style>
-  :root{
+  :root {
     --bg:#cfd4d8;
     --card:#f5f6f7;
     --border:#c6c9cd;
@@ -18,67 +18,110 @@
     --radius:12px;
   }
 
-  *{margin:0;padding:0;box-sizing:border-box;font-family:Inter, Arial, sans-serif}
+  * {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter, Arial, sans-serif;
+  }
 
-  body{
+  body {
     background:var(--bg);
-    padding:18px;
+    padding:20px;
     color:var(--text);
   }
 
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-  h1{font-size:22px;font-weight:700}
+  header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+  }
 
-  .card{
+  h1 {
+    font-size:24px;
+    font-weight:700;
+  }
+
+  .card {
     background:var(--card);
     border:1px solid var(--border);
-    padding:18px;
+    padding:20px;
     border-radius:var(--radius);
-    margin-bottom:18px;
+    margin-bottom:20px;
   }
 
-  input{
+  label { font-weight:600; }
+  input {
     width:100%;
-    padding:10px;
+    padding:11px;
     border-radius:8px;
     border:1px solid var(--border);
-    margin-bottom:10px;
+    margin-bottom:12px;
+    background:white;
   }
 
-  .btn{
+  .btn {
     padding:10px 14px;
     border-radius:9px;
     cursor:pointer;
     font-weight:700;
     border:0;
+    font-size:14px;
   }
 
-  .btn-primary{background:var(--accent);color:white}
-  .btn-danger{background:var(--danger);color:white}
-  .btn-ghost{background:transparent;border:1px solid var(--border)}
+  .btn-primary { background:var(--accent); color:white; }
+  .btn-danger  { background:var(--danger); color:white; }
+  .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
 
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  thead th{
+  table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+  }
+
+  thead th {
     background:#eceff1;
     padding:12px;
     border-bottom:1px solid var(--border);
     cursor:pointer;
   }
-  tbody td{padding:12px;border-bottom:1px solid var(--border)}
-  tbody tr:hover{background:#eef2f5}
 
-  .copy{color:var(--accent);cursor:pointer;font-weight:700;margin-left:6px}
+  tbody td {
+    padding:12px;
+    border-bottom:1px solid var(--border);
+    word-break:break-all;
+  }
 
-  .badge{padding:6px 10px;border-radius:18px;font-size:13px;font-weight:700}
-  .badge-ok{background:#d7f5dd;color:var(--ok)}
-  .badge-warn{background:#fff3c9;color:#8a6c1e}
-  .badge-exp{background:#ffe1e1;color:#b32828}
+  tbody tr:hover {
+    background:#eef2f5;
+  }
 
-  body.dark{
+  .copy {
+    color:var(--accent);
+    cursor:pointer;
+    font-weight:700;
+    margin-left:6px;
+  }
+
+  /* BADGES */
+  .badge {
+    padding:6px 10px;
+    border-radius:18px;
+    font-size:13px;
+    font-weight:700;
+    display:inline-block;
+  }
+  .badge-ok { background:#d7f5dd; color:var(--ok); }
+  .badge-warn { background:#fff3c9; color:#8a6c1e; }
+  .badge-exp { background:#ffe1e1; color:#b32828; }
+
+  /* DARK MODE */
+  body.dark {
     --bg:#0e1113;
     --card:#1a1d21;
     --border:#2a2e32;
-    --text:#e6ecef;
+    --text:#e5ecef;
     --text-light:#9aa4ab;
   }
 </style>
@@ -89,14 +132,15 @@
 <header>
   <div>
     <h1>Fera Alpha — Admin</h1>
-    <div class="small">Gerenciamento avançado de usuários e keys</div>
+    <div style="font-size:13px;color:var(--text-light)">Gerenciamento avançado</div>
   </div>
+
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
-<!-- GERAR NOVA KEY -->
+<!-- GERAR KEY -->
 <div class="card">
-  <h2>Gerar Nova Key</h2>
+  <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
   <form method="post" action="/admin/generate">
     <label>Usuário</label>
@@ -111,13 +155,14 @@
     <label>Expiração (dias)</label>
     <input name="expire_days" type="number" value="30" min="1">
 
-    <button class="btn btn-primary">Gerar</button>
+    <button type="submit" class="btn btn-primary">Gerar</button>
   </form>
 </div>
 
 <!-- TABELA -->
 <div class="card">
-  <input id="searchUser" placeholder="Buscar usuário, key ou device">
+  <input id="searchUser" placeholder="Buscar usuário, key ou device" 
+         style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -135,7 +180,7 @@
     <tbody>
       {% for u in users %}
       <tr data-expires="{{ u.expires_at }}">
-        
+
         <td>{{ loop.index0 }}</td>
 
         <td>{{ u.username }}</td>
@@ -156,14 +201,15 @@
 
         <td style="display:flex;gap:6px;flex-wrap:wrap">
 
-          <!-- Renovar +30 -->
+          <!-- +30 -->
           <form method="post" action="/admin/renew/{{ loop.index0 }}">
             <button type="submit" class="btn btn-primary">+30</button>
           </form>
 
-          <!-- Renovar custom -->
+          <!-- +DIAS -->
           <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-            <input type="number" name="days" min="1" value="7" style="width:55px;padding:6px">
+            <input type="number" name="days" min="1" value="7" 
+                   style="width:55px;padding:6px">
             <button type="submit" class="btn btn-primary">+Dias</button>
           </form>
 
@@ -184,7 +230,6 @@
           </form>
 
         </td>
-
       </tr>
       {% endfor %}
     </tbody>
@@ -193,22 +238,22 @@
 </div>
 
 <script>
-// DARK MODE
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
-// COPIAR
+// copiar key
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
+// copiar usuário + senha
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
   alert("Usuário + Senha copiados!");
 }
 
-// BUSCA
+// busca
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
   document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
@@ -216,7 +261,7 @@ document.getElementById("searchUser").addEventListener("input", function(){
   });
 });
 
-// ORDENAR
+// ordenar
 function sortTable(col){
   const table = document.getElementById("usersTable").tBodies[0];
   const rows = Array.from(table.rows);
@@ -232,7 +277,7 @@ function sortTable(col){
   table.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// EXPIRAÇÕES
+// expirações
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
 
