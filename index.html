@@ -57,7 +57,6 @@
         transform: scale(1.02);
     }
 
-    /* BOX RESULTADO BONITO */
     #result {
         margin-top: 20px;
         padding: 18px;
@@ -110,10 +109,10 @@
     <h2>Gerador de Keys – Revendedor</h2>
 
     <label>Usuário:</label>
-    <input id="username" value="jcgamer">
+    <input id="username">
 
     <label>Senha:</label>
-    <input id="password" value="321">
+    <input id="password">
 
     <label>Dias:</label>
     <input id="days" type="number" value="30">
@@ -156,23 +155,27 @@ async function generate() {
         const res = await req.json();
 
         if (!res.ok) {
-            result.innerHTML = `<div class="error">❌ Token inválido ou erro ao gerar key.</div>`;
+            result.innerHTML = `<div class="error">❌ Token inválido, servidor offline ou erro ao gerar key.</div>`;
             return;
         }
 
-        const dataExp = new Date(res.expires_at * 1000)
-            .toLocaleDateString("pt-BR");
+        let expText = "Ilimitado";
+
+        if (res.expires_at !== 0) {
+            expText = new Date(res.expires_at * 1000)
+                .toLocaleDateString("pt-BR");
+        }
 
         result.innerHTML = `
             <div class="ok-title">✔ Key Gerada com Sucesso!</div>
-            <div class="key-box">${res.generated_key}</div>
+            <div class="key-box">${res.key}</div>
 
             <div class="info-line"><b>Usuário:</b> ${res.username}</div>
-            <div class="info-line"><b>Expira em:</b> ${dataExp}</div>
+            <div class="info-line"><b>Expira em:</b> ${expText}</div>
         `;
 
     } catch (error) {
-        result.innerHTML = `<div class="error">❌ Erro ao conectar ao servidor. Verifique o Render.</div>`;
+        result.innerHTML = `<div class="error">❌ Erro ao conectar ao servidor. Render pode estar dormindo.</div>`;
     }
 }
 </script>
