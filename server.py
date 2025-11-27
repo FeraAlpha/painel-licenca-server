@@ -1,5 +1,4 @@
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 import json, os, time, base64, sqlite3, requests
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -56,9 +55,10 @@ def load_users():
         if os.path.exists(USERS_FILE):
             with open(USERS_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-    except:
+    except Exception:
         pass
 
+    # tenta recuperar do GitHub
     if GITHUB_TOKEN:
         try:
             r = requests.get(GITHUB_API_URL, headers={
@@ -71,7 +71,7 @@ def load_users():
                 data = json.loads(content)
                 atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
                 return data
-        except:
+        except Exception:
             pass
 
     return {"users": []}
@@ -92,7 +92,7 @@ def save_users_github(data, retries=3):
         })
         if r.ok:
             sha = r.json().get("sha")
-    except:
+    except Exception:
         pass
 
     content_b64 = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
@@ -101,7 +101,7 @@ def save_users_github(data, retries=3):
     if sha:
         payload["sha"] = sha
 
-    for _ in range(3):
+    for _ in range(retries):
         try:
             res = requests.put(
                 GITHUB_API_URL,
@@ -113,19 +113,28 @@ def save_users_github(data, retries=3):
             )
             if res.status_code in (200, 201):
                 return True
-        except:
+        except Exception:
             pass
 
     return False
 
+
 def save_users(data):
+    # backup
     ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
+
+    # local
     atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
-    save_users_github(data)
+
+    # sync cloud (não bloqueante)
+    try:
+        save_users_github(data)
+    except Exception:
+        pass
 
 # ------------------------------
-#   ASSINATURA DIGITAL
+#   ASSINATURA
 # ------------------------------
 def sign_payload(payload_bytes):
     with open(KEY_PRIV, "rb") as f:
@@ -135,10 +144,9 @@ def sign_payload(payload_bytes):
     return sig
 
 # ------------------------------
-#   FLASK + CORS
+#   FLASK
 # ------------------------------
 app = Flask(__name__, template_folder='templates')
-CORS(app)
 
 @app.route("/")
 def home():
@@ -164,20 +172,21 @@ def activate():
         return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
 
     now = int(time.time())
-    if user["expires_at"] < now:
+    expires = user.get("expires_at", 0)
+    if expires != 0 and expires < now:
         return jsonify({"status": "error", "reason": "expired"}), 403
 
-    if user["device_id"] is None:
+    if user.get("device_id") is None:
         user["device_id"] = fingerprint
         save_users({"users": users})
-    elif user["device_id"] != fingerprint:
+    elif user.get("device_id") != fingerprint:
         return jsonify({"status": "error", "reason": "device_mismatch"}), 403
 
     payload = {
         "username": username,
         "fingerprint": fingerprint,
         "issued_at": now,
-        "expires_at": user["expires_at"]
+        "expires_at": user.get("expires_at", 0)
     }
 
     payload_bytes = json.dumps(payload, separators=(',', ':')).encode()
@@ -186,8 +195,9 @@ def activate():
     return jsonify({
         "payload": base64.b64encode(payload_bytes).decode(),
         "sig": base64.b64encode(sig).decode(),
-        "expires_at": user["expires_at"]
+        "expires_at": user.get("expires_at", 0)
     })
+
 
 # ------------------------------
 #   ADMIN
@@ -197,23 +207,27 @@ def check_admin(a):
     ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
     return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
 
+
 def need_admin(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         auth = request.authorization
         if not check_admin(auth):
+            # solicitar autenticação básica
             return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Login Required\"'})
         return f(*args, **kwargs)
     return wrapper
+
 
 @app.route("/admin")
 @need_admin
 def admin():
     data = load_users()
-    return render_template("admin_index.html", users=data["users"], datetime=datetime)
+    return render_template("admin_index.html", users=data.get("users", []), datetime=datetime)
+
 
 # ------------------------------
-#   GERAR KEY ADMIN
+#   GERAR KEY (ADMIN)
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -221,16 +235,26 @@ def admin_generate():
     username = request.form.get("username")
     password = request.form.get("password")
     prefix = request.form.get("prefix") or "FERA"
-    expire_days = int(request.form.get("expire_days") or 30)
+    expire_days_raw = request.form.get("expire_days", "30")
+    try:
+        expire_days = int(expire_days_raw)
+    except Exception:
+        expire_days = 30
+
+    # Se expire_days == 0 => ilimitado
+    if expire_days == 0:
+        expires_at = 0
+    else:
+        expires_at = int(time.time()) + expire_days * 86400
 
     key = prefix + "-" + os.urandom(4).hex().upper()
-    expires_at = int(time.time()) + expire_days * 86400
 
     data = load_users()
-    users = data["users"]
+    users = data.get("users", [])
 
+    # evita duplicados
     for u in users:
-        if u["username"] == username:
+        if u.get("username") == username:
             u["password"] = password
             u["key"] = key
             u["expires_at"] = expires_at
@@ -248,18 +272,191 @@ def admin_generate():
     save_users(data)
     return ("", 302, {"Location": "/admin"})
 
+
 # ------------------------------
-#   ROTA DO REVENDEDOR
+#   RENOVAR +30 DIAS (ACEITA POST e GET)
+# ------------------------------
+@app.route("/admin/renew/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_renew(index):
+    """
+    Se chamado via GET: aplica +30 dias por padrão
+    Se chamado via POST: aplica +30 dias também
+    """
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        add_days = 30
+
+        # se current == 0 (ilimitado) e pedem renovar, manter ilimitado
+        if current == 0:
+            # deixa ilimitado
+            users[index]["expires_at"] = 0
+        else:
+            if current < now:
+                new_exp = now + add_days * 86400
+            else:
+                new_exp = current + add_days * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   RENOVAR CUSTOM DIAS (ACEITA POST e GET)
+# ------------------------------
+@app.route("/admin/renew_custom/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_renew_custom(index):
+    """
+    POST: espera form field 'days'
+    GET: aceita ?days=7 no querystring
+    """
+    data = load_users()
+    users = data.get("users", [])
+
+    days_raw = None
+    if request.method == "POST":
+        days_raw = request.form.get("days", "30")
+    else:
+        days_raw = request.args.get("days", "30")
+
+    try:
+        days = int(days_raw)
+    except Exception:
+        days = 30
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        # days == 0 => ilimitado
+        if days == 0:
+            users[index]["expires_at"] = 0
+        else:
+            if current == 0:
+                # se já é ilimitado, não reduza; apenas some dias a partir de now
+                new_exp = now + days * 86400
+            else:
+                if current < now:
+                    new_exp = now + days * 86400
+                else:
+                    new_exp = current + days * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   ROTA RÁPIDA PARA +X DIAS VIA LINK (GET)
+#   Exemplo: /admin/quick_renew/2/7  -> adiciona 7 dias ao usuário 2
+# ------------------------------
+@app.route("/admin/quick_renew/<int:index>/<int:days>", methods=["GET"])
+@need_admin
+def admin_quick_renew(index, days):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        if days == 0:
+            users[index]["expires_at"] = 0
+        else:
+            if current == 0:
+                new_exp = now + days * 86400
+            else:
+                if current < now:
+                    new_exp = now + days * 86400
+                else:
+                    new_exp = current + days * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   RESETAR KEY
+# ------------------------------
+@app.route("/admin/reset/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_reset(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        old_key = users[index].get("key", "FERA-XXXX")
+        prefix = old_key.split("-")[0]
+        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
+        users[index]["key"] = new_key
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   RESETAR DEVICE
+# ------------------------------
+@app.route("/admin/reset_device/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_reset_device(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users[index]["device_id"] = None
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   DELETAR USUÁRIO
+# ------------------------------
+@app.route("/admin/delete/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_delete(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users.pop(index)
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN)
 # ------------------------------
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
-    RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "revendedor_super_fera_2025")
+    """
+    Gera uma key externa para revendedores via token.
+    Não precisa autenticação admin. Seguro e separado.
+    """
+    RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
 
     token = request.form.get("token")
     username = request.form.get("username")
     password = request.form.get("password")
-    expire_days = int(request.form.get("expire_days") or 30)
-    prefix = "FERA"
+    prefix = request.form.get("prefix") or "FERA"
+    expire_days_raw = request.form.get("expire_days", "30")
+    try:
+        expire_days = int(expire_days_raw)
+    except Exception:
+        expire_days = 30
 
     if token != RESELLER_TOKEN:
         return jsonify({"error": "invalid_token"}), 403
@@ -267,68 +464,47 @@ def reseller_generate():
     if not username or not password:
         return jsonify({"error": "missing_fields"}), 400
 
+    # expire_days == 0 => ilimitado
+    if expire_days == 0:
+        expires_at = 0
+    else:
+        expires_at = int(time.time()) + expire_days * 86400
+
     key = prefix + "-" + os.urandom(4).hex().upper()
-    expires_at = int(time.time()) + expire_days * 86400
 
     data = load_users()
-    users = data["users"]
+    users = data.get("users", [])
 
-    existing = next((u for u in users if u["username"] == username), None)
+    for u in users:
+        if u.get("username") == username:
+            u["password"] = password
+            u["key"] = key
+            u["expires_at"] = expires_at
+            save_users(data)
+            return jsonify({
+                "ok": True,
+                "key": key,
+                "username": username,
+                "expires_at": expires_at
+            })
 
-    if existing:
-        existing["password"] = password
-        existing["key"] = key
-        existing["expires_at"] = expires_at
-    else:
-        users.append({
-            "username": username,
-            "password": password,
-            "key": key,
-            "device_id": None,
-            "expires_at": expires_at
-        })
+    users.append({
+        "username": username,
+        "password": password,
+        "key": key,
+        "device_id": None,
+        "expires_at": expires_at
+    })
 
     save_users(data)
 
     return jsonify({
         "ok": True,
-        "generated_key": key,
+        "key": key,
         "username": username,
         "expires_at": expires_at
     })
 
-# ------------------------------
-#   RESETAR E DELETAR
-# ------------------------------
-@app.route("/admin/reset/<int:index>", methods=["POST"])
-@need_admin
-def admin_reset(index):
-    data = load_users()
-    if 0 <= index < len(data["users"]):
-        old_key = data["users"][index]["key"]
-        prefix = old_key.split("-")[0]
-        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
-        data["users"][index]["key"] = new_key
-        save_users(data)
-    return ("", 302, {"Location": "/admin"})
-
-@app.route("/admin/reset_device/<int:index>", methods=["POST"])
-@need_admin
-def admin_reset_device(index):
-    data = load_users()
-    if 0 <= index < len(data["users"]):
-        data["users"][index]["device_id"] = None
-        save_users(data)
-    return ("", 302, {"Location": "/admin"})
-
-@app.route("/admin/delete/<int:index>", methods=["POST"])
-@need_admin
-def admin_delete(index):
-    data = load_users()
-    if 0 <= index < len(data["users"]):
-        data["users"].pop(index)
-        save_users(data)
-    return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
 #   RUN
