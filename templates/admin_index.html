@@ -158,29 +158,29 @@
 
           <!-- Renovar +30 -->
           <form method="post" action="/admin/renew/{{ loop.index0 }}">
-            <button class="btn btn-primary">+30</button>
+            <button type="submit" class="btn btn-primary">+30</button>
           </form>
 
           <!-- Renovar custom -->
           <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
             <input type="number" name="days" min="1" value="7" style="width:55px;padding:6px">
-            <button class="btn btn-primary">+Dias</button>
+            <button type="submit" class="btn btn-primary">+Dias</button>
           </form>
 
           <!-- Reset Key -->
           <form method="post" action="/admin/reset/{{ loop.index0 }}">
-            <button class="btn btn-ghost">Reset Key</button>
+            <button type="submit" class="btn btn-ghost">Reset Key</button>
           </form>
 
           <!-- Reset Device -->
           <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-            <button class="btn btn-danger">Reset Device</button>
+            <button type="submit" class="btn btn-danger">Reset Device</button>
           </form>
 
           <!-- Delete -->
           <form method="post" action="/admin/delete/{{ loop.index0 }}"
                 onsubmit="return confirm('Excluir usuário?')">
-            <button class="btn btn-danger">Del</button>
+            <button type="submit" class="btn btn-danger">Del</button>
           </form>
 
         </td>
