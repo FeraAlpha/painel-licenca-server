@@ -188,6 +188,13 @@
       "key": "FERA-E78A1779",
       "device_id": null,
       "expires_at": 1767045138
+    },
+    {
+      "username": "ferax",
+      "password": "123",
+      "key": "FERA-F2AF590E",
+      "device_id": null,
+      "expires_at": 0
     }
   ]
 }
