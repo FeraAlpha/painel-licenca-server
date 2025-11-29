@@ -154,8 +154,9 @@ async function generate() {
 
         const res = await req.json();
 
-        if (!res.ok) {
-            result.innerHTML = `<div class="error">❌ Token inválido, servidor offline ou erro ao gerar key.</div>`;
+        // 🔥 Correção: agora valida corretamente
+        if (res.status === "error" || !res.key) {
+            result.innerHTML = `<div class="error">❌ Token inválido, usuário já existe ou erro no servidor.</div>`;
             return;
         }
 
