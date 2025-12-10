@@ -11,6 +11,9 @@ USERS_FILE = "data/users.json"
 KEY_PRIV = "private.pem"
 KEY_PUB = "public.pem"
 
+# Constante para licença ilimitada
+UNLIMITED_EXPIRY = 9999999999999
+
 # ------------------------------
 #   CONFIG GITHUB
 # ------------------------------
@@ -54,7 +57,13 @@ def load_users():
     try:
         if os.path.exists(USERS_FILE):
             with open(USERS_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                # Corrige valores antigos: se for 0, converte para UNLIMITED_EXPIRY
+                users = data.get("users", [])
+                for user in users:
+                    if user.get("expires_at") == 0:
+                        user["expires_at"] = UNLIMITED_EXPIRY
+                return data
     except Exception:
         pass
 
@@ -69,6 +78,11 @@ def load_users():
                 info = r.json()
                 content = base64.b64decode(info.get("content", "")).decode()
                 data = json.loads(content)
+                # Corrige valores
+                users = data.get("users", [])
+                for user in users:
+                    if user.get("expires_at") == 0:
+                        user["expires_at"] = UNLIMITED_EXPIRY
                 atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
                 return data
         except Exception:
@@ -173,7 +187,12 @@ def activate():
 
     now = int(time.time())
     expires = user.get("expires_at", 0)
-    if expires != 0 and expires < now:
+    
+    # Para licença ilimitada
+    if expires == UNLIMITED_EXPIRY:
+        # Licença ilimitada - sempre válida
+        pass
+    elif expires < now:
         return jsonify({"status": "error", "reason": "expired"}), 403
 
     if user.get("device_id") is None:
@@ -182,11 +201,14 @@ def activate():
     elif user.get("device_id") != fingerprint:
         return jsonify({"status": "error", "reason": "device_mismatch"}), 403
 
+    # Para resposta, se for ilimitado, envia 0 para o cliente
+    client_expires = 0 if expires == UNLIMITED_EXPIRY else expires
+    
     payload = {
         "username": username,
         "fingerprint": fingerprint,
         "issued_at": now,
-        "expires_at": user.get("expires_at", 0)
+        "expires_at": client_expires  # Envia 0 para ilimitado
     }
 
     payload_bytes = json.dumps(payload, separators=(',', ':')).encode()
@@ -195,7 +217,7 @@ def activate():
     return jsonify({
         "payload": base64.b64encode(payload_bytes).decode(),
         "sig": base64.b64encode(sig).decode(),
-        "expires_at": user.get("expires_at", 0)
+        "expires_at": client_expires  # Envia 0 para ilimitado
     })
 
 
@@ -243,7 +265,7 @@ def admin_generate():
 
     # Se expire_days == 0 => ilimitado
     if expire_days == 0:
-        expires_at = 0
+        expires_at = UNLIMITED_EXPIRY  # Valor especial para ilimitado
     else:
         expires_at = int(time.time()) + expire_days * 86400
 
@@ -279,10 +301,6 @@ def admin_generate():
 @app.route("/admin/renew/<int:index>", methods=["POST", "GET"])
 @need_admin
 def admin_renew(index):
-    """
-    Se chamado via GET: aplica +30 dias por padrão
-    Se chamado via POST: aplica +30 dias também
-    """
     data = load_users()
     users = data.get("users", [])
 
@@ -292,10 +310,9 @@ def admin_renew(index):
 
         add_days = 30
 
-        # se current == 0 (ilimitado) e pedem renovar, manter ilimitado
-        if current == 0:
-            # deixa ilimitado
-            users[index]["expires_at"] = 0
+        # se já é ilimitado, mantém ilimitado
+        if current == UNLIMITED_EXPIRY:
+            users[index]["expires_at"] = UNLIMITED_EXPIRY
         else:
             if current < now:
                 new_exp = now + add_days * 86400
@@ -314,13 +331,6 @@ def admin_renew(index):
 @app.route("/admin/renew_custom/<int:index>", methods=["POST", "GET"])
 @need_admin
 def admin_renew_custom(index):
-    """
-    POST: espera form field 'days'
-    GET: aceita ?days=7 no querystring
-    """
-    data = load_users()
-    users = data.get("users", [])
-
     days_raw = None
     if request.method == "POST":
         days_raw = request.form.get("days", "30")
@@ -332,36 +342,6 @@ def admin_renew_custom(index):
     except Exception:
         days = 30
 
-    if 0 <= index < len(users):
-        now = int(time.time())
-        current = users[index].get("expires_at", 0)
-
-        # days == 0 => ilimitado
-        if days == 0:
-            users[index]["expires_at"] = 0
-        else:
-            if current == 0:
-                # se já é ilimitado, não reduza; apenas some dias a partir de now
-                new_exp = now + days * 86400
-            else:
-                if current < now:
-                    new_exp = now + days * 86400
-                else:
-                    new_exp = current + days * 86400
-            users[index]["expires_at"] = new_exp
-
-        save_users(data)
-
-    return ("", 302, {"Location": "/admin"})
-
-
-# ------------------------------
-#   ROTA RÁPIDA PARA +X DIAS VIA LINK (GET)
-#   Exemplo: /admin/quick_renew/2/7  -> adiciona 7 dias ao usuário 2
-# ------------------------------
-@app.route("/admin/quick_renew/<int:index>/<int:days>", methods=["GET"])
-@need_admin
-def admin_quick_renew(index, days):
     data = load_users()
     users = data.get("users", [])
 
@@ -369,10 +349,12 @@ def admin_quick_renew(index, days):
         now = int(time.time())
         current = users[index].get("expires_at", 0)
 
+        # days == 0 => ilimitado
         if days == 0:
-            users[index]["expires_at"] = 0
+            users[index]["expires_at"] = UNLIMITED_EXPIRY
         else:
-            if current == 0:
+            # se já é ilimitado, converte para dias a partir de agora
+            if current == UNLIMITED_EXPIRY:
                 new_exp = now + days * 86400
             else:
                 if current < now:
@@ -422,6 +404,67 @@ def admin_reset_device(index):
 
 
 # ------------------------------
+#   RESETAR TODOS OS DEVICES
+# ------------------------------
+@app.route("/admin/reset_all_devices", methods=["POST"])
+@need_admin
+def admin_reset_all_devices():
+    data = load_users()
+    users = data.get("users", [])
+    
+    for user in users:
+        user["device_id"] = None
+    
+    save_users(data)
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   LIMPAR USUÁRIOS EXPIRADOS
+# ------------------------------
+@app.route("/admin/clean_expired", methods=["POST"])
+@need_admin
+def admin_clean_expired():
+    data = load_users()
+    users = data.get("users", [])
+    now = int(time.time())
+    
+    # Filtrar apenas usuários não expirados ou ilimitados
+    filtered_users = []
+    
+    for user in users:
+        expires_at = user.get("expires_at", 0)
+        
+        # Se for ilimitado, mantém
+        if expires_at == UNLIMITED_EXPIRY:
+            filtered_users.append(user)
+        # Se não expirou, mantém
+        elif expires_at > now:
+            filtered_users.append(user)
+        # Se expirou, remove
+    
+    data["users"] = filtered_users
+    save_users(data)
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
+#   TORNAR LICENÇA ILIMITADA
+# ------------------------------
+@app.route("/admin/make_unlimited/<int:index>", methods=["POST"])
+@need_admin
+def admin_make_unlimited(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users[index]["expires_at"] = UNLIMITED_EXPIRY
+        save_users(data)
+
+    return ("", 302, {"Location": "/admin"})
+
+
+# ------------------------------
 #   DELETAR USUÁRIO
 # ------------------------------
 @app.route("/admin/delete/<int:index>", methods=["POST", "GET"])
@@ -442,10 +485,6 @@ def admin_delete(index):
 # ------------------------------
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
-    """
-    Gera uma key externa para revendedores via token.
-    Não precisa autenticação admin. Seguro e separado.
-    """
     RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
 
     token = request.form.get("token")
@@ -466,7 +505,7 @@ def reseller_generate():
 
     # expire_days == 0 => ilimitado
     if expire_days == 0:
-        expires_at = 0
+        expires_at = UNLIMITED_EXPIRY
     else:
         expires_at = int(time.time()) + expire_days * 86400
 
