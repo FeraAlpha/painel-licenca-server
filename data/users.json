@@ -235,7 +235,7 @@
       "username": "leo",
       "password": "123",
       "key": "FERA-CFF49E45",
-      "device_id": "FP",
+      "device_id": null,
       "expires_at": 9999999999999
     }
   ]
