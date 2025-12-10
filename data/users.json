@@ -152,21 +152,21 @@
       "password": "5070341",
       "key": "FERA-2DFFA229",
       "device_id": null,
-      "expires_at": 0
+      "expires_at": 9999999999999
     },
     {
       "username": "Jcs22",
       "password": "123",
       "key": "FERA-21376499",
       "device_id": null,
-      "expires_at": 0
+      "expires_at": 9999999999999
     },
     {
       "username": "jcs22ultra",
       "password": "123",
       "key": "FERA-423BB3AB",
       "device_id": "3fdaf5f455b867adaa1d3c166625969d",
-      "expires_at": 0
+      "expires_at": 9999999999999
     },
     {
       "username": "Vitin456",
@@ -194,14 +194,14 @@
       "password": "123",
       "key": "FERA-68B906DE",
       "device_id": null,
-      "expires_at": 0
+      "expires_at": 9999999999999
     },
     {
       "username": "leo",
       "password": "123",
       "key": "FERA-736F5986",
       "device_id": "FP",
-      "expires_at": 0
+      "expires_at": 9999999999999
     },
     {
       "username": "Maur\u00edcio",
@@ -237,6 +237,13 @@
       "key": "FERA-62FE065C",
       "device_id": "FP",
       "expires_at": 1767909297
+    },
+    {
+      "username": "Bb",
+      "password": "123",
+      "key": "FERA-85DF2C4D",
+      "device_id": null,
+      "expires_at": 9999999999999
     }
   ]
 }
