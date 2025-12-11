@@ -53,7 +53,7 @@
       "username": "Tronerboy",
       "password": "Deusefiel",
       "key": "FERA-CB64A09A",
-      "device_id": null,
+      "device_id": "FP",
       "expires_at": 1881852663
     },
     {
@@ -235,7 +235,7 @@
       "username": "leo",
       "password": "123",
       "key": "FERA-7236479F",
-      "device_id": "c5ca35a3cb29dc50a8a7636557b88f04",
+      "device_id": null,
       "expires_at": 1773165193
     }
   ]
