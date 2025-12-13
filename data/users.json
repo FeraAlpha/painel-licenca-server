@@ -4,7 +4,7 @@
       "username": "tiotchoco",
       "password": "ggtiotchocottk",
       "key": "FERA-410393F0",
-      "device_id": "66986f7795dfa7f45bf2921e6deeec67",
+      "device_id": null,
       "expires_at": 1766661620
     },
     {
@@ -53,7 +53,7 @@
       "username": "Tronerboy",
       "password": "Deusefiel",
       "key": "FERA-CB64A09A",
-      "device_id": "FP",
+      "device_id": null,
       "expires_at": 1881852663
     },
     {
@@ -74,7 +74,7 @@
       "username": "igor",
       "password": "280424",
       "key": "FERA-81324E93",
-      "device_id": "847b4a0b7e2af624182ca216d6d53e1d",
+      "device_id": null,
       "expires_at": 1766690120
     },
     {
@@ -102,7 +102,7 @@
       "username": "floquinhoaps",
       "password": "gabriel2018%",
       "key": "FERA-160F7F93",
-      "device_id": "FP",
+      "device_id": null,
       "expires_at": 1766701890
     },
     {
@@ -116,7 +116,7 @@
       "username": "samzzq",
       "password": "01",
       "key": "FERA-57DACCFC",
-      "device_id": "8f95d78a25114ad261efa62628c7133a",
+      "device_id": null,
       "expires_at": 1766705447
     },
     {
@@ -130,7 +130,7 @@
       "username": "Rogerwyll",
       "password": "Roger&2027",
       "key": "FERA-B49DF22F",
-      "device_id": "4abd69f0cf50f750f88b5386718f6007",
+      "device_id": null,
       "expires_at": 1766776425
     },
     {
@@ -186,7 +186,7 @@
       "username": "ferax",
       "password": "123",
       "key": "FERA-CF225EE4",
-      "device_id": "27aea49b7b64b19ca019eef2f8c552b8",
+      "device_id": null,
       "expires_at": 1850770884
     },
     {
@@ -200,7 +200,7 @@
       "username": "Paulosilva",
       "password": "Anaclara06#",
       "key": "FERA-0E0A2010",
-      "device_id": "d1978aa496992325afc921013003ea89",
+      "device_id": null,
       "expires_at": 1796669589
     },
     {
@@ -214,7 +214,7 @@
       "username": "DORA7",
       "password": "1036",
       "key": "FERA-75ED8236",
-      "device_id": "FP",
+      "device_id": null,
       "expires_at": 1767806983
     },
     {
@@ -228,14 +228,14 @@
       "username": "leo",
       "password": "123",
       "key": "FERA-7236479F",
-      "device_id": "c5ca35a3cb29dc50a8a7636557b88f04",
+      "device_id": null,
       "expires_at": 1773165193
     },
     {
       "username": "Mz",
       "password": "Muriz",
       "key": "FERA-01D793CF",
-      "device_id": "d0294558cffcbf0ccc22f5f8b613c9e3",
+      "device_id": null,
       "expires_at": 1797041302
     }
   ]
