@@ -95,14 +95,14 @@
       "username": "jcgamer",
       "password": "123",
       "key": "FERA-FC6F7E94",
-      "device_id": "631722cebf189b2648240ea4751cb7f8",
+      "device_id": null,
       "expires_at": 1766693079
     },
     {
       "username": "floquinhoaps",
       "password": "gabriel2018%",
       "key": "FERA-160F7F93",
-      "device_id": "9d59364ee108a1be48769016f62eb91b",
+      "device_id": null,
       "expires_at": 1766701890
     },
     {
@@ -165,7 +165,7 @@
       "username": "jcs22ultra",
       "password": "123",
       "key": "FERA-423BB3AB",
-      "device_id": "509f6a42528250e1a51927c2df7078e7",
+      "device_id": null,
       "expires_at": 9999999999999
     },
     {
