@@ -642,6 +642,38 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--text-light);
   }
+
+  /* TOAST STYLES */
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .toast-success { background: var(--ok); }
+  .toast-error { background: var(--danger); }
+  .toast-info { background: var(--info); }
+  .toast-warning { background: var(--warning); }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 </style>
 </head>
 
@@ -688,7 +720,7 @@
     </div>
     <div class="stat-info">
       <h3>Licenças Ativas</h3>
-      <div class="stat-number">{{ total_licenses }}</div>
+      <div class="stat-number">{{ total_licenses if total_licenses is defined else '0' }}</div>
     </div>
   </div>
   
@@ -770,11 +802,11 @@
       <div class="form-group">
         <label><i class="fas fa-calendar-alt"></i> Expiração (dias)</label>
         <div class="btn-group">
-          <input type="number" name="expire_days" value="30" min="0" style="flex: 1;">
-          <button type="button" class="btn btn-outline" onclick="setExpiration('30')">30 Dias</button>
-          <button type="button" class="btn btn-outline" onclick="setExpiration('90')">90 Dias</button>
-          <button type="button" class="btn btn-outline" onclick="setExpiration('365')">1 Ano</button>
-          <button type="button" class="btn btn-outline" onclick="setExpiration('0')" style="color: var(--accent);">
+          <input type="number" name="expire_days" id="expireDaysInput" value="30" min="0" style="flex: 1;">
+          <button type="button" class="btn btn-outline" onclick="setExpiration(30)">30 Dias</button>
+          <button type="button" class="btn btn-outline" onclick="setExpiration(90)">90 Dias</button>
+          <button type="button" class="btn btn-outline" onclick="setExpiration(365)">1 Ano</button>
+          <button type="button" class="btn btn-outline" onclick="setExpiration(0)" style="color: var(--accent);">
             <i class="fas fa-infinity"></i> Ilimitado
           </button>
         </div>
@@ -851,7 +883,7 @@
             data-key="{{ u.key.lower() }}"
             data-device="{{ u.device_id if u.device_id else '' }}">
           
-          <td>{{ loop.index }}</td>
+          <td>{{ loop.index0 }}</td>
           
           <td>
             <strong>{{ u.username }}</strong>
@@ -889,23 +921,23 @@
           <td>
             <div class="action-buttons">
               <!-- +30 Dias -->
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <form method="post" action="/admin/renew/{{ loop.index0 }}" style="display: inline;">
                 <button type="submit" class="action-btn action-btn-primary" title="+30 Dias">
                   <i class="fas fa-plus"></i>30
                 </button>
               </form>
               
               <!-- Dias Personalizados -->
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" style="display: inline;">
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" style="display: inline;" id="customForm{{ loop.index0 }}">
                 <input type="number" name="days" min="1" value="7" 
-                       style="width: 50px; padding: 5px; display: none;" id="days_{{ loop.index0 }}">
-                <button type="submit" class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="showDaysInput({{ loop.index0 }})">
+                       style="width: 60px; padding: 5px; display: none;" id="days_{{ loop.index0 }}">
+                <button type="button" class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="showDaysInput({{ loop.index0 }})">
                   <i class="fas fa-calendar-plus"></i>
                 </button>
               </form>
               
               <!-- Tornar Ilimitado -->
-              <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
+              <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}" style="display: inline;"
                     onsubmit="return confirm('Tornar esta licença ilimitada?')">
                 <button type="submit" class="action-btn" title="Tornar Ilimitado" style="background: var(--accent); color: white;">
                   <i class="fas fa-infinity"></i>
@@ -913,21 +945,21 @@
               </form>
               
               <!-- Reset Key -->
-              <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <form method="post" action="/admin/reset/{{ loop.index0 }}" style="display: inline;">
                 <button type="submit" class="action-btn action-btn-warning" title="Resetar Key">
                   <i class="fas fa-key"></i>
                 </button>
               </form>
               
               <!-- Reset Device -->
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <form method="post" action="/admin/reset_device/{{ loop.index0 }}" style="display: inline;">
                 <button type="submit" class="action-btn action-btn-danger" title="Resetar Device">
                   <i class="fas fa-mobile-alt"></i>
                 </button>
               </form>
               
               <!-- Delete -->
-              <form method="post" action="/admin/delete/{{ loop.index0 }}"
+              <form method="post" action="/admin/delete/{{ loop.index0 }}" style="display: inline;"
                     onsubmit="return confirm('Excluir usuário {{ u.username }} permanentemente?')">
                 <button type="submit" class="action-btn action-btn-danger" title="Excluir">
                   <i class="fas fa-trash"></i>
@@ -989,8 +1021,9 @@ if (localStorage.getItem('darkMode') === 'true') {
 // Atualizar hora atual
 function updateCurrentTime() {
   const now = new Date();
-  document.getElementById('currentTime').textContent = 
-    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
+                  now.getMinutes().toString().padStart(2, '0');
+  document.getElementById('currentTime').textContent = timeStr;
 }
 
 // Copiar para clipboard
@@ -1015,23 +1048,6 @@ function showToast(message, type = 'info') {
   toast.innerHTML = `
     <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
     ${message}
-  `;
-  
-  // Estilos do toast
-  toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: ${type === 'success' ? 'var(--ok)' : type === 'error' ? 'var(--danger)' : 'var(--info)'};
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeIn 0.3s ease-out;
   `;
   
   document.body.appendChild(toast);
@@ -1203,7 +1219,9 @@ function sortTable(column) {
   });
   
   const currentIcon = document.querySelector(`#usersTable th:nth-child(${column + 1}) i`);
-  currentIcon.className = isAsc ? 'fas fa-sort-up' : 'fas fa-sort-down';
+  if (currentIcon) {
+    currentIcon.className = isAsc ? 'fas fa-sort-up' : 'fas fa-sort-down';
+  }
 }
 
 // ====== BUSCA ======
@@ -1222,10 +1240,19 @@ document.getElementById("searchUser").addEventListener("input", function() {
 
 // ====== FUNÇÕES DO FORMULÁRIO ======
 function setExpiration(days) {
-  const input = document.querySelector('input[name="expire_days"]');
+  const input = document.getElementById('expireDaysInput');
   input.value = days;
   
-  if (days === '0') {
+  // Atualizar botões ativos
+  document.querySelectorAll('.btn-group .btn-outline').forEach(btn => {
+    btn.style.color = '';
+    if (btn.textContent.includes(days.toString()) || (days === 0 && btn.textContent.includes('Ilimitado'))) {
+      btn.style.color = 'var(--accent)';
+      btn.style.fontWeight = 'bold';
+    }
+  });
+  
+  if (days === 0) {
     showToast('Licença será criada como ILIMITADA!', 'info');
   }
 }
@@ -1242,11 +1269,19 @@ function generateRandomCredentials() {
 
 function showDaysInput(index) {
   const input = document.getElementById(`days_${index}`);
-  if (input.style.display === 'none') {
+  const form = document.getElementById(`customForm${index}`);
+  
+  if (input.style.display === 'none' || input.style.display === '') {
+    // Mostrar input
     input.style.display = 'inline-block';
     input.focus();
-  } else {
-    input.parentElement.submit();
+    
+    // Mudar botão para submit
+    const btn = input.previousElementSibling;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    btn.onclick = function() {
+      form.submit();
+    };
   }
 }
 
@@ -1352,7 +1387,7 @@ function openStatsModal() {
     <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: var(--radius);">
       <h4 style="margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Informações do Sistema</h4>
       <div style="font-size: 14px; line-height: 1.6;">
-        <p><strong>Banco de Dados:</strong> {{ total_licenses }} licenças registradas</p>
+        <p><strong>Banco de Dados:</strong> {{ total_licenses if total_licenses is defined else '0' }} licenças registradas</p>
         <p><strong>Última Atualização:</strong> ${new Date().toLocaleString('pt-BR')}</p>
         <p><strong>Status API:</strong> <span class="badge badge-success">Online</span></p>
       </div>
@@ -1387,7 +1422,7 @@ function exportToCSV() {
       
       const rowData = [
         cells[0].textContent.trim(),
-        cells[1].textContent.trim().split('\n')[0], // Remover badges
+        cells[1].textContent.trim().split('\n')[0],
         cells[2].querySelector("code").textContent.trim(),
         cells[3].querySelector("code").textContent.trim(),
         cells[4].textContent.trim().replace(/[^a-zA-Z0-9]/g, ' '),
@@ -1425,18 +1460,8 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(renderExpirations, 30000);
   setInterval(updateCurrentTime, 60000);
   
-  // Adicionar evento de confirmação para ações perigosas
-  document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
-    const oldSubmit = form.onsubmit;
-    form.onsubmit = function(e) {
-      const confirmMsg = this.getAttribute('onsubmit').match(/return confirm\('([^']+)'/)[1];
-      if (!confirm(confirmMsg)) {
-        e.preventDefault();
-        return false;
-      }
-      return oldSubmit.call(this, e);
-    };
-  });
+  // Inicializar botões de dias
+  setExpiration(30);
 });
 </script>
 </body>
