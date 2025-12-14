@@ -239,13 +239,6 @@
       "expires_at": 1768330247
     },
     {
-      "username": "test_connection_1765743777216",
-      "password": "test123",
-      "key": "TEST-07AEB8BD",
-      "device_id": null,
-      "expires_at": 1765830178
-    },
-    {
       "username": "test_connection_1765743779981",
       "password": "test123",
       "key": "TEST-39AAD4F2",
