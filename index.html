@@ -786,11 +786,6 @@
                         <div class="day-option">
                             <div class="day-btn" onclick="setDays(365)">1 Ano</div>
                         </div>
-                        <div class="day-option">
-                            <div class="day-btn" onclick="setDays(9999)" style="color: var(--primary);">
-                                <i class="fas fa-infinity"></i> Ilimitado
-                            </div>
-                        </div>
                     </div>
                     <input type="number" class="form-input" id="days" value="30" min="1" 
                            onchange="updateDayButtons(this.value)">
@@ -902,7 +897,7 @@
             
             // Permitir Enter para gerar
             document.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !document.getElementById('loader').style.display) {
+                if (e.key === 'Enter') {
                     generateLicense();
                 }
             });
@@ -922,8 +917,7 @@
             // Atualizar botões ativos
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('active');
-                const btnDays = btn.textContent.includes('Ilimitado') ? 9999 : parseInt(btn.textContent);
-                if (btnDays === days) {
+                if (parseInt(btn.textContent) === days) {
                     btn.classList.add('active');
                 }
             });
@@ -933,8 +927,7 @@
             currentDays = parseInt(value) || 30;
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('active');
-                const btnDays = btn.textContent.includes('Ilimitado') ? 9999 : parseInt(btn.textContent);
-                if (btnDays === currentDays) {
+                if (parseInt(btn.textContent) === currentDays) {
                     btn.classList.add('active');
                 }
             });
@@ -945,7 +938,7 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             const token = document.getElementById('token').value.trim();
-            let days = document.getElementById('days').value.trim();
+            const days = document.getElementById('days').value.trim();
             
             // Validação
             if (!username || !password || !token) {
@@ -954,15 +947,8 @@
             }
             
             if (!days || parseInt(days) < 1) {
-                if (days != 0) {
-                    showToast('Período inválido', 'error');
-                    return;
-                }
-            }
-            
-            // Ajustar dias para 9999 se for ilimitado
-            if (days == 0 || days == 9999) {
-                days = 0; // Envia 0 para o servidor como ilimitado
+                showToast('Período inválido', 'error');
+                return;
             }
             
             // Mostrar loader
@@ -984,23 +970,18 @@
                     })
                 });
                 
-                let data;
-                try {
-                    data = await response.json();
-                } catch (parseError) {
-                    throw new Error('Resposta inválida do servidor');
-                }
-                
-                console.log('Resposta do servidor:', data); // Para debug
+                const data = await response.json();
                 
                 // Esconder loader
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
                 
-                // Verificar se a resposta é de sucesso
-                // Alguns servidores podem retornar "ok: true" ou "success: true" ou apenas ter a chave
-                if (data.key || data.ok || data.success) {
-                    // Sucesso - a licença foi gerada
+                if (!data.ok || data.error) {
+                    // Erro
+                    showResultError(data.reason || 'Token inválido ou usuário já existe');
+                    showToast('Erro ao gerar licença: ' + (data.reason || 'Token inválido'), 'error');
+                } else {
+                    // Sucesso
                     showResultSuccess(data);
                     addToHistory(data, username);
                     updateStats();
@@ -1009,12 +990,6 @@
                     // Limpar formulário (exceto token)
                     document.getElementById('username').value = '';
                     document.getElementById('password').value = '';
-                    setDays(30);
-                } else {
-                    // Erro do servidor
-                    const errorMessage = data.reason || data.error || data.message || 'Token inválido ou usuário já existe';
-                    showResultError(errorMessage);
-                    showToast('Erro ao gerar licença: ' + errorMessage, 'error');
                 }
                 
             } catch (error) {
@@ -1022,9 +997,9 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
                 
-                console.error('Erro de conexão:', error);
                 showResultError('Erro ao conectar ao servidor. Verifique sua conexão.');
                 showToast('Erro de conexão com o servidor', 'error');
+                console.error('Erro:', error);
             }
         }
         
@@ -1033,44 +1008,22 @@
             const resultsCard = document.getElementById('resultsCard');
             const resultContent = document.getElementById('resultContent');
             
-            // Verificar se é ilimitado (0 ou 9999999999999)
-            const isUnlimited = !data.expires_at || data.expires_at == 0 || data.expires_at == UNLIMITED_EXPIRY;
-            const originalDays = document.getElementById('days').value;
+            const isUnlimited = data.expires_at === 0 || data.expires_at === UNLIMITED_EXPIRY;
+            const expiryDate = isUnlimited ? 'ILIMITADO' : 
+                new Date(data.expires_at * 1000).toLocaleDateString('pt-BR');
             
-            // Calcular data de expiração
-            let expiryDate, daysLeft;
-            
-            if (isUnlimited) {
-                expiryDate = 'ILIMITADO';
-                daysLeft = '∞';
-            } else {
-                // Garantir que temos um timestamp válido
-                const expiresAt = data.expires_at * 1000; // converter para milissegundos
-                expiryDate = new Date(expiresAt).toLocaleDateString('pt-BR');
-                
-                // Calcular dias restantes
-                const now = Date.now();
-                const diff = expiresAt - now;
-                daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-                
-                // Se o servidor retornou 29 dias em vez de 30, ajustamos
-                if (originalDays == 30 && daysLeft == 29) {
-                    daysLeft = 30; // Mostramos 30 dias mesmo que o servidor calcule 29
-                }
-            }
-            
-            // Verificar se a key foi fornecida
-            const licenseKey = data.key || 'KEY_NÃO_FORNECIDA';
+            const daysLeft = isUnlimited ? '∞' : 
+                Math.max(0, Math.floor((data.expires_at - Math.floor(Date.now()/1000)) / 86400));
             
             resultContent.innerHTML = `
                 <div class="result-success">
                     <div class="success-title">
-                        <i class="fas fa-check-circle"></i> ✅ Licença Gerada com Sucesso!
+                        <i class="fas fa-check-circle"></i> Licença Gerada com Sucesso!
                     </div>
                     
                     <div class="key-display" id="generatedKey">
-                        ${licenseKey}
-                        <button class="copy-btn" onclick="copyKey('${licenseKey}')">
+                        ${data.key}
+                        <button class="copy-btn" onclick="copyKey('${data.key}')">
                             <i class="fas fa-copy"></i> Copiar
                         </button>
                     </div>
@@ -1078,7 +1031,7 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Cliente</div>
-                            <div class="info-value">${data.username || document.getElementById('username').value}</div>
+                            <div class="info-value">${data.username}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Senha</div>
@@ -1094,9 +1047,9 @@
                         </div>
                     </div>
                     
-                    <div style="margin-top: 20px; font-size: 14px; color: #aaa; background: rgba(0, 255, 166, 0.05); padding: 15px; border-radius: 8px;">
+                    <div style="margin-top: 20px; font-size: 14px; color: #aaa;">
                         <i class="fas fa-info-circle"></i>
-                        <strong>Instruções:</strong> Envie os dados acima para seu cliente. A licença será ativada no primeiro login.
+                        Envie os dados acima para seu cliente. A licença será ativada no primeiro login.
                     </div>
                 </div>
             `;
@@ -1111,30 +1064,17 @@
             resultContent.innerHTML = `
                 <div class="result-error">
                     <div class="error-title">
-                        <i class="fas fa-exclamation-triangle"></i> ❌ Erro ao Gerar Licença
+                        <i class="fas fa-exclamation-triangle"></i> Erro ao Gerar Licença
                     </div>
-                    
-                    <div style="color: #ff9999; margin: 20px 0; font-size: 16px; padding: 15px; background: rgba(255, 78, 78, 0.05); border-radius: 8px;">
-                        <strong>Erro:</strong> ${message}
-                    </div>
-                    
-                    <div style="background: rgba(255, 78, 78, 0.05); border-radius: 8px; padding: 20px; margin-top: 15px;">
-                        <div style="color: #ffaaaa; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                            <i class="fas fa-info-circle"></i> Possíveis causas:
-                        </div>
-                        <ul style="margin-left: 20px; color: #ccc; line-height: 1.8;">
-                            <li><strong>Token de revendedor inválido ou expirado</strong></li>
-                            <li><strong>Nome de usuário já está em uso</strong></li>
-                            <li><strong>Servidor temporariamente indisponível</strong></li>
-                            <li><strong>Limite de licenças atingido</strong></li>
-                            <li><strong>Conexão com internet instável</strong></li>
+                    <p style="color: #ff9999; margin-bottom: 15px;">${message}</p>
+                    <div style="font-size: 14px; color: #aaa;">
+                        <strong>Possíveis causas:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Token de revendedor inválido ou expirado</li>
+                            <li>Nome de usuário já está em uso</li>
+                            <li>Servidor temporariamente indisponível</li>
+                            <li>Limite de licenças atingido</li>
                         </ul>
-                        
-                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 78, 78, 0.2);">
-                            <button onclick="testConnection()" style="background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 10px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                <i class="fas fa-wifi"></i> Testar Conexão
-                            </button>
-                        </div>
                     </div>
                 </div>
             `;
@@ -1142,59 +1082,12 @@
             resultsCard.style.display = 'block';
         }
         
-        // ====== FUNÇÃO PARA TESTAR CONEXÃO ======
-        async function testConnection() {
-            const token = document.getElementById('token').value.trim();
-            
-            if (!token) {
-                showToast('Insira o token primeiro', 'warning');
-                return;
-            }
-            
-            showToast('Testando conexão...', 'warning');
-            
-            try {
-                const testData = {
-                    username: 'test_' + Date.now(),
-                    password: 'test123',
-                    expire_days: '1',
-                    token: token,
-                    prefix: 'TEST'
-                };
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(testData)
-                });
-                
-                const data = await response.json();
-                
-                if (data.ok || data.key || data.success) {
-                    showToast('✅ Conexão OK! Servidor funcionando', 'success');
-                } else if (data.reason && data.reason.includes("usuário já existe")) {
-                    showToast('✅ Conexão OK! Token válido', 'success');
-                } else {
-                    showToast('❌ ' + (data.reason || 'Token inválido'), 'error');
-                }
-            } catch (error) {
-                showToast('❌ Erro de conexão com o servidor', 'error');
-            }
-        }
-        
         // ====== HISTÓRICO ======
         function loadHistory() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
-                try {
-                    history = JSON.parse(saved);
-                    renderHistory();
-                } catch (e) {
-                    console.error('Erro ao carregar histórico:', e);
-                    history = [];
-                }
+                history = JSON.parse(saved);
+                renderHistory();
             }
         }
         
@@ -1205,15 +1098,15 @@
         function addToHistory(licenseData, username) {
             const historyEntry = {
                 id: Date.now(),
-                date: new Date().toLocaleString('pt-BR'),
+                date: new Date().toISOString(),
                 username: username,
-                key: licenseData.key || 'N/A',
-                expires_at: licenseData.expires_at || UNLIMITED_EXPIRY,
-                is_unlimited: !licenseData.expires_at || licenseData.expires_at == 0 || licenseData.expires_at == UNLIMITED_EXPIRY
+                key: licenseData.key,
+                expires_at: licenseData.expires_at,
+                is_unlimited: licenseData.expires_at === 0 || licenseData.expires_at === UNLIMITED_EXPIRY
             };
             
-            history.unshift(historyEntry);
-            if (history.length > 100) {
+            history.unshift(historyEntry); // Adicionar no início
+            if (history.length > 50) { // Limitar a 50 entradas
                 history.pop();
             }
             
@@ -1236,7 +1129,7 @@
             historyTable.style.display = 'table';
             
             historyBody.innerHTML = history.map(entry => {
-                const date = entry.date;
+                const date = new Date(entry.date).toLocaleDateString('pt-BR');
                 const expiry = entry.is_unlimited ? 'ILIMITADO' : 
                     new Date(entry.expires_at * 1000).toLocaleDateString('pt-BR');
                 
@@ -1297,9 +1190,8 @@
         // ====== ESTATÍSTICAS ======
         function updateStats() {
             // Total de keys geradas
-            const totalKeys = history.length;
-            document.getElementById('totalKeys').textContent = totalKeys;
-            document.getElementById('keysGenerated').textContent = totalKeys;
+            document.getElementById('totalKeys').textContent = history.length;
+            document.getElementById('keysGenerated').textContent = history.length;
             
             // Clientes únicos
             const uniqueClients = [...new Set(history.map(h => h.username))].length;
@@ -1307,11 +1199,9 @@
             
             // Licenças ativas
             const now = Math.floor(Date.now() / 1000);
-            const activeLicenses = history.filter(h => {
-                if (h.is_unlimited) return true;
-                if (!h.expires_at) return false;
-                return h.expires_at > now;
-            }).length;
+            const activeLicenses = history.filter(h => 
+                h.is_unlimited || (h.expires_at && h.expires_at > now)
+            ).length;
             document.getElementById('activeLicenses').textContent = activeLicenses;
             
             // Licenças ilimitadas
@@ -1326,11 +1216,6 @@
         
         // ====== FUNÇÕES UTILITÁRIAS ======
         function copyKey(key) {
-            if (!key || key === 'N/A') {
-                showToast('Key inválida para copiar', 'error');
-                return;
-            }
-            
             navigator.clipboard.writeText(key).then(() => {
                 showToast('Key copiada para a área de transferência!', 'success');
             }).catch(err => {
@@ -1354,7 +1239,7 @@
             }).join('\n');
             
             const headers = 'Data,Cliente,Key,Expiração\n';
-            const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([headers + csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
@@ -1369,31 +1254,18 @@
         
         function showHelp() {
             alert(
-                '📋 AJUDA - PAINEL DO REVENDEDOR FERA ALPHA\n\n' +
-                '1. PREENCHA OS DADOS:\n' +
-                '   • Nome do cliente (deve ser único)\n' +
-                '   • Senha para o cliente\n' +
-                '   • Período da licença (7 dias a 1 ano)\n' +
-                '   • Seu token de revendedor\n\n' +
-                '2. GERE A LICENÇA:\n' +
-                '   • Clique em "Gerar Licença"\n' +
-                '   • Aguarde a conexão com o servidor\n' +
-                '   • Copie a key gerada\n\n' +
-                '3. HISTÓRICO:\n' +
-                '   • Todas as licenças são salvas localmente\n' +
-                '   • Você pode copiar ou reutilizar dados\n' +
-                '   • Exporte para backup em CSV\n\n' +
-                '💡 DICAS IMPORTANTES:\n' +
-                '• Use nomes únicos para cada cliente\n' +
-                '• O token é fornecido pelo administrador\n' +
-                '• Licenças ilimitadas: use "Ilimitado" ou digite 9999\n' +
-                '• As licenças são ativadas no primeiro login\n\n' +
-                '⚠️ PROBLEMAS COMUNS:\n' +
-                '• "Token inválido" = Seu token expirou ou é inválido\n' +
-                '• "Usuário já existe" = Escolha outro nome\n' +
-                '• "Erro de conexão" = Verifique sua internet\n\n' +
-                '📞 SUPORTE:\n' +
-                'Entre em contato com o administrador do sistema'
+                '📋 Ajuda - Painel do Revendedor\n\n' +
+                '1. Preencha o nome do cliente (único para cada licença)\n' +
+                '2. Escolha uma senha para o cliente\n' +
+                '3. Selecione a duração da licença\n' +
+                '4. Insira seu token de revendedor\n' +
+                '5. Clique em "Gerar Licença"\n\n' +
+                '💡 Dicas:\n' +
+                '- O histórico é salvo localmente no seu navegador\n' +
+                '- Você pode reutilizar dados de clientes antigos\n' +
+                '- Exporte o histórico para backup\n' +
+                '- Seu token é pessoal e intransferível\n\n' +
+                '📞 Suporte: Entre em contato com o administrador'
             );
         }
         
@@ -1405,16 +1277,6 @@
             toastMessage.textContent = message;
             toast.className = 'toast';
             toast.classList.add(type);
-            
-            // Definir ícone correto
-            const icon = toast.querySelector('i');
-            if (type === 'success') {
-                icon.className = 'fas fa-check-circle';
-            } else if (type === 'error') {
-                icon.className = 'fas fa-exclamation-circle';
-            } else if (type === 'warning') {
-                icon.className = 'fas fa-exclamation-triangle';
-            }
             
             // Mostrar
             setTimeout(() => {
@@ -1442,12 +1304,6 @@
             // Ctrl+E para exportar
             if (e.ctrlKey && e.key === 'e') {
                 exportHistory();
-            }
-            
-            // Ctrl+T para testar conexão
-            if (e.ctrlKey && e.key === 't') {
-                testConnection();
-                e.preventDefault();
             }
         });
     </script>
