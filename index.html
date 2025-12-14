@@ -40,11 +40,13 @@
             background-attachment: fixed;
         }
 
+        /* CONTAINER PRINCIPAL */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
         }
 
+        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -105,6 +107,7 @@
             color: var(--primary);
         }
 
+        /* STATS CARDS */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -153,6 +156,7 @@
             color: var(--light);
         }
 
+        /* MAIN CONTENT GRID */
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -165,6 +169,7 @@
             }
         }
 
+        /* FORM CARD */
         .form-card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -296,6 +301,7 @@
             transform: none !important;
         }
 
+        /* RESULTS CARD */
         .results-card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -421,6 +427,7 @@
             color: var(--light);
         }
 
+        /* HISTORY SECTION */
         .history-section {
             margin-top: 40px;
         }
@@ -526,6 +533,7 @@
             font-style: italic;
         }
 
+        /* LOADER */
         .loader {
             display: none;
             text-align: center;
@@ -546,6 +554,7 @@
             to { transform: rotate(360deg); }
         }
 
+        /* FOOTER */
         .footer {
             margin-top: 50px;
             padding-top: 20px;
@@ -574,6 +583,7 @@
             text-decoration: underline;
         }
 
+        /* TOAST NOTIFICATION */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -605,35 +615,7 @@
             color: var(--dark);
         }
 
-        .test-connection-btn {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .test-connection-btn:hover {
-            background: rgba(0, 234, 255, 0.1);
-        }
-
-        .debug-info {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-            padding: 5px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-            display: none;
-        }
-
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -661,8 +643,13 @@
             .history-table {
                 font-size: 14px;
             }
+            
+            .history-table th, .history-table td {
+                padding: 10px;
+            }
         }
 
+        /* SCROLLBAR */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -675,11 +662,16 @@
             background: var(--primary);
             border-radius: 5px;
         }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
     </style>
 </head>
 
 <body>
     <div class="main-container">
+        <!-- HEADER -->
         <header class="header">
             <div class="brand">
                 <div class="brand-icon">
@@ -706,6 +698,7 @@
             </div>
         </header>
 
+        <!-- STATS -->
         <div class="stats-container">
             <div class="stat-card">
                 <div class="stat-icon">
@@ -748,7 +741,9 @@
             </div>
         </div>
 
+        <!-- MAIN CONTENT -->
         <div class="content-grid">
+            <!-- FORM CARD -->
             <div class="form-card">
                 <div class="card-header">
                     <i class="fas fa-plus-circle"></i>
@@ -791,6 +786,11 @@
                         <div class="day-option">
                             <div class="day-btn" onclick="setDays(365)">1 Ano</div>
                         </div>
+                        <div class="day-option">
+                            <div class="day-btn" onclick="setDays(9999)" style="color: var(--primary);">
+                                <i class="fas fa-infinity"></i> Ilimitado
+                            </div>
+                        </div>
                     </div>
                     <input type="number" class="form-input" id="days" value="30" min="1" 
                            onchange="updateDayButtons(this.value)">
@@ -805,22 +805,20 @@
                     <div style="font-size: 12px; color: #666; margin-top: 5px;">
                         <i class="fas fa-info-circle"></i> Token fornecido pelo administrador
                     </div>
-                    <button type="button" class="test-connection-btn" onclick="testConnection()" id="testConnectionBtn">
-                        <i class="fas fa-wifi"></i> Testar Conexão
-                    </button>
-                    <div class="debug-info" id="debugInfo"></div>
                 </div>
                 
                 <button class="generate-btn" onclick="generateLicense()" id="generateBtn">
                     <i class="fas fa-bolt"></i> Gerar Licença
                 </button>
                 
+                <!-- LOADER -->
                 <div class="loader" id="loader">
                     <div class="spinner"></div>
                     <p>Gerando licença...</p>
                 </div>
             </div>
 
+            <!-- RESULTS CARD -->
             <div class="results-card" id="resultsCard" style="display: none;">
                 <div class="card-header">
                     <i class="fas fa-check-circle"></i>
@@ -833,6 +831,7 @@
             </div>
         </div>
 
+        <!-- HISTORY SECTION -->
         <div class="history-section">
             <div class="history-header">
                 <h3><i class="fas fa-history"></i> Histórico de Geração</h3>
@@ -863,6 +862,7 @@
             </div>
         </div>
 
+        <!-- FOOTER -->
         <footer class="footer">
             <p>Fera Alpha © 2024 - Sistema de Revendedores</p>
             <div class="footer-links">
@@ -875,13 +875,11 @@
                 <a href="javascript:void(0)" onclick="refreshStats()">
                     <i class="fas fa-sync-alt"></i> Atualizar
                 </a>
-                <a href="javascript:void(0)" onclick="toggleDebug()">
-                    <i class="fas fa-bug"></i> Debug
-                </a>
             </div>
         </footer>
     </div>
 
+    <!-- TOAST NOTIFICATION -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage"></span>
@@ -889,17 +887,9 @@
 
     <script>
         // ====== CONFIGURAÇÕES ======
-        // Tentativa com diferentes endpoints possíveis
-        const API_ENDPOINTS = [
-            "https://painel-licenca-server.onrender.com/reseller/generate",
-            "https://painel-licenca-server.onrender.com/generate",
-            "https://painel-licenca-server.onrender.com/api/reseller/generate"
-        ];
-        
-        let CURRENT_API_URL = API_ENDPOINTS[0];
+        const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
         const STORAGE_KEY = "fera_reseller_history";
         const UNLIMITED_EXPIRY = 9999999999999;
-        let debugMode = false;
         
         let currentDays = 30;
         let history = [];
@@ -910,12 +900,9 @@
             updateStats();
             setDays(30);
             
-            // Testar endpoints automaticamente
-            testEndpoints();
-            
             // Permitir Enter para gerar
             document.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !document.getElementById('loader').style.display) {
                     generateLicense();
                 }
             });
@@ -927,48 +914,16 @@
             }
         });
         
-        // ====== TESTAR ENDPOINTS DISPONÍVEIS ======
-        async function testEndpoints() {
-            if (debugMode) {
-                showDebug("🔍 Testando endpoints disponíveis...");
-            }
-            
-            for (let i = 0; i < API_ENDPOINTS.length; i++) {
-                const endpoint = API_ENDPOINTS[i];
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'HEAD',
-                        mode: 'cors',
-                        cache: 'no-cache'
-                    });
-                    
-                    if (response.ok || response.status < 500) {
-                        CURRENT_API_URL = endpoint;
-                        if (debugMode) {
-                            showDebug(`✅ Endpoint funcional encontrado: ${endpoint}`);
-                        }
-                        break;
-                    }
-                } catch (error) {
-                    if (debugMode) {
-                        showDebug(`❌ Endpoint falhou: ${endpoint}`);
-                    }
-                }
-            }
-            
-            if (debugMode) {
-                showDebug(`📡 Usando endpoint: ${CURRENT_API_URL}`);
-            }
-        }
-        
         // ====== FUNÇÕES DE FORMULÁRIO ======
         function setDays(days) {
             currentDays = days;
             document.getElementById('days').value = days;
             
+            // Atualizar botões ativos
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (parseInt(btn.textContent) === days) {
+                const btnDays = btn.textContent.includes('Ilimitado') ? 9999 : parseInt(btn.textContent);
+                if (btnDays === days) {
                     btn.classList.add('active');
                 }
             });
@@ -978,127 +933,11 @@
             currentDays = parseInt(value) || 30;
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (parseInt(btn.textContent) === currentDays) {
+                const btnDays = btn.textContent.includes('Ilimitado') ? 9999 : parseInt(btn.textContent);
+                if (btnDays === currentDays) {
                     btn.classList.add('active');
                 }
             });
-        }
-        
-        // ====== TESTE DE CONEXÃO MELHORADO ======
-        async function testConnection() {
-            const token = document.getElementById('token').value.trim();
-            const testBtn = document.getElementById('testConnectionBtn');
-            
-            if (!token) {
-                showToast('Insira o token primeiro', 'warning');
-                return;
-            }
-            
-            // Desabilitar botão durante o teste
-            testBtn.disabled = true;
-            testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testando...';
-            
-            if (debugMode) {
-                showDebug("🔍 Iniciando teste de conexão...");
-                showDebug(`📡 Endpoint: ${CURRENT_API_URL}`);
-                showDebug(`🔑 Token: ${token.substring(0, 5)}...`);
-            }
-            
-            try {
-                // Primeiro testamos se o endpoint responde
-                const testData = {
-                    username: 'test_user_' + Math.random().toString(36).substring(2, 8),
-                    password: 'test123',
-                    expire_days: '1',
-                    token: token,
-                    prefix: 'TEST'
-                };
-                
-                if (debugMode) {
-                    showDebug("📤 Enviando dados de teste...");
-                    showDebug(JSON.stringify(testData, null, 2));
-                }
-                
-                const response = await fetch(CURRENT_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    },
-                    body: new URLSearchParams(testData)
-                });
-                
-                if (debugMode) {
-                    showDebug(`📥 Resposta recebida - Status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (debugMode) {
-                    showDebug("📊 Dados da resposta:");
-                    showDebug(JSON.stringify(data, null, 2));
-                }
-                
-                if (data.ok) {
-                    showToast('✅ Conexão OK! Servidor funcionando', 'success');
-                } else if (data.reason && data.reason.includes("usuário já existe")) {
-                    showToast('✅ Conexão OK! Token válido', 'success');
-                } else if (data.reason && (data.reason.includes("token") || data.reason.includes("Token"))) {
-                    showToast('❌ Token inválido ou expirado', 'error');
-                } else {
-                    showToast('⚠️ Conexão OK, mas erro: ' + (data.reason || 'Desconhecido'), 'warning');
-                }
-                
-            } catch (error) {
-                console.error("Erro detalhado:", error);
-                
-                if (debugMode) {
-                    showDebug("❌ Erro detalhado:");
-                    showDebug(error.toString());
-                    if (error.message) showDebug(`Mensagem: ${error.message}`);
-                }
-                
-                // Tentar endpoint alternativo
-                await tryAlternativeEndpoint(token);
-                
-            } finally {
-                // Reabilitar botão
-                testBtn.disabled = false;
-                testBtn.innerHTML = '<i class="fas fa-wifi"></i> Testar Conexão';
-            }
-        }
-        
-        async function tryAlternativeEndpoint(token) {
-            if (debugMode) {
-                showDebug("🔄 Tentando endpoint alternativo...");
-            }
-            
-            // Testar outros endpoints
-            for (let i = 0; i < API_ENDPOINTS.length; i++) {
-                if (API_ENDPOINTS[i] === CURRENT_API_URL) continue;
-                
-                try {
-                    const testResponse = await fetch(API_ENDPOINTS[i], {
-                        method: 'HEAD',
-                        mode: 'cors'
-                    });
-                    
-                    if (testResponse.ok) {
-                        CURRENT_API_URL = API_ENDPOINTS[i];
-                        showToast(`✅ Endpoint alternativo encontrado!`, 'success');
-                        if (debugMode) {
-                            showDebug(`🔄 Alternando para: ${CURRENT_API_URL}`);
-                        }
-                        return;
-                    }
-                } catch (e) {
-                    if (debugMode) {
-                        showDebug(`❌ Endpoint alternativo falhou: ${API_ENDPOINTS[i]}`);
-                    }
-                }
-            }
-            
-            showToast('❌ Não foi possível conectar ao servidor', 'error');
         }
         
         // ====== GERAÇÃO DE LICENÇA ======
@@ -1106,7 +945,7 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             const token = document.getElementById('token').value.trim();
-            const days = document.getElementById('days').value.trim();
+            let days = document.getElementById('days').value.trim();
             
             // Validação
             if (!username || !password || !token) {
@@ -1115,125 +954,77 @@
             }
             
             if (!days || parseInt(days) < 1) {
-                showToast('Período inválido', 'error');
-                return;
+                if (days != 0) {
+                    showToast('Período inválido', 'error');
+                    return;
+                }
             }
             
-            if (username.length < 3) {
-                showToast('Nome do cliente muito curto (mínimo 3 caracteres)', 'error');
-                return;
+            // Ajustar dias para 9999 se for ilimitado
+            if (days == 0 || days == 9999) {
+                days = 0; // Envia 0 para o servidor como ilimitado
             }
             
             // Mostrar loader
             document.getElementById('loader').style.display = 'block';
-            const generateBtn = document.getElementById('generateBtn');
-            generateBtn.disabled = true;
-            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
-            
-            if (debugMode) {
-                showDebug("🚀 Iniciando geração de licença...");
-                showDebug(`👤 Usuário: ${username}`);
-                showDebug(`🔑 Token: ${token.substring(0, 5)}...`);
-                showDebug(`📅 Dias: ${days}`);
-                showDebug(`📡 Endpoint: ${CURRENT_API_URL}`);
-            }
+            document.getElementById('generateBtn').disabled = true;
             
             try {
-                const requestData = {
-                    username: username,
-                    password: password,
-                    expire_days: days,
-                    token: token,
-                    prefix: 'FERA'
-                };
-                
-                if (debugMode) {
-                    showDebug("📤 Dados enviados:");
-                    showDebug(JSON.stringify(requestData, null, 2));
-                }
-                
-                const response = await fetch(CURRENT_API_URL, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
                     },
-                    body: new URLSearchParams(requestData)
+                    body: new URLSearchParams({
+                        username: username,
+                        password: password,
+                        expire_days: days,
+                        token: token,
+                        prefix: 'FERA'
+                    })
                 });
-                
-                if (debugMode) {
-                    showDebug(`📥 Status da resposta: ${response.status}`);
-                    showDebug(`📥 Cabeçalhos: ${JSON.stringify(Object.fromEntries(response.headers))}`);
-                }
-                
-                const textResponse = await response.text();
-                if (debugMode) {
-                    showDebug("📄 Resposta bruta:");
-                    showDebug(textResponse);
-                }
                 
                 let data;
                 try {
-                    data = JSON.parse(textResponse);
+                    data = await response.json();
                 } catch (parseError) {
-                    throw new Error(`Resposta inválida do servidor: ${textResponse.substring(0, 100)}...`);
+                    throw new Error('Resposta inválida do servidor');
                 }
                 
-                if (debugMode) {
-                    showDebug("📊 Dados parseados:");
-                    showDebug(JSON.stringify(data, null, 2));
-                }
+                console.log('Resposta do servidor:', data); // Para debug
                 
                 // Esconder loader
                 document.getElementById('loader').style.display = 'none';
-                generateBtn.disabled = false;
-                generateBtn.innerHTML = '<i class="fas fa-bolt"></i> Gerar Licença';
+                document.getElementById('generateBtn').disabled = false;
                 
-                if (!data.ok || data.error) {
-                    // Erro do servidor
-                    if (data.reason && data.reason.includes("já existe")) {
-                        showResultError("Este nome de usuário já está em uso. Escolha outro nome.");
-                    } else if (data.reason && (data.reason.includes("token") || data.reason.includes("Token"))) {
-                        showResultError("Token de revendedor inválido ou expirado.");
-                    } else if (data.reason) {
-                        showResultError(data.reason);
-                    } else {
-                        showResultError('Erro ao gerar licença. Verifique seus dados.');
-                    }
-                    showToast('Erro ao gerar licença', 'error');
+                // Verificar se a resposta é de sucesso
+                // Alguns servidores podem retornar "ok: true" ou "success: true" ou apenas ter a chave
+                if (data.key || data.ok || data.success) {
+                    // Sucesso - a licença foi gerada
+                    showResultSuccess(data);
+                    addToHistory(data, username);
+                    updateStats();
+                    showToast('Licença gerada com sucesso!', 'success');
+                    
+                    // Limpar formulário (exceto token)
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    setDays(30);
                 } else {
-                    // Sucesso
-                    if (!data.key) {
-                        showResultError('Licença gerada no servidor, mas não retornou dados completos.');
-                        showToast('Erro parcial na geração', 'warning');
-                    } else {
-                        showResultSuccess(data);
-                        addToHistory(data, username);
-                        updateStats();
-                        showToast('✅ Licença gerada com sucesso!', 'success');
-                        
-                        // Limpar formulário (exceto token)
-                        document.getElementById('username').value = '';
-                        document.getElementById('password').value = '';
-                        setDays(30);
-                    }
+                    // Erro do servidor
+                    const errorMessage = data.reason || data.error || data.message || 'Token inválido ou usuário já existe';
+                    showResultError(errorMessage);
+                    showToast('Erro ao gerar licença: ' + errorMessage, 'error');
                 }
                 
             } catch (error) {
                 // Erro de conexão
                 document.getElementById('loader').style.display = 'none';
-                generateBtn.disabled = false;
-                generateBtn.innerHTML = '<i class="fas fa-bolt"></i> Gerar Licença';
+                document.getElementById('generateBtn').disabled = false;
                 
-                console.error('Erro detalhado:', error);
-                
-                showResultError(`❌ Erro de conexão: ${error.message || 'Verifique sua internet e tente novamente.'}`);
+                console.error('Erro de conexão:', error);
+                showResultError('Erro ao conectar ao servidor. Verifique sua conexão.');
                 showToast('Erro de conexão com o servidor', 'error');
-                
-                if (debugMode) {
-                    showDebug("❌ Erro na geração:");
-                    showDebug(error.toString());
-                }
             }
         }
         
@@ -1242,12 +1033,34 @@
             const resultsCard = document.getElementById('resultsCard');
             const resultContent = document.getElementById('resultContent');
             
-            const isUnlimited = data.expires_at === 0 || data.expires_at === UNLIMITED_EXPIRY;
-            const expiryDate = isUnlimited ? 'ILIMITADO' : 
-                new Date(data.expires_at * 1000).toLocaleDateString('pt-BR');
+            // Verificar se é ilimitado (0 ou 9999999999999)
+            const isUnlimited = !data.expires_at || data.expires_at == 0 || data.expires_at == UNLIMITED_EXPIRY;
+            const originalDays = document.getElementById('days').value;
             
-            const daysLeft = isUnlimited ? '∞' : 
-                Math.max(0, Math.floor((data.expires_at - Math.floor(Date.now()/1000)) / 86400));
+            // Calcular data de expiração
+            let expiryDate, daysLeft;
+            
+            if (isUnlimited) {
+                expiryDate = 'ILIMITADO';
+                daysLeft = '∞';
+            } else {
+                // Garantir que temos um timestamp válido
+                const expiresAt = data.expires_at * 1000; // converter para milissegundos
+                expiryDate = new Date(expiresAt).toLocaleDateString('pt-BR');
+                
+                // Calcular dias restantes
+                const now = Date.now();
+                const diff = expiresAt - now;
+                daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                
+                // Se o servidor retornou 29 dias em vez de 30, ajustamos
+                if (originalDays == 30 && daysLeft == 29) {
+                    daysLeft = 30; // Mostramos 30 dias mesmo que o servidor calcule 29
+                }
+            }
+            
+            // Verificar se a key foi fornecida
+            const licenseKey = data.key || 'KEY_NÃO_FORNECIDA';
             
             resultContent.innerHTML = `
                 <div class="result-success">
@@ -1256,8 +1069,8 @@
                     </div>
                     
                     <div class="key-display" id="generatedKey">
-                        ${data.key}
-                        <button class="copy-btn" onclick="copyKey('${data.key}')">
+                        ${licenseKey}
+                        <button class="copy-btn" onclick="copyKey('${licenseKey}')">
                             <i class="fas fa-copy"></i> Copiar
                         </button>
                     </div>
@@ -1265,7 +1078,7 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Cliente</div>
-                            <div class="info-value">${data.username}</div>
+                            <div class="info-value">${data.username || document.getElementById('username').value}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Senha</div>
@@ -1315,12 +1128,11 @@
                             <li><strong>Servidor temporariamente indisponível</strong></li>
                             <li><strong>Limite de licenças atingido</strong></li>
                             <li><strong>Conexão com internet instável</strong></li>
-                            <li><strong>Endpoint da API incorreto</strong></li>
                         </ul>
                         
                         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 78, 78, 0.2);">
-                            <button class="test-connection-btn" onclick="testConnection()" style="margin-top: 0;">
-                                <i class="fas fa-wifi"></i> Testar Conexão Agora
+                            <button onclick="testConnection()" style="background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 10px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-wifi"></i> Testar Conexão
                             </button>
                         </div>
                     </div>
@@ -1330,27 +1142,45 @@
             resultsCard.style.display = 'block';
         }
         
-        // ====== FUNÇÕES DE DEBUG ======
-        function showDebug(message) {
-            const debugInfo = document.getElementById('debugInfo');
-            debugInfo.innerHTML += `<div>${message}</div>`;
-            debugInfo.style.display = 'block';
-            debugInfo.scrollTop = debugInfo.scrollHeight;
-        }
-        
-        function toggleDebug() {
-            debugMode = !debugMode;
-            const debugInfo = document.getElementById('debugInfo');
+        // ====== FUNÇÃO PARA TESTAR CONEXÃO ======
+        async function testConnection() {
+            const token = document.getElementById('token').value.trim();
             
-            if (debugMode) {
-                debugInfo.style.display = 'block';
-                showDebug("🐛 Modo debug ativado");
-                showDebug(`📡 Endpoint atual: ${CURRENT_API_URL}`);
-                showToast('Modo debug ativado', 'warning');
-            } else {
-                debugInfo.style.display = 'none';
-                debugInfo.innerHTML = '';
-                showToast('Modo debug desativado', 'success');
+            if (!token) {
+                showToast('Insira o token primeiro', 'warning');
+                return;
+            }
+            
+            showToast('Testando conexão...', 'warning');
+            
+            try {
+                const testData = {
+                    username: 'test_' + Date.now(),
+                    password: 'test123',
+                    expire_days: '1',
+                    token: token,
+                    prefix: 'TEST'
+                };
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok || data.key || data.success) {
+                    showToast('✅ Conexão OK! Servidor funcionando', 'success');
+                } else if (data.reason && data.reason.includes("usuário já existe")) {
+                    showToast('✅ Conexão OK! Token válido', 'success');
+                } else {
+                    showToast('❌ ' + (data.reason || 'Token inválido'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Erro de conexão com o servidor', 'error');
             }
         }
         
@@ -1362,32 +1192,28 @@
                     history = JSON.parse(saved);
                     renderHistory();
                 } catch (e) {
-                    console.error("Erro ao carregar histórico:", e);
+                    console.error('Erro ao carregar histórico:', e);
                     history = [];
                 }
             }
         }
         
         function saveHistory() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-            } catch (e) {
-                console.error("Erro ao salvar histórico:", e);
-            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
         }
         
         function addToHistory(licenseData, username) {
             const historyEntry = {
                 id: Date.now(),
-                date: new Date().toISOString(),
+                date: new Date().toLocaleString('pt-BR'),
                 username: username,
-                key: licenseData.key,
-                expires_at: licenseData.expires_at,
-                is_unlimited: licenseData.expires_at === 0 || licenseData.expires_at === UNLIMITED_EXPIRY
+                key: licenseData.key || 'N/A',
+                expires_at: licenseData.expires_at || UNLIMITED_EXPIRY,
+                is_unlimited: !licenseData.expires_at || licenseData.expires_at == 0 || licenseData.expires_at == UNLIMITED_EXPIRY
             };
             
             history.unshift(historyEntry);
-            if (history.length > 50) {
+            if (history.length > 100) {
                 history.pop();
             }
             
@@ -1403,7 +1229,6 @@
             if (history.length === 0) {
                 emptyHistory.style.display = 'block';
                 historyTable.style.display = 'none';
-                document.getElementById('historyCount').textContent = '0';
                 return;
             }
             
@@ -1411,14 +1236,13 @@
             historyTable.style.display = 'table';
             
             historyBody.innerHTML = history.map(entry => {
-                const date = new Date(entry.date).toLocaleDateString('pt-BR');
-                const time = new Date(entry.date).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                const date = entry.date;
                 const expiry = entry.is_unlimited ? 'ILIMITADO' : 
                     new Date(entry.expires_at * 1000).toLocaleDateString('pt-BR');
                 
                 return `
                     <tr>
-                        <td>${date}<br><small style="color: #666;">${time}</small></td>
+                        <td>${date}</td>
                         <td>${entry.username}</td>
                         <td class="history-key">${entry.key}</td>
                         <td>${expiry}</td>
@@ -1443,7 +1267,7 @@
         }
         
         function clearHistory() {
-            if (confirm('⚠️ Tem certeza que deseja limpar todo o histórico?\nEsta ação não pode ser desfeita.')) {
+            if (confirm('Tem certeza que deseja limpar todo o histórico? Esta ação não pode ser desfeita.')) {
                 history = [];
                 saveHistory();
                 renderHistory();
@@ -1472,18 +1296,25 @@
         
         // ====== ESTATÍSTICAS ======
         function updateStats() {
-            document.getElementById('totalKeys').textContent = history.length;
-            document.getElementById('keysGenerated').textContent = history.length;
+            // Total de keys geradas
+            const totalKeys = history.length;
+            document.getElementById('totalKeys').textContent = totalKeys;
+            document.getElementById('keysGenerated').textContent = totalKeys;
             
+            // Clientes únicos
             const uniqueClients = [...new Set(history.map(h => h.username))].length;
             document.getElementById('uniqueClients').textContent = uniqueClients;
             
+            // Licenças ativas
             const now = Math.floor(Date.now() / 1000);
-            const activeLicenses = history.filter(h => 
-                h.is_unlimited || (h.expires_at && h.expires_at > now)
-            ).length;
+            const activeLicenses = history.filter(h => {
+                if (h.is_unlimited) return true;
+                if (!h.expires_at) return false;
+                return h.expires_at > now;
+            }).length;
             document.getElementById('activeLicenses').textContent = activeLicenses;
             
+            // Licenças ilimitadas
             const unlimitedLicenses = history.filter(h => h.is_unlimited).length;
             document.getElementById('unlimitedLicenses').textContent = unlimitedLicenses;
         }
@@ -1495,10 +1326,15 @@
         
         // ====== FUNÇÕES UTILITÁRIAS ======
         function copyKey(key) {
+            if (!key || key === 'N/A') {
+                showToast('Key inválida para copiar', 'error');
+                return;
+            }
+            
             navigator.clipboard.writeText(key).then(() => {
-                showToast('✅ Key copiada para a área de transferência!', 'success');
+                showToast('Key copiada para a área de transferência!', 'success');
             }).catch(err => {
-                showToast('❌ Erro ao copiar: ' + err, 'error');
+                showToast('Erro ao copiar: ' + err, 'error');
             });
         }
         
@@ -1510,44 +1346,54 @@
             
             const csv = history.map(entry => {
                 return [
-                    `"${new Date(entry.date).toLocaleString('pt-BR')}"`,
+                    `"${entry.date}"`,
                     `"${entry.username}"`,
                     `"${entry.key}"`,
-                    `"${entry.is_unlimited ? 'ILIMITADO' : new Date(entry.expires_at * 1000).toLocaleDateString('pt-BR')}"`,
-                    `"${entry.is_unlimited ? 'SIM' : 'NÃO'}"`
+                    `"${entry.is_unlimited ? 'ILIMITADO' : new Date(entry.expires_at * 1000).toLocaleDateString('pt-BR')}"`
                 ].join(',');
             }).join('\n');
             
-            const headers = 'Data,Cliente,Key,Expiração,Ilimitado\n';
+            const headers = 'Data,Cliente,Key,Expiração\n';
             const blob = new Blob([headers + csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `fera_historico_${new Date().toISOString().slice(0,10)}.csv`;
+            a.download = `fera_revendedor_${new Date().toISOString().slice(0,10)}.csv`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             
-            showToast('✅ Histórico exportado como CSV', 'success');
+            showToast('Histórico exportado como CSV', 'success');
         }
         
         function showHelp() {
             alert(
                 '📋 AJUDA - PAINEL DO REVENDEDOR FERA ALPHA\n\n' +
-                '🔧 SOLUÇÃO DE PROBLEMAS DE CONEXÃO:\n\n' +
-                '1. VERIFIQUE SEU TOKEN:\n' +
-                '   • Certifique-se de que o token está correto\n' +
-                '   • O token pode ter expirado\n\n' +
-                '2. TESTE DE CONEXÃO:\n' +
-                '   • Use o botão "Testar Conexão"\n' +
-                '   • Ele verificará se o servidor está online\n' +
-                '   • E se seu token é válido\n\n' +
-                '3. PROBLEMAS COMUNS:\n' +
-                '   • Servidor pode estar temporariamente offline\n' +
-                '   • Seu firewall pode estar bloqueando a conexão\n' +
-                '   • O endpoint da API pode ter mudado\n\n' +
-                '4. MODO DEBUG:\n' \
+                '1. PREENCHA OS DADOS:\n' +
+                '   • Nome do cliente (deve ser único)\n' +
+                '   • Senha para o cliente\n' +
+                '   • Período da licença (7 dias a 1 ano)\n' +
+                '   • Seu token de revendedor\n\n' +
+                '2. GERE A LICENÇA:\n' +
+                '   • Clique em "Gerar Licença"\n' +
+                '   • Aguarde a conexão com o servidor\n' +
+                '   • Copie a key gerada\n\n' +
+                '3. HISTÓRICO:\n' +
+                '   • Todas as licenças são salvas localmente\n' +
+                '   • Você pode copiar ou reutilizar dados\n' +
+                '   • Exporte para backup em CSV\n\n' +
+                '💡 DICAS IMPORTANTES:\n' +
+                '• Use nomes únicos para cada cliente\n' +
+                '• O token é fornecido pelo administrador\n' +
+                '• Licenças ilimitadas: use "Ilimitado" ou digite 9999\n' +
+                '• As licenças são ativadas no primeiro login\n\n' +
+                '⚠️ PROBLEMAS COMUNS:\n' +
+                '• "Token inválido" = Seu token expirou ou é inválido\n' +
+                '• "Usuário já existe" = Escolha outro nome\n' +
+                '• "Erro de conexão" = Verifique sua internet\n\n' +
+                '📞 SUPORTE:\n' +
+                'Entre em contato com o administrador do sistema'
             );
         }
         
@@ -1560,6 +1406,7 @@
             toast.className = 'toast';
             toast.classList.add(type);
             
+            // Definir ícone correto
             const icon = toast.querySelector('i');
             if (type === 'success') {
                 icon.className = 'fas fa-check-circle';
@@ -1569,14 +1416,40 @@
                 icon.className = 'fas fa-exclamation-triangle';
             }
             
+            // Mostrar
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10);
             
+            // Esconder após 3 segundos
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
+        
+        // ====== ATALHOS DE TECLADO ======
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter para gerar
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateLicense();
+            }
+            
+            // Ctrl+H para histórico
+            if (e.ctrlKey && e.key === 'h') {
+                document.getElementById('historyTable').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Ctrl+E para exportar
+            if (e.ctrlKey && e.key === 'e') {
+                exportHistory();
+            }
+            
+            // Ctrl+T para testar conexão
+            if (e.ctrlKey && e.key === 't') {
+                testConnection();
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>
