@@ -534,6 +534,45 @@
     color: var(--text-light);
   }
 
+  /* CUSTOM DAYS MODAL */
+  .custom-days-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .custom-days-content {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  /* LOADING SPINNER */
+  .spinner {
+    display: none;
+    border: 3px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     body {
@@ -653,7 +692,7 @@
     <h1><i class="fas fa-dragon"></i> Fera Alpha Admin</h1>
     <div class="subtitle">
       <i class="fas fa-shield-alt"></i>
-      <span>Sistema de Gerenciamento Avançado - {{ users|length }} usuários ativos</span>
+      <span>Sistema de Gerenciamento Avançado - <span id="userCount">{{ users|length }}</span> usuários ativos</span>
     </div>
   </div>
   
@@ -678,7 +717,7 @@
     </div>
     <div class="stat-info">
       <h3>Usuários Ativos</h3>
-      <div class="stat-number">{{ users|length }}</div>
+      <div class="stat-number" id="statsTotal">{{ users|length }}</div>
     </div>
   </div>
   
@@ -688,7 +727,7 @@
     </div>
     <div class="stat-info">
       <h3>Licenças Ativas</h3>
-      <div class="stat-number">{{ total_licenses }}</div>
+      <div class="stat-number" id="statsActive">0</div>
     </div>
   </div>
   
@@ -720,19 +759,13 @@
   </div>
   
   <div class="btn-group">
-    <form method="post" action="/admin/reset_all_devices" 
-          onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
-      <button type="submit" class="btn btn-warning">
-        <i class="fas fa-sync-alt"></i> Resetar Todos Devices
-      </button>
-    </form>
+    <button class="btn btn-warning" onclick="resetAllDevices()">
+      <i class="fas fa-sync-alt"></i> Resetar Todos Devices
+    </button>
     
-    <form method="post" action="/admin/clean_expired" 
-          onsubmit="return confirm('Remover TODOS os usuários expirados?')">
-      <button type="submit" class="btn btn-danger">
-        <i class="fas fa-trash"></i> Limpar Expirados
-      </button>
-    </form>
+    <button class="btn btn-danger" onclick="cleanExpired()">
+      <i class="fas fa-trash"></i> Limpar Expirados
+    </button>
     
     <button class="btn btn-info" onclick="openStatsModal()">
       <i class="fas fa-chart-pie"></i> Estatísticas
@@ -750,27 +783,27 @@
     <h2 class="card-title"><i class="fas fa-plus-circle"></i> Criar Nova Licença</h2>
   </div>
   
-  <form method="post" action="/admin/generate">
+  <form id="generateLicenseForm" onsubmit="generateLicense(event)">
     <div class="form-grid">
       <div class="form-group">
         <label><i class="fas fa-user"></i> Usuário</label>
-        <input name="username" required placeholder="ex: cliente123">
+        <input id="newUsername" name="username" required placeholder="ex: cliente123">
       </div>
       
       <div class="form-group">
         <label><i class="fas fa-lock"></i> Senha</label>
-        <input name="password" required placeholder="••••••••">
+        <input id="newPassword" name="password" required placeholder="••••••••">
       </div>
       
       <div class="form-group">
         <label><i class="fas fa-tag"></i> Prefixo</label>
-        <input name="prefix" value="FERA" placeholder="FERA">
+        <input id="newPrefix" name="prefix" value="FERA" placeholder="FERA">
       </div>
       
       <div class="form-group">
         <label><i class="fas fa-calendar-alt"></i> Expiração (dias)</label>
         <div class="btn-group">
-          <input type="number" name="expire_days" value="30" min="0" style="flex: 1;">
+          <input type="number" id="newExpireDays" name="expire_days" value="30" min="0" style="flex: 1;">
           <button type="button" class="btn btn-outline" onclick="setExpiration('30')">30 Dias</button>
           <button type="button" class="btn btn-outline" onclick="setExpiration('90')">90 Dias</button>
           <button type="button" class="btn btn-outline" onclick="setExpiration('365')">1 Ano</button>
@@ -795,7 +828,7 @@
 <!-- LISTA DE USUÁRIOS -->
 <div class="card">
   <div class="card-header">
-    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Usuários ({{ users|length }})</h2>
+    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Usuários (<span id="userCountDisplay">{{ users|length }}</span>)</h2>
     <div>
       <span class="badge badge-success" id="activeCount">0 ativos</span>
       <span class="badge badge-warning" id="expiringCount">0 próximos</span>
@@ -844,9 +877,9 @@
         </tr>
       </thead>
       
-      <tbody>
+      <tbody id="usersTableBody">
         {% for u in users %}
-        <tr data-expires="{{ u.expires_at }}" 
+        <tr id="userRow{{ loop.index0 }}" data-expires="{{ u.expires_at }}" 
             data-user="{{ u.username.lower() }}"
             data-key="{{ u.key.lower() }}"
             data-device="{{ u.device_id if u.device_id else '' }}">
@@ -889,50 +922,35 @@
           <td>
             <div class="action-buttons">
               <!-- +30 Dias -->
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
-                <button type="submit" class="action-btn action-btn-primary" title="+30 Dias">
-                  <i class="fas fa-plus"></i>30
-                </button>
-              </form>
+              <button class="action-btn action-btn-primary" title="+30 Dias" onclick="renewLicense('{{ loop.index0 }}', 30)">
+                <i class="fas fa-plus"></i>30
+              </button>
               
               <!-- Dias Personalizados -->
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" style="display: inline;">
-                <input type="number" name="days" min="1" value="7" 
-                       style="width: 50px; padding: 5px; display: none;" id="days_{{ loop.index0 }}">
-                <button type="submit" class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="showDaysInput({{ loop.index0 }})">
-                  <i class="fas fa-calendar-plus"></i>
-                </button>
-              </form>
+              <button class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="openCustomDaysModal('{{ loop.index0 }}', '{{ u.username }}')">
+                <i class="fas fa-calendar-plus"></i>
+              </button>
               
               <!-- Tornar Ilimitado -->
-              <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
-                    onsubmit="return confirm('Tornar esta licença ilimitada?')">
-                <button type="submit" class="action-btn" title="Tornar Ilimitado" style="background: var(--accent); color: white;">
-                  <i class="fas fa-infinity"></i>
-                </button>
-              </form>
+              <button class="action-btn" title="Tornar Ilimitado" style="background: var(--accent); color: white;" 
+                      onclick="makeUnlimited('{{ loop.index0 }}', '{{ u.username }}')">
+                <i class="fas fa-infinity"></i>
+              </button>
               
               <!-- Reset Key -->
-              <form method="post" action="/admin/reset/{{ loop.index0 }}">
-                <button type="submit" class="action-btn action-btn-warning" title="Resetar Key">
-                  <i class="fas fa-key"></i>
-                </button>
-              </form>
+              <button class="action-btn action-btn-warning" title="Resetar Key" onclick="resetKey('{{ loop.index0 }}', '{{ u.username }}')">
+                <i class="fas fa-key"></i>
+              </button>
               
               <!-- Reset Device -->
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-                <button type="submit" class="action-btn action-btn-danger" title="Resetar Device">
-                  <i class="fas fa-mobile-alt"></i>
-                </button>
-              </form>
+              <button class="action-btn action-btn-danger" title="Resetar Device" onclick="resetDevice('{{ loop.index0 }}', '{{ u.username }}')">
+                <i class="fas fa-mobile-alt"></i>
+              </button>
               
               <!-- Delete -->
-              <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                    onsubmit="return confirm('Excluir usuário {{ u.username }} permanentemente?')">
-                <button type="submit" class="action-btn action-btn-danger" title="Excluir">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </form>
+              <button class="action-btn action-btn-danger" title="Excluir" onclick="deleteUser('{{ loop.index0 }}', '{{ u.username }}')">
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
           </td>
         </tr>
@@ -944,7 +962,7 @@
   <div class="footer mt-20">
     <div class="text-muted">
       <i class="fas fa-info-circle"></i>
-      Mostrando {{ users|length }} usuários. Última atualização: <span id="currentTime"></span>
+      Mostrando <span id="showingCount">{{ users|length }}</span> usuários. Última atualização: <span id="currentTime"></span>
     </div>
     
     <div class="footer-links">
@@ -969,11 +987,50 @@
   </div>
 </div>
 
+<!-- CUSTOM DAYS MODAL -->
+<div id="customDaysModal" class="custom-days-modal">
+  <div class="custom-days-content">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-calendar-plus"></i> Adicionar Dias</h3>
+      <button class="modal-close" onclick="closeCustomDaysModal()">&times;</button>
+    </div>
+    
+    <div class="form-group mt-20">
+      <label><i class="fas fa-user"></i> Usuário</label>
+      <input type="text" id="customDaysUsername" class="form-input" readonly>
+    </div>
+    
+    <div class="form-group">
+      <label><i class="fas fa-calendar-alt"></i> Quantidade de Dias</label>
+      <input type="number" id="customDaysInput" class="form-input" value="7" min="1" max="9999" placeholder="Digite o número de dias">
+    </div>
+    
+    <div class="btn-group mt-20">
+      <button class="btn btn-primary" onclick="applyCustomDays()">
+        <i class="fas fa-check"></i> Aplicar
+      </button>
+      <button class="btn btn-outline" onclick="closeCustomDaysModal()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay" class="modal" style="display: none; background: rgba(0,0,0,0.7);">
+  <div style="text-align: center; color: white;">
+    <div class="spinner"></div>
+    <p style="margin-top: 20px;">Processando...</p>
+  </div>
+</div>
+
 <script>
 // ====== CONFIGURAÇÕES GERAIS ======
 const UNLIMITED_EXPIRY = 9999999999999;
 let currentFilter = 'all';
 let currentSort = { column: 0, direction: 'asc' };
+let currentUserIndex = null;
+let userData = {{ users|tojson|safe }};
 
 // ====== FUNÇÕES DE UTILIDADE ======
 function toggleDarkMode() {
@@ -1042,6 +1099,12 @@ function showToast(message, type = 'info') {
     toast.style.transform = 'translateX(100%)';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
+}
+
+// Mostrar/ocultar loading
+function showLoading(show) {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = show ? 'flex' : 'none';
 }
 
 // ====== GESTÃO DE EXPIRAÇÕES ======
@@ -1125,16 +1188,20 @@ function renderExpirations() {
   document.getElementById('expiredCount').textContent = `${expiredCount} expirados`;
   document.getElementById('unlimitedCount').textContent = unlimitedCount;
   document.getElementById('expiringSoon').textContent = expiringSoon;
+  
+  // Atualizar cards de estatísticas
+  document.getElementById('statsActive').textContent = activeCount;
 }
 
 // ====== FILTRAGEM E ORDENAÇÃO ======
 function filterUsers(filter) {
   currentFilter = filter;
-  const now = Math.floor(Date.now() / 1000);
   
   // Atualizar botões ativos
   document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
+  
+  let visibleCount = 0;
   
   document.querySelectorAll("tr[data-expires]").forEach(tr => {
     const expires = parseInt(tr.getAttribute("data-expires"));
@@ -1161,7 +1228,10 @@ function filterUsers(filter) {
     }
     
     tr.style.display = show ? '' : 'none';
+    if (show) visibleCount++;
   });
+  
+  document.getElementById('showingCount').textContent = visibleCount;
 }
 
 function sortTable(column) {
@@ -1210,6 +1280,8 @@ function sortTable(column) {
 document.getElementById("searchUser").addEventListener("input", function() {
   const query = this.value.toLowerCase().trim();
   
+  let visibleCount = 0;
+  
   document.querySelectorAll("tr[data-expires]").forEach(tr => {
     const user = tr.getAttribute("data-user") || "";
     const key = tr.getAttribute("data-key") || "";
@@ -1217,13 +1289,15 @@ document.getElementById("searchUser").addEventListener("input", function() {
     
     const matches = user.includes(query) || key.includes(query) || device.includes(query);
     tr.style.display = matches ? '' : 'none';
+    if (matches) visibleCount++;
   });
+  
+  document.getElementById('showingCount').textContent = visibleCount;
 });
 
 // ====== FUNÇÕES DO FORMULÁRIO ======
 function setExpiration(days) {
-  const input = document.querySelector('input[name="expire_days"]');
-  input.value = days;
+  document.getElementById('newExpireDays').value = days;
   
   if (days === '0') {
     showToast('Licença será criada como ILIMITADA!', 'info');
@@ -1234,20 +1308,273 @@ function generateRandomCredentials() {
   const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
   const randomPass = Math.random().toString(36).substring(2, 10);
   
-  document.querySelector('input[name="username"]').value = `user_${randomId}`;
-  document.querySelector('input[name="password"]').value = randomPass;
+  document.getElementById('newUsername').value = `user_${randomId}`;
+  document.getElementById('newPassword').value = randomPass;
   
   showToast('Credenciais aleatórias geradas!', 'success');
 }
 
-function showDaysInput(index) {
-  const input = document.getElementById(`days_${index}`);
-  if (input.style.display === 'none') {
-    input.style.display = 'inline-block';
-    input.focus();
-  } else {
-    input.parentElement.submit();
+// ====== FUNÇÕES AJAX PARA AÇÕES ======
+async function sendRequest(url, method = 'POST', data = null) {
+  showLoading(true);
+  
+  try {
+    const options = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    };
+    
+    if (data) {
+      options.body = JSON.stringify(data);
+    }
+    
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP ${response.status}`);
+    }
+    
+    const result = await response.json();
+    showLoading(false);
+    return result;
+    
+  } catch (error) {
+    showLoading(false);
+    console.error('Erro na requisição:', error);
+    showToast(`Erro: ${error.message}`, 'error');
+    throw error;
   }
+}
+
+// Gerar nova licença
+async function generateLicense(event) {
+  event.preventDefault();
+  
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value.trim();
+  const prefix = document.getElementById('newPrefix').value.trim();
+  const expireDays = document.getElementById('newExpireDays').value;
+  
+  if (!username || !password) {
+    showToast('Preencha usuário e senha!', 'error');
+    return;
+  }
+  
+  try {
+    const result = await sendRequest('/admin/generate', 'POST', {
+      username: username,
+      password: password,
+      prefix: prefix,
+      expire_days: expireDays
+    });
+    
+    if (result.success) {
+      showToast('Licença criada com sucesso!', 'success');
+      // Recarregar a página para mostrar a nova licença
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      showToast(`Erro: ${result.error || 'Falha ao criar licença'}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao criar licença', 'error');
+  }
+}
+
+// Renovar licença (+30 dias)
+async function renewLicense(userIndex, days) {
+  if (!confirm(`Adicionar ${days} dias a esta licença?`)) return;
+  
+  try {
+    const result = await sendRequest(`/admin/renew/${userIndex}`, 'POST', { days: days });
+    
+    if (result.success) {
+      showToast(`Licença renovada por +${days} dias!`, 'success');
+      // Atualizar apenas a linha específica
+      updateUserRow(userIndex, result.user);
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao renovar licença', 'error');
+  }
+}
+
+// Tornar licença ilimitada
+async function makeUnlimited(userIndex, username) {
+  if (!confirm(`Tornar a licença de ${username} ilimitada?`)) return;
+  
+  try {
+    const result = await sendRequest(`/admin/make_unlimited/${userIndex}`, 'POST');
+    
+    if (result.success) {
+      showToast('Licença tornada ILIMITADA!', 'success');
+      updateUserRow(userIndex, result.user);
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao tornar licença ilimitada', 'error');
+  }
+}
+
+// Resetar key
+async function resetKey(userIndex, username) {
+  if (!confirm(`Resetar a key do usuário ${username}?`)) return;
+  
+  try {
+    const result = await sendRequest(`/admin/reset/${userIndex}`, 'POST');
+    
+    if (result.success) {
+      showToast('Key resetada com sucesso!', 'success');
+      updateUserRow(userIndex, result.user);
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao resetar key', 'error');
+  }
+}
+
+// Resetar device
+async function resetDevice(userIndex, username) {
+  if (!confirm(`Resetar o device do usuário ${username}?`)) return;
+  
+  try {
+    const result = await sendRequest(`/admin/reset_device/${userIndex}`, 'POST');
+    
+    if (result.success) {
+      showToast('Device resetado com sucesso!', 'success');
+      updateUserRow(userIndex, result.user);
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao resetar device', 'error');
+  }
+}
+
+// Deletar usuário
+async function deleteUser(userIndex, username) {
+  if (!confirm(`Excluir permanentemente o usuário ${username}?`)) return;
+  
+  try {
+    const result = await sendRequest(`/admin/delete/${userIndex}`, 'POST');
+    
+    if (result.success) {
+      showToast('Usuário excluído com sucesso!', 'success');
+      // Remover a linha da tabela
+      document.getElementById(`userRow${userIndex}`).remove();
+      updateCounters();
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao excluir usuário', 'error');
+  }
+}
+
+// Resetar todos os devices
+async function resetAllDevices() {
+  if (!confirm('⚠️ Resetar TODOS os devices?\nEsta ação não pode ser desfeita.')) return;
+  
+  try {
+    const result = await sendRequest('/admin/reset_all_devices', 'POST');
+    
+    if (result.success) {
+      showToast('Todos os devices foram resetados!', 'success');
+      // Recarregar a página
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao resetar devices', 'error');
+  }
+}
+
+// Limpar expirados
+async function cleanExpired() {
+  if (!confirm('Remover TODOS os usuários expirados?')) return;
+  
+  try {
+    const result = await sendRequest('/admin/clean_expired', 'POST');
+    
+    if (result.success) {
+      showToast(`${result.removed} usuários expirados removidos!`, 'success');
+      // Recarregar a página
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      showToast(`Erro: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showToast('Erro ao limpar expirados', 'error');
+  }
+}
+
+// Atualizar linha do usuário
+function updateUserRow(index, userData) {
+  const row = document.getElementById(`userRow${index}`);
+  if (!row) return;
+  
+  // Atualizar dados
+  row.setAttribute('data-expires', userData.expires_at);
+  row.setAttribute('data-device', userData.device_id || '');
+  
+  // Atualizar key
+  const keyCell = row.querySelector('td:nth-child(4) code');
+  if (keyCell) keyCell.textContent = userData.key;
+  
+  // Atualizar device
+  const deviceCell = row.querySelector('td:nth-child(5)');
+  if (deviceCell) {
+    if (userData.device_id) {
+      deviceCell.innerHTML = `<span class="badge badge-success"><i class="fas fa-mobile-alt"></i> ${userData.device_id.slice(0, 10)}...</span>`;
+    } else {
+      deviceCell.innerHTML = `<span class="badge badge-warning"><i class="fas fa-times"></i> Não ativado</span>`;
+    }
+  }
+  
+  // Atualizar expiração
+  renderExpirations();
+}
+
+// Atualizar contadores
+function updateCounters() {
+  const rows = document.querySelectorAll('#usersTableBody tr[data-expires]');
+  const count = rows.length;
+  
+  document.getElementById('userCount').textContent = count;
+  document.getElementById('userCountDisplay').textContent = count;
+  document.getElementById('statsTotal').textContent = count;
+  document.getElementById('showingCount').textContent = count;
+}
+
+// ====== MODAL DE DIAS PERSONALIZADOS ======
+function openCustomDaysModal(userIndex, username) {
+  currentUserIndex = userIndex;
+  document.getElementById('customDaysUsername').value = username;
+  document.getElementById('customDaysInput').value = 7;
+  document.getElementById('customDaysModal').style.display = 'flex';
+}
+
+function closeCustomDaysModal() {
+  document.getElementById('customDaysModal').style.display = 'none';
+  currentUserIndex = null;
+}
+
+function applyCustomDays() {
+  const days = parseInt(document.getElementById('customDaysInput').value);
+  
+  if (isNaN(days) || days < 1) {
+    showToast('Digite um número válido de dias', 'error');
+    return;
+  }
+  
+  closeCustomDaysModal();
+  renewLicense(currentUserIndex, days);
 }
 
 // ====== MODAL DE ESTATÍSTICAS ======
@@ -1367,11 +1694,13 @@ function closeStatsModal() {
   document.getElementById('statsModal').style.display = 'none';
 }
 
-// Fechar modal ao clicar fora
+// Fechar modais ao clicar fora
 window.onclick = function(event) {
-  const modal = document.getElementById('statsModal');
-  if (event.target === modal) {
+  if (event.target === document.getElementById('statsModal')) {
     closeStatsModal();
+  }
+  if (event.target === document.getElementById('customDaysModal')) {
+    closeCustomDaysModal();
   }
 }
 
@@ -1387,7 +1716,7 @@ function exportToCSV() {
       
       const rowData = [
         cells[0].textContent.trim(),
-        cells[1].textContent.trim().split('\n')[0], // Remover badges
+        cells[1].textContent.trim().split('\n')[0],
         cells[2].querySelector("code").textContent.trim(),
         cells[3].querySelector("code").textContent.trim(),
         cells[4].textContent.trim().replace(/[^a-zA-Z0-9]/g, ' '),
@@ -1420,24 +1749,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Renderizar expirações
   renderExpirations();
   updateCurrentTime();
+  updateCounters();
   
   // Auto-refresh a cada 30 segundos
   setInterval(renderExpirations, 30000);
   setInterval(updateCurrentTime, 60000);
   
-  // Adicionar evento de confirmação para ações perigosas
-  document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
-    const oldSubmit = form.onsubmit;
-    form.onsubmit = function(e) {
-      const confirmMsg = this.getAttribute('onsubmit').match(/return confirm\('([^']+)'/)[1];
-      if (!confirm(confirmMsg)) {
-        e.preventDefault();
-        return false;
-      }
-      return oldSubmit.call(this, e);
-    };
+  // Prevenir submit padrão do formulário
+  document.getElementById('generateLicenseForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    generateLicense(e);
   });
 });
 </script>
 </body>
-</html>
+  </html>
