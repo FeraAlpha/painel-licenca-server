@@ -258,13 +258,6 @@
       "key": "TEST-06D44D51",
       "device_id": null,
       "expires_at": 1773524620
-    },
-    {
-      "username": "test_1765752294800",
-      "password": "test123",
-      "key": "TEST-CD9315B5",
-      "device_id": null,
-      "expires_at": 1765838695
     }
   ]
 }
