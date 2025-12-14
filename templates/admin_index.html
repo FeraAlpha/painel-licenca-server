@@ -2,396 +2,162 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel Administrativo</title>
+<title>Fera Alpha — Painel Admin Avançado</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   :root {
-    /* Cores principais */
-    --primary: #2f6fed;
-    --primary-dark: #1a5cd9;
-    --primary-light: rgba(47, 111, 237, 0.1);
-    
-    --secondary: #8b5cf6;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #3b82f6;
-    
-    /* Tema claro */
-    --sidebar-bg: #1e293b;
-    --sidebar-text: #e2e8f0;
-    --sidebar-hover: #334155;
-    --sidebar-active: rgba(47, 111, 237, 0.2);
-    
-    --header-bg: #ffffff;
-    --header-border: #e2e8f0;
-    
-    --main-bg: #f8fafc;
-    --card-bg: #ffffff;
-    
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
-    
-    --border-color: #e2e8f0;
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    
-    --radius-sm: 6px;
-    --radius: 10px;
-    --radius-lg: 14px;
-    
-    --transition: all 0.2s ease-in-out;
+    --bg: #cfd4d8;
+    --card: #f5f6f7;
+    --border: #c6c9cd;
+    --text: #2b2f33;
+    --text-light: #687078;
+    --accent: #2f6fed;
+    --danger: #d93c3c;
+    --ok: #177a30;
+    --warning: #f0ad4e;
+    --info: #17a2b8;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
-  .dark-mode {
-    /* Tema escuro */
-    --sidebar-bg: #0f172a;
-    --sidebar-text: #cbd5e1;
-    --sidebar-hover: #1e293b;
-    --sidebar-active: rgba(47, 111, 237, 0.3);
-    
-    --header-bg: #1e293b;
-    --header-border: #334155;
-    
-    --main-bg: #0f172a;
-    --card-bg: #1e293b;
-    
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    
-    --border-color: #334155;
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  .dark {
+    --bg: #0e1113;
+    --card: #1a1d21;
+    --border: #2a2e32;
+    --text: #e5ecef;
+    --text-light: #9aa4ab;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   }
 
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease;
   }
 
   body {
-    background-color: var(--main-bg);
-    color: var(--text-primary);
-    transition: var(--transition);
-    overflow-x: hidden;
-  }
-
-  /* Layout principal */
-  .app-container {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    width: 260px;
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    position: fixed;
-    height: 100vh;
-    z-index: 1000;
-    transition: var(--transition);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .sidebar-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-
-  .logo-text h1 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .logo-text p {
-    font-size: 12px;
-    opacity: 0.7;
-  }
-
-  .sidebar-nav {
-    padding: 20px 0;
-    flex: 1;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    color: var(--sidebar-text);
-    text-decoration: none;
-    transition: var(--transition);
-    border-left: 3px solid transparent;
-    margin: 4px 0;
-  }
-
-  .nav-item:hover {
-    background: var(--sidebar-hover);
-    border-left-color: var(--primary);
-  }
-
-  .nav-item.active {
-    background: var(--sidebar-active);
-    border-left-color: var(--primary);
-    color: white;
-  }
-
-  .nav-item i {
-    width: 20px;
-    text-align: center;
-  }
-
-  .nav-text {
-    font-weight: 500;
-    font-size: 14px;
-  }
-
-  .sidebar-footer {
+    background: var(--bg);
+    color: var(--text);
     padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 100vh;
+    line-height: 1.6;
   }
 
-  .user-info {
+  /* HEADER */
+  .header {
     display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-  }
-
-  .user-details h4 {
-    font-size: 14px;
-    margin-bottom: 2px;
-  }
-
-  .user-details p {
-    font-size: 12px;
-    opacity: 0.7;
-  }
-
-  /* Conteúdo principal */
-  .main-content {
-    flex: 1;
-    margin-left: 260px;
-    transition: var(--transition);
-  }
-
-  /* Header */
-  .main-header {
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 0 30px;
-    height: 70px;
-    display: flex;
-    align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow);
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
   }
 
-  .header-left h2 {
-    font-size: 20px;
-    font-weight: 600;
+  .header-left h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), #4a8eff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
   }
 
-  .header-actions {
+  .header-left .subtitle {
+    color: var(--text-light);
+    font-size: 14px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
   }
 
-  .theme-toggle {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
+  .header-right {
     display: flex;
+    gap: 15px;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
   }
 
-  .theme-toggle:hover {
-    background: var(--primary-light);
-    border-color: var(--primary);
-  }
-
-  /* Conteúdo */
-  .content-wrapper {
-    padding: 30px;
-  }
-
-  /* Cards de estatísticas */
+  /* STATS CARDS */
   .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
     margin-bottom: 30px;
   }
 
   .stat-card {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    border: 1px solid var(--border-color);
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
     box-shadow: var(--shadow);
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--primary);
-  }
-
-  .stat-card-success::before { background: var(--success); }
-  .stat-card-warning::before { background: var(--warning); }
-  .stat-card-danger::before { background: var(--danger); }
-  .stat-card-info::before { background: var(--info); }
-
-  .stat-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+    align-items: center;
+    gap: 15px;
   }
 
   .stat-icon {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    color: white;
   }
 
-  .stat-icon-primary { background: var(--primary); }
-  .stat-icon-success { background: var(--success); }
-  .stat-icon-warning { background: var(--warning); }
-  .stat-icon-danger { background: var(--danger); }
-  .stat-icon-info { background: var(--info); }
-
-  .stat-more {
-    color: var(--text-muted);
-    cursor: pointer;
+  .stat-info h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    margin-bottom: 5px;
   }
 
   .stat-number {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 8px;
   }
 
-  .stat-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
-  }
-
-  .stat-trend {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .trend-up { color: var(--success); }
-  .trend-down { color: var(--danger); }
-
-  /* Cards principais */
+  /* CARD STYLES */
   .card {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 25px;
+    margin-bottom: 25px;
     box-shadow: var(--shadow);
-    margin-bottom: 30px;
-    overflow: hidden;
   }
 
   .card-header {
-    padding: 24px;
-    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
   }
 
   .card-title {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .card-title i {
-    color: var(--primary);
+    color: var(--accent);
   }
 
-  .card-body {
-    padding: 24px;
-  }
-
-  /* Formulários */
+  /* FORM STYLES */
   .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    margin-bottom: 24px;
   }
 
   .form-group {
@@ -401,97 +167,110 @@
   label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
   }
 
   input, select {
     width: 100%;
     padding: 12px 16px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    color: var(--text-primary);
-    font-size: 14px;
-    transition: var(--transition);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    transition: border-color 0.3s;
   }
 
   input:focus, select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.1);
   }
 
-  /* Botões */
+  /* BUTTON STYLES */
   .btn {
     padding: 12px 20px;
-    border-radius: var(--radius);
+    border-radius: 8px;
     border: none;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     text-decoration: none;
   }
 
   .btn-primary {
-    background: var(--primary);
+    background: var(--accent);
     color: white;
   }
 
   .btn-primary:hover {
-    background: var(--primary-dark);
+    background: #1a5fd8;
     transform: translateY(-2px);
   }
 
   .btn-success {
-    background: var(--success);
+    background: var(--ok);
     color: white;
   }
 
-  .btn-success:hover { background: #0da271; }
+  .btn-success:hover {
+    background: #126625;
+  }
 
   .btn-danger {
     background: var(--danger);
     color: white;
   }
 
-  .btn-danger:hover { background: #dc2626; }
+  .btn-danger:hover {
+    background: #c12a2a;
+  }
 
   .btn-warning {
     background: var(--warning);
     color: white;
   }
 
-  .btn-warning:hover { background: #d97706; }
+  .btn-warning:hover {
+    background: #e09b2d;
+  }
+
+  .btn-info {
+    background: var(--info);
+    color: white;
+  }
+
+  .btn-info:hover {
+    background: #138496;
+  }
 
   .btn-outline {
     background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    color: var(--text);
   }
 
   .btn-outline:hover {
-    background: var(--primary-light);
-    border-color: var(--primary);
-    color: var(--primary);
+    background: var(--bg);
   }
 
   .btn-group {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
-  /* Table */
+  /* TABLE STYLES */
   .table-container {
     overflow-x: auto;
     border-radius: var(--radius);
+    border: 1px solid var(--border);
   }
 
   table {
@@ -501,73 +280,129 @@
   }
 
   thead {
-    background: var(--main-bg);
+    background: var(--bg);
   }
 
   th {
     padding: 16px;
     text-align: left;
     font-weight: 600;
-    color: var(--text-secondary);
-    border-bottom: 2px solid var(--border-color);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+    cursor: pointer;
+    user-select: none;
     white-space: nowrap;
   }
 
+  th:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .dark th:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
   td {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
     vertical-align: middle;
-    font-size: 14px;
   }
 
   tbody tr:hover {
-    background: var(--primary-light);
+    background: var(--bg);
   }
 
-  /* Badges */
+  /* BADGES */
   .badge {
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
     gap: 5px;
   }
 
   .badge-success {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--success);
+    background: rgba(23, 122, 48, 0.15);
+    color: var(--ok);
   }
 
   .badge-warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: var(--warning);
+    background: rgba(240, 173, 78, 0.15);
+    color: #b37e1b;
   }
 
   .badge-danger {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(217, 60, 60, 0.15);
     color: var(--danger);
   }
 
   .badge-info {
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(23, 162, 184, 0.15);
     color: var(--info);
   }
 
   .badge-unlimited {
-    background: rgba(47, 111, 237, 0.1);
-    color: var(--primary);
+    background: rgba(47, 111, 237, 0.15);
+    color: var(--accent);
   }
 
-  /* Search and filters */
-  .search-section {
+  /* ACTION BUTTONS IN TABLE */
+  .action-buttons {
     display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .action-btn-primary:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .action-btn-success:hover {
+    background: var(--ok);
+    color: white;
+    border-color: var(--ok);
+  }
+
+  .action-btn-danger:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+  }
+
+  .action-btn-warning:hover {
+    background: var(--warning);
+    color: white;
+    border-color: var(--warning);
+  }
+
+  /* SEARCH AND FILTERS */
+  .search-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
   }
 
@@ -582,46 +417,77 @@
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
+    color: var(--text-light);
   }
 
   .search-box input {
     padding-left: 45px;
   }
 
-  .filter-buttons {
+  .filters {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
   }
 
   .filter-btn {
     padding: 10px 16px;
-    border-radius: var(--radius);
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 14px;
-    transition: var(--transition);
+    transition: all 0.2s;
   }
 
   .filter-btn.active {
-    background: var(--primary);
+    background: var(--accent);
     color: white;
-    border-color: var(--primary);
+    border-color: var(--accent);
   }
 
-  .filter-btn:hover:not(.active) {
-    background: var(--primary-light);
-    border-color: var(--primary);
-    color: var(--primary);
+  .filter-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
   }
 
-  /* Modal */
+  /* FOOTER */
+  .footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-light);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-links a {
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer-links a:hover {
+    text-decoration: underline;
+  }
+
+  /* MODAL */
   .modal {
     display: none;
     position: fixed;
@@ -629,112 +495,116 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(4px);
   }
 
   .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
+    background: var(--card);
+    border-radius: var(--radius);
     padding: 30px;
     max-width: 500px;
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
 
-  /* Toast */
-  .toast {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    background: var(--success);
-    color: white;
-    padding: 16px 24px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    z-index: 1001;
-    display: none;
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    max-width: 350px;
-    animation: slideIn 0.3s ease;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
   }
 
-  @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
   }
 
-  /* Responsivo */
-  @media (max-width: 1200px) {
-    .sidebar {
-      width: 80px;
-    }
-    
-    .sidebar .logo-text,
-    .sidebar .nav-text,
-    .sidebar .user-details {
-      display: none;
-    }
-    
-    .sidebar .logo {
-      justify-content: center;
-    }
-    
-    .main-content {
-      margin-left: 80px;
-    }
-    
-    .nav-item {
-      justify-content: center;
-      padding: 16px;
-    }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-light);
   }
 
+  /* RESPONSIVE */
   @media (max-width: 768px) {
-    .main-content {
-      margin-left: 0;
+    body {
+      padding: 15px;
     }
     
-    .sidebar {
-      transform: translateX(-100%);
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
     }
     
-    .sidebar.active {
-      transform: translateX(0);
+    .header-right {
+      width: 100%;
+      justify-content: space-between;
     }
     
-    .content-wrapper {
-      padding: 20px;
-    }
-    
-    .main-header {
-      padding: 0 20px;
+    .form-grid {
+      grid-template-columns: 1fr;
     }
     
     .stats-grid {
       grid-template-columns: 1fr;
     }
+    
+    .search-box {
+      min-width: 100%;
+    }
+    
+    .footer {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+    
+    .action-btn {
+      width: 100%;
+      margin-bottom: 5px;
+    }
   }
 
-  /* Utilitários */
-  .text-muted { color: var(--text-muted); }
-  .text-success { color: var(--success); }
-  .text-danger { color: var(--danger); }
-  .text-warning { color: var(--warning); }
-  .text-primary { color: var(--primary); }
+  /* UTILITIES */
+  .text-muted {
+    color: var(--text-light);
+  }
+
+  .text-success {
+    color: var(--ok);
+  }
+
+  .text-danger {
+    color: var(--danger);
+  }
+
+  .text-warning {
+    color: var(--warning);
+  }
+
+  .text-info {
+    color: var(--info);
+  }
 
   .mt-20 { margin-top: 20px; }
   .mb-20 { margin-bottom: 20px; }
   .mt-30 { margin-top: 30px; }
   .mb-30 { margin-bottom: 30px; }
 
-  /* Animations */
+  /* ANIMATIONS */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -744,487 +614,606 @@
     animation: fadeIn 0.5s ease-out;
   }
 
-  /* Scrollbar */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+
+  /* SCROLLBAR */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--main-bg);
+    background: var(--bg);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
+    background: var(--border);
+    border-radius: 5px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
+    background: var(--text-light);
+  }
+
+  /* TOAST STYLES */
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--ok);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .toast-error {
+    background: var(--danger);
+  }
+
+  .toast-info {
+    background: var(--info);
   }
 </style>
 </head>
 
 <body class="fade-in">
 
-<div class="app-container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">
-          <i class="fas fa-dragon"></i>
-        </div>
-        <div class="logo-text">
-          <h1>Fera Alpha</h1>
-          <p>Admin Pro</p>
-        </div>
-      </div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <h1><i class="fas fa-dragon"></i> Fera Alpha Admin</h1>
+    <div class="subtitle">
+      <i class="fas fa-shield-alt"></i>
+      <span>Sistema de Gerenciamento Avançado - <span id="totalUsers">12</span> usuários ativos</span>
     </div>
+  </div>
+  
+  <div class="header-right">
+    <button class="btn btn-info" onclick="window.location.href='/admin/database'">
+      <i class="fas fa-database"></i> Banco de Dados
+    </button>
+    <button class="btn btn-info" onclick="window.location.href='/admin/usage_report'">
+      <i class="fas fa-chart-bar"></i> Relatórios
+    </button>
+    <button class="btn btn-outline" onclick="toggleDarkMode()">
+      <i class="fas fa-moon"></i> Tema
+    </button>
+  </div>
+</header>
 
-    <nav class="sidebar-nav">
-      <a href="#" class="nav-item active">
-        <i class="fas fa-home"></i>
-        <span class="nav-text">Dashboard</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fas fa-users"></i>
-        <span class="nav-text">Usuários</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fas fa-key"></i>
-        <span class="nav-text">Licenças</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fas fa-chart-bar"></i>
-        <span class="nav-text">Analytics</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fas fa-cog"></i>
-        <span class="nav-text">Configurações</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fas fa-shield-alt"></i>
-        <span class="nav-text">Segurança</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="user-info">
-        <div class="user-avatar">A</div>
-        <div class="user-details">
-          <h4>Administrador</h4>
-          <p>Super Admin</p>
-        </div>
-      </div>
+<!-- STATS CARDS -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon" style="background: rgba(47, 111, 237, 0.2); color: var(--accent);">
+      <i class="fas fa-users"></i>
     </div>
-  </aside>
-
-  <!-- Conteúdo Principal -->
-  <main class="main-content">
-    <!-- Header -->
-    <header class="main-header">
-      <div class="header-left">
-        <h2>Painel de Controle</h2>
-      </div>
-      
-      <div class="header-actions">
-        <div class="theme-toggle" onclick="toggleDarkMode()">
-          <i class="fas fa-moon"></i>
-        </div>
-      </div>
-    </header>
-
-    <!-- Conteúdo -->
-    <div class="content-wrapper">
-      <!-- Estatísticas -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon-primary">
-              <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-more">
-              <i class="fas fa-ellipsis-h"></i>
-            </div>
-          </div>
-          <div class="stat-number" id="totalUsers">{{ users|length }}</div>
-          <div class="stat-label">Total de Usuários</div>
-          <div class="stat-trend trend-up">
-            <i class="fas fa-arrow-up"></i>
-            <span>+12% desde o último mês</span>
-          </div>
-        </div>
-
-        <div class="stat-card stat-card-success">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon-success">
-              <i class="fas fa-key"></i>
-            </div>
-            <div class="stat-more">
-              <i class="fas fa-ellipsis-h"></i>
-            </div>
-          </div>
-          <div class="stat-number" id="activeLicenses">0</div>
-          <div class="stat-label">Licenças Ativas</div>
-          <div class="stat-trend trend-up">
-            <i class="fas fa-arrow-up"></i>
-            <span>+8% desde a semana passada</span>
-          </div>
-        </div>
-
-        <div class="stat-card stat-card-warning">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon-warning">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-more">
-              <i class="fas fa-ellipsis-h"></i>
-            </div>
-          </div>
-          <div class="stat-number" id="expiringSoon">0</div>
-          <div class="stat-label">Próximos a Expirar</div>
-          <div class="stat-trend trend-down">
-            <i class="fas fa-arrow-down"></i>
-            <span>-3% desde ontem</span>
-          </div>
-        </div>
-
-        <div class="stat-card stat-card-info">
-          <div class="stat-header">
-            <div class="stat-icon stat-icon-info">
-              <i class="fas fa-infinity"></i>
-            </div>
-            <div class="stat-more">
-              <i class="fas fa-ellipsis-h"></i>
-            </div>
-          </div>
-          <div class="stat-number" id="unlimitedCount">0</div>
-          <div class="stat-label">Licenças Ilimitadas</div>
-          <div class="stat-trend trend-up">
-            <i class="fas fa-arrow-up"></i>
-            <span>+5% este mês</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Ações Rápidas -->
-      <div class="card mb-30">
-        <div class="card-header">
-          <h3 class="card-title">
-            <i class="fas fa-bolt"></i>
-            Ações Rápidas
-          </h3>
-        </div>
-        <div class="card-body">
-          <div class="btn-group">
-            <button class="btn btn-primary" onclick="openCreateModal()">
-              <i class="fas fa-plus"></i> Nova Licença
-            </button>
-            <form method="post" action="/admin/reset_all_devices" style="display: inline;" onsubmit="return confirm('Resetar todos os devices?')">
-              <button type="submit" class="btn btn-warning">
-                <i class="fas fa-sync-alt"></i> Resetar Devices
-              </button>
-            </form>
-            <form method="post" action="/admin/clean_expired" style="display: inline;" onsubmit="return confirm('Limpar usuários expirados?')">
-              <button type="submit" class="btn btn-danger">
-                <i class="fas fa-trash"></i> Limpar Expirados
-              </button>
-            </form>
-            <button class="btn btn-outline" onclick="exportToCSV()">
-              <i class="fas fa-file-export"></i> Exportar CSV
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lista de Usuários -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">
-            <i class="fas fa-list"></i>
-            Gerenciar Usuários
-            <span class="badge badge-primary ml-10" id="usersCount">{{ users|length }}</span>
-          </h3>
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Buscar usuários...">
-          </div>
-        </div>
-
-        <div class="card-body">
-          <!-- Filtros -->
-          <div class="filter-buttons mb-20">
-            <button class="filter-btn active" onclick="filterUsers('all')">
-              <i class="fas fa-list"></i> Todos
-            </button>
-            <button class="filter-btn" onclick="filterUsers('active')">
-              <i class="fas fa-check-circle"></i> Ativos
-            </button>
-            <button class="filter-btn" onclick="filterUsers('expiring')">
-              <i class="fas fa-clock"></i> Próximos
-            </button>
-            <button class="filter-btn" onclick="filterUsers('expired')">
-              <i class="fas fa-times-circle"></i> Expirados
-            </button>
-            <button class="filter-btn" onclick="filterUsers('unlimited')">
-              <i class="fas fa-infinity"></i> Ilimitados
-            </button>
-          </div>
-
-          <!-- Tabela -->
-          <div class="table-container">
-            <table id="usersTable">
-              <thead>
-                <tr>
-                  <th>Usuário</th>
-                  <th>Licença</th>
-                  <th>Dispositivo</th>
-                  <th>Status</th>
-                  <th>Expiração</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for u in users %}
-                <tr data-expires="{{ u.expires_at }}" 
-                    data-user="{{ u.username|lower }}"
-                    data-key="{{ u.key|lower }}"
-                    data-device="{{ u.device_id|lower if u.device_id else '' }}"
-                    class="user-row">
-                  <td>
-                    <div class="user-cell">
-                      <strong>{{ u.username }}</strong>
-                      <small class="text-muted">{{ u.password }}</small>
-                    </div>
-                  </td>
-                  <td>
-                    <code class="license-key">{{ u.key }}</code>
-                    <button class="btn btn-outline btn-sm ml-10" onclick="copyToClipboard('{{ u.key }}')">
-                      <i class="fas fa-copy"></i>
-                    </button>
-                  </td>
-                  <td>
-                    {% if u.device_id %}
-                    <span class="badge badge-success">
-                      <i class="fas fa-mobile-alt"></i> {{ u.device_id[:8] }}...
-                    </span>
-                    {% else %}
-                    <span class="badge badge-warning">
-                      <i class="fas fa-times"></i> Não ativado
-                    </span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if u.device_id %}
-                    <span class="badge badge-success">Online</span>
-                    {% else %}
-                    <span class="badge badge-danger">Offline</span>
-                    {% endif %}
-                  </td>
-                  <td class="expiration-cell">
-                    <!-- Preenchido via JS -->
-                  </td>
-                  <td>
-                    <div class="action-buttons">
-                      <button class="btn btn-outline btn-sm" onclick="renewLicense({{ loop.index0 }})" title="Renovar">
-                        <i class="fas fa-plus"></i>
-                      </button>
-                      <form method="post" action="/admin/reset_device/{{ loop.index0 }}" style="display: inline;">
-                        <button type="submit" class="btn btn-outline btn-sm" title="Resetar Device">
-                          <i class="fas fa-mobile-alt"></i>
-                        </button>
-                      </form>
-                      <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')" style="display: inline;">
-                        <button type="submit" class="btn btn-outline btn-sm text-danger" title="Excluir">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Paginação/Status -->
-          <div class="mt-20 text-center">
-            <div class="text-muted">
-              Mostrando <span id="visibleCount">{{ users|length }}</span> de {{ users|length }} usuários
-            </div>
-            <div class="mt-10">
-              <button class="btn btn-outline" onclick="refreshData()">
-                <i class="fas fa-sync-alt"></i> Atualizar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="stat-info">
+      <h3>Usuários Ativos</h3>
+      <div class="stat-number" id="statsActiveUsers">12</div>
     </div>
-  </main>
-</div>
-
-<!-- Modal para criar licença -->
-<div id="createModal" class="modal">
-  <div class="modal-content">
-    <h3 class="mb-20">
-      <i class="fas fa-plus-circle"></i>
-      Criar Nova Licença
-    </h3>
-    
-    <form method="post" action="/admin/generate">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Usuário</label>
-          <input type="text" name="username" required placeholder="ex: usuario123">
-        </div>
-        
-        <div class="form-group">
-          <label>Senha</label>
-          <input type="password" name="password" required placeholder="••••••••">
-        </div>
-        
-        <div class="form-group">
-          <label>Prefixo da Licença</label>
-          <input type="text" name="prefix" value="FERA">
-        </div>
-        
-        <div class="form-group">
-          <label>Duração (dias)</label>
-          <div class="btn-group">
-            <button type="button" class="btn btn-outline" onclick="setDuration(30)">30 Dias</button>
-            <button type="button" class="btn btn-outline" onclick="setDuration(90)">90 Dias</button>
-            <button type="button" class="btn btn-outline" onclick="setDuration(365)">1 Ano</button>
-            <button type="button" class="btn btn-outline" onclick="setDuration(0)">Ilimitado</button>
-          </div>
-          <input type="number" name="expire_days" value="30" min="0" class="mt-10">
-        </div>
-      </div>
-      
-      <div class="btn-group mt-20">
-        <button type="submit" class="btn btn-primary">
-          <i class="fas fa-check"></i> Criar Licença
-        </button>
-        <button type="button" class="btn btn-outline" onclick="closeCreateModal()">
-          Cancelar
-        </button>
-      </div>
-    </form>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon" style="background: rgba(23, 122, 48, 0.2); color: var(--ok);">
+      <i class="fas fa-key"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Licenças Ativas</h3>
+      <div class="stat-number" id="statsTotalLicenses">12</div>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon" style="background: rgba(240, 173, 78, 0.2); color: var(--warning);">
+      <i class="fas fa-clock"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Próximos a Expirar</h3>
+      <div class="stat-number" id="expiringSoon">2</div>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon" style="background: rgba(23, 162, 184, 0.2); color: var(--info);">
+      <i class="fas fa-infinity"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Licenças Ilimitadas</h3>
+      <div class="stat-number" id="unlimitedCount">3</div>
+    </div>
   </div>
 </div>
 
-<!-- Toast Notifications -->
-<div id="toast" class="toast" style="display: none;">
-  <i class="fas fa-check-circle"></i>
-  <span id="toastMessage">Operação realizada com sucesso!</span>
+<!-- ADMIN TOOLS -->
+<div class="card mb-30">
+  <div class="card-header">
+    <h2 class="card-title"><i class="fas fa-tools"></i> Ferramentas Administrativas</h2>
+  </div>
+  
+  <div class="btn-group">
+    <button class="btn btn-warning" onclick="confirmAction('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.', 'resetAllDevices')">
+      <i class="fas fa-sync-alt"></i> Resetar Todos Devices
+    </button>
+    
+    <button class="btn btn-danger" onclick="confirmAction('Remover TODOS os usuários expirados?', 'cleanExpired')">
+      <i class="fas fa-trash"></i> Limpar Expirados
+    </button>
+    
+    <button class="btn btn-info" onclick="openStatsModal()">
+      <i class="fas fa-chart-pie"></i> Estatísticas
+    </button>
+    
+    <button class="btn btn-outline" onclick="exportToCSV()">
+      <i class="fas fa-file-export"></i> Exportar CSV
+    </button>
+  </div>
+</div>
+
+<!-- GERAR NOVA KEY -->
+<div class="card mb-30">
+  <div class="card-header">
+    <h2 class="card-title"><i class="fas fa-plus-circle"></i> Criar Nova Licença</h2>
+  </div>
+  
+  <form id="licenseForm" onsubmit="createLicense(event)">
+    <div class="form-grid">
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Usuário</label>
+        <input name="username" id="username" required placeholder="ex: cliente123">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Senha</label>
+        <input name="password" id="password" required placeholder="••••••••">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-tag"></i> Prefixo</label>
+        <input name="prefix" id="prefix" value="FERA" placeholder="FERA">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-calendar-alt"></i> Expiração (dias)</label>
+        <div class="btn-group">
+          <input type="number" name="expire_days" id="expire_days" value="30" min="0" style="flex: 1;">
+          <button type="button" class="btn btn-outline" onclick="setExpiration('30')">30 Dias</button>
+          <button type="button" class="btn btn-outline" onclick="setExpiration('90')">90 Dias</button>
+          <button type="button" class="btn btn-outline" onclick="setExpiration('365')">1 Ano</button>
+          <button type="button" class="btn btn-outline" onclick="setExpiration('0')" style="color: var(--accent);">
+            <i class="fas fa-infinity"></i> Ilimitado
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="btn-group mt-20">
+      <button type="submit" class="btn btn-success">
+        <i class="fas fa-plus"></i> Criar Licença
+      </button>
+      <button type="button" class="btn btn-outline" onclick="generateRandomCredentials()">
+        <i class="fas fa-random"></i> Gerar Aleatório
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- LISTA DE USUÁRIOS -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Usuários (<span id="userCount">12</span>)</h2>
+    <div>
+      <span class="badge badge-success" id="activeCount">0 ativos</span>
+      <span class="badge badge-warning" id="expiringCount">0 próximos</span>
+      <span class="badge badge-danger" id="expiredCount">0 expirados</span>
+    </div>
+  </div>
+  
+  <!-- SEARCH AND FILTERS -->
+  <div class="search-container">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchUser" placeholder="Buscar por usuário, key, device...">
+    </div>
+    
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterUsers('all')">
+        <i class="fas fa-list"></i> Todos
+      </button>
+      <button class="filter-btn" onclick="filterUsers('active')">
+        <i class="fas fa-check-circle"></i> Ativos
+      </button>
+      <button class="filter-btn" onclick="filterUsers('expiring')">
+        <i class="fas fa-exclamation-triangle"></i> Próximos
+      </button>
+      <button class="filter-btn" onclick="filterUsers('expired')">
+        <i class="fas fa-times-circle"></i> Expirados
+      </button>
+      <button class="filter-btn" onclick="filterUsers('unlimited')">
+        <i class="fas fa-infinity"></i> Ilimitados
+      </button>
+    </div>
+  </div>
+  
+  <!-- TABLE -->
+  <div class="table-container">
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">ID <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(1)">Usuário <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(2)">Senha <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(3)">Key <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(4)">Device <i class="fas fa-sort"></i></th>
+          <th onclick="sortTable(5)">Expiração <i class="fas fa-sort"></i></th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      
+      <tbody id="usersTableBody">
+        <!-- Dados serão preenchidos via JavaScript -->
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="footer mt-20">
+    <div class="text-muted">
+      <i class="fas fa-info-circle"></i>
+      Mostrando <span id="showingCount">12</span> usuários. Última atualização: <span id="currentTime"></span>
+    </div>
+    
+    <div class="footer-links">
+      <a href="#"><i class="fas fa-database"></i> Banco de Dados</a>
+      <a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a>
+      <a href="#"><i class="fas fa-heartbeat"></i> Status API</a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS MODAL -->
+<div id="statsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-chart-pie"></i> Estatísticas do Sistema</h3>
+      <button class="modal-close" onclick="closeStatsModal()">&times;</button>
+    </div>
+    
+    <div id="modalStatsContent">
+      <!-- Preenchido via JavaScript -->
+    </div>
+  </div>
 </div>
 
 <script>
-// Estado da aplicação
-const state = {
-  darkMode: localStorage.getItem('darkMode') === 'true',
-  currentFilter: 'all',
-  stats: {
-    total: {{ users|length }},
-    active: 0,
-    expiring: 0,
-    expired: 0,
-    unlimited: 0
+// ====== DADOS DE EXEMPLO ======
+let usersData = [
+  {
+    id: 1,
+    username: "cliente_premium",
+    password: "senha123",
+    key: "FERA-ABCD-1234-EFGH",
+    device_id: "DEV-789-XYZ-456",
+    expires_at: Math.floor(Date.now() / 1000) + (86400 * 45) // 45 dias
+  },
+  {
+    id: 2,
+    username: "user_teste",
+    password: "teste2024",
+    key: "FERA-WXYZ-5678-ABCD",
+    device_id: "",
+    expires_at: Math.floor(Date.now() / 1000) + (86400 * 2) // 2 dias
+  },
+  {
+    id: 3,
+    username: "admin_ilimitado",
+    password: "master2024",
+    key: "FERA-ILIM-9999-9999",
+    device_id: "DEV-ADMIN-001",
+    expires_at: 9999999999999 // Ilimitado
+  },
+  {
+    id: 4,
+    username: "empresa_x",
+    password: "emp123456",
+    key: "FERA-COMP-8888-7777",
+    device_id: "DEV-COMP-789",
+    expires_at: Math.floor(Date.now() / 1000) + (86400 * 365) // 1 ano
+  },
+  {
+    id: 5,
+    username: "user_expirado",
+    password: "pass123",
+    key: "FERA-EXPI-0000-0000",
+    device_id: "DEV-OLD-001",
+    expires_at: Math.floor(Date.now() / 1000) - (86400 * 10) // Expirado há 10 dias
+  },
+  {
+    id: 6,
+    username: "demo_user",
+    password: "demo2024",
+    key: "FERA-DEMO-1111-2222",
+    device_id: "DEV-DEMO-123",
+    expires_at: Math.floor(Date.now() / 1000) + (86400 * 15) // 15 dias
+  },
+  {
+    id: 7,
+    username: "beta_tester",
+    password: "beta999",
+    key: "FERA-BETA-3333-4444",
+    device_id: "",
+    expires_at: 9999999999999 // Ilimitado
+  },
+  {
+    id: 8,
+    username: "corporativo",
+    password: "Corp@2024",
+    key: "FERA-CORP-5555-6666",
+    device_id: "DEV-CORP-001",
+    expires_at: Math.floor(Date.now() / 1000) + (86400 * 180) // 180 dias
   }
-};
+];
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', function() {
-  // Aplicar tema
-  if (state.darkMode) {
-    document.body.classList.add('dark-mode');
-  }
-  
-  // Carregar estatísticas
-  updateStatistics();
-  updateExpirations();
-  
-  // Configurar busca
-  document.getElementById('searchInput').addEventListener('input', searchUsers);
-  
-  // Auto-refresh
-  setInterval(updateExpirations, 30000);
-  setInterval(updateStatistics, 60000);
-});
+// ====== CONFIGURAÇÕES GERAIS ======
+const UNLIMITED_EXPIRY = 9999999999999;
+let currentFilter = 'all';
+let currentSort = { column: 0, direction: 'asc' };
 
-// Alternar tema
+// ====== FUNÇÕES DE UTILIDADE ======
 function toggleDarkMode() {
-  state.darkMode = !state.darkMode;
-  document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', state.darkMode);
-  
-  // Atualizar ícone
-  const icon = document.querySelector('.theme-toggle i');
-  icon.className = state.darkMode ? 'fas fa-sun' : 'fas fa-moon';
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+  showToast('Tema alterado!', 'info');
 }
 
-// Atualizar expirações
-function updateExpirations() {
-  const now = Math.floor(Date.now() / 1000);
-  
-  document.querySelectorAll('.user-row').forEach(row => {
-    const expires = parseInt(row.getAttribute('data-expires'));
-    const cell = row.querySelector('.expiration-cell');
-    
-    if (!expires || expires === 0 || expires > 999999999999) {
-      cell.innerHTML = '<span class="badge badge-unlimited"><i class="fas fa-infinity"></i> Ilimitado</span>';
-      return;
-    }
-    
-    const diff = expires - now;
-    const days = Math.floor(diff / 86400);
-    
-    if (diff <= 0) {
-      cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times"></i> Expirado</span>';
-    } else if (days <= 3) {
-      cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></i> ${days} dias</span>`;
-    } else if (days <= 7) {
-      cell.innerHTML = `<span class="badge badge-warning"><i class="fas fa-clock"></i> ${days} dias</span>`;
-    } else {
-      cell.innerHTML = `<span class="badge badge-success"><i class="fas fa-check"></i> ${days} dias</span>`;
-    }
+// Verificar preferência salva
+if (localStorage.getItem('darkMode') === 'true') {
+  document.body.classList.add('dark');
+}
+
+// Atualizar hora atual
+function updateCurrentTime() {
+  const now = new Date();
+  document.getElementById('currentTime').textContent = 
+    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// Copiar para clipboard
+function copyToClipboard(text, label = 'Texto') {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(`${label} copiado para clipboard!`, 'success');
+  }).catch(err => {
+    console.error('Erro ao copiar:', err);
+    showToast('Erro ao copiar', 'error');
   });
 }
 
-// Atualizar estatísticas
-function updateStatistics() {
-  const now = Math.floor(Date.now() / 1000);
-  const stats = { total: 0, active: 0, expiring: 0, expired: 0, unlimited: 0 };
+// Mostrar toast notification
+function showToast(message, type = 'info') {
+  // Remover toast anterior
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) existingToast.remove();
   
-  document.querySelectorAll('.user-row').forEach(row => {
-    const expires = parseInt(row.getAttribute('data-expires'));
-    stats.total++;
+  // Criar novo toast
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
+    ${message}
+  `;
+  
+  // Adicionar classe de tipo
+  if (type === 'error') {
+    toast.style.background = 'var(--danger)';
+  } else if (type === 'info') {
+    toast.style.background = 'var(--info)';
+  } else {
+    toast.style.background = 'var(--ok)';
+  }
+  
+  document.body.appendChild(toast);
+  
+  // Remover após 3 segundos
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100%)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Confirmar ação
+function confirmAction(message, action) {
+  if (confirm(message)) {
+    if (action === 'resetAllDevices') {
+      resetAllDevices();
+    } else if (action === 'cleanExpired') {
+      cleanExpiredUsers();
+    }
+  }
+}
+
+// ====== FUNÇÕES DE GESTÃO DE USUÁRIOS ======
+function loadUsersTable() {
+  const tbody = document.getElementById('usersTableBody');
+  tbody.innerHTML = '';
+  
+  usersData.forEach((user, index) => {
+    const expires = user.expires_at || 0;
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-expires', expires);
+    tr.setAttribute('data-user', user.username.toLowerCase());
+    tr.setAttribute('data-key', user.key.toLowerCase());
+    tr.setAttribute('data-device', user.device_id || '');
     
-    if (!expires || expires === 0 || expires > 999999999999) {
-      stats.unlimited++;
-    } else if (expires < now) {
-      stats.expired++;
-    } else {
-      const days = Math.floor((expires - now) / 86400);
-      stats.active++;
-      if (days <= 7) stats.expiring++;
+    const expInfo = calculateExpiration(expires);
+    const expiresBadge = getExpirationBadge(expInfo);
+    
+    tr.innerHTML = `
+      <td>${user.id}</td>
+      <td>
+        <strong>${user.username}</strong>
+        ${expires === UNLIMITED_EXPIRY || expires === 0 ? 
+          '<span class="badge badge-unlimited">ILIMITADO</span>' : ''}
+      </td>
+      <td>
+        <code>${user.password}</code>
+        <button class="action-btn action-btn-success" onclick="copyToClipboard('${user.username}:${user.password}', 'Usuário/Senha')">
+          <i class="fas fa-copy"></i>
+        </button>
+      </td>
+      <td>
+        <code>${user.key}</code>
+        <button class="action-btn action-btn-primary" onclick="copyToClipboard('${user.key}', 'Key')">
+          <i class="fas fa-copy"></i>
+        </button>
+      </td>
+      <td>
+        ${user.device_id ? 
+          `<span class="badge badge-success"><i class="fas fa-mobile-alt"></i> ${user.device_id.substring(0, 10)}...</span>` :
+          `<span class="badge badge-warning"><i class="fas fa-times"></i> Não ativado</span>`}
+      </td>
+      <td class="expCell">
+        ${expiresBadge}
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="action-btn action-btn-primary" title="+30 Dias" onclick="renewLicense(${index}, 30)">
+            <i class="fas fa-plus"></i>30
+          </button>
+          
+          <button class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="showCustomRenew(${index})">
+            <i class="fas fa-calendar-plus"></i>
+          </button>
+          
+          <button class="action-btn" title="Tornar Ilimitado" onclick="makeUnlimited(${index})" style="background: var(--accent); color: white;">
+            <i class="fas fa-infinity"></i>
+          </button>
+          
+          <button class="action-btn action-btn-warning" title="Resetar Key" onclick="resetKey(${index})">
+            <i class="fas fa-key"></i>
+          </button>
+          
+          <button class="action-btn action-btn-danger" title="Resetar Device" onclick="resetDevice(${index})">
+            <i class="fas fa-mobile-alt"></i>
+          </button>
+          
+          <button class="action-btn action-btn-danger" title="Excluir" onclick="deleteUser(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    `;
+    
+    tbody.appendChild(tr);
+  });
+  
+  updateStats();
+  renderExpirations();
+}
+
+// ====== GESTÃO DE EXPIRAÇÕES ======
+function calculateExpiration(expires) {
+  const now = Math.floor(Date.now() / 1000);
+  
+  // Licença ilimitada
+  if (!expires || expires == 0 || expires == UNLIMITED_EXPIRY) {
+    return { status: 'unlimited', days: Infinity };
+  }
+  
+  const diff = expires - now;
+  const days = Math.floor(diff / 86400);
+  
+  if (diff <= 0) {
+    return { status: 'expired', days: 0 };
+  } else if (days <= 3) {
+    return { status: 'critical', days };
+  } else if (days <= 7) {
+    return { status: 'warning', days };
+  } else {
+    return { status: 'active', days };
+  }
+}
+
+function getExpirationBadge(expInfo) {
+  switch(expInfo.status) {
+    case 'unlimited':
+      return `<span class="badge badge-unlimited"><i class="fas fa-infinity"></i> ILIMITADO</span>`;
+    case 'active':
+      return `<span class="badge badge-success"><i class="fas fa-check"></i> ${expInfo.days} dias</span>`;
+    case 'warning':
+      return `<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> ${expInfo.days} dias</span>`;
+    case 'critical':
+      return `<span class="badge badge-danger pulse"><i class="fas fa-exclamation-circle"></i> ${expInfo.days} dias</span>`;
+    case 'expired':
+      return `<span class="badge badge-danger"><i class="fas fa-times"></i> EXPIRADO</span>`;
+    default:
+      return `<span class="badge badge-info">${expInfo.days} dias</span>`;
+  }
+}
+
+function renderExpirations() {
+  let activeCount = 0;
+  let expiringCount = 0;
+  let expiredCount = 0;
+  let unlimitedCount = 0;
+  let expiringSoon = 0;
+  
+  usersData.forEach(user => {
+    const expInfo = calculateExpiration(user.expires_at);
+    
+    // Atualizar contadores
+    switch(expInfo.status) {
+      case 'unlimited':
+        unlimitedCount++;
+        break;
+      case 'active':
+        activeCount++;
+        if (expInfo.days <= 30) expiringSoon++;
+        break;
+      case 'warning':
+      case 'critical':
+        expiringCount++;
+        expiringSoon++;
+        break;
+      case 'expired':
+        expiredCount++;
+        break;
     }
   });
   
-  // Atualizar UI
-  document.getElementById('activeLicenses').textContent = stats.active;
-  document.getElementById('expiringSoon').textContent = stats.expiring;
-  document.getElementById('unlimitedCount').textContent = stats.unlimited;
-  document.getElementById('usersCount').textContent = stats.total;
-  
-  state.stats = stats;
+  // Atualizar estatísticas
+  document.getElementById('activeCount').textContent = `${activeCount} ativos`;
+  document.getElementById('expiringCount').textContent = `${expiringCount} próximos`;
+  document.getElementById('expiredCount').textContent = `${expiredCount} expirados`;
+  document.getElementById('unlimitedCount').textContent = unlimitedCount;
+  document.getElementById('expiringSoon').textContent = expiringSoon;
+  document.getElementById('userCount').textContent = usersData.length;
+  document.getElementById('showingCount').textContent = usersData.length;
+  document.getElementById('totalUsers').textContent = usersData.length;
+  document.getElementById('statsActiveUsers').textContent = usersData.length;
+  document.getElementById('statsTotalLicenses').textContent = usersData.length;
 }
 
-// Filtrar usuários
+function updateStats() {
+  // Função para atualizar todas as estatísticas
+  renderExpirations();
+}
+
+// ====== FILTRAGEM E ORDENAÇÃO ======
 function filterUsers(filter) {
-  state.currentFilter = filter;
-  const now = Math.floor(Date.now() / 1000);
+  currentFilter = filter;
   
   // Atualizar botões ativos
   document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -1232,197 +1221,411 @@ function filterUsers(filter) {
   
   let visibleCount = 0;
   
-  document.querySelectorAll('.user-row').forEach(row => {
-    const expires = parseInt(row.getAttribute('data-expires'));
-    let shouldShow = false;
+  document.querySelectorAll("tr[data-expires]").forEach(tr => {
+    const expires = parseInt(tr.getAttribute("data-expires"));
+    const expInfo = calculateExpiration(expires);
+    
+    let show = false;
     
     switch(filter) {
       case 'all':
-        shouldShow = true;
+        show = true;
         break;
       case 'active':
-        shouldShow = expires > now && expires < 999999999999;
+        show = expInfo.status === 'active' || expInfo.status === 'warning' || expInfo.status === 'critical';
         break;
       case 'expiring':
-        const days = Math.floor((expires - now) / 86400);
-        shouldShow = expires > now && days <= 7;
+        show = expInfo.status === 'warning' || expInfo.status === 'critical';
         break;
       case 'expired':
-        shouldShow = expires < now;
+        show = expInfo.status === 'expired';
         break;
       case 'unlimited':
-        shouldShow = !expires || expires === 0 || expires > 999999999999;
+        show = expInfo.status === 'unlimited';
         break;
     }
     
-    row.style.display = shouldShow ? '' : 'none';
-    if (shouldShow) visibleCount++;
+    tr.style.display = show ? '' : 'none';
+    if (show) visibleCount++;
   });
   
-  document.getElementById('visibleCount').textContent = visibleCount;
+  document.getElementById('showingCount').textContent = visibleCount;
 }
 
-// Buscar usuários
-function searchUsers() {
-  const query = this.value.toLowerCase();
+function sortTable(column) {
+  const table = document.getElementById("usersTable");
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  
+  // Determinar direção
+  const isAsc = currentSort.column !== column ? true : currentSort.direction !== 'asc';
+  currentSort = { column, direction: isAsc ? 'asc' : 'desc' };
+  
+  rows.sort((a, b) => {
+    let aVal = a.cells[column].textContent.trim();
+    let bVal = b.cells[column].textContent.trim();
+    
+    // Ordenação especial para coluna de expiração
+    if (column === 5) {
+      aVal = parseInt(a.getAttribute("data-expires")) || 0;
+      bVal = parseInt(b.getAttribute("data-expires")) || 0;
+    }
+    
+    // Ordenar por ID
+    if (column === 0) {
+      const aNum = parseInt(aVal);
+      const bNum = parseInt(bVal);
+      return isAsc ? aNum - bNum : bNum - aNum;
+    }
+    
+    // Ordenação alfabética
+    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+  });
+  
+  // Reordenar tabela
+  rows.forEach(row => tbody.appendChild(row));
+  
+  // Atualizar ícones de ordenação
+  document.querySelectorAll('#usersTable th i').forEach(icon => {
+    icon.className = 'fas fa-sort';
+  });
+  
+  const currentIcon = document.querySelector(`#usersTable th:nth-child(${column + 1}) i`);
+  if (currentIcon) {
+    currentIcon.className = isAsc ? 'fas fa-sort-up' : 'fas fa-sort-down';
+  }
+}
+
+// ====== BUSCA ======
+document.getElementById("searchUser").addEventListener("input", function() {
+  const query = this.value.toLowerCase().trim();
   let visibleCount = 0;
   
-  document.querySelectorAll('.user-row').forEach(row => {
-    const user = row.getAttribute('data-user');
-    const key = row.getAttribute('data-key');
-    const device = row.getAttribute('data-device');
+  document.querySelectorAll("tr[data-expires]").forEach(tr => {
+    const user = tr.getAttribute("data-user") || "";
+    const key = tr.getAttribute("data-key") || "";
+    const device = tr.getAttribute("data-device") || "";
     
     const matches = user.includes(query) || key.includes(query) || device.includes(query);
-    const isFiltered = state.currentFilter === 'all' || checkFilter(row);
-    
-    row.style.display = matches && isFiltered ? '' : 'none';
-    if (matches && isFiltered) visibleCount++;
+    tr.style.display = matches ? '' : 'none';
+    if (matches) visibleCount++;
   });
   
-  document.getElementById('visibleCount').textContent = visibleCount;
-}
+  document.getElementById('showingCount').textContent = visibleCount;
+});
 
-function checkFilter(row) {
-  const expires = parseInt(row.getAttribute('data-expires'));
-  const now = Math.floor(Date.now() / 1000);
+// ====== FUNÇÕES DO FORMULÁRIO ======
+function setExpiration(days) {
+  const input = document.getElementById('expire_days');
+  input.value = days;
   
-  switch(state.currentFilter) {
-    case 'active':
-      return expires > now && expires < 999999999999;
-    case 'expiring':
-      const days = Math.floor((expires - now) / 86400);
-      return expires > now && days <= 7;
-    case 'expired':
-      return expires < now;
-    case 'unlimited':
-      return !expires || expires === 0 || expires > 999999999999;
-    default:
-      return true;
+  if (days === '0') {
+    showToast('Licença será criada como ILIMITADA!', 'info');
   }
 }
 
-// Copiar para clipboard
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Copiado para a área de transferência!');
-  });
+function generateRandomCredentials() {
+  const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const randomPass = Math.random().toString(36).substring(2, 10);
+  
+  document.getElementById('username').value = `user_${randomId}`;
+  document.getElementById('password').value = randomPass;
+  
+  showToast('Credenciais aleatórias geradas!', 'success');
 }
 
-// Mostrar toast
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  const toastMessage = document.getElementById('toastMessage');
+function createLicense(event) {
+  event.preventDefault();
   
-  // Configurar cor baseada no tipo
-  const colors = {
-    success: '#10b981',
-    error: '#ef4444',
-    warning: '#f59e0b',
-    info: '#3b82f6'
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const prefix = document.getElementById('prefix').value || 'FERA';
+  const expireDays = parseInt(document.getElementById('expire_days').value);
+  
+  // Gerar key aleatória
+  const key = `${prefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  
+  // Calcular expiração
+  let expiresAt;
+  if (expireDays === 0) {
+    expiresAt = UNLIMITED_EXPIRY;
+  } else {
+    expiresAt = Math.floor(Date.now() / 1000) + (86400 * expireDays);
+  }
+  
+  // Adicionar novo usuário
+  const newUser = {
+    id: usersData.length + 1,
+    username: username,
+    password: password,
+    key: key,
+    device_id: "",
+    expires_at: expiresAt
   };
   
-  toast.style.background = colors[type] || colors.success;
-  toastMessage.textContent = message;
-  toast.style.display = 'flex';
+  usersData.push(newUser);
   
-  setTimeout(() => {
-    toast.style.display = 'none';
-  }, 3000);
+  // Recarregar tabela
+  loadUsersTable();
+  
+  // Limpar formulário
+  document.getElementById('licenseForm').reset();
+  document.getElementById('expire_days').value = '30';
+  
+  showToast(`Licença criada para ${username}!`, 'success');
 }
 
-// Modal functions
-function openCreateModal() {
-  document.getElementById('createModal').style.display = 'flex';
-}
-
-function closeCreateModal() {
-  document.getElementById('createModal').style.display = 'none';
-}
-
-function setDuration(days) {
-  document.querySelector('input[name="expire_days"]').value = days;
-  if (days === 0) {
-    showToast('Licença será criada como ilimitada!', 'info');
+// ====== AÇÕES NA TABELA ======
+function renewLicense(index, days) {
+  if (usersData[index].expires_at !== UNLIMITED_EXPIRY) {
+    const newExpiry = Math.floor(Date.now() / 1000) + (86400 * days);
+    usersData[index].expires_at = newExpiry;
+    loadUsersTable();
+    showToast(`Licença renovada por +${days} dias!`, 'success');
+  } else {
+    showToast('Licença ilimitada não pode ser renovada!', 'info');
   }
 }
 
-// Renovar licença
-function renewLicense(index) {
-  const days = prompt('Quantos dias para adicionar?', '30');
-  if (days && !isNaN(days)) {
-    // Enviar requisição para renovar
-    fetch(`/admin/renew_custom/${index}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: `days=${days}`
-    }).then(() => {
-      showToast(`Licença renovada por ${days} dias!`);
-      setTimeout(() => location.reload(), 1000);
-    });
+function showCustomRenew(index) {
+  const days = prompt('Quantos dias deseja adicionar?', '7');
+  if (days && !isNaN(days) && parseInt(days) > 0) {
+    renewLicense(index, parseInt(days));
   }
 }
 
-// Exportar CSV
+function makeUnlimited(index) {
+  if (confirm('Tornar esta licença ilimitada?')) {
+    usersData[index].expires_at = UNLIMITED_EXPIRY;
+    loadUsersTable();
+    showToast('Licença tornada ilimitada!', 'success');
+  }
+}
+
+function resetKey(index) {
+  const prefix = usersData[index].key.split('-')[0];
+  const newKey = `${prefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  usersData[index].key = newKey;
+  loadUsersTable();
+  showToast('Key resetada com sucesso!', 'success');
+}
+
+function resetDevice(index) {
+  if (confirm('Resetar device deste usuário?')) {
+    usersData[index].device_id = "";
+    loadUsersTable();
+    showToast('Device resetado!', 'success');
+  }
+}
+
+function deleteUser(index) {
+  const username = usersData[index].username;
+  if (confirm(`Excluir usuário ${username} permanentemente?`)) {
+    usersData.splice(index, 1);
+    loadUsersTable();
+    showToast(`Usuário ${username} excluído!`, 'success');
+  }
+}
+
+// Ações em lote
+function resetAllDevices() {
+  usersData.forEach(user => {
+    user.device_id = "";
+  });
+  loadUsersTable();
+  showToast('Todos devices foram resetados!', 'success');
+}
+
+function cleanExpiredUsers() {
+  const now = Math.floor(Date.now() / 1000);
+  const initialLength = usersData.length;
+  usersData = usersData.filter(user => {
+    const expInfo = calculateExpiration(user.expires_at);
+    return expInfo.status !== 'expired' && user.expires_at !== 0;
+  });
+  
+  const removed = initialLength - usersData.length;
+  loadUsersTable();
+  showToast(`${removed} usuários expirados removidos!`, 'success');
+}
+
+// ====== MODAL DE ESTATÍSTICAS ======
+function openStatsModal() {
+  let stats = {
+    total: usersData.length,
+    active: 0,
+    expiring: 0,
+    expired: 0,
+    unlimited: 0,
+    withDevice: 0,
+    withoutDevice: 0
+  };
+  
+  usersData.forEach(user => {
+    const expInfo = calculateExpiration(user.expires_at);
+    const hasDevice = user.device_id && user.device_id.trim() !== "";
+    
+    // Contar por status
+    switch(expInfo.status) {
+      case 'unlimited': stats.unlimited++; break;
+      case 'active': stats.active++; break;
+      case 'warning':
+      case 'critical': stats.expiring++; break;
+      case 'expired': stats.expired++; break;
+    }
+    
+    // Contar por dispositivo
+    if (hasDevice) {
+      stats.withDevice++;
+    } else {
+      stats.withoutDevice++;
+    }
+  });
+  
+  // Gerar conteúdo do modal
+  const modalContent = `
+    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(47, 111, 237, 0.2); color: var(--accent);">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Total Usuários</h3>
+          <div class="stat-number">${stats.total}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(23, 122, 48, 0.2); color: var(--ok);">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Ativos</h3>
+          <div class="stat-number">${stats.active}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(240, 173, 78, 0.2); color: var(--warning);">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Próximos a Expirar</h3>
+          <div class="stat-number">${stats.expiring}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(217, 60, 60, 0.2); color: var(--danger);">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Expirados</h3>
+          <div class="stat-number">${stats.expired}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(47, 111, 237, 0.2); color: var(--accent);">
+          <i class="fas fa-infinity"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Ilimitados</h3>
+          <div class="stat-number">${stats.unlimited}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(23, 162, 184, 0.2); color: var(--info);">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Com Device</h3>
+          <div class="stat-number">${stats.withDevice}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: var(--radius);">
+      <h4 style="margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Informações do Sistema</h4>
+      <div style="font-size: 14px; line-height: 1.6;">
+        <p><strong>Banco de Dados:</strong> ${stats.total} licenças registradas</p>
+        <p><strong>Última Atualização:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+        <p><strong>Status Sistema:</strong> <span class="badge badge-success">Online</span></p>
+        <p><strong>Usuários sem Device:</strong> ${stats.withoutDevice}</p>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('modalStatsContent').innerHTML = modalContent;
+  document.getElementById('statsModal').style.display = 'flex';
+}
+
+function closeStatsModal() {
+  document.getElementById('statsModal').style.display = 'none';
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+  const modal = document.getElementById('statsModal');
+  if (event.target === modal) {
+    closeStatsModal();
+  }
+}
+
+// ====== EXPORTAÇÃO ======
 function exportToCSV() {
-  const rows = document.querySelectorAll('.user-row');
-  let csv = 'Usuário,Senha,Licença,Dispositivo,Status,Expiração\n';
+  const rows = document.querySelectorAll("#usersTable tbody tr");
+  let csv = "ID,Usuário,Senha,Key,Device,Expiração,Status\n";
   
   rows.forEach(row => {
     if (row.style.display !== 'none') {
-      const cells = row.querySelectorAll('td');
-      const username = row.getAttribute('data-user');
-      const key = row.getAttribute('data-key');
-      const device = row.getAttribute('data-device');
-      const expires = row.getAttribute('data-expires');
+      const cells = row.querySelectorAll("td");
+      const expCell = row.querySelector(".expCell").textContent.trim();
       
-      const status = cells[3].textContent.trim();
-      const expiration = cells[4].textContent.trim();
+      const rowData = [
+        cells[0].textContent.trim(),
+        cells[1].textContent.trim().split('\n')[0],
+        cells[2].querySelector("code").textContent.trim(),
+        cells[3].querySelector("code").textContent.trim(),
+        cells[4].textContent.trim().replace(/[^a-zA-Z0-9]/g, ' '),
+        row.getAttribute("data-expires"),
+        expCell
+      ];
       
-      // Encontrar senha no primeiro cell
-      const password = cells[0].querySelector('small').textContent.trim();
-      
-      csv += `"${username}","${password}","${key}","${device}","${status}","${expiration}"\n`;
+      csv += rowData.map(cell => `"${cell}"`).join(",") + "\n";
     }
   });
   
   // Criar e baixar arquivo
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
   
-  link.setAttribute('href', url);
-  link.setAttribute('download', `usuarios_fera_alpha_${new Date().toISOString().slice(0,10)}.csv`);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `fera_alpha_users_${new Date().toISOString().slice(0,10)}.csv`);
+  link.style.visibility = 'hidden';
+  
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   
-  showToast('Dados exportados com sucesso!');
+  showToast('Dados exportados para CSV!', 'success');
 }
 
-// Atualizar dados
-function refreshData() {
-  const btn = event?.target;
-  if (btn) {
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Atualizando...';
-    btn.disabled = true;
-    
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
-  } else {
-    location.reload();
-  }
-}
-
-// Fechar modal ao clicar fora
-window.onclick = function(event) {
-  const modal = document.getElementById('createModal');
-  if (event.target === modal) {
-    closeCreateModal();
-  }
-}
+// ====== INICIALIZAÇÃO ======
+document.addEventListener('DOMContentLoaded', function() {
+  // Carregar dados iniciais
+  loadUsersTable();
+  updateCurrentTime();
+  
+  // Auto-refresh a cada 30 segundos
+  setInterval(renderExpirations, 30000);
+  setInterval(updateCurrentTime, 60000);
+  
+  // Configurar filtro padrão
+  filterUsers('all');
+});
 </script>
 </body>
 </html>
