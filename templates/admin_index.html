@@ -2,261 +2,268 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel Admin Avançado</title>
+<title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   :root {
-    --bg: #cfd4d8;
-    --card: #f5f6f7;
-    --border: #c6c9cd;
-    --text: #2b2f33;
-    --text-light: #687078;
+    /* Light Theme */
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --border: #e1e5e9;
+    --text: #1a1d21;
+    --text-light: #6c757d;
     --accent: #2f6fed;
-    --danger: #d93c3c;
-    --ok: #177a30;
-    --warning: #f0ad4e;
-    --info: #17a2b8;
+    --accent-hover: #1a5cd9;
+    --danger: #e74c3c;
+    --danger-hover: #c0392b;
+    --warning: #f39c12;
+    --warning-hover: #e67e22;
+    --success: #27ae60;
+    --success-hover: #219955;
+    --info: #3498db;
     --radius: 12px;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --transition: all 0.2s ease;
   }
 
-  .dark {
-    --bg: #0e1113;
-    --card: #1a1d21;
-    --border: #2a2e32;
-    --text: #e5ecef;
-    --text-light: #9aa4ab;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  .dark-theme {
+    /* Dark Theme */
+    --bg: #0f1419;
+    --card: #1a1f26;
+    --border: #2d3748;
+    --text: #e2e8f0;
+    --text-light: #a0aec0;
+    --accent: #4299e1;
+    --accent-hover: #3182ce;
+    --danger: #fc8181;
+    --danger-hover: #f56565;
+    --warning: #f6ad55;
+    --warning-hover: #ed8936;
+    --success: #68d391;
+    --success-hover: #48bb78;
+    --info: #63b3ed;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    transition: background-color 0.3s ease;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   body {
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--text);
     padding: 20px;
     min-height: 100vh;
-    line-height: 1.6;
+    transition: var(--transition);
+    line-height: 1.5;
   }
 
-  /* HEADER */
-  .header {
+  /* Header */
+  header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
 
-  .header-left h1 {
+  .header-info h1 {
     font-size: 28px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), #4a8eff);
+    font-weight: 700;
+    margin-bottom: 4px;
+    background: linear-gradient(90deg, var(--accent), #4a7dff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 5px;
+    background-clip: text;
   }
 
-  .header-left .subtitle {
-    color: var(--text-light);
+  .header-info .subtitle {
     font-size: 14px;
+    color: var(--text-light);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  .header-right {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-  }
-
-  /* STATS CARDS */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-
-  .stat-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  .stat-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-  }
-
-  .stat-info h3 {
+  .header-info .subtitle i {
     font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-light);
-    margin-bottom: 5px;
   }
 
-  .stat-number {
-    font-size: 28px;
-    font-weight: 700;
+  .theme-toggle {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    transition: var(--transition);
   }
 
-  /* CARD STYLES */
+  .theme-toggle:hover {
+    background: var(--border);
+    transform: translateY(-1px);
+  }
+
+  /* Cards */
   .card {
     background: var(--card);
     border: 1px solid var(--border);
+    padding: 24px;
     border-radius: var(--radius);
-    padding: 25px;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
     box-shadow: var(--shadow);
+    transition: var(--transition);
   }
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border);
+  .card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   }
 
-  .card-title {
+  .dark-theme .card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .card h2 {
     font-size: 20px;
     font-weight: 700;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  .card-title i {
+  .card h2 i {
     color: var(--accent);
   }
 
-  /* FORM STYLES */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-  }
-
+  /* Forms */
   .form-group {
     margin-bottom: 20px;
   }
 
   label {
     display: block;
-    margin-bottom: 8px;
     font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
     color: var(--text);
+  }
+
+  .input-with-icon {
+    position: relative;
+  }
+
+  .input-with-icon i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
   }
 
   input, select {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 14px 14px 42px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--bg);
     color: var(--text);
     font-size: 15px;
-    transition: border-color 0.3s;
+    transition: var(--transition);
   }
 
   input:focus, select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.1);
+    box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
   }
 
-  /* BUTTON STYLES */
+  /* Buttons */
   .btn {
     padding: 12px 20px;
     border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    font-size: 14px;
     cursor: pointer;
+    font-weight: 600;
+    border: none;
+    font-size: 15px;
+    transition: var(--transition);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    transition: all 0.3s ease;
-    text-decoration: none;
   }
 
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background: #1a5fd8;
+  .btn:hover {
     transform: translateY(-2px);
   }
 
-  .btn-success {
-    background: var(--ok);
-    color: white;
+  .btn:active {
+    transform: translateY(0);
   }
 
-  .btn-success:hover {
-    background: #126625;
+  .btn-primary { 
+    background: var(--accent); 
+    color: white; 
+  }
+  
+  .btn-primary:hover { 
+    background: var(--accent-hover); 
   }
 
-  .btn-danger {
-    background: var(--danger);
-    color: white;
+  .btn-danger { 
+    background: var(--danger); 
+    color: white; 
+  }
+  
+  .btn-danger:hover { 
+    background: var(--danger-hover); 
   }
 
-  .btn-danger:hover {
-    background: #c12a2a;
+  .btn-warning { 
+    background: var(--warning); 
+    color: white; 
+  }
+  
+  .btn-warning:hover { 
+    background: var(--warning-hover); 
   }
 
-  .btn-warning {
-    background: var(--warning);
-    color: white;
+  .btn-success { 
+    background: var(--success); 
+    color: white; 
+  }
+  
+  .btn-success:hover { 
+    background: var(--success-hover); 
   }
 
-  .btn-warning:hover {
-    background: #e09b2d;
+  .btn-ghost { 
+    background: transparent; 
+    border: 1px solid var(--border); 
+    color: var(--text); 
+  }
+  
+  .btn-ghost:hover { 
+    background: var(--border); 
   }
 
-  .btn-info {
-    background: var(--info);
-    color: white;
-  }
-
-  .btn-info:hover {
-    background: #138496;
-  }
-
-  .btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-
-  .btn-outline:hover {
-    background: var(--bg);
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 13px;
   }
 
   .btn-group {
@@ -266,7 +273,28 @@
     margin-top: 10px;
   }
 
-  /* TABLE STYLES */
+  /* Admin Tools */
+  .admin-tools {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .tool-card {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .tool-card h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Table */
   .table-container {
     overflow-x: auto;
     border-radius: var(--radius);
@@ -276,43 +304,54 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 14px;
     min-width: 1000px;
   }
 
   thead {
     background: var(--bg);
+    border-bottom: 2px solid var(--border);
   }
 
-  th {
-    padding: 16px;
+  thead th {
+    padding: 16px 12px;
+    font-weight: 700;
     text-align: left;
-    font-weight: 600;
     color: var(--text);
-    border-bottom: 2px solid var(--border);
-    cursor: pointer;
     user-select: none;
     white-space: nowrap;
   }
 
-  th:hover {
-    background: rgba(0, 0, 0, 0.05);
+  thead th.sortable {
+    cursor: pointer;
+    transition: var(--transition);
   }
 
-  .dark th:hover {
-    background: rgba(255, 255, 255, 0.05);
+  thead th.sortable:hover {
+    background: var(--border);
   }
 
-  td {
-    padding: 14px 16px;
+  thead th i {
+    margin-left: 5px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  tbody tr {
     border-bottom: 1px solid var(--border);
-    vertical-align: middle;
+    transition: var(--transition);
   }
 
   tbody tr:hover {
     background: var(--bg);
   }
 
-  /* BADGES */
+  tbody td {
+    padding: 16px 12px;
+    vertical-align: middle;
+  }
+
+  /* Badges */
   .badge {
     padding: 6px 12px;
     border-radius: 20px;
@@ -323,96 +362,66 @@
     gap: 5px;
   }
 
-  .badge-success {
-    background: rgba(23, 122, 48, 0.15);
-    color: var(--ok);
+  .badge-unlimited { 
+    background: rgba(66, 153, 225, 0.15); 
+    color: var(--accent); 
   }
 
-  .badge-warning {
-    background: rgba(240, 173, 78, 0.15);
-    color: #b37e1b;
+  .badge-expired { 
+    background: rgba(231, 76, 60, 0.15); 
+    color: var(--danger); 
   }
 
-  .badge-danger {
-    background: rgba(217, 60, 60, 0.15);
-    color: var(--danger);
+  .badge-warning { 
+    background: rgba(243, 156, 18, 0.15); 
+    color: var(--warning); 
   }
 
-  .badge-info {
-    background: rgba(23, 162, 184, 0.15);
-    color: var(--info);
+  .badge-success { 
+    background: rgba(39, 174, 96, 0.15); 
+    color: var(--success); 
   }
 
-  .badge-unlimited {
-    background: rgba(47, 111, 237, 0.15);
+  .badge-info { 
+    background: rgba(52, 152, 219, 0.15); 
+    color: var(--info); 
+  }
+
+  /* Copy elements */
+  .copy-btn {
+    background: transparent;
+    border: none;
     color: var(--accent);
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
   }
 
-  /* ACTION BUTTONS IN TABLE */
-  .action-buttons {
+  .copy-btn:hover {
+    background: var(--bg);
+  }
+
+  /* Action buttons */
+  .actions-cell {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
 
-  .action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .action-btn-primary:hover {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-
-  .action-btn-success:hover {
-    background: var(--ok);
-    color: white;
-    border-color: var(--ok);
-  }
-
-  .action-btn-danger:hover {
-    background: var(--danger);
-    color: white;
-    border-color: var(--danger);
-  }
-
-  .action-btn-warning:hover {
-    background: var(--warning);
-    color: white;
-    border-color: var(--warning);
-  }
-
-  /* SEARCH AND FILTERS */
+  /* Search */
   .search-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-
-  .search-box {
-    flex: 1;
-    min-width: 300px;
     position: relative;
+    margin-bottom: 20px;
   }
 
-  .search-box i {
+  .search-container i {
     position: absolute;
     left: 16px;
     top: 50%;
@@ -420,74 +429,37 @@
     color: var(--text-light);
   }
 
-  .search-box input {
-    padding-left: 45px;
+  .search-container input {
+    padding-left: 46px;
   }
 
-  .filters {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .filter-btn {
-    padding: 10px 16px;
-    border-radius: 8px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    transition: all 0.2s;
-  }
-
-  .filter-btn.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-
-  .filter-btn:hover {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-
-  /* FOOTER */
-  .footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    color: var(--text-light);
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-
-  .footer-links {
+  /* Stats */
+  .stats-container {
     display: flex;
     gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
   }
 
-  .footer-links a {
-    color: var(--accent);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .stat-card {
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+    padding: 20px;
   }
 
-  .footer-links a:hover {
-    text-decoration: underline;
+  .stat-card .number {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
   }
 
-  /* MODAL */
+  .stat-card .label {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  /* Modal */
   .modal {
     display: none;
     position: fixed;
@@ -495,7 +467,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -507,450 +479,338 @@
     padding: 30px;
     max-width: 500px;
     width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   }
 
-  .modal-header {
+  .modal-buttons {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
   }
 
-  .modal-title {
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  .modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--text-light);
-  }
-
-  /* CUSTOM DAYS MODAL */
-  .custom-days-modal {
-    display: none;
+  /* Toast */
+  .toast {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .custom-days-content {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 25px;
-    width: 90%;
-    max-width: 400px;
-  }
-
-  /* LOADING SPINNER */
-  .spinner {
+    bottom: 20px;
+    right: 20px;
+    background: var(--success);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 1001;
     display: none;
-    border: 3px solid var(--border);
-    border-top: 3px solid var(--accent);
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
+    align-items: center;
+    gap: 10px;
+    max-width: 350px;
+    animation: slideIn 0.3s ease;
   }
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
   }
 
-  /* RESPONSIVE */
+  /* Responsive */
   @media (max-width: 768px) {
     body {
       padding: 15px;
     }
     
-    .header {
+    header {
       flex-direction: column;
       align-items: flex-start;
       gap: 15px;
     }
     
-    .header-right {
-      width: 100%;
-      justify-content: space-between;
+    .admin-tools {
+      flex-direction: column;
     }
     
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .search-box {
+    .tool-card {
       min-width: 100%;
     }
     
-    .footer {
-      flex-direction: column;
-      text-align: center;
-    }
-    
-    .action-buttons {
+    .btn-group {
       flex-direction: column;
     }
     
-    .action-btn {
+    .btn-group button {
       width: 100%;
-      margin-bottom: 5px;
+    }
+    
+    .stats-container {
+      flex-direction: column;
     }
   }
 
-  /* UTILITIES */
-  .text-muted {
-    color: var(--text-light);
+  /* Loading */
+  .loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
   }
 
-  .text-success {
-    color: var(--ok);
-  }
-
-  .text-danger {
-    color: var(--danger);
-  }
-
-  .text-warning {
-    color: var(--warning);
-  }
-
-  .text-info {
-    color: var(--info);
-  }
-
-  .mt-20 { margin-top: 20px; }
-  .mb-20 { margin-bottom: 20px; }
-  .mt-30 { margin-top: 30px; }
-  .mb-30 { margin-bottom: 30px; }
-
-  /* ANIMATIONS */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-
-  .pulse {
-    animation: pulse 2s infinite;
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--bg);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 5px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-light);
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 </style>
 </head>
 
-<body class="fade-in">
+<body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="header-left">
-    <h1><i class="fas fa-dragon"></i> Fera Alpha Admin</h1>
+<header>
+  <div class="header-info">
+    <h1><i class="fas fa-shield-alt"></i> Fera Alpha — Admin</h1>
     <div class="subtitle">
-      <i class="fas fa-shield-alt"></i>
-      <span>Sistema de Gerenciamento Avançado - <span id="userCount">{{ users|length }}</span> usuários ativos</span>
+      <i class="fas fa-cog fa-spin"></i>
+      <span>Painel de gerenciamento avançado</span>
     </div>
   </div>
-  
-  <div class="header-right">
-    <button class="btn btn-info" onclick="window.location.href='/admin/database'">
-      <i class="fas fa-database"></i> Banco de Dados
-    </button>
-    <button class="btn btn-info" onclick="window.location.href='/admin/usage_report'">
-      <i class="fas fa-chart-bar"></i> Relatórios
-    </button>
-    <button class="btn btn-outline" onclick="toggleDarkMode()">
-      <i class="fas fa-moon"></i> Tema
-    </button>
-  </div>
+
+  <button class="theme-toggle" onclick="toggleDark()">
+    <i class="fas fa-moon"></i>
+    <span id="theme-text">Modo Escuro</span>
+  </button>
 </header>
 
-<!-- STATS CARDS -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon" style="background: rgba(47, 111, 237, 0.2); color: var(--accent);">
-      <i class="fas fa-users"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Usuários Ativos</h3>
-      <div class="stat-number" id="statsTotal">{{ users|length }}</div>
-    </div>
+<!-- Stats -->
+<div class="stats-container">
+  <div class="card stat-card">
+    <div class="number" id="total-users">{{ users|length }}</div>
+    <div class="label">Total de Usuários</div>
   </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon" style="background: rgba(23, 122, 48, 0.2); color: var(--ok);">
-      <i class="fas fa-key"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Licenças Ativas</h3>
-      <div class="stat-number" id="statsActive">0</div>
-    </div>
+  <div class="card stat-card">
+    <div class="number" id="active-users">0</div>
+    <div class="label">Licenças Ativas</div>
   </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon" style="background: rgba(240, 173, 78, 0.2); color: var(--warning);">
-      <i class="fas fa-clock"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Próximos a Expirar</h3>
-      <div class="stat-number" id="expiringSoon">0</div>
-    </div>
+  <div class="card stat-card">
+    <div class="number" id="expired-users">0</div>
+    <div class="label">Licenças Expiradas</div>
   </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon" style="background: rgba(23, 162, 184, 0.2); color: var(--info);">
-      <i class="fas fa-infinity"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Licenças Ilimitadas</h3>
-      <div class="stat-number" id="unlimitedCount">0</div>
-    </div>
+  <div class="card stat-card">
+    <div class="number" id="unlimited-users">0</div>
+    <div class="label">Ilimitadas</div>
   </div>
 </div>
 
 <!-- ADMIN TOOLS -->
-<div class="card mb-30">
-  <div class="card-header">
-    <h2 class="card-title"><i class="fas fa-tools"></i> Ferramentas Administrativas</h2>
+<div class="admin-tools">
+  <div class="card tool-card">
+    <h3><i class="fas fa-sync-alt"></i> Reset Geral</h3>
+    <p style="font-size: 14px; color: var(--text-light); margin-bottom: 15px;">
+      Resetar todos os devices registrados no sistema.
+    </p>
+    <form method="post" action="/admin/reset_all_devices" onsubmit="return confirmAction('resetAll')">
+      <button type="submit" class="btn btn-warning">
+        <i class="fas fa-redo-alt"></i> Resetar Todos Devices
+      </button>
+    </form>
   </div>
   
-  <div class="btn-group">
-    <button class="btn btn-warning" onclick="resetAllDevices()">
-      <i class="fas fa-sync-alt"></i> Resetar Todos Devices
+  <div class="card tool-card">
+    <h3><i class="fas fa-trash-alt"></i> Limpeza</h3>
+    <p style="font-size: 14px; color: var(--text-light); margin-bottom: 15px;">
+      Remover usuários com licenças expiradas.
+    </p>
+    <form method="post" action="/admin/clean_expired" onsubmit="return confirmAction('cleanExpired')">
+      <button type="submit" class="btn btn-danger">
+        <i class="fas fa-broom"></i> Limpar Expirados
+      </button>
+    </form>
+  </div>
+  
+  <div class="card tool-card">
+    <h3><i class="fas fa-file-export"></i> Exportação</h3>
+    <p style="font-size: 14px; color: var(--text-light); margin-bottom: 15px;">
+      Exportar dados em diferentes formatos.
+    </p>
+    <button type="button" class="btn btn-ghost" onclick="exportData('csv')">
+      <i class="fas fa-file-csv"></i> CSV
     </button>
-    
-    <button class="btn btn-danger" onclick="cleanExpired()">
-      <i class="fas fa-trash"></i> Limpar Expirados
-    </button>
-    
-    <button class="btn btn-info" onclick="openStatsModal()">
-      <i class="fas fa-chart-pie"></i> Estatísticas
-    </button>
-    
-    <button class="btn btn-outline" onclick="exportToCSV()">
-      <i class="fas fa-file-export"></i> Exportar CSV
+    <button type="button" class="btn btn-ghost" onclick="exportData('json')">
+      <i class="fas fa-file-code"></i> JSON
     </button>
   </div>
 </div>
 
-<!-- GERAR NOVA KEY -->
-<div class="card mb-30">
-  <div class="card-header">
-    <h2 class="card-title"><i class="fas fa-plus-circle"></i> Criar Nova Licença</h2>
-  </div>
+<!-- GERAR KEY -->
+<div class="card">
+  <h2><i class="fas fa-key"></i> Gerar Nova Licença</h2>
   
-  <form id="generateLicenseForm" onsubmit="generateLicense(event)">
-    <div class="form-grid">
-      <div class="form-group">
-        <label><i class="fas fa-user"></i> Usuário</label>
-        <input id="newUsername" name="username" required placeholder="ex: cliente123">
-      </div>
-      
-      <div class="form-group">
-        <label><i class="fas fa-lock"></i> Senha</label>
-        <input id="newPassword" name="password" required placeholder="••••••••">
-      </div>
-      
-      <div class="form-group">
-        <label><i class="fas fa-tag"></i> Prefixo</label>
-        <input id="newPrefix" name="prefix" value="FERA" placeholder="FERA">
-      </div>
-      
-      <div class="form-group">
-        <label><i class="fas fa-calendar-alt"></i> Expiração (dias)</label>
-        <div class="btn-group">
-          <input type="number" id="newExpireDays" name="expire_days" value="30" min="0" style="flex: 1;">
-          <button type="button" class="btn btn-outline" onclick="setExpiration('30')">30 Dias</button>
-          <button type="button" class="btn btn-outline" onclick="setExpiration('90')">90 Dias</button>
-          <button type="button" class="btn btn-outline" onclick="setExpiration('365')">1 Ano</button>
-          <button type="button" class="btn btn-outline" onclick="setExpiration('0')" style="color: var(--accent);">
-            <i class="fas fa-infinity"></i> Ilimitado
-          </button>
-        </div>
+  <form method="post" action="/admin/generate" id="generateForm" onsubmit="return validateForm()">
+    <div class="form-group">
+      <label>Usuário</label>
+      <div class="input-with-icon">
+        <i class="fas fa-user"></i>
+        <input name="username" required placeholder="Digite o nome de usuário">
       </div>
     </div>
     
-    <div class="btn-group mt-20">
-      <button type="submit" class="btn btn-success">
-        <i class="fas fa-plus"></i> Criar Licença
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="input-with-icon">
+        <i class="fas fa-lock"></i>
+        <input name="password" required type="password" placeholder="Digite a senha" id="passwordField">
+      </div>
+      <div style="display: flex; align-items: center; margin-top: 5px;">
+        <input type="checkbox" id="showPassword" onchange="togglePassword()">
+        <label for="showPassword" style="margin-left: 5px; font-weight: normal; font-size: 13px;">Mostrar senha</label>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Prefixo da Key</label>
+      <div class="input-with-icon">
+        <i class="fas fa-tag"></i>
+        <input name="prefix" value="FERA" placeholder="Ex: FERA">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Expiração (dias)</label>
+      <div class="input-with-icon">
+        <i class="fas fa-calendar-alt"></i>
+        <input name="expire_days" type="number" value="30" min="0" placeholder="0 para ilimitado">
+      </div>
+    </div>
+    
+    <div class="btn-group">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Gerar Licença
       </button>
-      <button type="button" class="btn btn-outline" onclick="generateRandomCredentials()">
-        <i class="fas fa-random"></i> Gerar Aleatório
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('30')">
+        <i class="fas fa-calendar-day"></i> 30 Dias
+      </button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('90')">
+        <i class="fas fa-calendar-week"></i> 90 Dias
+      </button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('365')">
+        <i class="fas fa-calendar"></i> 1 Ano
+      </button>
+      <button type="button" class="btn btn-success" onclick="setExpiration('0')">
+        <i class="fas fa-infinity"></i> Ilimitado
       </button>
     </div>
   </form>
 </div>
 
-<!-- LISTA DE USUÁRIOS -->
+<!-- TABELA DE USUÁRIOS -->
 <div class="card">
-  <div class="card-header">
-    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Usuários (<span id="userCountDisplay">{{ users|length }}</span>)</h2>
-    <div>
-      <span class="badge badge-success" id="activeCount">0 ativos</span>
-      <span class="badge badge-warning" id="expiringCount">0 próximos</span>
-      <span class="badge badge-danger" id="expiredCount">0 expirados</span>
-    </div>
-  </div>
+  <h2><i class="fas fa-users"></i> Gerenciar Licenças</h2>
   
-  <!-- SEARCH AND FILTERS -->
   <div class="search-container">
-    <div class="search-box">
-      <i class="fas fa-search"></i>
-      <input type="text" id="searchUser" placeholder="Buscar por usuário, key, device...">
-    </div>
-    
-    <div class="filters">
-      <button class="filter-btn active" onclick="filterUsers('all')">
-        <i class="fas fa-list"></i> Todos
-      </button>
-      <button class="filter-btn" onclick="filterUsers('active')">
-        <i class="fas fa-check-circle"></i> Ativos
-      </button>
-      <button class="filter-btn" onclick="filterUsers('expiring')">
-        <i class="fas fa-exclamation-triangle"></i> Próximos
-      </button>
-      <button class="filter-btn" onclick="filterUsers('expired')">
-        <i class="fas fa-times-circle"></i> Expirados
-      </button>
-      <button class="filter-btn" onclick="filterUsers('unlimited')">
-        <i class="fas fa-infinity"></i> Ilimitados
-      </button>
-    </div>
+    <i class="fas fa-search"></i>
+    <input id="searchUser" placeholder="Buscar por usuário, key, device..." 
+           oninput="searchTable()">
   </div>
   
-  <!-- TABLE -->
   <div class="table-container">
     <table id="usersTable">
       <thead>
         <tr>
-          <th onclick="sortTable(0)">ID <i class="fas fa-sort"></i></th>
-          <th onclick="sortTable(1)">Usuário <i class="fas fa-sort"></i></th>
-          <th onclick="sortTable(2)">Senha <i class="fas fa-sort"></i></th>
-          <th onclick="sortTable(3)">Key <i class="fas fa-sort"></i></th>
-          <th onclick="sortTable(4)">Device <i class="fas fa-sort"></i></th>
-          <th onclick="sortTable(5)">Expiração <i class="fas fa-sort"></i></th>
+          <th class="sortable" onclick="sortTable(0)">
+            ID <i class="fas fa-sort"></i>
+          </th>
+          <th class="sortable" onclick="sortTable(1)">
+            Usuário <i class="fas fa-sort"></i>
+          </th>
+          <th>Senha</th>
+          <th>Licença</th>
+          <th>Device</th>
+          <th class="sortable" onclick="sortTable(5)">
+            Status <i class="fas fa-sort"></i>
+          </th>
           <th>Ações</th>
         </tr>
       </thead>
-      
-      <tbody id="usersTableBody">
+
+      <tbody>
         {% for u in users %}
-        <tr id="userRow{{ loop.index0 }}" data-expires="{{ u.expires_at }}" 
-            data-user="{{ u.username.lower() }}"
-            data-key="{{ u.key.lower() }}"
-            data-device="{{ u.device_id if u.device_id else '' }}">
-          
-          <td>{{ loop.index }}</td>
-          
+        <tr data-expires="{{ u.expires_at }}" data-user="{{ u.username|lower }}" 
+            data-key="{{ u.key|lower }}" data-device="{{ u.device_id|lower if u.device_id else '' }}">
+          <td><strong>#{{ loop.index0 + 1 }}</strong></td>
+          <td>{{ u.username }}</td>
           <td>
-            <strong>{{ u.username }}</strong>
-            {% if u.expires_at == 9999999999999 or u.expires_at == 0 %}
-            <span class="badge badge-unlimited">ILIMITADO</span>
-            {% endif %}
-          </td>
-          
-          <td>
-            <code>{{ u.password }}</code>
-            <button class="action-btn action-btn-success" onclick="copyToClipboard('{{ u.username }}:{{ u.password }}', 'Usuário/Senha')">
-              <i class="fas fa-copy"></i>
+            <span class="password-display">••••••••</span>
+            <button type="button" class="copy-btn" onclick="copyCredentials('{{ u.username }}','{{ u.password }}')" 
+                    title="Copiar credenciais">
+              <i class="fas fa-copy"></i> Copiar
             </button>
           </td>
-          
           <td>
             <code>{{ u.key }}</code>
-            <button class="action-btn action-btn-primary" onclick="copyToClipboard('{{ u.key }}', 'Key')">
+            <button type="button" class="copy-btn" onclick="copyToClipboard('{{ u.key }}', this)" 
+                    title="Copiar licença">
               <i class="fas fa-copy"></i>
             </button>
           </td>
-          
           <td>
             {% if u.device_id %}
-            <span class="badge badge-success"><i class="fas fa-mobile-alt"></i> {{ u.device_id[:10] }}...</span>
+            <span class="badge badge-info">
+              <i class="fas fa-desktop"></i> {{ u.device_id[:8] }}...
+            </span>
             {% else %}
-            <span class="badge badge-warning"><i class="fas fa-times"></i> Não ativado</span>
+            <span class="badge" style="background: var(--bg); color: var(--text-light);">
+              <i class="fas fa-times"></i> Não registrado
+            </span>
             {% endif %}
           </td>
-          
-          <td class="expCell">
-            <!-- Preenchido via JavaScript -->
-          </td>
-          
+          <td class="expCell"></td>
           <td>
-            <div class="action-buttons">
+            <div class="actions-cell">
               <!-- +30 Dias -->
-              <button class="action-btn action-btn-primary" title="+30 Dias" onclick="renewLicense('{{ loop.index0 }}', 30)">
-                <i class="fas fa-plus"></i>30
-              </button>
+              <form method="post" action="/admin/renew/{{ loop.index0 }}">
+                <button type="submit" class="btn btn-sm btn-success" title="Adicionar 30 dias">
+                  <i class="fas fa-plus"></i> 30d
+                </button>
+              </form>
               
-              <!-- Dias Personalizados -->
-              <button class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="openCustomDaysModal('{{ loop.index0 }}', '{{ u.username }}')">
-                <i class="fas fa-calendar-plus"></i>
-              </button>
+              <!-- + Dias Personalizado -->
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" 
+                    onsubmit="return validateCustomDays(this)" style="display: inline-flex; gap: 4px;">
+                <input type="number" name="days" min="1" max="3650" value="7" 
+                       style="width: 50px; padding: 4px; font-size: 13px;">
+                <button type="submit" class="btn btn-sm btn-primary" title="Adicionar dias personalizados">
+                  <i class="fas fa-plus-circle"></i>
+                </button>
+              </form>
               
               <!-- Tornar Ilimitado -->
-              <button class="action-btn" title="Tornar Ilimitado" style="background: var(--accent); color: white;" 
-                      onclick="makeUnlimited('{{ loop.index0 }}', '{{ u.username }}')">
-                <i class="fas fa-infinity"></i>
-              </button>
+              <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
+                    onsubmit="return confirmAction('makeUnlimited')">
+                <button type="submit" class="btn btn-sm" style="background: var(--accent); color: white;" 
+                        title="Tornar licença ilimitada">
+                  <i class="fas fa-infinity"></i>
+                </button>
+              </form>
               
-              <!-- Reset Key -->
-              <button class="action-btn action-btn-warning" title="Resetar Key" onclick="resetKey('{{ loop.index0 }}', '{{ u.username }}')">
-                <i class="fas fa-key"></i>
-              </button>
+              <!-- Resetar Licença -->
+              <form method="post" action="/admin/reset/{{ loop.index0 }}">
+                <button type="submit" class="btn btn-sm btn-ghost" title="Resetar key">
+                  <i class="fas fa-key"></i>
+                </button>
+              </form>
               
-              <!-- Reset Device -->
-              <button class="action-btn action-btn-danger" title="Resetar Device" onclick="resetDevice('{{ loop.index0 }}', '{{ u.username }}')">
-                <i class="fas fa-mobile-alt"></i>
-              </button>
+              <!-- Resetar Device -->
+              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+                <button type="submit" class="btn btn-sm btn-warning" title="Resetar dispositivo">
+                  <i class="fas fa-desktop"></i>
+                </button>
+              </form>
               
-              <!-- Delete -->
-              <button class="action-btn action-btn-danger" title="Excluir" onclick="deleteUser('{{ loop.index0 }}', '{{ u.username }}')">
-                <i class="fas fa-trash"></i>
-              </button>
+              <!-- Excluir -->
+              <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                    onsubmit="return confirmAction('deleteUser')">
+                <button type="submit" class="btn btn-sm btn-danger" title="Excluir usuário">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
             </div>
           </td>
         </tr>
@@ -959,808 +819,509 @@
     </table>
   </div>
   
-  <div class="footer mt-20">
-    <div class="text-muted">
-      <i class="fas fa-info-circle"></i>
-      Mostrando <span id="showingCount">{{ users|length }}</span> usuários. Última atualização: <span id="currentTime"></span>
+  <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div style="font-size: 14px; color: var(--text-light);">
+      Mostrando <span id="visible-count">{{ users|length }}</span> de {{ users|length }} registros
     </div>
-    
-    <div class="footer-links">
-      <a href="/admin/database"><i class="fas fa-database"></i> Banco de Dados</a>
-      <a href="/admin/usage_report"><i class="fas fa-chart-bar"></i> Relatórios</a>
-      <a href="/ping" target="_blank"><i class="fas fa-heartbeat"></i> Status API</a>
+    <div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshData()">
+        <i class="fas fa-sync-alt"></i> Atualizar
+      </button>
     </div>
   </div>
 </div>
 
-<!-- STATS MODAL -->
-<div id="statsModal" class="modal">
+<!-- Modal de Confirmação -->
+<div id="confirmModal" class="modal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3 class="modal-title"><i class="fas fa-chart-pie"></i> Estatísticas do Sistema</h3>
-      <button class="modal-close" onclick="closeStatsModal()">&times;</button>
-    </div>
-    
-    <div id="modalStatsContent">
-      <!-- Preenchido via JavaScript -->
+    <h3 id="modalTitle">Confirmar Ação</h3>
+    <p id="modalMessage">Tem certeza que deseja realizar esta ação?</p>
+    <div class="modal-buttons">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn" id="confirmButton" onclick="executeAction()">Confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- CUSTOM DAYS MODAL -->
-<div id="customDaysModal" class="custom-days-modal">
-  <div class="custom-days-content">
-    <div class="modal-header">
-      <h3 class="modal-title"><i class="fas fa-calendar-plus"></i> Adicionar Dias</h3>
-      <button class="modal-close" onclick="closeCustomDaysModal()">&times;</button>
-    </div>
-    
-    <div class="form-group mt-20">
-      <label><i class="fas fa-user"></i> Usuário</label>
-      <input type="text" id="customDaysUsername" class="form-input" readonly>
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fas fa-calendar-alt"></i> Quantidade de Dias</label>
-      <input type="number" id="customDaysInput" class="form-input" value="7" min="1" max="9999" placeholder="Digite o número de dias">
-    </div>
-    
-    <div class="btn-group mt-20">
-      <button class="btn btn-primary" onclick="applyCustomDays()">
-        <i class="fas fa-check"></i> Aplicar
-      </button>
-      <button class="btn btn-outline" onclick="closeCustomDaysModal()">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- LOADING OVERLAY -->
-<div id="loadingOverlay" class="modal" style="display: none; background: rgba(0,0,0,0.7);">
-  <div style="text-align: center; color: white;">
-    <div class="spinner"></div>
-    <p style="margin-top: 20px;">Processando...</p>
-  </div>
+<!-- Toast -->
+<div id="toast" class="toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMessage">Copiado para a área de transferência!</span>
 </div>
 
 <script>
-// ====== CONFIGURAÇÕES GERAIS ======
-const UNLIMITED_EXPIRY = 9999999999999;
-let currentFilter = 'all';
-let currentSort = { column: 0, direction: 'asc' };
-let currentUserIndex = null;
-let userData = {{ users|tojson|safe }};
+// Estado da aplicação
+const appState = {
+  sortColumn: 0,
+  sortDirection: 'asc',
+  currentAction: null,
+  currentForm: null,
+  isDark: localStorage.getItem('darkMode') === 'true'
+};
 
-// ====== FUNÇÕES DE UTILIDADE ======
-function toggleDarkMode() {
-  document.body.classList.toggle('dark');
-  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+  // Aplicar tema salvo
+  if (appState.isDark) {
+    document.body.classList.add('dark-theme');
+    document.getElementById('theme-text').textContent = 'Modo Claro';
+  }
+  
+  // Renderizar status
+  renderExpirations();
+  updateStats();
+  
+  // Configurar busca em tempo real
+  const searchInput = document.getElementById('searchUser');
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce(searchTable, 300));
+  }
+  
+  // Adicionar listener para tecla Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+});
+
+// Alternar tema
+function toggleDark() {
+  const body = document.body;
+  const isDark = body.classList.toggle('dark-theme');
+  appState.isDark = isDark;
+  
+  const themeText = document.getElementById('theme-text');
+  themeText.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+  
+  localStorage.setItem('darkMode', isDark);
+  showToast('Tema alterado com sucesso!', 'success');
 }
 
-// Verificar preferência salva
-if (localStorage.getItem('darkMode') === 'true') {
-  document.body.classList.add('dark');
-}
-
-// Atualizar hora atual
-function updateCurrentTime() {
-  const now = new Date();
-  document.getElementById('currentTime').textContent = 
-    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+// Definir expiração
+function setExpiration(days) {
+  const input = document.querySelector('input[name="expire_days"]');
+  if (input) {
+    input.value = days;
+    
+    if (days === '0') {
+      showToast('Licença será criada como ILIMITADA!', 'warning');
+    } else {
+      showToast(`Expiração definida para ${days} dias`, 'info');
+    }
+  }
 }
 
 // Copiar para clipboard
-function copyToClipboard(text, label = 'Texto') {
+function copyToClipboard(text, button) {
   navigator.clipboard.writeText(text).then(() => {
-    showToast(`${label} copiado para clipboard!`, 'success');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i>';
+    button.style.color = 'var(--success)';
+    
+    showToast('Copiado para a área de transferência!', 'success');
+    
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.style.color = '';
+    }, 2000);
   }).catch(err => {
     console.error('Erro ao copiar:', err);
-    showToast('Erro ao copiar', 'error');
+    showToast('Erro ao copiar!', 'danger');
   });
 }
 
-// Mostrar toast notification
-function showToast(message, type = 'info') {
-  // Remover toast anterior
-  const existingToast = document.querySelector('.toast');
-  if (existingToast) existingToast.remove();
-  
-  // Criar novo toast
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
-    ${message}
-  `;
-  
-  // Estilos do toast
-  toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: ${type === 'success' ? 'var(--ok)' : type === 'error' ? 'var(--danger)' : 'var(--info)'};
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeIn 0.3s ease-out;
-  `;
-  
-  document.body.appendChild(toast);
-  
-  // Remover após 3 segundos
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(100%)';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-// Mostrar/ocultar loading
-function showLoading(show) {
-  const overlay = document.getElementById('loadingOverlay');
-  overlay.style.display = show ? 'flex' : 'none';
-}
-
-// ====== GESTÃO DE EXPIRAÇÕES ======
-function calculateExpiration(expires) {
-  const now = Math.floor(Date.now() / 1000);
-  
-  // Licença ilimitada
-  if (!expires || expires == 0 || expires == UNLIMITED_EXPIRY) {
-    return { status: 'unlimited', days: Infinity };
-  }
-  
-  const diff = expires - now;
-  const days = Math.floor(diff / 86400);
-  
-  if (diff <= 0) {
-    return { status: 'expired', days: 0 };
-  } else if (days <= 3) {
-    return { status: 'critical', days };
-  } else if (days <= 7) {
-    return { status: 'warning', days };
-  } else {
-    return { status: 'active', days };
-  }
-}
-
-function renderExpirations() {
-  const now = Math.floor(Date.now() / 1000);
-  let activeCount = 0;
-  let expiringCount = 0;
-  let expiredCount = 0;
-  let unlimitedCount = 0;
-  let expiringSoon = 0;
-  
-  document.querySelectorAll("tr[data-expires]").forEach(tr => {
-    const expires = parseInt(tr.getAttribute("data-expires"));
-    const cell = tr.querySelector(".expCell");
-    const expInfo = calculateExpiration(expires);
-    
-    // Atualizar contadores
-    switch(expInfo.status) {
-      case 'unlimited':
-        unlimitedCount++;
-        break;
-      case 'active':
-        activeCount++;
-        if (expInfo.days <= 30) expiringSoon++;
-        break;
-      case 'warning':
-      case 'critical':
-        expiringCount++;
-        expiringSoon++;
-        break;
-      case 'expired':
-        expiredCount++;
-        break;
-    }
-    
-    // Renderizar badge
-    switch(expInfo.status) {
-      case 'unlimited':
-        cell.innerHTML = `<span class="badge badge-unlimited"><i class="fas fa-infinity"></i> ILIMITADO</span>`;
-        break;
-      case 'active':
-        cell.innerHTML = `<span class="badge badge-success"><i class="fas fa-check"></i> ${expInfo.days} dias</span>`;
-        break;
-      case 'warning':
-        cell.innerHTML = `<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> ${expInfo.days} dias</span>`;
-        break;
-      case 'critical':
-        cell.innerHTML = `<span class="badge badge-danger pulse"><i class="fas fa-exclamation-circle"></i> ${expInfo.days} dias</span>`;
-        break;
-      case 'expired':
-        cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-times"></i> EXPIRADO</span>`;
-        break;
-    }
+// Copiar credenciais
+function copyCredentials(username, password) {
+  const text = `Usuário: ${username}\nSenha: ${password}`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Credenciais copiadas!', 'success');
   });
-  
-  // Atualizar estatísticas
-  document.getElementById('activeCount').textContent = `${activeCount} ativos`;
-  document.getElementById('expiringCount').textContent = `${expiringCount} próximos`;
-  document.getElementById('expiredCount').textContent = `${expiredCount} expirados`;
-  document.getElementById('unlimitedCount').textContent = unlimitedCount;
-  document.getElementById('expiringSoon').textContent = expiringSoon;
-  
-  // Atualizar cards de estatísticas
-  document.getElementById('statsActive').textContent = activeCount;
 }
 
-// ====== FILTRAGEM E ORDENAÇÃO ======
-function filterUsers(filter) {
-  currentFilter = filter;
-  
-  // Atualizar botões ativos
-  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  
+// Buscar na tabela
+function searchTable() {
+  const searchTerm = document.getElementById('searchUser').value.toLowerCase();
+  const rows = document.querySelectorAll('#usersTable tbody tr');
   let visibleCount = 0;
   
-  document.querySelectorAll("tr[data-expires]").forEach(tr => {
-    const expires = parseInt(tr.getAttribute("data-expires"));
-    const expInfo = calculateExpiration(expires);
+  rows.forEach(row => {
+    const user = row.getAttribute('data-user') || '';
+    const key = row.getAttribute('data-key') || '';
+    const device = row.getAttribute('data-device') || '';
     
-    let show = false;
+    const match = user.includes(searchTerm) || 
+                  key.includes(searchTerm) || 
+                  device.includes(searchTerm);
     
-    switch(filter) {
-      case 'all':
-        show = true;
-        break;
-      case 'active':
-        show = expInfo.status === 'active' || expInfo.status === 'warning' || expInfo.status === 'critical';
-        break;
-      case 'expiring':
-        show = expInfo.status === 'warning' || expInfo.status === 'critical';
-        break;
-      case 'expired':
-        show = expInfo.status === 'expired';
-        break;
-      case 'unlimited':
-        show = expInfo.status === 'unlimited';
-        break;
-    }
-    
-    tr.style.display = show ? '' : 'none';
-    if (show) visibleCount++;
+    row.style.display = match ? '' : 'none';
+    if (match) visibleCount++;
   });
   
-  document.getElementById('showingCount').textContent = visibleCount;
+  document.getElementById('visible-count').textContent = visibleCount;
 }
 
-function sortTable(column) {
-  const table = document.getElementById("usersTable").tBodies[0];
-  const rows = Array.from(table.rows);
+// Ordenar tabela
+function sortTable(columnIndex) {
+  const table = document.getElementById('usersTable');
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const isSameColumn = appState.sortColumn === columnIndex;
   
-  // Determinar direção
-  const isAsc = currentSort.column !== column ? true : currentSort.direction !== 'asc';
-  currentSort = { column, direction: isAsc ? 'asc' : 'desc' };
+  // Alternar direção se for a mesma coluna
+  if (isSameColumn) {
+    appState.sortDirection = appState.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    appState.sortColumn = columnIndex;
+    appState.sortDirection = 'asc';
+  }
   
-  rows.sort((a, b) => {
-    let aVal = a.cells[column].innerText;
-    let bVal = b.cells[column].innerText;
-    
-    // Ordenação especial para coluna de expiração
-    if (column === 5) {
-      aVal = parseInt(a.getAttribute("data-expires")) || 0;
-      bVal = parseInt(b.getAttribute("data-expires")) || 0;
-    }
-    
-    // Converter para números se possível
-    const aNum = parseFloat(aVal.replace(/[^\d.-]/g, ''));
-    const bNum = parseFloat(bVal.replace(/[^\d.-]/g, ''));
-    
-    if (!isNaN(aNum) && !isNaN(bNum)) {
-      return isAsc ? aNum - bNum : bNum - aNum;
-    }
-    
-    // Ordenação alfabética
-    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-  });
-  
-  // Reaplicar filtro após ordenação
-  rows.forEach(r => table.appendChild(r));
-  
-  // Atualizar ícones de ordenação
-  document.querySelectorAll('#usersTable th i').forEach(icon => {
+  // Atualizar indicadores visuais
+  document.querySelectorAll('#usersTable thead th i').forEach(icon => {
     icon.className = 'fas fa-sort';
   });
   
-  const currentIcon = document.querySelector(`#usersTable th:nth-child(${column + 1}) i`);
-  currentIcon.className = isAsc ? 'fas fa-sort-up' : 'fas fa-sort-down';
-}
-
-// ====== BUSCA ======
-document.getElementById("searchUser").addEventListener("input", function() {
-  const query = this.value.toLowerCase().trim();
+  const currentHeader = table.rows[0].cells[columnIndex];
+  const sortIcon = currentHeader.querySelector('i');
+  if (sortIcon) {
+    sortIcon.className = appState.sortDirection === 'asc' ? 
+      'fas fa-sort-up' : 'fas fa-sort-down';
+  }
   
-  let visibleCount = 0;
-  
-  document.querySelectorAll("tr[data-expires]").forEach(tr => {
-    const user = tr.getAttribute("data-user") || "";
-    const key = tr.getAttribute("data-key") || "";
-    const device = tr.getAttribute("data-device") || "";
+  // Ordenar linhas
+  rows.sort((a, b) => {
+    const aVal = a.cells[columnIndex].textContent.trim().toLowerCase();
+    const bVal = b.cells[columnIndex].textContent.trim().toLowerCase();
     
-    const matches = user.includes(query) || key.includes(query) || device.includes(query);
-    tr.style.display = matches ? '' : 'none';
-    if (matches) visibleCount++;
+    // Verificar se é numérico (ID)
+    if (columnIndex === 0) {
+      const aNum = parseInt(aVal.replace('#', ''));
+      const bNum = parseInt(bVal.replace('#', ''));
+      return appState.sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+    }
+    
+    // Verificar se é data/status
+    if (columnIndex === 5) {
+      const aExp = parseInt(a.getAttribute('data-expires') || 0);
+      const bExp = parseInt(b.getAttribute('data-expires') || 0);
+      return appState.sortDirection === 'asc' ? aExp - bExp : bExp - aExp;
+    }
+    
+    // Ordenação alfabética padrão
+    const comparison = aVal.localeCompare(bVal);
+    return appState.sortDirection === 'asc' ? comparison : -comparison;
   });
   
-  document.getElementById('showingCount').textContent = visibleCount;
-});
-
-// ====== FUNÇÕES DO FORMULÁRIO ======
-function setExpiration(days) {
-  document.getElementById('newExpireDays').value = days;
-  
-  if (days === '0') {
-    showToast('Licença será criada como ILIMITADA!', 'info');
-  }
+  // Reordenar DOM
+  rows.forEach(row => tbody.appendChild(row));
 }
 
-function generateRandomCredentials() {
-  const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const randomPass = Math.random().toString(36).substring(2, 10);
-  
-  document.getElementById('newUsername').value = `user_${randomId}`;
-  document.getElementById('newPassword').value = randomPass;
-  
-  showToast('Credenciais aleatórias geradas!', 'success');
-}
-
-// ====== FUNÇÕES AJAX PARA AÇÕES ======
-async function sendRequest(url, method = 'POST', data = null) {
-  showLoading(true);
-  
-  try {
-    const options = {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    };
-    
-    if (data) {
-      options.body = JSON.stringify(data);
-    }
-    
-    const response = await fetch(url, options);
-    
-    if (!response.ok) {
-      throw new Error(`Erro HTTP ${response.status}`);
-    }
-    
-    const result = await response.json();
-    showLoading(false);
-    return result;
-    
-  } catch (error) {
-    showLoading(false);
-    console.error('Erro na requisição:', error);
-    showToast(`Erro: ${error.message}`, 'error');
-    throw error;
-  }
-}
-
-// Gerar nova licença
-async function generateLicense(event) {
-  event.preventDefault();
-  
-  const username = document.getElementById('newUsername').value.trim();
-  const password = document.getElementById('newPassword').value.trim();
-  const prefix = document.getElementById('newPrefix').value.trim();
-  const expireDays = document.getElementById('newExpireDays').value;
-  
-  if (!username || !password) {
-    showToast('Preencha usuário e senha!', 'error');
-    return;
-  }
-  
-  try {
-    const result = await sendRequest('/admin/generate', 'POST', {
-      username: username,
-      password: password,
-      prefix: prefix,
-      expire_days: expireDays
-    });
-    
-    if (result.success) {
-      showToast('Licença criada com sucesso!', 'success');
-      // Recarregar a página para mostrar a nova licença
-      setTimeout(() => location.reload(), 1000);
-    } else {
-      showToast(`Erro: ${result.error || 'Falha ao criar licença'}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao criar licença', 'error');
-  }
-}
-
-// Renovar licença (+30 dias)
-async function renewLicense(userIndex, days) {
-  if (!confirm(`Adicionar ${days} dias a esta licença?`)) return;
-  
-  try {
-    const result = await sendRequest(`/admin/renew/${userIndex}`, 'POST', { days: days });
-    
-    if (result.success) {
-      showToast(`Licença renovada por +${days} dias!`, 'success');
-      // Atualizar apenas a linha específica
-      updateUserRow(userIndex, result.user);
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao renovar licença', 'error');
-  }
-}
-
-// Tornar licença ilimitada
-async function makeUnlimited(userIndex, username) {
-  if (!confirm(`Tornar a licença de ${username} ilimitada?`)) return;
-  
-  try {
-    const result = await sendRequest(`/admin/make_unlimited/${userIndex}`, 'POST');
-    
-    if (result.success) {
-      showToast('Licença tornada ILIMITADA!', 'success');
-      updateUserRow(userIndex, result.user);
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao tornar licença ilimitada', 'error');
-  }
-}
-
-// Resetar key
-async function resetKey(userIndex, username) {
-  if (!confirm(`Resetar a key do usuário ${username}?`)) return;
-  
-  try {
-    const result = await sendRequest(`/admin/reset/${userIndex}`, 'POST');
-    
-    if (result.success) {
-      showToast('Key resetada com sucesso!', 'success');
-      updateUserRow(userIndex, result.user);
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao resetar key', 'error');
-  }
-}
-
-// Resetar device
-async function resetDevice(userIndex, username) {
-  if (!confirm(`Resetar o device do usuário ${username}?`)) return;
-  
-  try {
-    const result = await sendRequest(`/admin/reset_device/${userIndex}`, 'POST');
-    
-    if (result.success) {
-      showToast('Device resetado com sucesso!', 'success');
-      updateUserRow(userIndex, result.user);
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao resetar device', 'error');
-  }
-}
-
-// Deletar usuário
-async function deleteUser(userIndex, username) {
-  if (!confirm(`Excluir permanentemente o usuário ${username}?`)) return;
-  
-  try {
-    const result = await sendRequest(`/admin/delete/${userIndex}`, 'POST');
-    
-    if (result.success) {
-      showToast('Usuário excluído com sucesso!', 'success');
-      // Remover a linha da tabela
-      document.getElementById(`userRow${userIndex}`).remove();
-      updateCounters();
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao excluir usuário', 'error');
-  }
-}
-
-// Resetar todos os devices
-async function resetAllDevices() {
-  if (!confirm('⚠️ Resetar TODOS os devices?\nEsta ação não pode ser desfeita.')) return;
-  
-  try {
-    const result = await sendRequest('/admin/reset_all_devices', 'POST');
-    
-    if (result.success) {
-      showToast('Todos os devices foram resetados!', 'success');
-      // Recarregar a página
-      setTimeout(() => location.reload(), 1000);
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao resetar devices', 'error');
-  }
-}
-
-// Limpar expirados
-async function cleanExpired() {
-  if (!confirm('Remover TODOS os usuários expirados?')) return;
-  
-  try {
-    const result = await sendRequest('/admin/clean_expired', 'POST');
-    
-    if (result.success) {
-      showToast(`${result.removed} usuários expirados removidos!`, 'success');
-      // Recarregar a página
-      setTimeout(() => location.reload(), 1000);
-    } else {
-      showToast(`Erro: ${result.error}`, 'error');
-    }
-  } catch (error) {
-    showToast('Erro ao limpar expirados', 'error');
-  }
-}
-
-// Atualizar linha do usuário
-function updateUserRow(index, userData) {
-  const row = document.getElementById(`userRow${index}`);
-  if (!row) return;
-  
-  // Atualizar dados
-  row.setAttribute('data-expires', userData.expires_at);
-  row.setAttribute('data-device', userData.device_id || '');
-  
-  // Atualizar key
-  const keyCell = row.querySelector('td:nth-child(4) code');
-  if (keyCell) keyCell.textContent = userData.key;
-  
-  // Atualizar device
-  const deviceCell = row.querySelector('td:nth-child(5)');
-  if (deviceCell) {
-    if (userData.device_id) {
-      deviceCell.innerHTML = `<span class="badge badge-success"><i class="fas fa-mobile-alt"></i> ${userData.device_id.slice(0, 10)}...</span>`;
-    } else {
-      deviceCell.innerHTML = `<span class="badge badge-warning"><i class="fas fa-times"></i> Não ativado</span>`;
-    }
-  }
-  
-  // Atualizar expiração
-  renderExpirations();
-}
-
-// Atualizar contadores
-function updateCounters() {
-  const rows = document.querySelectorAll('#usersTableBody tr[data-expires]');
-  const count = rows.length;
-  
-  document.getElementById('userCount').textContent = count;
-  document.getElementById('userCountDisplay').textContent = count;
-  document.getElementById('statsTotal').textContent = count;
-  document.getElementById('showingCount').textContent = count;
-}
-
-// ====== MODAL DE DIAS PERSONALIZADOS ======
-function openCustomDaysModal(userIndex, username) {
-  currentUserIndex = userIndex;
-  document.getElementById('customDaysUsername').value = username;
-  document.getElementById('customDaysInput').value = 7;
-  document.getElementById('customDaysModal').style.display = 'flex';
-}
-
-function closeCustomDaysModal() {
-  document.getElementById('customDaysModal').style.display = 'none';
-  currentUserIndex = null;
-}
-
-function applyCustomDays() {
-  const days = parseInt(document.getElementById('customDaysInput').value);
-  
-  if (isNaN(days) || days < 1) {
-    showToast('Digite um número válido de dias', 'error');
-    return;
-  }
-  
-  closeCustomDaysModal();
-  renewLicense(currentUserIndex, days);
-}
-
-// ====== MODAL DE ESTATÍSTICAS ======
-function openStatsModal() {
+// Renderizar expirações
+function renderExpirations() {
   const now = Math.floor(Date.now() / 1000);
-  let stats = {
-    total: {{ users|length }},
-    active: 0,
-    expiring: 0,
-    expired: 0,
-    unlimited: 0,
-    withDevice: 0,
-    withoutDevice: 0
+  
+  document.querySelectorAll('tr[data-expires]').forEach(tr => {
+    const exp = parseInt(tr.getAttribute('data-expires')) || 0;
+    const cell = tr.querySelector('.expCell');
+    
+    if (!cell) return;
+    
+    // Licença ilimitada
+    if (exp === 0 || exp > 253402300799) { // Ano 9999
+      cell.innerHTML = '<span class="badge badge-unlimited"><i class="fas fa-infinity"></i> Ilimitado</span>';
+      return;
+    }
+    
+    // Licença expirada
+    if (exp < now) {
+      const daysAgo = Math.floor((now - exp) / 86400);
+      cell.innerHTML = `<span class="badge badge-expired"><i class="fas fa-exclamation-circle"></i> Expirado há ${daysAgo} dias</span>`;
+      return;
+    }
+    
+    // Calcular dias restantes
+    const daysLeft = Math.floor((exp - now) / 86400);
+    
+    if (daysLeft <= 3) {
+      cell.innerHTML = `<span class="badge badge-expired"><i class="fas fa-exclamation-triangle"></i> ${daysLeft} dias</span>`;
+    } else if (daysLeft <= 7) {
+      cell.innerHTML = `<span class="badge badge-warning"><i class="fas fa-clock"></i> ${daysLeft} dias</span>`;
+    } else if (daysLeft <= 30) {
+      cell.innerHTML = `<span class="badge badge-success"><i class="fas fa-check-circle"></i> ${daysLeft} dias</span>`;
+    } else {
+      cell.innerHTML = `<span class="badge badge-success"><i class="fas fa-check-circle"></i> ${daysLeft} dias</span>`;
+    }
+  });
+}
+
+// Atualizar estatísticas
+function updateStats() {
+  const rows = document.querySelectorAll('#usersTable tbody tr');
+  let active = 0, expired = 0, unlimited = 0;
+  const now = Math.floor(Date.now() / 1000);
+  
+  rows.forEach(tr => {
+    const exp = parseInt(tr.getAttribute('data-expires')) || 0;
+    
+    if (exp === 0 || exp > 253402300799) {
+      unlimited++;
+    } else if (exp < now) {
+      expired++;
+    } else {
+      active++;
+    }
+  });
+  
+  document.getElementById('active-users').textContent = active;
+  document.getElementById('expired-users').textContent = expired;
+  document.getElementById('unlimited-users').textContent = unlimited;
+}
+
+// Mostrar toast
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  
+  if (!toast || !toastMessage) return;
+  
+  // Definir cor baseada no tipo
+  const colors = {
+    success: 'var(--success)',
+    danger: 'var(--danger)',
+    warning: 'var(--warning)',
+    info: 'var(--accent)'
   };
   
-  document.querySelectorAll("tr[data-expires]").forEach(tr => {
-    const expires = parseInt(tr.getAttribute("data-expires"));
-    const hasDevice = tr.getAttribute("data-device") !== "";
-    const expInfo = calculateExpiration(expires);
-    
-    // Contar por status
-    switch(expInfo.status) {
-      case 'unlimited': stats.unlimited++; break;
-      case 'active': stats.active++; break;
-      case 'warning':
-      case 'critical': stats.expiring++; break;
-      case 'expired': stats.expired++; break;
-    }
-    
-    // Contar por dispositivo
-    if (hasDevice) {
-      stats.withDevice++;
-    } else {
-      stats.withoutDevice++;
-    }
-  });
+  toast.style.background = colors[type] || colors.success;
+  toastMessage.textContent = message;
+  toast.style.display = 'flex';
   
-  // Gerar conteúdo do modal
-  const modalContent = `
-    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(47, 111, 237, 0.2); color: var(--accent);">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Total Usuários</h3>
-          <div class="stat-number">${stats.total}</div>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(23, 122, 48, 0.2); color: var(--ok);">
-          <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Ativos</h3>
-          <div class="stat-number">${stats.active}</div>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(240, 173, 78, 0.2); color: var(--warning);">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Próximos a Expirar</h3>
-          <div class="stat-number">${stats.expiring}</div>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(217, 60, 60, 0.2); color: var(--danger);">
-          <i class="fas fa-times-circle"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Expirados</h3>
-          <div class="stat-number">${stats.expired}</div>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(47, 111, 237, 0.2); color: var(--accent);">
-          <i class="fas fa-infinity"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Ilimitados</h3>
-          <div class="stat-number">${stats.unlimited}</div>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(23, 162, 184, 0.2); color: var(--info);">
-          <i class="fas fa-mobile-alt"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Com Device</h3>
-          <div class="stat-number">${stats.withDevice}</div>
-        </div>
-      </div>
-    </div>
-    
-    <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: var(--radius);">
-      <h4 style="margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Informações do Sistema</h4>
-      <div style="font-size: 14px; line-height: 1.6;">
-        <p><strong>Banco de Dados:</strong> {{ total_licenses }} licenças registradas</p>
-        <p><strong>Última Atualização:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-        <p><strong>Status API:</strong> <span class="badge badge-success">Online</span></p>
-      </div>
-    </div>
-  `;
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+
+// Modal de confirmação
+function confirmAction(actionType, form = null) {
+  appState.currentAction = actionType;
+  appState.currentForm = form;
   
-  document.getElementById('modalStatsContent').innerHTML = modalContent;
-  document.getElementById('statsModal').style.display = 'flex';
+  const modal = document.getElementById('confirmModal');
+  const title = document.getElementById('modalTitle');
+  const message = document.getElementById('modalMessage');
+  const button = document.getElementById('confirmButton');
+  
+  if (!modal) return false;
+  
+  const messages = {
+    resetAll: {
+      title: 'Resetar Todos Devices',
+      message: '⚠️ ATENÇÃO: Esta ação irá resetar TODOS os devices registrados. Todos os usuários precisarão registrar um novo device. Esta ação não pode ser desfeita. Continuar?',
+      buttonColor: 'var(--warning)',
+      buttonText: 'Resetar Todos'
+    },
+    cleanExpired: {
+      title: 'Limpar Licenças Expiradas',
+      message: 'Remover TODOS os usuários com licenças expiradas? Esta ação não pode ser desfeita.',
+      buttonColor: 'var(--danger)',
+      buttonText: 'Limpar Tudo'
+    },
+    deleteUser: {
+      title: 'Excluir Usuário',
+      message: 'Tem certeza que deseja excluir este usuário? Todas as informações serão perdidas permanentemente.',
+      buttonColor: 'var(--danger)',
+      buttonText: 'Excluir'
+    },
+    makeUnlimited: {
+      title: 'Tornar Licença Ilimitada',
+      message: 'Deseja tornar esta licença ilimitada? Ela nunca expirará automaticamente.',
+      buttonColor: 'var(--accent)',
+      buttonText: 'Tornar Ilimitada'
+    }
+  };
+  
+  const config = messages[actionType] || {
+    title: 'Confirmar Ação',
+    message: 'Tem certeza que deseja realizar esta ação?',
+    buttonColor: 'var(--accent)',
+    buttonText: 'Confirmar'
+  };
+  
+  title.textContent = config.title;
+  message.textContent = config.message;
+  button.style.background = config.buttonColor;
+  button.textContent = config.buttonText;
+  
+  modal.style.display = 'flex';
+  return false;
 }
 
-function closeStatsModal() {
-  document.getElementById('statsModal').style.display = 'none';
-}
-
-// Fechar modais ao clicar fora
-window.onclick = function(event) {
-  if (event.target === document.getElementById('statsModal')) {
-    closeStatsModal();
+function closeModal() {
+  const modal = document.getElementById('confirmModal');
+  if (modal) {
+    modal.style.display = 'none';
   }
-  if (event.target === document.getElementById('customDaysModal')) {
-    closeCustomDaysModal();
+  appState.currentAction = null;
+  appState.currentForm = null;
+}
+
+function executeAction() {
+  if (appState.currentForm) {
+    appState.currentForm.submit();
+  } else if (appState.currentAction === 'deleteUser') {
+    // Formulário já está em execução
+    const form = document.querySelector('form[onsubmit*="deleteUser"]');
+    if (form) form.submit();
+  }
+  closeModal();
+}
+
+// Validação de formulário
+function validateForm() {
+  const username = document.querySelector('input[name="username"]').value.trim();
+  const password = document.querySelector('input[name="password"]').value;
+  const days = document.querySelector('input[name="expire_days"]').value;
+  
+  if (!username || !password) {
+    showToast('Preencha todos os campos obrigatórios!', 'danger');
+    return false;
+  }
+  
+  if (days < 0) {
+    showToast('Os dias de expiração não podem ser negativos!', 'danger');
+    return false;
+  }
+  
+  return true;
+}
+
+function validateCustomDays(form) {
+  const daysInput = form.querySelector('input[name="days"]');
+  const days = parseInt(daysInput.value);
+  
+  if (isNaN(days) || days < 1 || days > 3650) {
+    showToast('Digite um valor entre 1 e 3650 dias!', 'danger');
+    return false;
+  }
+  
+  return true;
+}
+
+// Alternar visibilidade da senha
+function togglePassword() {
+  const passwordField = document.getElementById('passwordField');
+  const checkbox = document.getElementById('showPassword');
+  
+  if (passwordField && checkbox) {
+    passwordField.type = checkbox.checked ? 'text' : 'password';
   }
 }
 
-// ====== EXPORTAÇÃO ======
-function exportToCSV() {
-  const rows = document.querySelectorAll("#usersTable tbody tr");
-  let csv = "ID,Usuário,Senha,Key,Device,Expiração,Status\n";
+// Exportar dados
+function exportData(format) {
+  const rows = document.querySelectorAll('#usersTable tbody tr');
+  const data = [];
   
   rows.forEach(row => {
     if (row.style.display !== 'none') {
-      const cells = row.querySelectorAll("td");
-      const expCell = row.querySelector(".expCell").textContent.trim();
-      
-      const rowData = [
-        cells[0].textContent.trim(),
-        cells[1].textContent.trim().split('\n')[0],
-        cells[2].querySelector("code").textContent.trim(),
-        cells[3].querySelector("code").textContent.trim(),
-        cells[4].textContent.trim().replace(/[^a-zA-Z0-9]/g, ' '),
-        row.getAttribute("data-expires"),
-        expCell
-      ];
-      
-      csv += rowData.map(cell => `"${cell}"`).join(",") + "\n";
+      const cells = row.cells;
+      data.push({
+        id: cells[0].textContent.trim(),
+        usuario: cells[1].textContent.trim(),
+        licenca: cells[3].querySelector('code').textContent.trim(),
+        device: cells[4].textContent.trim(),
+        status: cells[5].textContent.trim()
+      });
     }
   });
   
-  // Criar e baixar arquivo
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement("a");
+  if (format === 'csv') {
+    exportToCSV(data);
+  } else if (format === 'json') {
+    exportToJSON(data);
+  }
+}
+
+function exportToCSV(data) {
+  if (data.length === 0) {
+    showToast('Nenhum dado para exportar!', 'warning');
+    return;
+  }
+  
+  const headers = ['ID', 'Usuário', 'Licença', 'Device', 'Status'];
+  const csvContent = [
+    headers.join(','),
+    ...data.map(item => [
+      item.id,
+      `"${item.usuario}"`,
+      `"${item.licenca}"`,
+      `"${item.device}"`,
+      `"${item.status}"`
+    ].join(','))
+  ].join('\n');
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  downloadBlob(blob, 'licencas_fera_alpha.csv');
+  showToast('Dados exportados como CSV!', 'success');
+}
+
+function exportToJSON(data) {
+  if (data.length === 0) {
+    showToast('Nenhum dado para exportar!', 'warning');
+    return;
+  }
+  
+  const jsonContent = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+  downloadBlob(blob, 'licencas_fera_alpha.json');
+  showToast('Dados exportados como JSON!', 'success');
+}
+
+function downloadBlob(blob, filename) {
+  const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  
-  link.setAttribute("href", url);
-  link.setAttribute("download", `fera_alpha_users_${new Date().toISOString().slice(0,10)}.csv`);
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
   link.style.visibility = 'hidden';
-  
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
-  showToast('Dados exportados para CSV!', 'success');
+  URL.revokeObjectURL(url);
 }
 
-// ====== INICIALIZAÇÃO ======
-document.addEventListener('DOMContentLoaded', function() {
-  // Renderizar expirações
-  renderExpirations();
-  updateCurrentTime();
-  updateCounters();
-  
-  // Auto-refresh a cada 30 segundos
-  setInterval(renderExpirations, 30000);
-  setInterval(updateCurrentTime, 60000);
-  
-  // Prevenir submit padrão do formulário
-  document.getElementById('generateLicenseForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    generateLicense(e);
-  });
-});
+// Debounce para busca
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Atualizar dados
+function refreshData() {
+  const btn = event?.target.closest('button');
+  if (btn) {
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<div class="loading"></div>';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  } else {
+    location.reload();
+  }
+}
+
+// Atualizar automaticamente a cada 30 segundos
+setInterval(renderExpirations, 30000);
+setInterval(updateStats, 30000);
 </script>
+
 </body>
 </html>
