@@ -47,6 +47,46 @@
     line-height: 1.6;
   }
 
+  /* LOADING STATE */
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border);
+    border-top: 4px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* ERROR STATE */
+  .error-container {
+    background: rgba(217, 60, 60, 0.1);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .error-container i {
+    font-size: 48px;
+    color: var(--danger);
+    margin-bottom: 15px;
+  }
+
   /* HEADER */
   .header {
     display: flex;
@@ -534,6 +574,49 @@
     color: var(--text-light);
   }
 
+  /* TOAST NOTIFICATION */
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .toast-success {
+    background: var(--ok);
+  }
+
+  .toast-error {
+    background: var(--danger);
+  }
+
+  .toast-warning {
+    background: var(--warning);
+  }
+
+  .toast-info {
+    background: var(--info);
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     body {
@@ -653,7 +736,7 @@
     <h1><i class="fas fa-dragon"></i> Fera Alpha Admin</h1>
     <div class="subtitle">
       <i class="fas fa-shield-alt"></i>
-      <span>Sistema de Gerenciamento Avançado - <span id="userCount">0</span> usuários ativos</span>
+      <span id="subtitleText">Sistema de Gerenciamento Avançado</span>
     </div>
   </div>
   
@@ -669,6 +752,25 @@
     </button>
   </div>
 </header>
+
+<!-- ERROR CONTAINER (inicialmente oculto) -->
+<div id="errorContainer" class="error-container" style="display: none;">
+  <i class="fas fa-exclamation-triangle"></i>
+  <h3>Erro ao Carregar Dados</h3>
+  <p id="errorMessage">Ocorreu um erro ao carregar os dados do servidor.</p>
+  <button class="btn btn-primary mt-20" onclick="location.reload()">
+    <i class="fas fa-sync-alt"></i> Recarregar Página
+  </button>
+</div>
+
+<!-- LOADING STATE -->
+<div id="loadingState" class="loading">
+  <div class="spinner"></div>
+  <p>Carregando dados do sistema...</p>
+</div>
+
+<!-- MAIN CONTENT (inicialmente oculto) -->
+<div id="mainContent" style="display: none;">
 
 <!-- STATS CARDS -->
 <div class="stats-grid">
@@ -720,13 +822,19 @@
   </div>
   
   <div class="btn-group">
-    <button type="button" class="btn btn-warning" onclick="resetAllDevices()">
-      <i class="fas fa-sync-alt"></i> Resetar Todos Devices
-    </button>
+    <form method="post" action="/admin/reset_all_devices" 
+          onsubmit="return confirmAction('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
+      <button type="submit" class="btn btn-warning">
+        <i class="fas fa-sync-alt"></i> Resetar Todos Devices
+      </button>
+    </form>
     
-    <button type="button" class="btn btn-danger" onclick="cleanExpired()">
-      <i class="fas fa-trash"></i> Limpar Expirados
-    </button>
+    <form method="post" action="/admin/clean_expired" 
+          onsubmit="return confirmAction('Remover TODOS os usuários expirados?')">
+      <button type="submit" class="btn btn-danger">
+        <i class="fas fa-trash"></i> Limpar Expirados
+      </button>
+    </form>
     
     <button class="btn btn-info" onclick="openStatsModal()">
       <i class="fas fa-chart-pie"></i> Estatísticas
@@ -744,27 +852,27 @@
     <h2 class="card-title"><i class="fas fa-plus-circle"></i> Criar Nova Licença</h2>
   </div>
   
-  <form id="createLicenseForm" onsubmit="event.preventDefault(); createLicense();">
+  <form method="post" action="/admin/generate" id="generateForm">
     <div class="form-grid">
       <div class="form-group">
         <label><i class="fas fa-user"></i> Usuário</label>
-        <input name="username" id="username" required placeholder="ex: cliente123">
+        <input name="username" id="usernameInput" required placeholder="ex: cliente123">
       </div>
       
       <div class="form-group">
         <label><i class="fas fa-lock"></i> Senha</label>
-        <input name="password" id="password" required placeholder="••••••••">
+        <input name="password" id="passwordInput" required placeholder="••••••••">
       </div>
       
       <div class="form-group">
         <label><i class="fas fa-tag"></i> Prefixo</label>
-        <input name="prefix" id="prefix" value="FERA" placeholder="FERA">
+        <input name="prefix" id="prefixInput" value="FERA" placeholder="FERA">
       </div>
       
       <div class="form-group">
         <label><i class="fas fa-calendar-alt"></i> Expiração (dias)</label>
         <div class="btn-group">
-          <input type="number" name="expire_days" id="expire_days" value="30" min="0" style="flex: 1;">
+          <input type="number" name="expire_days" id="expireDaysInput" value="30" min="0" style="flex: 1;">
           <button type="button" class="btn btn-outline" onclick="setExpiration('30')">30 Dias</button>
           <button type="button" class="btn btn-outline" onclick="setExpiration('90')">90 Dias</button>
           <button type="button" class="btn btn-outline" onclick="setExpiration('365')">1 Ano</button>
@@ -776,11 +884,14 @@
     </div>
     
     <div class="btn-group mt-20">
-      <button type="submit" class="btn btn-success">
+      <button type="submit" class="btn btn-success" id="submitBtn">
         <i class="fas fa-plus"></i> Criar Licença
       </button>
       <button type="button" class="btn btn-outline" onclick="generateRandomCredentials()">
         <i class="fas fa-random"></i> Gerar Aleatório
+      </button>
+      <button type="button" class="btn btn-outline" onclick="clearForm()">
+        <i class="fas fa-times"></i> Limpar
       </button>
     </div>
   </form>
@@ -789,7 +900,7 @@
 <!-- LISTA DE USUÁRIOS -->
 <div class="card">
   <div class="card-header">
-    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Usuários (<span id="userCount2">0</span>)</h2>
+    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Usuários (<span id="usersCount">0</span>)</h2>
     <div>
       <span class="badge badge-success" id="activeCount">0 ativos</span>
       <span class="badge badge-warning" id="expiringCount">0 próximos</span>
@@ -839,7 +950,7 @@
       </thead>
       
       <tbody id="usersTableBody">
-        <!-- Dados serão inseridos via JavaScript -->
+        <!-- Preenchido via JavaScript -->
       </tbody>
     </table>
   </div>
@@ -858,6 +969,8 @@
   </div>
 </div>
 
+</div> <!-- Fim do mainContent -->
+
 <!-- STATS MODAL -->
 <div id="statsModal" class="modal">
   <div class="modal-content">
@@ -873,46 +986,12 @@
 </div>
 
 <script>
-// ====== DADOS DE EXEMPLO (SIMULANDO BACKEND) ======
-let users = [
-  {
-    id: 1,
-    username: "admin_master",
-    password: "admin123",
-    key: "FERA-ADMIN-001",
-    device_id: "DEVICE-001-ABC",
-    expires_at: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60)
-  },
-  {
-    id: 2,
-    username: "cliente_premium",
-    password: "premium2024",
-    key: "FERA-PREM-002",
-    device_id: "",
-    expires_at: Math.floor(Date.now() / 1000) + (5 * 24 * 60 * 60)
-  },
-  {
-    id: 3,
-    username: "teste_ilimitado",
-    password: "ilimitado123",
-    key: "FERA-UNLIM-003",
-    device_id: "DEVICE-003-XYZ",
-    expires_at: 9999999999999
-  },
-  {
-    id: 4,
-    username: "expirado_demo",
-    password: "demo123",
-    key: "FERA-DEMO-004",
-    device_id: "DEVICE-004-EXP",
-    expires_at: Math.floor(Date.now() / 1000) - (10 * 24 * 60 * 60)
-  }
-];
-
 // ====== CONFIGURAÇÕES GERAIS ======
 const UNLIMITED_EXPIRY = 9999999999999;
+const API_BASE_URL = '/admin'; // Ajuste conforme necessário
 let currentFilter = 'all';
 let currentSort = { column: 0, direction: 'asc' };
+let usersData = [];
 
 // ====== FUNÇÕES DE UTILIDADE ======
 function toggleDarkMode() {
@@ -929,7 +1008,7 @@ if (localStorage.getItem('darkMode') === 'true') {
 function updateCurrentTime() {
   const now = new Date();
   document.getElementById('currentTime').textContent = 
-    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 // Copiar para clipboard
@@ -950,27 +1029,10 @@ function showToast(message, type = 'info') {
   
   // Criar novo toast
   const toast = document.createElement('div');
-  toast.className = `toast`;
+  toast.className = `toast toast-${type}`;
   toast.innerHTML = `
-    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
+    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
     ${message}
-  `;
-  
-  // Estilos do toast
-  toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: ${type === 'success' ? 'var(--ok)' : type === 'error' ? 'var(--danger)' : 'var(--info)'};
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeIn 0.3s ease-out;
   `;
   
   document.body.appendChild(toast);
@@ -981,6 +1043,48 @@ function showToast(message, type = 'info') {
     toast.style.transform = 'translateX(100%)';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
+}
+
+// Confirmação de ações
+function confirmAction(message) {
+  return confirm(message);
+}
+
+// ====== CARREGAMENTO DE DADOS ======
+async function loadUsersData() {
+  try {
+    // Mostrar loading
+    document.getElementById('loadingState').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('errorContainer').style.display = 'none';
+    
+    // Tentar carregar dados da API
+    const response = await fetch(`${API_BASE_URL}/api/users`); // Ajuste a rota conforme necessário
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    
+    usersData = await response.json();
+    
+    // Atualizar interface
+    updateInterface();
+    
+    // Esconder loading, mostrar conteúdo
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    
+    showToast('Dados carregados com sucesso!', 'success');
+    
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('errorContainer').style.display = 'block';
+    document.getElementById('errorMessage').textContent = error.message;
+    
+    showToast('Erro ao carregar dados do servidor', 'error');
+  }
 }
 
 // ====== GESTÃO DE EXPIRAÇÕES ======
@@ -1006,36 +1110,46 @@ function calculateExpiration(expires) {
   }
 }
 
-// ====== RENDERIZAÇÃO DA TABELA ======
 function renderUsersTable() {
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = '';
   
-  users.forEach((user, index) => {
+  let activeCount = 0;
+  let expiringCount = 0;
+  let expiredCount = 0;
+  let unlimitedCount = 0;
+  let expiringSoon = 0;
+  
+  usersData.forEach((user, index) => {
     const expInfo = calculateExpiration(user.expires_at);
     const row = document.createElement('tr');
-    row.setAttribute('data-expires', user.expires_at);
-    row.setAttribute('data-user', user.username.toLowerCase());
-    row.setAttribute('data-key', user.key.toLowerCase());
-    row.setAttribute('data-device', user.device_id || '');
     
-    // Determinar badge de expiração
-    let expiryBadge = '';
+    // Atualizar contadores
+    switch(expInfo.status) {
+      case 'unlimited': unlimitedCount++; break;
+      case 'active': activeCount++; break;
+      case 'warning':
+      case 'critical': expiringCount++; expiringSoon++; break;
+      case 'expired': expiredCount++; break;
+    }
+    
+    // Criar célula de expiração
+    let expiryCell = '';
     switch(expInfo.status) {
       case 'unlimited':
-        expiryBadge = `<span class="badge badge-unlimited"><i class="fas fa-infinity"></i> ILIMITADO</span>`;
+        expiryCell = `<span class="badge badge-unlimited"><i class="fas fa-infinity"></i> ILIMITADO</span>`;
         break;
       case 'active':
-        expiryBadge = `<span class="badge badge-success"><i class="fas fa-check"></i> ${expInfo.days} dias</span>`;
+        expiryCell = `<span class="badge badge-success"><i class="fas fa-check"></i> ${expInfo.days} dias</span>`;
         break;
       case 'warning':
-        expiryBadge = `<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> ${expInfo.days} dias</span>`;
+        expiryCell = `<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> ${expInfo.days} dias</span>`;
         break;
       case 'critical':
-        expiryBadge = `<span class="badge badge-danger pulse"><i class="fas fa-exclamation-circle"></i> ${expInfo.days} dias</span>`;
+        expiryCell = `<span class="badge badge-danger pulse"><i class="fas fa-exclamation-circle"></i> ${expInfo.days} dias</span>`;
         break;
       case 'expired':
-        expiryBadge = `<span class="badge badge-danger"><i class="fas fa-times"></i> EXPIRADO</span>`;
+        expiryCell = `<span class="badge badge-danger"><i class="fas fa-times"></i> EXPIRADO</span>`;
         break;
     }
     
@@ -1043,7 +1157,8 @@ function renderUsersTable() {
       <td>${index + 1}</td>
       <td>
         <strong>${user.username}</strong>
-        ${expInfo.status === 'unlimited' ? '<span class="badge badge-unlimited">ILIMITADO</span>' : ''}
+        ${user.expires_at == UNLIMITED_EXPIRY || user.expires_at == 0 ? 
+          '<span class="badge badge-unlimited">ILIMITADO</span>' : ''}
       </td>
       <td>
         <code>${user.password}</code>
@@ -1058,120 +1173,85 @@ function renderUsersTable() {
         </button>
       </td>
       <td>
-        ${user.device_id 
-          ? `<span class="badge badge-success"><i class="fas fa-mobile-alt"></i> ${user.device_id.substring(0, 10)}...</span>` 
-          : `<span class="badge badge-warning"><i class="fas fa-times"></i> Não ativado</span>`}
+        ${user.device_id ? 
+          `<span class="badge badge-success"><i class="fas fa-mobile-alt"></i> ${user.device_id.substring(0, 10)}...</span>` :
+          `<span class="badge badge-warning"><i class="fas fa-times"></i> Não ativado</span>`}
       </td>
-      <td class="expCell">
-        ${expiryBadge}
-      </td>
+      <td>${expiryCell}</td>
       <td>
         <div class="action-buttons">
           <!-- +30 Dias -->
-          <button type="button" class="action-btn action-btn-primary" title="+30 Dias" onclick="renewLicense(${index}, 30)">
-            <i class="fas fa-plus"></i>30
-          </button>
+          <form method="post" action="/admin/renew/${index}">
+            <button type="submit" class="action-btn action-btn-primary" title="+30 Dias">
+              <i class="fas fa-plus"></i>30
+            </button>
+          </form>
           
-          <!-- Dias Personalizados -->
-          <button type="button" class="action-btn action-btn-warning" title="+ Dias Personalizados" onclick="customRenew(${index})">
-            <i class="fas fa-calendar-plus"></i>
-          </button>
-          
-          <!-- Tornar Ilimitado -->
-          <button type="button" class="action-btn" title="Tornar Ilimitado" style="background: var(--accent); color: white;" onclick="makeUnlimited(${index})">
-            <i class="fas fa-infinity"></i>
-          </button>
+          <!-- Reset Key -->
+          <form method="post" action="/admin/reset/${index}">
+            <button type="submit" class="action-btn action-btn-warning" title="Resetar Key">
+              <i class="fas fa-key"></i>
+            </button>
+          </form>
           
           <!-- Reset Device -->
-          <button type="button" class="action-btn action-btn-danger" title="Resetar Device" onclick="resetDevice(${index})">
-            <i class="fas fa-mobile-alt"></i>
-          </button>
+          <form method="post" action="/admin/reset_device/${index}">
+            <button type="submit" class="action-btn action-btn-danger" title="Resetar Device">
+              <i class="fas fa-mobile-alt"></i>
+            </button>
+          </form>
           
           <!-- Delete -->
-          <button type="button" class="action-btn action-btn-danger" title="Excluir" onclick="deleteUser(${index})">
-            <i class="fas fa-trash"></i>
-          </button>
+          <form method="post" action="/admin/delete/${index}"
+                onsubmit="return confirmAction('Excluir usuário ${user.username} permanentemente?')">
+            <button type="submit" class="action-btn action-btn-danger" title="Excluir">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
         </div>
       </td>
     `;
     
+    // Adicionar atributos para filtragem
+    row.setAttribute('data-expires', user.expires_at || 0);
+    row.setAttribute('data-user', user.username.toLowerCase());
+    row.setAttribute('data-key', user.key.toLowerCase());
+    row.setAttribute('data-device', user.device_id ? user.device_id.toLowerCase() : '');
+    
     tbody.appendChild(row);
   });
   
-  updateStats();
-  filterUsers(currentFilter);
+  // Atualizar estatísticas
+  document.getElementById('totalUsers').textContent = usersData.length;
+  document.getElementById('usersCount').textContent = usersData.length;
+  document.getElementById('showingCount').textContent = usersData.length;
+  document.getElementById('activeCount').textContent = `${activeCount} ativos`;
+  document.getElementById('expiringCount').textContent = `${expiringCount} próximos`;
+  document.getElementById('expiredCount').textContent = `${expiredCount} expirados`;
+  document.getElementById('unlimitedCount').textContent = unlimitedCount;
+  document.getElementById('expiringSoon').textContent = expiringSoon;
+  document.getElementById('totalLicenses').textContent = usersData.length;
+  document.getElementById('subtitleText').textContent = `Sistema de Gerenciamento Avançado - ${usersData.length} usuários ativos`;
 }
 
-// ====== ATUALIZAR ESTATÍSTICAS ======
-function updateStats() {
-  const now = Math.floor(Date.now() / 1000);
-  let stats = {
-    total: users.length,
-    active: 0,
-    expiring: 0,
-    expired: 0,
-    unlimited: 0,
-    withDevice: 0,
-    withoutDevice: 0,
-    expiringSoon: 0
-  };
-  
-  users.forEach(user => {
-    const expInfo = calculateExpiration(user.expires_at);
-    const hasDevice = user.device_id && user.device_id !== "";
-    
-    // Contar por status
-    switch(expInfo.status) {
-      case 'unlimited': 
-        stats.unlimited++; 
-        break;
-      case 'active': 
-        stats.active++; 
-        if (expInfo.days <= 30) stats.expiringSoon++;
-        break;
-      case 'warning':
-      case 'critical': 
-        stats.expiring++; 
-        stats.expiringSoon++;
-        break;
-      case 'expired': 
-        stats.expired++; 
-        break;
-    }
-    
-    // Contar por dispositivo
-    if (hasDevice) {
-      stats.withDevice++;
-    } else {
-      stats.withoutDevice++;
-    }
-  });
-  
-  // Atualizar UI
-  document.getElementById('totalUsers').textContent = stats.total;
-  document.getElementById('totalLicenses').textContent = stats.total;
-  document.getElementById('unlimitedCount').textContent = stats.unlimited;
-  document.getElementById('expiringSoon').textContent = stats.expiringSoon;
-  document.getElementById('userCount').textContent = stats.total;
-  document.getElementById('userCount2').textContent = stats.total;
-  document.getElementById('showingCount').textContent = stats.total;
-  document.getElementById('activeCount').textContent = `${stats.active} ativos`;
-  document.getElementById('expiringCount').textContent = `${stats.expiring} próximos`;
-  document.getElementById('expiredCount').textContent = `${stats.expired} expirados`;
+function updateInterface() {
+  renderUsersTable();
+  updateCurrentTime();
 }
 
 // ====== FILTRAGEM E ORDENAÇÃO ======
 function filterUsers(filter) {
   currentFilter = filter;
-  const rows = document.querySelectorAll("#usersTableBody tr");
-  let visibleCount = 0;
+  const now = Math.floor(Date.now() / 1000);
   
   // Atualizar botões ativos
   document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
   
-  rows.forEach(row => {
-    const expires = parseInt(row.getAttribute("data-expires"));
+  let showingCount = 0;
+  
+  document.querySelectorAll("#usersTableBody tr").forEach(tr => {
+    const expires = parseInt(tr.getAttribute("data-expires"));
     const expInfo = calculateExpiration(expires);
     
     let show = false;
@@ -1194,15 +1274,16 @@ function filterUsers(filter) {
         break;
     }
     
-    row.style.display = show ? '' : 'none';
-    if (show) visibleCount++;
+    tr.style.display = show ? '' : 'none';
+    if (show) showingCount++;
   });
   
-  document.getElementById('showingCount').textContent = visibleCount;
+  document.getElementById('showingCount').textContent = showingCount;
 }
 
 function sortTable(column) {
-  const tbody = document.getElementById('usersTableBody');
+  const table = document.getElementById("usersTable");
+  const tbody = table.tBodies[0];
   const rows = Array.from(tbody.rows);
   
   // Determinar direção
@@ -1210,8 +1291,8 @@ function sortTable(column) {
   currentSort = { column, direction: isAsc ? 'asc' : 'desc' };
   
   rows.sort((a, b) => {
-    let aVal = a.cells[column].innerText;
-    let bVal = b.cells[column].innerText;
+    let aVal = a.cells[column].textContent;
+    let bVal = b.cells[column].textContent;
     
     // Ordenação especial para coluna de expiração
     if (column === 5) {
@@ -1246,25 +1327,24 @@ function sortTable(column) {
 // ====== BUSCA ======
 document.getElementById("searchUser").addEventListener("input", function() {
   const query = this.value.toLowerCase().trim();
-  let visibleCount = 0;
+  let showingCount = 0;
   
-  document.querySelectorAll("#usersTableBody tr").forEach(row => {
-    const user = row.getAttribute("data-user") || "";
-    const key = row.getAttribute("data-key") || "";
-    const device = row.getAttribute("data-device") || "";
+  document.querySelectorAll("#usersTableBody tr").forEach(tr => {
+    const user = tr.getAttribute("data-user") || "";
+    const key = tr.getAttribute("data-key") || "";
+    const device = tr.getAttribute("data-device") || "";
     
     const matches = user.includes(query) || key.includes(query) || device.includes(query);
-    row.style.display = matches ? '' : 'none';
-    if (matches) visibleCount++;
+    tr.style.display = matches ? '' : 'none';
+    if (matches) showingCount++;
   });
   
-  document.getElementById('showingCount').textContent = visibleCount;
+  document.getElementById('showingCount').textContent = showingCount;
 });
 
 // ====== FUNÇÕES DO FORMULÁRIO ======
 function setExpiration(days) {
-  const input = document.getElementById('expire_days');
-  input.value = days;
+  document.getElementById('expireDaysInput').value = days;
   
   if (days === '0') {
     showToast('Licença será criada como ILIMITADA!', 'info');
@@ -1273,134 +1353,26 @@ function setExpiration(days) {
 
 function generateRandomCredentials() {
   const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const randomPass = Math.random().toString(36).substring(2, 10);
+  const randomPass = Math.random().toString(36).substring(2, 10) + Math.floor(Math.random() * 10);
   
-  document.getElementById('username').value = `user_${randomId}`;
-  document.getElementById('password').value = randomPass;
+  document.getElementById('usernameInput').value = `user_${randomId}`;
+  document.getElementById('passwordInput').value = randomPass;
   
   showToast('Credenciais aleatórias geradas!', 'success');
 }
 
-function createLicense() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const prefix = document.getElementById('prefix').value || 'FERA';
-  const expireDays = parseInt(document.getElementById('expire_days').value);
-  
-  // Gerar key única
-  const keyNum = users.length + 1;
-  const key = `${prefix}-${String(keyNum).padStart(3, '0')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-  
-  // Calcular expiração
-  let expiresAt;
-  if (expireDays === 0) {
-    expiresAt = UNLIMITED_EXPIRY;
-  } else {
-    expiresAt = Math.floor(Date.now() / 1000) + (expireDays * 24 * 60 * 60);
-  }
-  
-  // Adicionar novo usuário
-  const newUser = {
-    id: users.length + 1,
-    username: username,
-    password: password,
-    key: key,
-    device_id: "",
-    expires_at: expiresAt
-  };
-  
-  users.push(newUser);
-  renderUsersTable();
-  
-  // Limpar formulário
-  document.getElementById('createLicenseForm').reset();
-  document.getElementById('prefix').value = 'FERA';
-  document.getElementById('expire_days').value = '30';
-  
-  showToast(`Licença criada com sucesso! Key: ${key}`, 'success');
-}
-
-// ====== AÇÕES NA TABELA ======
-function renewLicense(index, days) {
-  if (users[index].expires_at === UNLIMITED_EXPIRY) {
-    showToast('Licença ilimitada não pode ser renovada!', 'warning');
-    return;
-  }
-  
-  const currentExpiry = users[index].expires_at;
-  const now = Math.floor(Date.now() / 1000);
-  
-  // Se já expirou, renovar a partir de agora
-  const base = currentExpiry > now ? currentExpiry : now;
-  users[index].expires_at = base + (days * 24 * 60 * 60);
-  
-  renderUsersTable();
-  showToast(`Licença renovada em ${days} dias!`, 'success');
-}
-
-function customRenew(index) {
-  const days = prompt('Quantos dias deseja adicionar?', '7');
-  if (days && !isNaN(days) && days > 0) {
-    renewLicense(index, parseInt(days));
-  }
-}
-
-function makeUnlimited(index) {
-  if (confirm(`Tornar licença de ${users[index].username} ilimitada?`)) {
-    users[index].expires_at = UNLIMITED_EXPIRY;
-    renderUsersTable();
-    showToast('Licença tornada ilimitada!', 'success');
-  }
-}
-
-function resetDevice(index) {
-  if (confirm(`Resetar device de ${users[index].username}?`)) {
-    users[index].device_id = "";
-    renderUsersTable();
-    showToast('Device resetado!', 'success');
-  }
-}
-
-function deleteUser(index) {
-  if (confirm(`Excluir usuário ${users[index].username} permanentemente?`)) {
-    users.splice(index, 1);
-    renderUsersTable();
-    showToast('Usuário excluído!', 'success');
-  }
-}
-
-// ====== FERRAMENTAS ADMIN ======
-function resetAllDevices() {
-  if (confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')) {
-    users.forEach(user => {
-      user.device_id = "";
-    });
-    renderUsersTable();
-    showToast('Todos devices foram resetados!', 'success');
-  }
-}
-
-function cleanExpired() {
-  if (confirm('Remover TODOS os usuários expirados?')) {
-    const now = Math.floor(Date.now() / 1000);
-    const initialCount = users.length;
-    
-    users = users.filter(user => {
-      if (user.expires_at === UNLIMITED_EXPIRY || user.expires_at === 0) return true;
-      return user.expires_at > now;
-    });
-    
-    const removed = initialCount - users.length;
-    renderUsersTable();
-    showToast(`${removed} usuários expirados removidos!`, 'success');
-  }
+function clearForm() {
+  document.getElementById('usernameInput').value = '';
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('prefixInput').value = 'FERA';
+  document.getElementById('expireDaysInput').value = '30';
+  showToast('Formulário limpo!', 'info');
 }
 
 // ====== MODAL DE ESTATÍSTICAS ======
 function openStatsModal() {
-  const now = Math.floor(Date.now() / 1000);
   let stats = {
-    total: users.length,
+    total: usersData.length,
     active: 0,
     expiring: 0,
     expired: 0,
@@ -1409,9 +1381,9 @@ function openStatsModal() {
     withoutDevice: 0
   };
   
-  users.forEach(user => {
+  usersData.forEach(user => {
     const expInfo = calculateExpiration(user.expires_at);
-    const hasDevice = user.device_id && user.device_id !== "";
+    const hasDevice = !!user.device_id;
     
     // Contar por status
     switch(expInfo.status) {
@@ -1497,9 +1469,10 @@ function openStatsModal() {
     <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: var(--radius);">
       <h4 style="margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Informações do Sistema</h4>
       <div style="font-size: 14px; line-height: 1.6;">
-        <p><strong>Banco de Dados:</strong> ${users.length} licenças registradas</p>
+        <p><strong>Banco de Dados:</strong> ${stats.total} licenças registradas</p>
         <p><strong>Última Atualização:</strong> ${new Date().toLocaleString('pt-BR')}</p>
         <p><strong>Status API:</strong> <span class="badge badge-success">Online</span></p>
+        <p><strong>Versão:</strong> 1.0.0</p>
       </div>
     </div>
   `;
@@ -1522,31 +1495,26 @@ window.onclick = function(event) {
 
 // ====== EXPORTAÇÃO ======
 function exportToCSV() {
+  const rows = document.querySelectorAll("#usersTable tbody tr");
   let csv = "ID,Usuário,Senha,Key,Device,Expiração,Status\n";
   
-  users.forEach((user, index) => {
-    const expInfo = calculateExpiration(user.expires_at);
-    let status = '';
-    
-    switch(expInfo.status) {
-      case 'unlimited': status = 'ILIMITADO'; break;
-      case 'active': status = `${expInfo.days} dias`; break;
-      case 'warning': 
-      case 'critical': status = `Expira em ${expInfo.days} dias`; break;
-      case 'expired': status = 'EXPIRADO'; break;
+  rows.forEach((row, index) => {
+    if (row.style.display !== 'none') {
+      const cells = row.querySelectorAll("td");
+      const status = cells[5].textContent.trim();
+      
+      const rowData = [
+        index + 1,
+        cells[1].textContent.trim().split('\n')[0], // Remover badges
+        cells[2].querySelector("code").textContent.trim(),
+        cells[3].querySelector("code").textContent.trim(),
+        cells[4].textContent.trim().replace(/[^a-zA-Z0-9]/g, ' '),
+        row.getAttribute("data-expires"),
+        status
+      ];
+      
+      csv += rowData.map(cell => `"${cell}"`).join(",") + "\n";
     }
-    
-    const rowData = [
-      index + 1,
-      user.username,
-      user.password,
-      user.key,
-      user.device_id || 'Não ativado',
-      new Date(user.expires_at * 1000).toLocaleDateString('pt-BR'),
-      status
-    ];
-    
-    csv += rowData.map(cell => `"${cell}"`).join(",") + "\n";
   });
   
   // Criar e baixar arquivo
@@ -1567,22 +1535,61 @@ function exportToCSV() {
 
 // ====== INICIALIZAÇÃO ======
 document.addEventListener('DOMContentLoaded', function() {
-  // Renderizar tabela inicial
-  renderUsersTable();
-  updateCurrentTime();
+  // Carregar dados iniciais
+  loadUsersData();
   
-  // Auto-refresh a cada 30 segundos
-  setInterval(() => {
-    renderUsersTable();
-  }, 30000);
+  // Auto-refresh a cada 60 segundos
+  setInterval(loadUsersData, 60000);
   
-  setInterval(updateCurrentTime, 60000);
+  // Atualizar hora a cada segundo
+  setInterval(updateCurrentTime, 1000);
   
-  // Fechar modal com ESC
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeStatsModal();
-    }
+  // Configurar evento de submit do formulário
+  document.getElementById('generateForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    
+    // Mostrar loading no botão
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando...';
+    submitBtn.disabled = true;
+    
+    // Permitir que o formulário seja enviado normalmente
+    // Se quiser AJAX, descomente abaixo e comente a linha return true;
+    /*
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        showToast('Licença criada com sucesso!', 'success');
+        loadUsersData(); // Recarregar dados
+        clearForm();
+      } else {
+        throw new Error('Erro ao criar licença');
+      }
+    })
+    .catch(error => {
+      showToast('Erro ao criar licença', 'error');
+      console.error(error);
+    })
+    .finally(() => {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    });
+    */
+    
+    // Restaurar botão após 2 segundos (caso o formulário seja enviado normalmente)
+    setTimeout(() => {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }, 2000);
+    
+    return true; // Permitir envio normal do formulário
   });
 });
 </script>
