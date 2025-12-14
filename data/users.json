@@ -251,6 +251,13 @@
       "key": "TEST-D6D1B934",
       "device_id": null,
       "expires_at": 1765830120
+    },
+    {
+      "username": "test_connection_1765743721620",
+      "password": "test123",
+      "key": "TEST-84326B99",
+      "device_id": null,
+      "expires_at": 1765830122
     }
   ]
 }
