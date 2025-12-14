@@ -244,6 +244,13 @@
       "key": "FERA-0D7B38BE",
       "device_id": null,
       "expires_at": 1768335688
+    },
+    {
+      "username": "test_connection_1765743719410",
+      "password": "test123",
+      "key": "TEST-D6D1B934",
+      "device_id": null,
+      "expires_at": 1765830120
     }
   ]
 }
