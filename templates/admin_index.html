@@ -5,27 +5,43 @@
 <title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --bg: #f0f2f5;
+    --bg: #f8fafc;
     --card: #ffffff;
-    --border: #d1d9e6;
-    --text: #2c3e50;
-    --text-light: #7f8c8d;
-    --accent: #3498db;
-    --accent-dark: #2980b9;
-    --danger: #e74c3c;
-    --danger-dark: #c0392b;
-    --warning: #f39c12;
-    --warning-dark: #d68910;
-    --success: #27ae60;
-    --success-dark: #219653;
-    --info: #2f6fed;
-    --radius: 12px;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.12);
-    --transition: all 0.3s ease;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --text-lighter: #94a3b8;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --accent-light: #dbeafe;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-light: #fee2e2;
+    --warning: #f59e0b;
+    --warning-hover: #d97706;
+    --warning-light: #fef3c7;
+    --success: #10b981;
+    --success-hover: #059669;
+    --success-light: #d1fae5;
+    --info: #06b6d4;
+    --info-hover: #0891b2;
+    --info-light: #cffafe;
+    --purple: #8b5cf6;
+    --purple-hover: #7c3aed;
+    --purple-light: #ede9fe;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --sidebar-width: 260px;
   }
 
   .dark-mode {
@@ -33,295 +49,460 @@
     --card: #1e293b;
     --border: #334155;
     --text: #f1f5f9;
-    --text-light: #94a3b8;
+    --text-light: #cbd5e1;
+    --text-lighter: #64748b;
     --accent: #60a5fa;
-    --accent-dark: #3b82f6;
+    --accent-hover: #3b82f6;
+    --accent-light: rgba(96, 165, 250, 0.15);
     --danger: #f87171;
-    --danger-dark: #dc2626;
+    --danger-hover: #ef4444;
+    --danger-light: rgba(248, 113, 113, 0.15);
     --warning: #fbbf24;
-    --warning-dark: #f59e0b;
-    --success: #4ade80;
-    --success-dark: #22c55e;
-    --info: #38bdf8;
+    --warning-hover: #f59e0b;
+    --warning-light: rgba(251, 191, 36, 0.15);
+    --success: #34d399;
+    --success-hover: #10b981;
+    --success-light: rgba(52, 211, 153, 0.15);
+    --info: #22d3ee;
+    --info-hover: #06b6d4;
+    --info-light: rgba(34, 211, 238, 0.15);
+    --purple: #a78bfa;
+    --purple-hover: #8b5cf6;
+    --purple-light: rgba(167, 139, 250, 0.15);
   }
 
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   body {
     background: var(--bg);
     color: var(--text);
-    padding: 20px;
     min-height: 100vh;
     transition: var(--transition);
+    line-height: 1.6;
   }
 
-  header {
+  .app-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 24px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: var(--transition);
+    z-index: 100;
+  }
+
+  .sidebar-header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
     border-bottom: 1px solid var(--border);
   }
 
-  .header-left h1 {
-    font-size: 28px;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .logo h1 {
+    font-size: 22px;
     font-weight: 800;
-    background: linear-gradient(90deg, var(--accent), var(--info));
+    background: linear-gradient(90deg, var(--accent), var(--purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 5px;
   }
 
-  .header-left .subtitle {
-    font-size: 14px;
+  .logo-subtitle {
+    font-size: 13px;
     color: var(--text-light);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-weight: 500;
   }
 
-  .header-left .subtitle i {
+  .nav-section {
+    margin-bottom: 32px;
+  }
+
+  .nav-section h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 8px;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .nav-item:hover {
+    background: var(--bg);
+  }
+
+  .nav-item.active {
+    background: var(--accent-light);
     color: var(--accent);
+    font-weight: 600;
   }
 
-  .header-right {
+  .nav-item i {
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  /* MAIN CONTENT */
+  .main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 30px;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .page-title h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .page-title p {
+    color: var(--text-light);
+    font-size: 15px;
+  }
+
+  .top-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .user-menu {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
   }
 
-  .stats {
+  .user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
     display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
   }
 
   .stat-card {
     background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 24px;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    flex: 1;
-    min-width: 180px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-md);
     transition: var(--transition);
+    position: relative;
+    overflow: hidden;
   }
 
   .stat-card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
   }
 
-  .stat-card i {
-    font-size: 24px;
-    margin-bottom: 12px;
-    border-radius: 10px;
-    width: 50px;
-    height: 50px;
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+
+  .stat-card.total::before { background: linear-gradient(to bottom, var(--accent), var(--purple)); }
+  .stat-card.active::before { background: linear-gradient(to bottom, var(--success), var(--info)); }
+  .stat-card.expired::before { background: linear-gradient(to bottom, var(--danger), var(--warning)); }
+  .stat-card.unlimited::before { background: linear-gradient(to bottom, var(--purple), var(--accent)); }
+
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 24px;
   }
 
-  .stat-card.total i { background: rgba(52, 152, 219, 0.15); color: var(--accent); }
-  .stat-card.active i { background: rgba(39, 174, 96, 0.15); color: var(--success); }
-  .stat-card.expired i { background: rgba(231, 76, 60, 0.15); color: var(--danger); }
-  .stat-card.unlimited i { background: rgba(47, 111, 237, 0.15); color: var(--info); }
+  .stat-card.total .stat-icon { background: rgba(59, 130, 246, 0.1); color: var(--accent); }
+  .stat-card.active .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+  .stat-card.expired .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+  .stat-card.unlimited .stat-icon { background: rgba(139, 92, 246, 0.1); color: var(--purple); }
 
-  .stat-card h3 {
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 5px;
-  }
-
-  .stat-card p {
+  .stat-trend {
     font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .trend-up { background: var(--success-light); color: var(--success); }
+  .trend-down { background: var(--danger-light); color: var(--danger); }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  /* QUICK ACTIONS */
+  .quick-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    flex: 1;
+    min-width: 180px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: left;
+  }
+
+  .action-btn:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .action-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .action-btn.danger .action-icon { background: var(--danger-light); color: var(--danger); }
+  .action-btn.warning .action-icon { background: var(--warning-light); color: var(--warning); }
+  .action-btn.success .action-icon { background: var(--success-light); color: var(--success); }
+  .action-btn.info .action-icon { background: var(--accent-light); color: var(--accent); }
+
+  .action-content h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .action-content p {
+    font-size: 13px;
     color: var(--text-light);
   }
 
-  .card {
+  /* MAIN CARD */
+  .main-card {
     background: var(--card);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: 32px;
   }
 
-  .card:hover {
-    box-shadow: var(--shadow-hover);
+  .card-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
   }
 
-  .card h2 {
+  .card-header h2 {
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
-  .card h2 i {
+  .card-header h2 i {
     color: var(--accent);
   }
 
-  label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text);
-  }
-
-  .form-group {
-    margin-bottom: 20px;
-  }
-
-  input, select {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    font-size: 15px;
-    transition: var(--transition);
-  }
-
-  input:focus, select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-  }
-
-  input::placeholder {
-    color: var(--text-light);
-    opacity: 0.7;
-  }
-
-  .btn {
-    padding: 12px 24px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 700;
-    border: none;
-    font-size: 15px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: var(--transition);
-  }
-
-  .btn i {
-    font-size: 16px;
-  }
-
-  .btn-primary { 
-    background: var(--accent); 
-    color: white; 
-  }
-  .btn-primary:hover { 
-    background: var(--accent-dark); 
-    transform: translateY(-2px);
-  }
-
-  .btn-danger  { 
-    background: var(--danger); 
-    color: white; 
-  }
-  .btn-danger:hover { 
-    background: var(--danger-dark); 
-    transform: translateY(-2px);
-  }
-
-  .btn-ghost   { 
-    background: transparent; 
-    border: 1px solid var(--border); 
-    color: var(--text); 
-  }
-  .btn-ghost:hover { 
-    background: var(--bg);
-    border-color: var(--accent);
-  }
-
-  .btn-warning { 
-    background: var(--warning); 
-    color: white; 
-  }
-  .btn-warning:hover { 
-    background: var(--warning-dark);
-    transform: translateY(-2px);
-  }
-
-  .btn-success { 
-    background: var(--success); 
-    color: white; 
-  }
-  .btn-success:hover { 
-    background: var(--success-dark);
-    transform: translateY(-2px);
-  }
-
-  .btn-group {
+  .header-actions {
     display: flex;
     gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+    align-items: center;
   }
 
-  .admin-tools {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-  }
-  
-  .admin-tools form {
-    display: inline-block;
-  }
-
-  .search-container {
+  .search-box {
     position: relative;
-    margin-bottom: 20px;
+    min-width: 280px;
   }
 
-  .search-container i {
+  .search-box i {
     position: absolute;
-    left: 18px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-light);
-    z-index: 2;
   }
 
-  .search-container input {
-    padding-left: 50px;
+  .search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    transition: var(--transition);
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .filter-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text);
+    transition: var(--transition);
+  }
+
+  .filter-btn:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* TABLE */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    min-width: 1000px;
   }
 
   thead {
-    background: var(--card);
-    border-bottom: 2px solid var(--border);
+    background: var(--bg);
   }
 
   thead th {
-    padding: 18px 15px;
+    padding: 18px 16px;
     text-align: left;
-    font-weight: 700;
-    color: var(--text);
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
     cursor: pointer;
     user-select: none;
     transition: var(--transition);
@@ -329,13 +510,14 @@
   }
 
   thead th:hover {
-    background: var(--bg);
+    background: var(--accent-light);
+    color: var(--accent);
   }
 
   thead th i {
-    margin-left: 5px;
-    opacity: 0.6;
+    margin-left: 6px;
     font-size: 12px;
+    opacity: 0.7;
   }
 
   tbody tr {
@@ -348,14 +530,67 @@
   }
 
   tbody td {
-    padding: 18px 15px;
-    word-break: break-word;
+    padding: 20px 16px;
+    font-size: 14px;
   }
 
-  .copy {
-    color: var(--accent);
-    cursor: pointer;
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     font-weight: 700;
+    font-size: 16px;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-name {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .user-id {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .key-cell {
+    font-family: 'Monaco', 'Consolas', monospace;
+    background: var(--bg);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text);
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .copy-btn {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
     margin-left: 8px;
     transition: var(--transition);
     display: inline-flex;
@@ -363,15 +598,54 @@
     gap: 4px;
   }
 
-  .copy:hover {
-    color: var(--accent-dark);
-    transform: scale(1.05);
+  .copy-btn:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  .device-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .device-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--success-light);
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .device-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .device-id {
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .device-time {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .no-device {
+    color: var(--text-light);
+    font-style: italic;
+    font-size: 13px;
   }
 
   .badge {
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
@@ -383,44 +657,52 @@
     font-size: 12px;
   }
 
-  .badge-ok { 
-    background: rgba(39, 174, 96, 0.15); 
+  .badge-success { 
+    background: var(--success-light); 
     color: var(--success); 
   }
-  .badge-warn { 
-    background: rgba(243, 156, 18, 0.15); 
+  .badge-warning { 
+    background: var(--warning-light); 
     color: var(--warning); 
   }
-  .badge-exp { 
-    background: rgba(231, 76, 60, 0.15); 
+  .badge-danger { 
+    background: var(--danger-light); 
     color: var(--danger); 
   }
-  .badge-unl { 
-    background: rgba(47, 111, 237, 0.15); 
-    color: var(--info); 
+  .badge-info { 
+    background: var(--accent-light); 
+    color: var(--accent); 
   }
 
   .actions-cell {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
   }
 
-  .actions-cell form {
-    display: inline-block;
+  .action-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-light);
+    transition: var(--transition);
   }
 
-  .actions-cell button {
-    min-width: 40px;
-    padding: 8px 12px;
+  .action-icon-btn:hover {
+    transform: translateY(-2px);
   }
 
-  .small-input {
-    width: 80px;
-    padding: 8px 10px;
-    text-align: center;
-  }
+  .action-icon-btn.primary:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+  .action-icon-btn.success:hover { background: var(--success-light); color: var(--success); border-color: var(--success); }
+  .action-icon-btn.danger:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+  .action-icon-btn.warning:hover { background: var(--warning-light); color: var(--warning); border-color: var(--warning); }
 
+  /* MODAL */
   .modal {
     display: none;
     position: fixed;
@@ -428,68 +710,136 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   .modal-content {
     background: var(--card);
-    border-radius: var(--radius);
-    padding: 30px;
-    width: 90%;
+    border-radius: var(--radius-lg);
+    padding: 0;
+    width: 100%;
     max-width: 500px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   .modal-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
   }
 
   .modal-header h3 {
     font-size: 20px;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .close-modal {
+  .modal-close {
     background: transparent;
     border: none;
     font-size: 24px;
     color: var(--text-light);
     cursor: pointer;
     transition: var(--transition);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .close-modal:hover {
+  .modal-close:hover {
+    background: var(--danger-light);
     color: var(--danger);
   }
 
-  .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 25px;
+  .modal-body {
+    padding: 24px;
   }
 
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: var(--accent);
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    transition: var(--transition);
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 32px;
+  }
+
+  /* TOAST */
   .toast {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    padding: 15px 25px;
-    border-radius: 10px;
+    padding: 16px 24px;
+    border-radius: var(--radius-md);
     background: var(--success);
     color: white;
     font-weight: 600;
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-lg);
     display: none;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     z-index: 1001;
     animation: slideIn 0.3s ease;
+    max-width: 400px;
   }
 
   @keyframes slideIn {
@@ -497,540 +847,1037 @@
     to { transform: translateX(0); opacity: 1; }
   }
 
+  .toast i {
+    font-size: 20px;
+  }
+
+  .toast.danger { background: var(--danger); }
+  .toast.warning { background: var(--warning); }
+  .toast.info { background: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1200px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+    
+    .sidebar.active {
+      transform: translateX(0);
+    }
+    
+    .main-content {
+      margin-left: 0;
+    }
+    
+    .mobile-menu-btn {
+      display: block;
+    }
+  }
+
   @media (max-width: 768px) {
-    body {
-      padding: 15px;
+    .main-content {
+      padding: 20px;
     }
     
-    .header-left h1 {
-      font-size: 24px;
-    }
-    
-    .stats {
+    .top-bar {
       flex-direction: column;
+      align-items: stretch;
     }
     
-    .stat-card {
+    .search-box {
       min-width: 100%;
     }
     
-    thead th, tbody td {
-      padding: 12px 8px;
+    .stats-grid {
+      grid-template-columns: 1fr;
     }
     
-    .actions-cell {
-      flex-direction: column;
+    .action-btn {
+      min-width: 100%;
     }
     
-    .actions-cell form {
+    .header-actions {
       width: 100%;
     }
-    
-    .actions-cell button {
-      width: 100%;
-      justify-content: center;
+  }
+
+  .mobile-menu-btn {
+    display: none;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 1200px) {
+    .mobile-menu-btn {
+      display: flex;
     }
-    
-    .btn-group {
-      flex-direction: column;
-    }
-    
-    .btn-group button {
-      width: 100%;
-    }
+  }
+
+  .theme-toggle {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text);
+  }
+
+  .theme-toggle:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .page-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+  }
+
+  .page-btn:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .page-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .empty-state i {
+    font-size: 48px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .empty-state p {
+    color: var(--text-light);
+    max-width: 400px;
+    margin: 0 auto 24px;
   }
 </style>
 </head>
 
 <body>
-
-<header>
-  <div class="header-left">
-    <h1><i class="fas fa-shield-alt"></i> Fera Alpha — Admin</h1>
-    <div class="subtitle">
-      <i class="fas fa-cogs"></i>
-      <span>Painel de gerenciamento avançado</span>
+<div class="app-container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div>
+          <h1>Fera Alpha</h1>
+          <div class="logo-subtitle">Painel Administrativo</div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="header-right">
-    <div class="user-info">
-      <span id="currentTime">--:--:--</span>
+    <nav>
+      <div class="nav-section">
+        <h3>Principal</h3>
+        <div class="nav-item active" onclick="switchSection('dashboard')">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+          <span class="nav-badge" id="totalUsersBadge">0</span>
+        </div>
+        <div class="nav-item" onclick="switchSection('licenses')">
+          <i class="fas fa-key"></i>
+          <span>Licenças</span>
+        </div>
+        <div class="nav-item" onclick="switchSection('users')">
+          <i class="fas fa-users"></i>
+          <span>Usuários</span>
+        </div>
+        <div class="nav-item" onclick="switchSection('devices')">
+          <i class="fas fa-desktop"></i>
+          <span>Dispositivos</span>
+          <span class="nav-badge" id="activeDevicesBadge">0</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <h3>Ferramentas</h3>
+        <div class="nav-item" onclick="showGenerateModal()">
+          <i class="fas fa-plus-circle"></i>
+          <span>Nova Licença</span>
+        </div>
+        <div class="nav-item" onclick="showBulkModal()">
+          <i class="fas fa-layer-group"></i>
+          <span>Gerar em Massa</span>
+        </div>
+        <div class="nav-item" onclick="exportData()">
+          <i class="fas fa-file-export"></i>
+          <span>Exportar Dados</span>
+        </div>
+        <div class="nav-item" onclick="showReports()">
+          <i class="fas fa-chart-bar"></i>
+          <span>Relatórios</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <h3>Sistema</h3>
+        <div class="nav-item" onclick="showSettings()">
+          <i class="fas fa-cog"></i>
+          <span>Configurações</span>
+        </div>
+        <div class="nav-item" onclick="showAuditLog()">
+          <i class="fas fa-history"></i>
+          <span>Log de Atividades</span>
+        </div>
+        <div class="nav-item" onclick="toggleDark()">
+          <i class="fas fa-moon"></i>
+          <span>Tema Escuro</span>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="top-bar">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="page-title">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+        <p>Gerencie todas as licenças e usuários do sistema</p>
+      </div>
+
+      <div class="top-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Buscar licenças, usuários, dispositivos...">
+        </div>
+        
+        <button class="filter-btn" onclick="toggleFilters()">
+          <i class="fas fa-filter"></i>
+          <span>Filtrar</span>
+        </button>
+        
+        <button class="theme-toggle" onclick="toggleDark()">
+          <i class="fas fa-moon"></i>
+        </button>
+        
+        <div class="user-menu">
+          <div class="user-avatar">
+            <span>A</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-ghost" onclick="toggleDark()">
-      <i class="fas fa-moon"></i>
-      <span>Tema</span>
-    </button>
-  </div>
-</header>
 
-<!-- ESTATÍSTICAS -->
-<div class="stats">
-  <div class="stat-card total">
-    <i class="fas fa-users"></i>
-    <h3 id="totalUsers">0</h3>
-    <p>Total de Usuários</p>
-  </div>
-  
-  <div class="stat-card active">
-    <i class="fas fa-check-circle"></i>
-    <h3 id="activeUsers">0</h3>
-    <p>Licenças Ativas</p>
-  </div>
-  
-  <div class="stat-card expired">
-    <i class="fas fa-exclamation-circle"></i>
-    <h3 id="expiredUsers">0</h3>
-    <p>Licenças Expiradas</p>
-  </div>
-  
-  <div class="stat-card unlimited">
-    <i class="fas fa-infinity"></i>
-    <h3 id="unlimitedUsers">0</h3>
-    <p>Licenças Ilimitadas</p>
-  </div>
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <span class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i>
+            12%
+          </span>
+        </div>
+        <div class="stat-value" id="totalUsers">0</div>
+        <div class="stat-label">Total de Usuários</div>
+      </div>
+      
+      <div class="stat-card active">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <span class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i>
+            8%
+          </span>
+        </div>
+        <div class="stat-value" id="activeUsers">0</div>
+        <div class="stat-label">Licenças Ativas</div>
+      </div>
+      
+      <div class="stat-card expired">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <span class="stat-trend trend-down">
+            <i class="fas fa-arrow-down"></i>
+            3%
+          </span>
+        </div>
+        <div class="stat-value" id="expiredUsers">0</div>
+        <div class="stat-label">Licenças Expiradas</div>
+      </div>
+      
+      <div class="stat-card unlimited">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-infinity"></i>
+          </div>
+          <span class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i>
+            5%
+          </span>
+        </div>
+        <div class="stat-value" id="unlimitedUsers">0</div>
+        <div class="stat-label">Licenças Ilimitadas</div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+      <div class="action-btn success" onclick="showGenerateModal()">
+        <div class="action-icon">
+          <i class="fas fa-key"></i>
+        </div>
+        <div class="action-content">
+          <h4>Nova Licença</h4>
+          <p>Gerar uma nova chave de acesso</p>
+        </div>
+      </div>
+      
+      <div class="action-btn info" onclick="showBulkModal()">
+        <div class="action-icon">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="action-content">
+          <h4>Gerar em Massa</h4>
+          <p>Criar múltiplas licenças</p>
+        </div>
+      </div>
+      
+      <div class="action-btn warning" onclick="confirmAction('resetAllDevices')">
+        <div class="action-icon">
+          <i class="fas fa-redo-alt"></i>
+        </div>
+        <div class="action-content">
+          <h4>Resetar Devices</h4>
+          <p>Limpar todos os vínculos</p>
+        </div>
+      </div>
+      
+      <div class="action-btn danger" onclick="confirmAction('cleanExpired')">
+        <div class="action-icon">
+          <i class="fas fa-trash-alt"></i>
+        </div>
+        <div class="action-content">
+          <h4>Limpar Expirados</h4>
+          <p>Remover licenças expiradas</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN TABLE -->
+    <div class="main-card">
+      <div class="card-header">
+        <h2><i class="fas fa-list"></i> Licenças Ativas</h2>
+        <div class="header-actions">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="tableSearch" placeholder="Buscar na tabela...">
+          </div>
+          <button class="filter-btn" onclick="toggleAdvancedFilters()">
+            <i class="fas fa-sliders-h"></i>
+            <span>Filtros Avançados</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="usersTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">
+                <span>ID</span>
+                <i class="fas fa-sort"></i>
+              </th>
+              <th onclick="sortTable(1)">
+                <span>Usuário</span>
+                <i class="fas fa-sort"></i>
+              </th>
+              <th>Senha</th>
+              <th>Licença</th>
+              <th>Dispositivo</th>
+              <th onclick="sortTable(5)">
+                <span>Status</span>
+                <i class="fas fa-sort"></i>
+              </th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody id="tableBody">
+            {% for u in users %}
+            <tr data-expires="{{ u.expires_at }}" data-key="{{ u.key }}" data-username="{{ u.username }}" 
+                data-password="{{ u.password }}" data-device="{{ u.device_id }}" data-index="{{ loop.index0 }}">
+              <td>
+                <strong>#{{ loop.index0 + 1 }}</strong>
+              </td>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar-small">
+                    {{ u.username[0]|upper }}
+                  </div>
+                  <div class="user-info">
+                    <div class="user-name">{{ u.username }}</div>
+                    <div class="user-id">ID: {{ loop.index0 }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <code>{{ u.password }}</code>
+                <button class="copy-btn" onclick="copyCredentials('{{ u.username }}', '{{ u.password }}', this)">
+                  <i class="fas fa-copy"></i>
+                  Copiar
+                </button>
+              </td>
+              <td>
+                <span class="key-cell">{{ u.key }}</span>
+                <button class="copy-btn" onclick="copyKey('{{ u.key }}', this)">
+                  <i class="fas fa-copy"></i>
+                  Copiar
+                </button>
+              </td>
+              <td>
+                {% if u.device_id %}
+                <div class="device-cell">
+                  <div class="device-icon">
+                    <i class="fas fa-desktop"></i>
+                  </div>
+                  <div class="device-info">
+                    <div class="device-id">{{ u.device_id|truncate(12) }}</div>
+                    <div class="device-time">Vinculado</div>
+                  </div>
+                </div>
+                {% else %}
+                <div class="no-device">Não vinculado</div>
+                {% endif %}
+              </td>
+              <td class="expCell"></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="action-icon-btn success" title="+30 Dias" onclick="renewLicense({{ loop.index0 }}, 30)">
+                    <i class="fas fa-calendar-plus"></i>
+                  </button>
+                  <button class="action-icon-btn primary" title="Editar" onclick="editUser({{ loop.index0 }})">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-icon-btn warning" title="Reset Device" onclick="resetDevice({{ loop.index0 }})">
+                    <i class="fas fa-desktop"></i>
+                  </button>
+                  <button class="action-icon-btn danger" title="Excluir" onclick="deleteUser({{ loop.index0 }})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if users|length == 0 %}
+      <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <h3>Nenhuma licença encontrada</h3>
+        <p>Crie sua primeira licença para começar a gerenciar o sistema</p>
+        <button class="btn btn-primary" onclick="showGenerateModal()">
+          <i class="fas fa-plus"></i>
+          Criar Primeira Licença
+        </button>
+      </div>
+      {% endif %}
+
+      <div class="pagination">
+        <button class="page-btn" onclick="changePage(-1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <span>...</span>
+        <button class="page-btn">10</button>
+        <button class="page-btn" onclick="changePage(1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </main>
 </div>
 
-<!-- ADMIN TOOLS -->
-<div class="admin-tools">
-  <form method="post" action="/admin/reset_all_devices" 
-        onsubmit="return confirmAction('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
-    <button type="submit" class="btn btn-warning">
-      <i class="fas fa-redo-alt"></i>
-      Resetar Todos Devices
-    </button>
-  </form>
-  
-  <form method="post" action="/admin/clean_expired" 
-        onsubmit="return confirmAction('🗑️ Remover TODOS os usuários expirados?')">
-    <button type="submit" class="btn btn-danger">
-      <i class="fas fa-trash-alt"></i>
-      Limpar Expirados
-    </button>
-  </form>
-  
-  <button class="btn btn-success" onclick="showGenerateModal()">
-    <i class="fas fa-key"></i>
-    Nova Licença
-  </button>
-</div>
-
-<!-- TABELA DE USUÁRIOS -->
-<div class="card">
-  <h2><i class="fas fa-list"></i> Gerenciamento de Licenças</h2>
-  
-  <div class="search-container">
-    <i class="fas fa-search"></i>
-    <input id="searchUser" placeholder="Buscar por usuário, key, device...">
-  </div>
-
-  <div style="overflow-x: auto;">
-    <table id="usersTable">
-      <thead>
-        <tr>
-          <th onclick="sortTable(0)">
-            <span>ID</span>
-            <i class="fas fa-sort"></i>
-          </th>
-          <th onclick="sortTable(1)">
-            <span>Usuário</span>
-            <i class="fas fa-sort"></i>
-          </th>
-          <th>Senha</th>
-          <th>Licença</th>
-          <th>Device</th>
-          <th onclick="sortTable(5)">
-            <span>Status</span>
-            <i class="fas fa-sort"></i>
-          </th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for u in users %}
-        <tr data-expires="{{ u.expires_at }}" data-key="{{ u.key }}" data-username="{{ u.username }}" data-password="{{ u.password }}">
-          <td><strong>#{{ loop.index0 + 1 }}</strong></td>
-          <td>
-            <strong>{{ u.username }}</strong>
-          </td>
-          <td>
-            <code>{{ u.password }}</code>
-            <span class="copy" onclick="copyCredentials('{{ u.username }}', '{{ u.password }}')">
-              <i class="fas fa-copy"></i>
-              Copiar
-            </span>
-          </td>
-          <td>
-            <code style="font-family: monospace; font-size: 13px;">{{ u.key }}</code>
-            <span class="copy" onclick="copyKey('{{ u.key }}', this)">
-              <i class="fas fa-copy"></i>
-              Copiar
-            </span>
-          </td>
-          <td>
-            {% if u.device_id %}
-              <span class="badge badge-ok">
-                <i class="fas fa-desktop"></i>
-                {{ u.device_id|truncate(10) }}
-              </span>
-            {% else %}
-              <span class="badge badge-warn">
-                <i class="fas fa-times"></i>
-                Não vinculado
-              </span>
-            {% endif %}
-          </td>
-          <td class="expCell"></td>
-          <td class="actions-cell">
-            <form method="post" action="/admin/renew/{{ loop.index0 }}" onsubmit="return confirmAction('Adicionar 30 dias à licença?')">
-              <button type="submit" class="btn btn-success" title="+30 Dias">
-                <i class="fas fa-calendar-plus"></i>
-              </button>
-            </form>
-
-            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" onsubmit="return confirmAction('Adicionar dias à licença?')" style="display: flex; gap: 5px;">
-              <input type="number" name="days" min="1" value="7" class="small-input">
-              <button type="submit" class="btn btn-primary" title="+ Dias">
-                <i class="fas fa-plus"></i>
-              </button>
-            </form>
-
-            <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}" onsubmit="return confirmAction('Tornar esta licença ilimitada?')">
-              <button type="submit" class="btn btn-ghost" title="Ilimitado">
-                <i class="fas fa-infinity"></i>
-              </button>
-            </form>
-
-            <form method="post" action="/admin/reset/{{ loop.index0 }}" onsubmit="return confirmAction('Resetar esta key?')">
-              <button type="submit" class="btn btn-ghost" title="Resetar Key">
-                <i class="fas fa-key"></i>
-              </button>
-            </form>
-
-            <form method="post" action="/admin/reset_device/{{ loop.index0 }}" onsubmit="return confirmAction('Resetar device vinculado?')">
-              <button type="submit" class="btn btn-warning" title="Reset Device">
-                <i class="fas fa-desktop"></i>
-              </button>
-            </form>
-
-            <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirmAction('Excluir usuário permanentemente?')">
-              <button type="submit" class="btn btn-danger" title="Excluir">
-                <i class="fas fa-trash"></i>
-              </button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- MODAL GERAR NOVA LICENÇA -->
+<!-- MODAL GERAR LICENÇA -->
 <div id="generateModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
       <h3><i class="fas fa-key"></i> Gerar Nova Licença</h3>
-      <button class="close-modal" onclick="hideGenerateModal()">&times;</button>
+      <button class="modal-close" onclick="hideModal('generateModal')">&times;</button>
     </div>
     
-    <form method="post" action="/admin/generate" id="generateForm">
-      <div class="form-group">
-        <label><i class="fas fa-user"></i> Usuário</label>
-        <input name="username" required placeholder="Digite o nome de usuário">
-      </div>
-      
-      <div class="form-group">
-        <label><i class="fas fa-lock"></i> Senha</label>
-        <input name="password" required placeholder="Digite a senha">
-      </div>
-      
-      <div class="form-group">
-        <label><i class="fas fa-tag"></i> Prefixo da Licença</label>
-        <input name="prefix" value="FERA" placeholder="Ex: FERA, ALPHA, etc">
-      </div>
-      
-      <div class="form-group">
-        <label><i class="fas fa-calendar-alt"></i> Expiração</label>
-        <select name="expire_days" id="expireSelect">
-          <option value="7">7 Dias</option>
-          <option value="30" selected>30 Dias</option>
-          <option value="90">90 Dias</option>
-          <option value="180">180 Dias</option>
-          <option value="365">1 Ano</option>
-          <option value="0">Ilimitado</option>
-        </select>
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-ghost" onclick="hideGenerateModal()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-primary">
-          <i class="fas fa-check"></i>
-          Gerar Licença
-        </button>
-      </div>
-    </form>
+    <div class="modal-body">
+      <form id="generateForm" onsubmit="return handleGenerate(event)">
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Nome do Usuário</label>
+          <input type="text" id="usernameInput" required placeholder="Digite o nome de usuário">
+        </div>
+        
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> Senha</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="passwordInput" required placeholder="Gerar senha automática" style="flex: 1;">
+            <button type="button" class="btn btn-ghost" onclick="generatePassword()" style="white-space: nowrap;">
+              <i class="fas fa-sync-alt"></i>
+              Gerar
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label><i class="fas fa-tag"></i> Prefixo da Licença</label>
+          <select id="prefixSelect">
+            <option value="FERA">FERA</option>
+            <option value="ALPHA">ALPHA</option>
+            <option value="PRO">PRO</option>
+            <option value="VIP">VIP</option>
+            <option value="CUSTOM">Personalizado</option>
+          </select>
+          <input type="text" id="customPrefix" placeholder="Digite seu prefixo" style="display: none; margin-top: 10px;">
+        </div>
+        
+        <div class="form-group">
+          <label><i class="fas fa-calendar-alt"></i> Validade</label>
+          <select id="validitySelect">
+            <option value="7">7 Dias</option>
+            <option value="30" selected>30 Dias</option>
+            <option value="90">90 Dias</option>
+            <option value="180">180 Dias</option>
+            <option value="365">1 Ano</option>
+            <option value="0">Ilimitado</option>
+            <option value="custom">Personalizado</option>
+          </select>
+          <div id="customDaysContainer" style="display: none; margin-top: 10px;">
+            <input type="number" id="customDays" placeholder="Número de dias" min="1" style="width: 100%;">
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" onclick="hideModal('generateModal')">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-check"></i>
+            Gerar Licença
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
 <!-- TOAST NOTIFICATION -->
 <div id="toast" class="toast">
   <i class="fas fa-check-circle"></i>
-  <span id="toastMessage">Copiado para a área de transferência!</span>
+  <span id="toastMessage">Operação realizada com sucesso!</span>
 </div>
 
 <script>
 // ====================
-// VARIÁVEIS GLOBAIS
+// CONFIGURAÇÕES
 // ====================
-let sortDirection = {};
+let currentPage = 1;
+const itemsPerPage = 10;
+let currentSort = { column: 0, direction: 'asc' };
+let filteredUsers = [];
 
 // ====================
-// FUNÇÕES DE UTILIDADE
+// INICIALIZAÇÃO
+// ====================
+document.addEventListener('DOMContentLoaded', function() {
+  // Verificar tema
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    updateThemeToggle();
+  }
+  
+  // Inicializar dados
+  loadUsers();
+  updateStats();
+  updateExpirationBadges();
+  
+  // Configurar listeners
+  setupEventListeners();
+  
+  // Atualizar a cada 30 segundos
+  setInterval(updateExpirationBadges, 30000);
+  
+  // Mostrar mensagem de boas-vindas
+  setTimeout(() => {
+    showToast('Sistema carregado com sucesso!', 'success');
+  }, 1000);
+});
+
+// ====================
+// FUNÇÕES DO SIDEBAR
+// ====================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('active');
+}
+
+function switchSection(section) {
+  // Atualizar navegação ativa
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  event.currentTarget.classList.add('active');
+  
+  // Aqui você implementaria a troca de seção
+  showToast(`Seção ${section} carregada`, 'info');
+}
+
+// ====================
+// TEMA
 // ====================
 function toggleDark() {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  updateThemeToggle();
+  showToast('Tema alterado', 'info');
 }
 
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  const toastMessage = document.getElementById('toastMessage');
+function updateThemeToggle() {
+  const icon = document.querySelector('.theme-toggle i');
+  const label = document.querySelector('.nav-item:nth-child(3) span');
   
-  toast.style.background = type === 'success' ? 'var(--success)' : 
-                          type === 'error' ? 'var(--danger)' : 'var(--warning)';
-  
-  toastMessage.textContent = message;
-  toast.style.display = 'flex';
-  
-  setTimeout(() => {
-    toast.style.display = 'none';
-  }, 3000);
-}
-
-function confirmAction(message) {
-  return confirm(`❓ ${message}`);
-}
-
-// ====================
-// FUNÇÕES DE CÓPIA
-// ====================
-function copyKey(key, element) {
-  navigator.clipboard.writeText(key);
-  showToast('Licença copiada para a área de transferência!');
-  
-  // Feedback visual no botão
-  const icon = element.querySelector('i');
-  const originalIcon = icon.className;
-  const originalText = element.innerHTML;
-  
-  icon.className = 'fas fa-check';
-  element.innerHTML = element.innerHTML.replace('Copiar', 'Copiado!');
-  
-  setTimeout(() => {
-    icon.className = originalIcon;
-    element.innerHTML = originalText;
-  }, 1500);
-}
-
-function copyCredentials(username, password) {
-  const text = `👤 Usuário: ${username}\n🔒 Senha: ${password}`;
-  navigator.clipboard.writeText(text);
-  showToast('Credenciais copiadas para a área de transferência!');
-}
-
-// ====================
-// FUNÇÕES DE MODAL
-// ====================
-function showGenerateModal() {
-  document.getElementById('generateModal').style.display = 'flex';
-}
-
-function hideGenerateModal() {
-  document.getElementById('generateModal').style.display = 'none';
-}
-
-// Fechar modal ao clicar fora
-window.onclick = function(event) {
-  const modal = document.getElementById('generateModal');
-  if (event.target === modal) {
-    hideGenerateModal();
+  if (document.body.classList.contains('dark-mode')) {
+    icon.className = 'fas fa-sun';
+    if (label) label.textContent = 'Tema Claro';
+  } else {
+    icon.className = 'fas fa-moon';
+    if (label) label.textContent = 'Tema Escuro';
   }
-};
-
-// ====================
-// FUNÇÕES DE BUSCA E ORDENAÇÃO
-// ====================
-document.getElementById('searchUser').addEventListener('input', function() {
-  const query = this.value.toLowerCase();
-  const rows = document.querySelectorAll('#usersTable tbody tr');
-  
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(query) ? '' : 'none';
-  });
-  
-  updateStats();
-});
-
-function sortTable(columnIndex) {
-  const table = document.getElementById('usersTable');
-  const tbody = table.querySelector('tbody');
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-  
-  // Determinar direção da ordenação
-  if (!sortDirection[columnIndex]) sortDirection[columnIndex] = 'asc';
-  const direction = sortDirection[columnIndex];
-  
-  // Atualizar ícones
-  table.querySelectorAll('th i').forEach(icon => {
-    icon.className = 'fas fa-sort';
-  });
-  
-  const currentIcon = table.querySelectorAll('th')[columnIndex].querySelector('i');
-  currentIcon.className = direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
-  
-  // Ordenar linhas
-  rows.sort((a, b) => {
-    let aValue = a.cells[columnIndex].textContent.trim();
-    let bValue = b.cells[columnIndex].textContent.trim();
-    
-    // Tratamento especial para colunas numéricas (ID)
-    if (columnIndex === 0) {
-      aValue = parseInt(aValue.replace('#', ''));
-      bValue = parseInt(bValue.replace('#', ''));
-    }
-    
-    // Tratamento especial para coluna de status
-    if (columnIndex === 5) {
-      const aExp = parseInt(a.getAttribute('data-expires'));
-      const bExp = parseInt(b.getAttribute('data-expires'));
-      aValue = aExp || 0;
-      bValue = bExp || 0;
-    }
-    
-    if (direction === 'asc') {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
-    }
-  });
-  
-  // Reinserir linhas ordenadas
-  rows.forEach(row => tbody.appendChild(row));
-  
-  // Alternar direção para próxima ordenação
-  sortDirection[columnIndex] = direction === 'asc' ? 'desc' : 'asc';
 }
 
 // ====================
-// FUNÇÕES DE STATUS E ESTATÍSTICAS
+// GERENCIAMENTO DE USUÁRIOS
 // ====================
+function loadUsers() {
+  // Em uma implementação real, isso viria do servidor
+  filteredUsers = Array.from(document.querySelectorAll('#tableBody tr'));
+  updatePagination();
+}
+
+function updateStats() {
+  const total = filteredUsers.length;
+  const active = document.querySelectorAll('.badge-success').length;
+  const expired = document.querySelectorAll('.badge-danger').length;
+  const unlimited = document.querySelectorAll('.badge-info').length;
+  
+  document.getElementById('totalUsers').textContent = total;
+  document.getElementById('activeUsers').textContent = active;
+  document.getElementById('expiredUsers').textContent = expired;
+  document.getElementById('unlimitedUsers').textContent = unlimited;
+  
+  // Atualizar badges na sidebar
+  document.getElementById('totalUsersBadge').textContent = total;
+  document.getElementById('activeDevicesBadge').textContent = 
+    document.querySelectorAll('.device-cell').length;
+}
+
 function updateExpirationBadges() {
   const now = Math.floor(Date.now() / 1000);
-  let total = 0, active = 0, expired = 0, unlimited = 0;
+  let activeCount = 0;
+  let expiredCount = 0;
+  let unlimitedCount = 0;
   
   document.querySelectorAll('tr[data-expires]').forEach(row => {
     const expires = parseInt(row.getAttribute('data-expires'));
     const cell = row.querySelector('.expCell');
     
-    total++;
-    
     if (!expires || expires === 0 || expires >= 9999999999) {
-      cell.innerHTML = '<span class="badge badge-unl"><i class="fas fa-infinity"></i> Ilimitado</span>';
-      unlimited++;
+      cell.innerHTML = '<span class="badge badge-info"><i class="fas fa-infinity"></i> Ilimitado</span>';
+      unlimitedCount++;
       return;
     }
     
     const diffDays = Math.floor((expires - now) / 86400);
     
     if (expires < now) {
-      cell.innerHTML = `<span class="badge badge-exp"><i class="fas fa-exclamation-circle"></i> Expirado</span>`;
-      expired++;
+      cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Expirado</span>`;
+      expiredCount++;
     } else if (diffDays < 3) {
-      cell.innerHTML = `<span class="badge badge-exp"><i class="fas fa-hourglass-end"></i> ${diffDays} dias</span>`;
-      active++;
+      cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-hourglass-end"></i> ${diffDays}d</span>`;
+      activeCount++;
     } else if (diffDays < 7) {
-      cell.innerHTML = `<span class="badge badge-warn"><i class="fas fa-exclamation-triangle"></i> ${diffDays} dias</span>`;
-      active++;
+      cell.innerHTML = `<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> ${diffDays}d</span>`;
+      activeCount++;
     } else {
-      cell.innerHTML = `<span class="badge badge-ok"><i class="fas fa-check-circle"></i> ${diffDays} dias</span>`;
-      active++;
+      cell.innerHTML = `<span class="badge badge-success"><i class="fas fa-check-circle"></i> ${diffDays}d</span>`;
+      activeCount++;
     }
   });
   
-  // Atualizar estatísticas
-  document.getElementById('totalUsers').textContent = total;
-  document.getElementById('activeUsers').textContent = active;
-  document.getElementById('expiredUsers').textContent = expired;
-  document.getElementById('unlimitedUsers').textContent = unlimited;
+  updateStats();
 }
 
 // ====================
-// FUNÇÕES DE TEMPO E ATUALIZAÇÃO
+// MODAIS
 // ====================
-function updateClock() {
-  const now = new Date();
-  const timeString = now.toLocaleTimeString('pt-BR', { 
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+function showModal(modalId) {
+  document.getElementById(modalId).style.display = 'flex';
+}
+
+function hideModal(modalId) {
+  document.getElementById(modalId).style.display = 'none';
+}
+
+function showGenerateModal() {
+  generatePassword();
+  showModal('generateModal');
+}
+
+// ====================
+// FORMULÁRIOS
+// ====================
+function setupEventListeners() {
+  // Prefixo personalizado
+  document.getElementById('prefixSelect').addEventListener('change', function() {
+    const customInput = document.getElementById('customPrefix');
+    customInput.style.display = this.value === 'CUSTOM' ? 'block' : 'none';
   });
-  document.getElementById('currentTime').textContent = timeString;
+  
+  // Dias personalizados
+  document.getElementById('validitySelect').addEventListener('change', function() {
+    const container = document.getElementById('customDaysContainer');
+    container.style.display = this.value === 'custom' ? 'block' : 'none';
+  });
+  
+  // Busca
+  document.getElementById('searchInput').addEventListener('input', function() {
+    filterTable(this.value);
+  });
+  
+  document.getElementById('tableSearch').addEventListener('input', function() {
+    filterTable(this.value);
+  });
+}
+
+function generatePassword() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+  let password = '';
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  document.getElementById('passwordInput').value = password;
+}
+
+function handleGenerate(event) {
+  event.preventDefault();
+  
+  const username = document.getElementById('usernameInput').value;
+  const password = document.getElementById('passwordInput').value;
+  const prefix = document.getElementById('prefixSelect').value === 'CUSTOM' 
+    ? document.getElementById('customPrefix').value 
+    : document.getElementById('prefixSelect').value;
+  const days = document.getElementById('validitySelect').value === 'custom'
+    ? parseInt(document.getElementById('customDays').value) || 30
+    : parseInt(document.getElementById('validitySelect').value);
+  
+  // Aqui você enviaria os dados para o servidor
+  console.log('Gerando licença:', { username, password, prefix, days });
+  
+  showToast(`Licença para ${username} criada com sucesso!`, 'success');
+  hideModal('generateModal');
+  
+  // Limpar formulário
+  event.target.reset();
+  document.getElementById('customPrefix').style.display = 'none';
+  document.getElementById('customDaysContainer').style.display = 'none';
+  
+  return false;
 }
 
 // ====================
-// INICIALIZAÇÃO
+// AÇÕES DA TABELA
 // ====================
-document.addEventListener('DOMContentLoaded', function() {
-  // Verificar tema salvo
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
+function sortTable(column) {
+  const table = document.getElementById('usersTable');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  
+  // Alternar direção
+  if (currentSort.column === column) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = column;
+    currentSort.direction = 'asc';
   }
   
-  // Inicializar relógio
-  updateClock();
-  setInterval(updateClock, 1000);
+  // Atualizar ícones
+  table.querySelectorAll('th i').forEach(icon => {
+    icon.className = 'fas fa-sort';
+  });
   
-  // Inicializar badges e estatísticas
-  updateExpirationBadges();
+  const currentIcon = table.querySelectorAll('th')[column].querySelector('i');
+  currentIcon.className = currentSort.direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
   
-  // Atualizar estatísticas a cada 30 segundos
-  setInterval(updateExpirationBadges, 30000);
+  // Ordenar
+  rows.sort((a, b) => {
+    let aValue = a.cells[column].textContent.trim();
+    let bValue = b.cells[column].textContent.trim();
+    
+    // Tratamento especial para colunas
+    if (column === 0) { // ID
+      aValue = parseInt(aValue.replace('#', ''));
+      bValue = parseInt(bValue.replace('#', ''));
+    } else if (column === 5) { // Status
+      const aExp = parseInt(a.getAttribute('data-expires'));
+      const bExp = parseInt(b.getAttribute('data-expires'));
+      aValue = aExp || 0;
+      bValue = bExp || 0;
+    }
+    
+    const modifier = currentSort.direction === 'asc' ? 1 : -1;
+    return aValue > bValue ? modifier : -modifier;
+  });
   
-  // Atualizar estatísticas quando houver busca
-  document.getElementById('searchUser').addEventListener('input', updateExpirationBadges);
-});
+  // Reinserir
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+function filterTable(query) {
+  const rows = document.querySelectorAll('#tableBody tr');
+  query = query.toLowerCase();
+  
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? '' : 'none';
+  });
+  
+  filteredUsers = Array.from(rows).filter(row => row.style.display !== 'none');
+  updateStats();
+  updatePagination();
+}
+
+function updatePagination() {
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  // Implementar lógica de paginação aqui
+}
+
+function changePage(delta) {
+  currentPage += delta;
+  if (currentPage < 1) currentPage = 1;
+  // Implementar mudança de página aqui
+  showToast(`Página ${currentPage}`, 'info');
+}
 
 // ====================
-// EXPORT/IMPORT (EXTRA)
+// AÇÕES DOS USUÁRIOS
 // ====================
-function exportUsers() {
-  const users = [];
+function renewLicense(userIndex, days) {
+  if (confirm(`Adicionar ${days} dias à licença?`)) {
+    // Aqui você enviaria para o servidor
+    showToast(`${days} dias adicionados à licença`, 'success');
+  }
+}
+
+function editUser(userIndex) {
+  const row = document.querySelector(`tr[data-index="${userIndex}"]`);
+  const username = row.getAttribute('data-username');
+  const password = row.getAttribute('data-password');
+  
+  document.getElementById('usernameInput').value = username;
+  document.getElementById('passwordInput').value = password;
+  showGenerateModal();
+}
+
+function resetDevice(userIndex) {
+  if (confirm('Resetar dispositivo vinculado?')) {
+    showToast('Dispositivo resetado', 'warning');
+  }
+}
+
+function deleteUser(userIndex) {
+  if (confirm('Excluir este usuário permanentemente?')) {
+    // Aqui você enviaria para o servidor
+    showToast('Usuário excluído', 'danger');
+  }
+}
+
+// ====================
+// UTILITÁRIOS
+// ====================
+function copyKey(key, button) {
+  navigator.clipboard.writeText(key);
+  
+  // Feedback visual
+  const icon = button.querySelector('i');
+  const originalIcon = icon.className;
+  icon.className = 'fas fa-check';
+  button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+  
+  setTimeout(() => {
+    icon.className = originalIcon;
+    button.innerHTML = '<i class="fas fa-copy"></i> Copiar';
+  }, 2000);
+  
+  showToast('Licença copiada para a área de transferência', 'success');
+}
+
+function copyCredentials(username, password, button) {
+  const text = `Usuário: ${username}\nSenha: ${password}`;
+  navigator.clipboard.writeText(text);
+  
+  if (button) {
+    const icon = button.querySelector('i');
+    const originalIcon = icon.className;
+    icon.className = 'fas fa-check';
+    button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+    
+    setTimeout(() => {
+      icon.className = originalIcon;
+      button.innerHTML = '<i class="fas fa-copy"></i> Copiar';
+    }, 2000);
+  }
+  
+  showToast('Credenciais copiadas', 'success');
+}
+
+function confirmAction(action) {
+  let message = '';
+  switch(action) {
+    case 'resetAllDevices':
+      message = 'Resetar TODOS os dispositivos? Esta ação não pode ser desfeita.';
+      break;
+    case 'cleanExpired':
+      message = 'Remover TODAS as licenças expiradas?';
+      break;
+    default:
+      message = 'Confirmar ação?';
+  }
+  
+  if (confirm(`⚠️ ${message}`)) {
+    showToast('Ação realizada com sucesso', 'success');
+  }
+}
+
+function exportData() {
+  const data = [];
   document.querySelectorAll('tr[data-key]').forEach(row => {
-    users.push({
+    data.push({
       username: row.getAttribute('data-username'),
       password: row.getAttribute('data-password'),
       key: row.getAttribute('data-key'),
-      expires: row.getAttribute('data-expires')
+      expires: row.getAttribute('data-expires'),
+      device: row.getAttribute('data-device')
     });
   });
   
-  const dataStr = JSON.stringify(users, null, 2);
-  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fera_alpha_export_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
   
-  const exportFileDefaultName = 'fera_alpha_users.json';
+  showToast('Dados exportados com sucesso', 'success');
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  const icon = toast.querySelector('i');
   
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', exportFileDefaultName);
-  linkElement.click();
+  // Configurar tipo
+  toast.className = `toast ${type}`;
+  icon.className = type === 'success' ? 'fas fa-check-circle' :
+                   type === 'danger' ? 'fas fa-exclamation-circle' :
+                   'fas fa-info-circle';
   
-  showToast('Dados exportados com sucesso!');
+  toastMessage.textContent = message;
+  toast.style.display = 'flex';
+  
+  // Auto-esconder
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+
+// ====================
+// FUNÇÕES FUTURAS
+// ====================
+function showBulkModal() {
+  showToast('Funcionalidade em desenvolvimento', 'info');
+}
+
+function showReports() {
+  showToast('Relatórios em desenvolvimento', 'info');
+}
+
+function showSettings() {
+  showToast('Configurações em desenvolvimento', 'info');
+}
+
+function showAuditLog() {
+  showToast('Log de atividades em desenvolvimento', 'info');
+}
+
+function toggleFilters() {
+  showToast('Filtros em desenvolvimento', 'info');
+}
+
+function toggleAdvancedFilters() {
+  showToast('Filtros avançados em desenvolvimento', 'info');
 }
 </script>
 
