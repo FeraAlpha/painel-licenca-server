@@ -642,31 +642,6 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--text-light);
   }
-
-  /* COPY BUTTON */
-  .copy-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--accent);
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    margin-left: 8px;
-    transition: all 0.2s;
-  }
-
-  .copy-btn:hover {
-    background: var(--accent);
-    color: white;
-  }
-
-  .copy-btn.copied {
-    background: var(--ok);
-    color: white;
-    border-color: var(--ok);
-  }
 </style>
 </head>
 
@@ -688,6 +663,9 @@
     </button>
     <button class="btn btn-info" onclick="window.location.href='/admin/usage_report'">
       <i class="fas fa-chart-bar"></i> Relatórios
+    </button>
+    <button class="btn btn-info" onclick="window.location.href='/admin/usage_report'">
+      <i class="fas fa-file-alt"></i> Logs
     </button>
     <button class="btn btn-outline" onclick="toggleDarkMode()">
       <i class="fas fa-moon"></i> Tema
@@ -713,7 +691,7 @@
     </div>
     <div class="stat-info">
       <h3>Licenças Ativas</h3>
-      <div class="stat-number">{{ users|length }}</div>
+      <div class="stat-number">{{ total_licenses }}</div>
     </div>
   </div>
   
@@ -766,8 +744,48 @@
     <button class="btn btn-outline" onclick="exportToCSV()">
       <i class="fas fa-file-export"></i> Exportar CSV
     </button>
+    
+    <button class="btn btn-info" onclick="window.location.href='/admin/database'">
+      <i class="fas fa-database"></i> Ver Banco de Dados
+    </button>
   </div>
 </div>
+
+<!-- ÚLTIMOS ACESSOS -->
+{% if recent_usage %}
+<div class="card mb-30">
+  <div class="card-header">
+    <h2 class="card-title"><i class="fas fa-history"></i> Últimos Acessos</h2>
+  </div>
+  
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Fingerprint</th>
+          <th>Usuário</th>
+          <th>Último Acesso</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usage in recent_usage %}
+        <tr>
+          <td><code>{{ usage[0] }}</code></td>
+          <td>{{ usage[1] }}</td>
+          <td>
+            {% if usage[2] %}
+              {{ datetime.fromtimestamp(usage[2]).strftime('%d/%m/%Y %H:%M:%S') }}
+            {% else %}
+              Nunca
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
 
 <!-- GERAR NOVA KEY -->
 <div class="card mb-30">
@@ -887,15 +905,15 @@
           
           <td>
             <code>{{ u.password }}</code>
-            <button class="copy-btn" onclick="copyToClipboard('{{ u.username }}:{{ u.password }}', this, 'Usuário/Senha')">
-              <i class="fas fa-copy"></i> Copiar
+            <button class="action-btn action-btn-success" onclick="copyToClipboard('{{ u.username }}:{{ u.password }}', 'Usuário/Senha')">
+              <i class="fas fa-copy"></i>
             </button>
           </td>
           
           <td>
             <code>{{ u.key }}</code>
-            <button class="copy-btn" onclick="copyToClipboard('{{ u.key }}', this, 'Key')">
-              <i class="fas fa-copy"></i> Copiar
+            <button class="action-btn action-btn-primary" onclick="copyToClipboard('{{ u.key }}', 'Key')">
+              <i class="fas fa-copy"></i>
             </button>
           </td>
           
@@ -1019,18 +1037,8 @@ function updateCurrentTime() {
 }
 
 // Copiar para clipboard
-function copyToClipboard(text, button, label = 'Texto') {
+function copyToClipboard(text, label = 'Texto') {
   navigator.clipboard.writeText(text).then(() => {
-    // Mostrar feedback visual no botão
-    const originalText = button.innerHTML;
-    button.classList.add('copied');
-    button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-    
-    setTimeout(() => {
-      button.classList.remove('copied');
-      button.innerHTML = originalText;
-    }, 2000);
-    
     showToast(`${label} copiado para clipboard!`, 'success');
   }).catch(err => {
     console.error('Erro ao copiar:', err);
@@ -1165,7 +1173,6 @@ function renderExpirations() {
 // ====== FILTRAGEM E ORDENAÇÃO ======
 function filterUsers(filter) {
   currentFilter = filter;
-  const now = Math.floor(Date.now() / 1000);
   
   // Atualizar botões ativos
   document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -1377,7 +1384,7 @@ function openStatsModal() {
     <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: var(--radius);">
       <h4 style="margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Informações do Sistema</h4>
       <div style="font-size: 14px; line-height: 1.6;">
-        <p><strong>Banco de Dados:</strong> {{ users|length }} licenças registradas</p>
+        <p><strong>Licenças no Banco:</strong> {{ total_licenses }}</p>
         <p><strong>Última Atualização:</strong> ${new Date().toLocaleString('pt-BR')}</p>
         <p><strong>Status API:</strong> <span class="badge badge-success">Online</span></p>
       </div>
@@ -1465,4 +1472,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-</html>
+                </html>
