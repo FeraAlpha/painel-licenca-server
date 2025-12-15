@@ -237,13 +237,6 @@
       "key": "FERA-5F55924C",
       "device_id": "dc128de3af8b31681aaf943ffab8d115",
       "expires_at": 1768330247
-    },
-    {
-      "username": "222",
-      "password": "123",
-      "key": "FERA-997B9C8C",
-      "device_id": null,
-      "expires_at": 1774823646
     }
   ]
 }
