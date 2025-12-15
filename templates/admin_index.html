@@ -2,45 +2,54 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel de Controle</title>
+<title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
   :root {
-    --primary: #2f6fed;
-    --primary-dark: #1a56d4;
-    --secondary: #e63946;
-    --secondary-dark: #c1121f;
-    --accent: #f4a261;
-    --accent-dark: #e76f51;
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --border: #d1d9e6;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --accent: #3498db;
+    --accent-dark: #2980b9;
+    --danger: #e74c3c;
+    --danger-dark: #c0392b;
+    --warning: #f39c12;
+    --warning-dark: #d68910;
+    --success: #27ae60;
+    --success-dark: #219653;
+    --info: #2f6fed;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s ease;
+  }
+
+  .dark-mode {
     --bg: #0f172a;
     --card: #1e293b;
-    --card-light: #334155;
-    --border: #475569;
+    --border: #334155;
     --text: #f1f5f9;
     --text-light: #94a3b8;
-    --text-lighter: #cbd5e1;
-    --ok: #10b981;
-    --ok-light: #a7f3d0;
-    --warn: #f59e0b;
-    --warn-light: #fde68a;
-    --danger: #ef4444;
-    --danger-light: #fecaca;
-    --radius: 16px;
-    --radius-sm: 8px;
-    --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
-    --gradient-primary: linear-gradient(135deg, #2f6fed 0%, #4f46e5 100%);
-    --gradient-danger: linear-gradient(135deg, #e63946 0%, #d62828 100%);
-    --gradient-accent: linear-gradient(135deg, #f4a261 0%, #e76f51 100%);
-    --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --accent: #60a5fa;
+    --accent-dark: #3b82f6;
+    --danger: #f87171;
+    --danger-dark: #dc2626;
+    --warning: #fbbf24;
+    --warning-dark: #f59e0b;
+    --success: #4ade80;
+    --success-dark: #22c55e;
+    --info: #38bdf8;
   }
 
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   body {
@@ -48,412 +57,486 @@
     color: var(--text);
     padding: 20px;
     min-height: 100vh;
-    background-image: 
-      radial-gradient(circle at 10% 20%, rgba(47, 111, 237, 0.1) 0%, transparent 20%),
-      radial-gradient(circle at 90% 80%, rgba(230, 57, 70, 0.1) 0%, transparent 20%);
+    transition: var(--transition);
   }
 
-  /* Cabeçalho com dragão */
   header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid var(--border);
-    position: relative;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
   }
 
-  header::before {
-    content: "🐉";
-    position: absolute;
-    font-size: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0.7;
+  .header-left h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
   }
 
-  .logo {
+  .header-left .subtitle {
+    font-size: 14px;
+    color: var(--text-light);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
   }
 
-  .logo-icon {
-    background: var(--gradient-primary);
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+  .header-left .subtitle i {
+    color: var(--accent);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    flex: 1;
+    min-width: 180px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+  }
+
+  .stat-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .stat-card i {
+    font-size: 24px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    box-shadow: var(--shadow);
   }
 
-  .logo-text h1 {
-    font-size: 28px;
+  .stat-card.total i { background: rgba(52, 152, 219, 0.15); color: var(--accent); }
+  .stat-card.active i { background: rgba(39, 174, 96, 0.15); color: var(--success); }
+  .stat-card.expired i { background: rgba(231, 76, 60, 0.15); color: var(--danger); }
+  .stat-card.unlimited i { background: rgba(47, 111, 237, 0.15); color: var(--info); }
+
+  .stat-card h3 {
+    font-size: 32px;
     font-weight: 800;
-    background: linear-gradient(to right, var(--text), var(--accent));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    letter-spacing: -0.5px;
+    margin-bottom: 5px;
   }
 
-  .logo-text div {
-    font-size: 13px;
+  .stat-card p {
+    font-size: 14px;
     color: var(--text-light);
-    letter-spacing: 1px;
   }
 
-  .header-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .user-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: rgba(47, 111, 237, 0.15);
-    border-radius: 50px;
-    border: 1px solid rgba(47, 111, 237, 0.3);
-    font-size: 14px;
-  }
-
-  .user-badge i {
-    color: var(--primary);
-  }
-
-  /* Botões */
-  .btn {
-    padding: 12px 20px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 700;
-    border: none;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow);
-  }
-
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-  }
-
-  .btn-primary { 
-    background: var(--gradient-primary); 
-    color: white; 
-  }
-
-  .btn-primary:hover { background: linear-gradient(135deg, var(--primary-dark) 0%, #4338ca 100%); }
-
-  .btn-danger  { 
-    background: var(--gradient-danger); 
-    color: white; 
-  }
-
-  .btn-danger:hover { background: linear-gradient(135deg, var(--secondary-dark) 0%, #b91c1c 100%); }
-
-  .btn-warning { 
-    background: var(--gradient-accent); 
-    color: white; 
-  }
-
-  .btn-warning:hover { background: linear-gradient(135deg, #e76f51 0%, #e63946 100%); }
-
-  .btn-ghost { 
-    background: transparent; 
-    border: 2px solid var(--border); 
-    color: var(--text); 
-  }
-
-  .btn-ghost:hover { 
-    background: rgba(255, 255, 255, 0.05); 
-    border-color: var(--primary); 
-  }
-
-  .btn-success { 
-    background: linear-gradient(135deg, var(--ok) 0%, #059669 100%); 
-    color: white; 
-  }
-
-  /* Cards */
   .card {
     background: var(--card);
     border: 1px solid var(--border);
-    padding: 24px;
     border-radius: var(--radius);
-    margin-bottom: 24px;
+    padding: 25px;
+    margin-bottom: 25px;
     box-shadow: var(--shadow);
-    transition: transform 0.3s ease;
+    transition: var(--transition);
   }
 
   .card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-hover);
   }
 
   .card h2 {
     font-size: 20px;
+    font-weight: 700;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--text-lighter);
   }
 
   .card h2 i {
-    color: var(--primary);
-  }
-
-  /* Formulários */
-  .form-group {
-    margin-bottom: 18px;
+    color: var(--accent);
   }
 
   label {
     font-weight: 600;
     display: block;
     margin-bottom: 8px;
-    color: var(--text-lighter);
-    font-size: 14px;
+    color: var(--text);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
   }
 
   input, select {
     width: 100%;
-    padding: 14px 16px;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--border);
-    background: rgba(15, 23, 42, 0.5);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
     color: var(--text);
     font-size: 15px;
-    transition: all 0.3s;
+    transition: var(--transition);
   }
 
   input:focus, select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
   }
 
-  /* Tabela */
-  .table-container {
-    overflow-x: auto;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
+  input::placeholder {
+    color: var(--text-light);
+    opacity: 0.7;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    border: none;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+  }
+
+  .btn i {
+    font-size: 16px;
+  }
+
+  .btn-primary { 
+    background: var(--accent); 
+    color: white; 
+  }
+  .btn-primary:hover { 
+    background: var(--accent-dark); 
+    transform: translateY(-2px);
+  }
+
+  .btn-danger  { 
+    background: var(--danger); 
+    color: white; 
+  }
+  .btn-danger:hover { 
+    background: var(--danger-dark); 
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost   { 
+    background: transparent; 
+    border: 1px solid var(--border); 
+    color: var(--text); 
+  }
+  .btn-ghost:hover { 
+    background: var(--bg);
+    border-color: var(--accent);
+  }
+
+  .btn-warning { 
+    background: var(--warning); 
+    color: white; 
+  }
+  .btn-warning:hover { 
+    background: var(--warning-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-success { 
+    background: var(--success); 
+    color: white; 
+  }
+  .btn-success:hover { 
+    background: var(--success-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .admin-tools {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+  
+  .admin-tools form {
+    display: inline-block;
+  }
+
+  .search-container {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .search-container i {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    z-index: 2;
+  }
+
+  .search-container input {
+    padding-left: 50px;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
-    min-width: 1000px;
   }
 
   thead {
-    background: var(--gradient-dark);
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
   }
 
   thead th {
-    padding: 18px 16px;
+    padding: 18px 15px;
     text-align: left;
     font-weight: 700;
-    color: var(--text-lighter);
-    border-bottom: 2px solid var(--border);
+    color: var(--text);
     cursor: pointer;
-    transition: background 0.3s;
-    position: relative;
+    user-select: none;
+    transition: var(--transition);
+    white-space: nowrap;
   }
 
   thead th:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg);
   }
 
   thead th i {
     margin-left: 5px;
+    opacity: 0.6;
     font-size: 12px;
-    opacity: 0.7;
-  }
-
-  tbody td {
-    padding: 16px;
-    border-bottom: 1px solid var(--border);
-    word-break: break-all;
-    vertical-align: middle;
   }
 
   tbody tr {
-    transition: background 0.3s;
+    border-bottom: 1px solid var(--border);
+    transition: var(--transition);
   }
 
   tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg);
   }
 
-  tbody tr:last-child td {
-    border-bottom: none;
+  tbody td {
+    padding: 18px 15px;
+    word-break: break-word;
   }
 
-  /* Badges */
+  .copy {
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 700;
+    margin-left: 8px;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .copy:hover {
+    color: var(--accent-dark);
+    transform: scale(1.05);
+  }
+
   .badge {
-    padding: 6px 12px;
-    border-radius: 50px;
-    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    white-space: nowrap;
   }
 
-  .badge-ok { background: rgba(16, 185, 129, 0.2); color: var(--ok-light); border: 1px solid rgba(16, 185, 129, 0.3); }
-  .badge-warn { background: rgba(245, 158, 11, 0.2); color: var(--warn-light); border: 1px solid rgba(245, 158, 11, 0.3); }
-  .badge-exp { background: rgba(239, 68, 68, 0.2); color: var(--danger-light); border: 1px solid rgba(239, 68, 68, 0.3); }
-  .badge-unl { background: rgba(47, 111, 237, 0.2); color: #a5b4fc; border: 1px solid rgba(47, 111, 237, 0.3); }
+  .badge i {
+    font-size: 12px;
+  }
 
-  /* Ações da tabela */
-  .actions {
+  .badge-ok { 
+    background: rgba(39, 174, 96, 0.15); 
+    color: var(--success); 
+  }
+  .badge-warn { 
+    background: rgba(243, 156, 18, 0.15); 
+    color: var(--warning); 
+  }
+  .badge-exp { 
+    background: rgba(231, 76, 60, 0.15); 
+    color: var(--danger); 
+  }
+  .badge-unl { 
+    background: rgba(47, 111, 237, 0.15); 
+    color: var(--info); 
+  }
+
+  .actions-cell {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
 
-  .action-btn {
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: all 0.2s;
-  }
-
-  .action-btn.copy { background: rgba(47, 111, 237, 0.15); color: #a5b4fc; }
-  .action-btn.copy:hover { background: rgba(47, 111, 237, 0.3); }
-
-  .action-btn.reset { background: rgba(245, 158, 11, 0.15); color: var(--warn-light); }
-  .action-btn.reset:hover { background: rgba(245, 158, 11, 0.3); }
-
-  .action-btn.delete { background: rgba(239, 68, 68, 0.15); color: var(--danger-light); }
-  .action-btn.delete:hover { background: rgba(239, 68, 68, 0.3); }
-
-  /* Admin Tools */
-  .admin-tools {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-
-  .admin-tools form {
+  .actions-cell form {
     display: inline-block;
   }
 
-  /* Expirações rápidas */
-  .quick-expiration {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-    flex-wrap: wrap;
+  .actions-cell button {
+    min-width: 40px;
+    padding: 8px 12px;
   }
 
-  /* Status bar */
-  .status-bar {
+  .small-input {
+    width: 80px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
     display: flex;
     justify-content: space-between;
-    background: var(--card-light);
-    padding: 12px 20px;
-    border-radius: var(--radius-sm);
-    margin-bottom: 20px;
-    font-size: 14px;
-    border: 1px solid var(--border);
-  }
-
-  .status-item {
-    display: flex;
     align-items: center;
-    gap: 8px;
-  }
-
-  .status-item i {
-    color: var(--primary);
-  }
-
-  /* Mensagens de alerta */
-  .alert {
-    padding: 16px;
-    border-radius: var(--radius-sm);
     margin-bottom: 20px;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .close-modal {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .close-modal:hover {
+    color: var(--danger);
+  }
+
+  .modal-footer {
     display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px 25px;
+    border-radius: 10px;
+    background: var(--success);
+    color: white;
+    font-weight: 600;
+    box-shadow: var(--shadow-hover);
+    display: none;
     align-items: center;
-    gap: 12px;
-    border-left: 4px solid;
+    gap: 10px;
+    z-index: 1001;
+    animation: slideIn 0.3s ease;
   }
 
-  .alert-warning {
-    background: rgba(245, 158, 11, 0.1);
-    border-left-color: var(--warn);
-    color: var(--warn-light);
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
   }
 
-  /* Animações */
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(47, 111, 237, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(47, 111, 237, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(47, 111, 237, 0); }
-  }
-
-  .pulse {
-    animation: pulse 2s infinite;
-  }
-
-  /* Responsividade */
   @media (max-width: 768px) {
     body {
-      padding: 12px;
+      padding: 15px;
     }
     
-    header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
+    .header-left h1 {
+      font-size: 24px;
     }
     
-    .header-actions {
-      width: 100%;
-      justify-content: space-between;
-    }
-    
-    .admin-tools {
+    .stats {
       flex-direction: column;
     }
     
-    .admin-tools form {
+    .stat-card {
+      min-width: 100%;
+    }
+    
+    thead th, tbody td {
+      padding: 12px 8px;
+    }
+    
+    .actions-cell {
+      flex-direction: column;
+    }
+    
+    .actions-cell form {
       width: 100%;
     }
     
-    .admin-tools .btn {
+    .actions-cell button {
       width: 100%;
       justify-content: center;
     }
     
-    .quick-expiration {
+    .btn-group {
       flex-direction: column;
     }
     
-    .actions {
-      flex-direction: column;
+    .btn-group button {
+      width: 100%;
     }
   }
 </style>
@@ -462,153 +545,103 @@
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">🐉</div>
-    <div class="logo-text">
-      <h1>FERA ALPHA</h1>
-      <div>PAINEL DE GERENCIAMENTO AVANÇADO</div>
+  <div class="header-left">
+    <h1><i class="fas fa-shield-alt"></i> Fera Alpha — Admin</h1>
+    <div class="subtitle">
+      <i class="fas fa-cogs"></i>
+      <span>Painel de gerenciamento avançado</span>
     </div>
   </div>
 
-  <div class="header-actions">
-    <div class="user-badge">
-      <i class="fas fa-user-shield"></i>
-      <span>Administrador</span>
+  <div class="header-right">
+    <div class="user-info">
+      <span id="currentTime">--:--:--</span>
     </div>
     <button class="btn btn-ghost" onclick="toggleDark()">
-      <i class="fas fa-moon"></i> Modo Escuro
-    </button>
-    <button class="btn btn-primary" onclick="refreshData()">
-      <i class="fas fa-sync-alt"></i> Atualizar
+      <i class="fas fa-moon"></i>
+      <span>Tema</span>
     </button>
   </div>
 </header>
 
-<!-- Barra de status -->
-<div class="status-bar">
-  <div class="status-item">
+<!-- ESTATÍSTICAS -->
+<div class="stats">
+  <div class="stat-card total">
     <i class="fas fa-users"></i>
-    <span>Total de Licenças: <strong>{% if users %}{{ users|length }}{% else %}0{% endif %}</strong></span>
+    <h3 id="totalUsers">0</h3>
+    <p>Total de Usuários</p>
   </div>
-  <div class="status-item">
-    <i class="fas fa-clock"></i>
-    <span>Atualizado: <span id="updateTime">Agora</span></span>
+  
+  <div class="stat-card active">
+    <i class="fas fa-check-circle"></i>
+    <h3 id="activeUsers">0</h3>
+    <p>Licenças Ativas</p>
   </div>
-  <div class="status-item">
-    <i class="fas fa-server"></i>
-    <span>Sistema: <strong>Online</strong></span>
+  
+  <div class="stat-card expired">
+    <i class="fas fa-exclamation-circle"></i>
+    <h3 id="expiredUsers">0</h3>
+    <p>Licenças Expiradas</p>
   </div>
-</div>
-
-<!-- Alertas -->
-<div class="alert alert-warning">
-  <i class="fas fa-exclamation-triangle"></i>
-  <span>Ações administrativas são irreversíveis. Use com cautela.</span>
+  
+  <div class="stat-card unlimited">
+    <i class="fas fa-infinity"></i>
+    <h3 id="unlimitedUsers">0</h3>
+    <p>Licenças Ilimitadas</p>
+  </div>
 </div>
 
 <!-- ADMIN TOOLS -->
 <div class="admin-tools">
   <form method="post" action="/admin/reset_all_devices" 
-        onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
+        onsubmit="return confirmAction('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
     <button type="submit" class="btn btn-warning">
-      <i class="fas fa-redo-alt"></i> Resetar Todos Devices
+      <i class="fas fa-redo-alt"></i>
+      Resetar Todos Devices
     </button>
   </form>
   
   <form method="post" action="/admin/clean_expired" 
-        onsubmit="return confirm('Remover TODOS os usuários expirados?')">
+        onsubmit="return confirmAction('🗑️ Remover TODOS os usuários expirados?')">
     <button type="submit" class="btn btn-danger">
-      <i class="fas fa-trash-alt"></i> Limpar Expirados
+      <i class="fas fa-trash-alt"></i>
+      Limpar Expirados
     </button>
   </form>
   
-  <form method="post" action="/admin/generate_batch" 
-        onsubmit="return confirm('Gerar 5 licenças de teste?')">
-    <button type="submit" class="btn btn-success">
-      <i class="fas fa-bolt"></i> Gerar Batch Teste
-    </button>
-  </form>
+  <button class="btn btn-success" onclick="showGenerateModal()">
+    <i class="fas fa-key"></i>
+    Nova Licença
+  </button>
 </div>
 
-<!-- GERAR NOVA KEY -->
+<!-- TABELA DE USUÁRIOS -->
 <div class="card">
-  <h2><i class="fas fa-key"></i> Gerar Nova Licença</h2>
-
-  <form method="post" action="/admin/generate" id="generateForm">
-    <div class="form-group">
-      <label>Usuário</label>
-      <input name="username" required placeholder="ex: usuario123">
-    </div>
-
-    <div class="form-group">
-      <label>Senha</label>
-      <input name="password" required placeholder="Digite uma senha segura">
-    </div>
-
-    <div class="form-group">
-      <label>Prefixo da Licença</label>
-      <input name="prefix" value="FERA" placeholder="FERA">
-    </div>
-
-    <div class="form-group">
-      <label>Expiração (dias) - Use 0 para ilimitado</label>
-      <input name="expire_days" type="number" value="30" min="0" id="expireInput">
-    </div>
-    
-    <div class="quick-expiration">
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">
-        <i class="fas fa-calendar-week"></i> 7 Dias
-      </button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('30')">
-        <i class="fas fa-calendar-alt"></i> 30 Dias
-      </button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('90')">
-        <i class="fas fa-calendar-check"></i> 90 Dias
-      </button>
-      <button type="button" class="btn btn-primary" onclick="setExpiration('0')">
-        <i class="fas fa-infinity"></i> Ilimitado
-      </button>
-    </div>
-
-    <div style="display:flex; gap:12px; margin-top:20px;">
-      <button type="submit" class="btn btn-primary pulse">
-        <i class="fas fa-bolt"></i> Gerar Licença
-      </button>
-      <button type="button" class="btn btn-ghost" onclick="generateRandomUser()">
-        <i class="fas fa-dice"></i> Gerar Aleatório
-      </button>
-    </div>
-  </form>
-</div>
-
-<!-- TABELA DE LICENÇAS -->
-<div class="card">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-    <h2><i class="fas fa-list-alt"></i> Licenças Ativas</h2>
-    <div style="display:flex; gap:10px; align-items:center;">
-      <input id="searchUser" placeholder="Buscar usuário, key ou device..." 
-             style="padding:12px 16px; width:250px; border-radius:var(--radius-sm); border:1px solid var(--border); background:rgba(15,23,42,0.5); color:var(--text);">
-      <span id="filterCount" style="font-size:14px; color:var(--text-light);">
-        {% if users %}{{ users|length }}{% else %}0{% endif %} itens
-      </span>
-    </div>
+  <h2><i class="fas fa-list"></i> Gerenciamento de Licenças</h2>
+  
+  <div class="search-container">
+    <i class="fas fa-search"></i>
+    <input id="searchUser" placeholder="Buscar por usuário, key, device...">
   </div>
 
-  <div class="table-container">
+  <div style="overflow-x: auto;">
     <table id="usersTable">
       <thead>
         <tr>
           <th onclick="sortTable(0)">
-            ID <i class="fas fa-sort"></i>
+            <span>ID</span>
+            <i class="fas fa-sort"></i>
           </th>
           <th onclick="sortTable(1)">
-            Usuário <i class="fas fa-sort"></i>
+            <span>Usuário</span>
+            <i class="fas fa-sort"></i>
           </th>
-          <th>Credenciais</th>
+          <th>Senha</th>
           <th>Licença</th>
-          <th>Device ID</th>
+          <th>Device</th>
           <th onclick="sortTable(5)">
-            Status <i class="fas fa-sort"></i>
+            <span>Status</span>
+            <i class="fas fa-sort"></i>
           </th>
           <th>Ações</th>
         </tr>
@@ -616,98 +649,76 @@
 
       <tbody>
         {% for u in users %}
-        <tr data-expires="{{ u.expires_at }}" data-username="{{ u.username|lower }}" data-key="{{ u.key|lower }}" data-device="{{ u.device_id|lower if u.device_id else '' }}">
-
+        <tr data-expires="{{ u.expires_at }}" data-key="{{ u.key }}" data-username="{{ u.username }}" data-password="{{ u.password }}">
+          <td><strong>#{{ loop.index0 + 1 }}</strong></td>
           <td>
-            <div class="badge badge-unl">{{ loop.index0 }}</div>
+            <strong>{{ u.username }}</strong>
           </td>
-
           <td>
-            <div style="font-weight:600; color:var(--text-lighter);">{{ u.username }}</div>
+            <code>{{ u.password }}</code>
+            <span class="copy" onclick="copyCredentials('{{ u.username }}', '{{ u.password }}')">
+              <i class="fas fa-copy"></i>
+              Copiar
+            </span>
           </td>
-
           <td>
-            <div style="margin-bottom:5px;">
-              <strong>Usuário:</strong> {{ u.username }}
-            </div>
-            <div>
-              <strong>Senha:</strong> {{ u.password }}
-              <button class="action-btn copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">
-                <i class="far fa-copy"></i> Copiar
-              </button>
-            </div>
+            <code style="font-family: monospace; font-size: 13px;">{{ u.key }}</code>
+            <span class="copy" onclick="copyKey('{{ u.key }}', this)">
+              <i class="fas fa-copy"></i>
+              Copiar
+            </span>
           </td>
-
-          <td>
-            <div style="font-family: monospace; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px; word-break:break-all;">
-              {{ u.key }}
-            </div>
-            <button class="action-btn copy" onclick="copiar('{{ u.key }}', this)">
-              <i class="far fa-copy"></i> Copiar Key
-            </button>
-          </td>
-
           <td>
             {% if u.device_id %}
-              <div style="font-family: monospace; font-size:13px;">{{ u.device_id }}</div>
+              <span class="badge badge-ok">
+                <i class="fas fa-desktop"></i>
+                {{ u.device_id|truncate(10) }}
+              </span>
             {% else %}
-              <span style="color:var(--text-light); font-style:italic;">Não vinculado</span>
+              <span class="badge badge-warn">
+                <i class="fas fa-times"></i>
+                Não vinculado
+              </span>
             {% endif %}
           </td>
-
           <td class="expCell"></td>
+          <td class="actions-cell">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}" onsubmit="return confirmAction('Adicionar 30 dias à licença?')">
+              <button type="submit" class="btn btn-success" title="+30 Dias">
+                <i class="fas fa-calendar-plus"></i>
+              </button>
+            </form>
 
-          <td>
-            <div class="actions">
-              <!-- +30 Dias -->
-              <form method="post" action="/admin/renew/{{ loop.index0 }}" style="display:inline;">
-                <button type="submit" class="action-btn reset" title="Renovar 30 dias">
-                  <i class="fas fa-plus-circle"></i> +30
-                </button>
-              </form>
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" onsubmit="return confirmAction('Adicionar dias à licença?')" style="display: flex; gap: 5px;">
+              <input type="number" name="days" min="1" value="7" class="small-input">
+              <button type="submit" class="btn btn-primary" title="+ Dias">
+                <i class="fas fa-plus"></i>
+              </button>
+            </form>
 
-              <!-- +Dias Personalizado -->
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" style="display:inline;">
-                <div style="display:flex; gap:4px;">
-                  <input type="number" name="days" min="1" value="7" 
-                         style="width:55px; padding:6px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:var(--text); border-radius:4px;">
-                  <button type="submit" class="action-btn reset" title="Adicionar dias">
-                    <i class="fas fa-calendar-plus"></i>
-                  </button>
-                </div>
-              </form>
+            <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}" onsubmit="return confirmAction('Tornar esta licença ilimitada?')">
+              <button type="submit" class="btn btn-ghost" title="Ilimitado">
+                <i class="fas fa-infinity"></i>
+              </button>
+            </form>
 
-              <!-- Tornar Ilimitado -->
-              <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
-                    onsubmit="return confirm('Tornar esta licença ilimitada?')" style="display:inline;">
-                <button type="submit" class="action-btn copy" title="Tornar ilimitado">
-                  <i class="fas fa-infinity"></i>
-                </button>
-              </form>
+            <form method="post" action="/admin/reset/{{ loop.index0 }}" onsubmit="return confirmAction('Resetar esta key?')">
+              <button type="submit" class="btn btn-ghost" title="Resetar Key">
+                <i class="fas fa-key"></i>
+              </button>
+            </form>
 
-              <!-- Reset Device -->
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}"
-                    onsubmit="return confirm('Resetar dispositivo vinculado?')" style="display:inline;">
-                <button type="submit" class="action-btn reset" title="Resetar Device">
-                  <i class="fas fa-mobile-alt"></i>
-                </button>
-              </form>
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}" onsubmit="return confirmAction('Resetar device vinculado?')">
+              <button type="submit" class="btn btn-warning" title="Reset Device">
+                <i class="fas fa-desktop"></i>
+              </button>
+            </form>
 
-              <!-- Deletar -->
-              <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                    onsubmit="return confirm('Excluir esta licença permanentemente?')" style="display:inline;">
-                <button type="submit" class="action-btn delete" title="Excluir">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="7" style="text-align:center; padding:40px; color:var(--text-light);">
-            <i class="fas fa-inbox" style="font-size:48px; margin-bottom:16px; display:block; opacity:0.5;"></i>
-            Nenhuma licença encontrada. Gere sua primeira licença acima.
+            <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirmAction('Excluir usuário permanentemente?')">
+              <button type="submit" class="btn btn-danger" title="Excluir">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
           </td>
         </tr>
         {% endfor %}
@@ -716,233 +727,311 @@
   </div>
 </div>
 
-<footer style="text-align:center; padding:20px; color:var(--text-light); font-size:14px; border-top:1px solid var(--border); margin-top:20px;">
-  <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:8px;">
-    <i class="fas fa-dragon" style="color:var(--accent);"></i>
-    <span>Fera Alpha Admin Panel v2.0</span>
-    <i class="fas fa-dragon" style="color:var(--accent);"></i>
+<!-- MODAL GERAR NOVA LICENÇA -->
+<div id="generateModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-key"></i> Gerar Nova Licença</h3>
+      <button class="close-modal" onclick="hideGenerateModal()">&times;</button>
+    </div>
+    
+    <form method="post" action="/admin/generate" id="generateForm">
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Usuário</label>
+        <input name="username" required placeholder="Digite o nome de usuário">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Senha</label>
+        <input name="password" required placeholder="Digite a senha">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-tag"></i> Prefixo da Licença</label>
+        <input name="prefix" value="FERA" placeholder="Ex: FERA, ALPHA, etc">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-calendar-alt"></i> Expiração</label>
+        <select name="expire_days" id="expireSelect">
+          <option value="7">7 Dias</option>
+          <option value="30" selected>30 Dias</option>
+          <option value="90">90 Dias</option>
+          <option value="180">180 Dias</option>
+          <option value="365">1 Ano</option>
+          <option value="0">Ilimitado</option>
+        </select>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="hideGenerateModal()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-check"></i>
+          Gerar Licença
+        </button>
+      </div>
+    </form>
   </div>
-  <div>Sistema de gerenciamento de licenças © 2023</div>
-</footer>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMessage">Copiado para a área de transferência!</span>
+</div>
 
 <script>
-// Temas
+// ====================
+// VARIÁVEIS GLOBAIS
+// ====================
+let sortDirection = {};
+
+// ====================
+// FUNÇÕES DE UTILIDADE
+// ====================
 function toggleDark() {
-  document.body.classList.toggle("dark");
-  const btn = document.querySelector('.btn-ghost i');
-  if (document.body.classList.contains("dark")) {
-    btn.className = "fas fa-sun";
-    document.querySelector('.btn-ghost span').textContent = " Modo Claro";
-  } else {
-    btn.className = "fas fa-moon";
-    document.querySelector('.btn-ghost span').textContent = " Modo Escuro";
-  }
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 }
 
-// Definir expiração
-function setExpiration(days) {
-  const input = document.getElementById('expireInput');
-  input.value = days;
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
   
-  if(days == '0') {
-    showNotification("Licença será criada como <strong>ILIMITADA</strong>!", "success");
-  } else {
-    showNotification(`Expiração definida para <strong>${days} dias</strong>.`, "info");
-  }
-}
-
-// Gerar usuário aleatório
-function generateRandomUser() {
-  const adjectives = ["Feroz", "Ágil", "Poderoso", "Sábio", "Astuto", "Valente", "Lendário", "Místico"];
-  const nouns = ["Dragão", "Guerreiro", "Mago", "Caçador", "Titã", "Fênix", "Lobo", "Leão"];
-  const numbers = Math.floor(Math.random() * 999) + 1;
+  toast.style.background = type === 'success' ? 'var(--success)' : 
+                          type === 'error' ? 'var(--danger)' : 'var(--warning)';
   
-  const randomUser = adjectives[Math.floor(Math.random() * adjectives.length)] + 
-                     nouns[Math.floor(Math.random() * nouns.length)] + 
-                     numbers;
+  toastMessage.textContent = message;
+  toast.style.display = 'flex';
   
-  const randomPass = Math.random().toString(36).slice(-10) + Math.floor(Math.random() * 9) + 1;
-  
-  document.querySelector('input[name="username"]').value = randomUser;
-  document.querySelector('input[name="password"]').value = randomPass;
-  
-  showNotification(`Usuário gerado: <strong>${randomUser}</strong>`, "success");
-}
-
-// Copiar key
-function copiar(t, el) {
-  navigator.clipboard.writeText(t);
-  
-  // Mudar ícone temporariamente
-  const icon = el.querySelector('i') || el;
-  const originalClass = icon.className;
-  icon.className = "fas fa-check";
-  
-  // Restaurar após 2 segundos
   setTimeout(() => {
-    icon.className = originalClass;
-  }, 2000);
-  
-  showNotification("Licença copiada para a área de transferência!", "success");
-}
-
-// Copiar credenciais
-function copiarCred(u, p) {
-  navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
-  showNotification(`Credenciais de <strong>${u}</strong> copiadas!`, "success");
-}
-
-// Busca na tabela
-document.getElementById("searchUser").addEventListener("input", function() {
-  const q = this.value.toLowerCase().trim();
-  const rows = document.querySelectorAll("#usersTable tbody tr");
-  let visibleCount = 0;
-  
-  rows.forEach(tr => {
-    const username = tr.getAttribute('data-username');
-    const key = tr.getAttribute('data-key');
-    const device = tr.getAttribute('data-device');
-    
-    if (username.includes(q) || key.includes(q) || device.includes(q) || q === '') {
-      tr.style.display = "";
-      visibleCount++;
-    } else {
-      tr.style.display = "none";
-    }
-  });
-  
-  document.getElementById("filterCount").textContent = `${visibleCount} itens`;
-});
-
-// Ordenar tabela
-function sortTable(col) {
-  const table = document.getElementById("usersTable").tBodies[0];
-  const rows = Array.from(table.rows);
-  const asc = table.getAttribute("data-sort") !== "asc";
-  
-  // Para a coluna de status, ordenar por data de expiração
-  if (col === 5) {
-    rows.sort((a, b) => {
-      const aExp = parseInt(a.getAttribute("data-expires"));
-      const bExp = parseInt(b.getAttribute("data-expires"));
-      
-      // Tratar ilimitados como valor máximo
-      const aVal = aExp === 0 || aExp === 9999999999999 ? Number.MAX_SAFE_INTEGER : aExp;
-      const bVal = bExp === 0 || bExp === 9999999999999 ? Number.MAX_SAFE_INTEGER : bExp;
-      
-      return asc ? aVal - bVal : bVal - aVal;
-    });
-  } else {
-    // Ordenação normal para outras colunas
-    rows.sort((a, b) => {
-      let A = a.cells[col].innerText.toLowerCase();
-      let B = b.cells[col].innerText.toLowerCase();
-      
-      // Para a coluna ID, converter para número
-      if (col === 0) {
-        A = parseInt(A) || 0;
-        B = parseInt(B) || 0;
-        return asc ? A - B : B - A;
-      }
-      
-      return asc ? A.localeCompare(B) : B.localeCompare(A);
-    });
-  }
-  
-  rows.forEach(r => table.appendChild(r));
-  table.setAttribute("data-sort", asc ? "asc" : "desc");
-  
-  // Atualizar ícones de ordenação
-  const headers = document.querySelectorAll("#usersTable thead th i");
-  headers.forEach((icon, index) => {
-    if (index === col) {
-      icon.className = asc ? "fas fa-sort-up" : "fas fa-sort-down";
-    } else {
-      icon.className = "fas fa-sort";
-    }
-  });
-}
-
-// Renderizar status de expiração
-function renderExp() {
-  const now = Math.floor(Date.now() / 1000);
-  
-  document.querySelectorAll("tr[data-expires]").forEach(tr => {
-    let exp = parseInt(tr.getAttribute("data-expires"));
-    let cell = tr.querySelector(".expCell");
-    
-    // Verificar se é ilimitado
-    if (!exp || exp === 0 || exp === 9999999999999) {
-      cell.innerHTML = "<span class='badge badge-unl'><i class='fas fa-infinity'></i> Ilimitado</span>";
-      return;
-    }
-    
-    if (exp < now) {
-      cell.innerHTML = "<span class='badge badge-exp'><i class='fas fa-exclamation-circle'></i> Expirado</span>";
-      return;
-    }
-    
-    let diff = Math.floor((exp - now) / 86400);
-    
-    if (diff < 3) {
-      cell.innerHTML = `<span class='badge badge-exp'><i class='fas fa-clock'></i> ${diff} dias</span>`;
-    } else if (diff < 7) {
-      cell.innerHTML = `<span class='badge badge-warn'><i class='fas fa-exclamation-triangle'></i> ${diff} dias</span>`;
-    } else {
-      cell.innerHTML = `<span class='badge badge-ok'><i class='fas fa-check-circle'></i> ${diff} dias</span>`;
-    }
-  });
-  
-  // Atualizar hora da última atualização
-  const nowTime = new Date();
-  document.getElementById('updateTime').textContent = nowTime.toLocaleTimeString('pt-BR');
-}
-
-// Notificações
-function showNotification(message, type) {
-  // Criar elemento de notificação
-  const notification = document.createElement('div');
-  notification.innerHTML = `
-    <div style="position:fixed; top:20px; right:20px; background:var(--card); padding:16px; border-radius:var(--radius-sm); border-left:4px solid ${type === 'success' ? 'var(--ok)' : type === 'warning' ? 'var(--warn)' : 'var(--primary)'}; box-shadow:var(--shadow-lg); z-index:1000; max-width:350px; display:flex; align-items:center; gap:12px;">
-      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}" style="color:${type === 'success' ? 'var(--ok)' : type === 'warning' ? 'var(--warn)' : 'var(--primary)'}; font-size:20px;"></i>
-      <div>${message}</div>
-    </div>
-  `;
-  
-  document.body.appendChild(notification);
-  
-  // Remover após 3 segundos
-  setTimeout(() => {
-    notification.style.opacity = '0';
-    notification.style.transition = 'opacity 0.5s';
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 500);
+    toast.style.display = 'none';
   }, 3000);
 }
 
-// Atualizar dados
-function refreshData() {
-  showNotification("Atualizando dados...", "info");
-  renderExp();
-  setTimeout(() => {
-    showNotification("Dados atualizados com sucesso!", "success");
-  }, 500);
+function confirmAction(message) {
+  return confirm(`❓ ${message}`);
 }
 
-// Inicializar
-document.addEventListener('DOMContentLoaded', function() {
-  renderExp();
+// ====================
+// FUNÇÕES DE CÓPIA
+// ====================
+function copyKey(key, element) {
+  navigator.clipboard.writeText(key);
+  showToast('Licença copiada para a área de transferência!');
   
-  // Auto-refresh a cada 30 segundos
-  setInterval(renderExp, 30000);
+  // Feedback visual no botão
+  const icon = element.querySelector('i');
+  const originalIcon = icon.className;
+  const originalText = element.innerHTML;
   
-  // Inicializar ordenação
-  const table = document.getElementById("usersTable").tBodies[0];
-  table.setAttribute("data-sort", "asc");
+  icon.className = 'fas fa-check';
+  element.innerHTML = element.innerHTML.replace('Copiar', 'Copiado!');
+  
+  setTimeout(() => {
+    icon.className = originalIcon;
+    element.innerHTML = originalText;
+  }, 1500);
+}
+
+function copyCredentials(username, password) {
+  const text = `👤 Usuário: ${username}\n🔒 Senha: ${password}`;
+  navigator.clipboard.writeText(text);
+  showToast('Credenciais copiadas para a área de transferência!');
+}
+
+// ====================
+// FUNÇÕES DE MODAL
+// ====================
+function showGenerateModal() {
+  document.getElementById('generateModal').style.display = 'flex';
+}
+
+function hideGenerateModal() {
+  document.getElementById('generateModal').style.display = 'none';
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+  const modal = document.getElementById('generateModal');
+  if (event.target === modal) {
+    hideGenerateModal();
+  }
+};
+
+// ====================
+// FUNÇÕES DE BUSCA E ORDENAÇÃO
+// ====================
+document.getElementById('searchUser').addEventListener('input', function() {
+  const query = this.value.toLowerCase();
+  const rows = document.querySelectorAll('#usersTable tbody tr');
+  
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? '' : 'none';
+  });
+  
+  updateStats();
 });
+
+function sortTable(columnIndex) {
+  const table = document.getElementById('usersTable');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  
+  // Determinar direção da ordenação
+  if (!sortDirection[columnIndex]) sortDirection[columnIndex] = 'asc';
+  const direction = sortDirection[columnIndex];
+  
+  // Atualizar ícones
+  table.querySelectorAll('th i').forEach(icon => {
+    icon.className = 'fas fa-sort';
+  });
+  
+  const currentIcon = table.querySelectorAll('th')[columnIndex].querySelector('i');
+  currentIcon.className = direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+  
+  // Ordenar linhas
+  rows.sort((a, b) => {
+    let aValue = a.cells[columnIndex].textContent.trim();
+    let bValue = b.cells[columnIndex].textContent.trim();
+    
+    // Tratamento especial para colunas numéricas (ID)
+    if (columnIndex === 0) {
+      aValue = parseInt(aValue.replace('#', ''));
+      bValue = parseInt(bValue.replace('#', ''));
+    }
+    
+    // Tratamento especial para coluna de status
+    if (columnIndex === 5) {
+      const aExp = parseInt(a.getAttribute('data-expires'));
+      const bExp = parseInt(b.getAttribute('data-expires'));
+      aValue = aExp || 0;
+      bValue = bExp || 0;
+    }
+    
+    if (direction === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
+  
+  // Reinserir linhas ordenadas
+  rows.forEach(row => tbody.appendChild(row));
+  
+  // Alternar direção para próxima ordenação
+  sortDirection[columnIndex] = direction === 'asc' ? 'desc' : 'asc';
+}
+
+// ====================
+// FUNÇÕES DE STATUS E ESTATÍSTICAS
+// ====================
+function updateExpirationBadges() {
+  const now = Math.floor(Date.now() / 1000);
+  let total = 0, active = 0, expired = 0, unlimited = 0;
+  
+  document.querySelectorAll('tr[data-expires]').forEach(row => {
+    const expires = parseInt(row.getAttribute('data-expires'));
+    const cell = row.querySelector('.expCell');
+    
+    total++;
+    
+    if (!expires || expires === 0 || expires >= 9999999999) {
+      cell.innerHTML = '<span class="badge badge-unl"><i class="fas fa-infinity"></i> Ilimitado</span>';
+      unlimited++;
+      return;
+    }
+    
+    const diffDays = Math.floor((expires - now) / 86400);
+    
+    if (expires < now) {
+      cell.innerHTML = `<span class="badge badge-exp"><i class="fas fa-exclamation-circle"></i> Expirado</span>`;
+      expired++;
+    } else if (diffDays < 3) {
+      cell.innerHTML = `<span class="badge badge-exp"><i class="fas fa-hourglass-end"></i> ${diffDays} dias</span>`;
+      active++;
+    } else if (diffDays < 7) {
+      cell.innerHTML = `<span class="badge badge-warn"><i class="fas fa-exclamation-triangle"></i> ${diffDays} dias</span>`;
+      active++;
+    } else {
+      cell.innerHTML = `<span class="badge badge-ok"><i class="fas fa-check-circle"></i> ${diffDays} dias</span>`;
+      active++;
+    }
+  });
+  
+  // Atualizar estatísticas
+  document.getElementById('totalUsers').textContent = total;
+  document.getElementById('activeUsers').textContent = active;
+  document.getElementById('expiredUsers').textContent = expired;
+  document.getElementById('unlimitedUsers').textContent = unlimited;
+}
+
+// ====================
+// FUNÇÕES DE TEMPO E ATUALIZAÇÃO
+// ====================
+function updateClock() {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString('pt-BR', { 
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  document.getElementById('currentTime').textContent = timeString;
+}
+
+// ====================
+// INICIALIZAÇÃO
+// ====================
+document.addEventListener('DOMContentLoaded', function() {
+  // Verificar tema salvo
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+  
+  // Inicializar relógio
+  updateClock();
+  setInterval(updateClock, 1000);
+  
+  // Inicializar badges e estatísticas
+  updateExpirationBadges();
+  
+  // Atualizar estatísticas a cada 30 segundos
+  setInterval(updateExpirationBadges, 30000);
+  
+  // Atualizar estatísticas quando houver busca
+  document.getElementById('searchUser').addEventListener('input', updateExpirationBadges);
+});
+
+// ====================
+// EXPORT/IMPORT (EXTRA)
+// ====================
+function exportUsers() {
+  const users = [];
+  document.querySelectorAll('tr[data-key]').forEach(row => {
+    users.push({
+      username: row.getAttribute('data-username'),
+      password: row.getAttribute('data-password'),
+      key: row.getAttribute('data-key'),
+      expires: row.getAttribute('data-expires')
+    });
+  });
+  
+  const dataStr = JSON.stringify(users, null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  const exportFileDefaultName = 'fera_alpha_users.json';
+  
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+  
+  showToast('Dados exportados com sucesso!');
+}
 </script>
 
 </body>
