@@ -49,7 +49,7 @@
         /* HEADER */
         .header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             padding: 25px 0;
             border-bottom: 1px solid var(--border-color);
@@ -87,27 +87,7 @@
             font-size: 14px;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-badge {
-            background: var(--gray);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .user-badge i {
-            color: var(--primary);
-        }
-
-        /* REMOVIDO: Stats Cards */
+        /* REMOVIDO: user-info */
 
         /* MAIN CONTENT GRID */
         .content-grid {
@@ -380,111 +360,7 @@
             color: var(--light);
         }
 
-        /* HISTORY SECTION */
-        .history-section {
-            margin-top: 40px;
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .history-header h3 {
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .history-header h3 i {
-            color: var(--primary);
-        }
-
-        .clear-history {
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .clear-history:hover {
-            background: #ff3333;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--darker);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .history-table thead {
-            background: var(--gray);
-        }
-
-        .history-table th {
-            padding: 15px;
-            text-align: left;
-            color: #aaa;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .history-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .history-key {
-            font-family: monospace;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .history-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: #aaa;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .history-btn:hover {
-            background: var(--primary);
-            color: var(--dark);
-            border-color: var(--primary);
-        }
-
-        .empty-history {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-style: italic;
-        }
+        /* REMOVIDO: HISTORY SECTION */
 
         /* LOADER */
         .loader {
@@ -572,13 +448,8 @@
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
                 gap: 20px;
-            }
-            
-            .user-info {
-                width: 100%;
-                justify-content: space-between;
             }
             
             .form-card, .results-card {
@@ -587,14 +458,6 @@
             
             .key-display {
                 font-size: 18px;
-            }
-            
-            .history-table {
-                font-size: 14px;
-            }
-            
-            .history-table th, .history-table td {
-                padding: 10px;
             }
         }
 
@@ -631,19 +494,7 @@
                     <div class="subtitle">Painel de Geração de Licenças</div>
                 </div>
             </div>
-            
-            <div class="user-info">
-                <div class="user-badge">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Conta Revendedor</span>
-                </div>
-                <button class="clear-history" onclick="clearHistory()">
-                    <i class="fas fa-trash-alt"></i> Limpar Histórico
-                </button>
-            </div>
         </header>
-
-        <!-- REMOVIDO: Stats Container -->
 
         <!-- MAIN CONTENT -->
         <div class="content-grid">
@@ -730,37 +581,6 @@
             </div>
         </div>
 
-        <!-- HISTORY SECTION -->
-        <div class="history-section">
-            <div class="history-header">
-                <h3><i class="fas fa-history"></i> Histórico de Geração</h3>
-                <div style="font-size: 14px; color: #aaa;">
-                    Últimas <span id="historyCount">0</span> licenças
-                </div>
-            </div>
-            
-            <table class="history-table" id="historyTable">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Cliente</th>
-                        <th>Key</th>
-                        <th>Validade</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="historyBody">
-                    <!-- Histórico será inserido aqui -->
-                </tbody>
-            </table>
-            
-            <div class="empty-history" id="emptyHistory">
-                <i class="fas fa-history fa-3x" style="margin-bottom: 15px; opacity: 0.3;"></i>
-                <p>Nenhuma licença gerada ainda</p>
-                <p style="font-size: 14px; margin-top: 10px;">As licenças geradas aparecerão aqui</p>
-            </div>
-        </div>
-
         <!-- FOOTER -->
         <footer class="footer">
             <p>Fera Alpha © 2024 - Sistema de Revendedores</p>
@@ -768,10 +588,7 @@
                 <a href="javascript:void(0)" onclick="showHelp()">
                     <i class="fas fa-question-circle"></i> Ajuda
                 </a>
-                <a href="javascript:void(0)" onclick="exportHistory()">
-                    <i class="fas fa-download"></i> Exportar Histórico
-                </a>
-                <a href="javascript:void(0)" onclick="refreshStats()">
+                <a href="javascript:void(0)" onclick="refreshPage()">
                     <i class="fas fa-sync-alt"></i> Atualizar
                 </a>
             </div>
@@ -787,15 +604,12 @@
     <script>
         // ====== CONFIGURAÇÕES ======
         const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
-        const STORAGE_KEY = "fera_reseller_history";
         const UNLIMITED_EXPIRY = 9999999999999;
         
         let currentDays = 30;
-        let history = [];
         
         // ====== INICIALIZAÇÃO ======
         document.addEventListener('DOMContentLoaded', function() {
-            loadHistory();
             setDays(30);
             
             // Permitir Enter para gerar
@@ -804,12 +618,6 @@
                     generateLicense();
                 }
             });
-            
-            // Mostrar histórico se existir
-            if (history.length > 0) {
-                document.getElementById('emptyHistory').style.display = 'none';
-                document.getElementById('historyTable').style.display = 'table';
-            }
         });
         
         // ====== FUNÇÕES DE FORMULÁRIO ======
@@ -886,10 +694,9 @@
                 } else {
                     // Sucesso
                     showResultSuccess(data);
-                    addToHistory(data, username);
                     showToast('Licença gerada com sucesso!', 'success');
                     
-                    // Limpar formulário (exceto token)
+                    // Limpar formulário
                     document.getElementById('username').value = '';
                     document.getElementById('password').value = '';
                 }
@@ -984,114 +791,6 @@
             resultsCard.style.display = 'block';
         }
         
-        // ====== HISTÓRICO ======
-        function loadHistory() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                history = JSON.parse(saved);
-                renderHistory();
-            }
-        }
-        
-        function saveHistory() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-        }
-        
-        function addToHistory(licenseData, username) {
-            const historyEntry = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                username: username,
-                key: licenseData.key,
-                expires_at: licenseData.expires_at,
-                is_unlimited: licenseData.expires_at === 0 || licenseData.expires_at === UNLIMITED_EXPIRY
-            };
-            
-            history.unshift(historyEntry); // Adicionar no início
-            if (history.length > 50) { // Limitar a 50 entradas
-                history.pop();
-            }
-            
-            saveHistory();
-            renderHistory();
-        }
-        
-        function renderHistory() {
-            const historyBody = document.getElementById('historyBody');
-            const emptyHistory = document.getElementById('emptyHistory');
-            const historyTable = document.getElementById('historyTable');
-            
-            if (history.length === 0) {
-                emptyHistory.style.display = 'block';
-                historyTable.style.display = 'none';
-                return;
-            }
-            
-            emptyHistory.style.display = 'none';
-            historyTable.style.display = 'table';
-            
-            historyBody.innerHTML = history.map(entry => {
-                const date = new Date(entry.date).toLocaleDateString('pt-BR');
-                const expiry = entry.is_unlimited ? 'ILIMITADO' : 
-                    new Date(entry.expires_at * 1000).toLocaleDateString('pt-BR');
-                
-                return `
-                    <tr>
-                        <td>${date}</td>
-                        <td>${entry.username}</td>
-                        <td class="history-key">${entry.key}</td>
-                        <td>${expiry}</td>
-                        <td>
-                            <div class="history-actions">
-                                <button class="history-btn" onclick="copyKey('${entry.key}')" title="Copiar Key">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button class="history-btn" onclick="reuseLicense('${entry.username}')" title="Reutilizar Dados">
-                                    <i class="fas fa-recycle"></i>
-                                </button>
-                                <button class="history-btn" onclick="deleteHistoryEntry(${entry.id})" title="Remover">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            
-            document.getElementById('historyCount').textContent = history.length;
-        }
-        
-        function clearHistory() {
-            if (confirm('Tem certeza que deseja limpar todo o histórico? Esta ação não pode ser desfeita.')) {
-                history = [];
-                saveHistory();
-                renderHistory();
-                showToast('Histórico limpo com sucesso', 'warning');
-            }
-        }
-        
-        function deleteHistoryEntry(id) {
-            if (confirm('Remover esta entrada do histórico?')) {
-                history = history.filter(entry => entry.id !== id);
-                saveHistory();
-                renderHistory();
-                showToast('Entrada removida do histórico', 'warning');
-            }
-        }
-        
-        function reuseLicense(username) {
-            const entry = history.find(e => e.username === username);
-            if (entry) {
-                document.getElementById('username').value = username;
-                showToast(`Dados de ${username} preenchidos`, 'success');
-            }
-        }
-        
-        // ====== ESTATÍSTICAS (SIMPLIFICADA) ======
-        function refreshStats() {
-            showToast('Histórico atualizado', 'success');
-        }
-        
         // ====== FUNÇÕES UTILITÁRIAS ======
         function copyKey(key) {
             navigator.clipboard.writeText(key).then(() => {
@@ -1101,33 +800,8 @@
             });
         }
         
-        function exportHistory() {
-            if (history.length === 0) {
-                showToast('Nenhum dado para exportar', 'warning');
-                return;
-            }
-            
-            const csv = history.map(entry => {
-                return [
-                    `"${entry.date}"`,
-                    `"${entry.username}"`,
-                    `"${entry.key}"`,
-                    `"${entry.is_unlimited ? 'ILIMITADO' : new Date(entry.expires_at * 1000).toLocaleDateString('pt-BR')}"`
-                ].join(',');
-            }).join('\n');
-            
-            const headers = 'Data,Cliente,Key,Expiração\n';
-            const blob = new Blob([headers + csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fera_revendedor_${new Date().toISOString().slice(0,10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            showToast('Histórico exportado como CSV', 'success');
+        function refreshPage() {
+            location.reload();
         }
         
         function showHelp() {
@@ -1139,9 +813,8 @@
                 '4. Insira seu token de revendedor\n' +
                 '5. Clique em "Gerar Licença"\n\n' +
                 '💡 Dicas:\n' +
-                '- O histórico é salvo localmente no seu navegador\n' +
-                '- Você pode reutilizar dados de clientes antigos\n' +
-                '- Exporte o histórico para backup\n' +
+                '- Use nomes de clientes diferentes para cada licença\n' +
+                '- Escolha senhas seguras\n' +
                 '- Seu token é pessoal e intransferível\n\n' +
                 '📞 Suporte: Entre em contato com o administrador'
             );
@@ -1172,16 +845,6 @@
             // Ctrl+Enter para gerar
             if (e.ctrlKey && e.key === 'Enter') {
                 generateLicense();
-            }
-            
-            // Ctrl+H para histórico
-            if (e.ctrlKey && e.key === 'h') {
-                document.getElementById('historyTable').scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            // Ctrl+E para exportar
-            if (e.ctrlKey && e.key === 'e') {
-                exportHistory();
             }
         });
     </script>
