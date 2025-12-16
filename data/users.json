@@ -242,7 +242,7 @@
       "username": "manomix",
       "password": "123",
       "key": "FERA-676376C9",
-      "device_id": null,
+      "device_id": "12012ccccb6af23baf421cb775d337d7356e2e45544b736f8ee9cbfafaf98b1a",
       "expires_at": 2633215696
     },
     {
@@ -255,16 +255,9 @@
     {
       "username": "Rush7",
       "password": "123",
-      "key": "FERA-871F557C",
+      "key": "FERA-6B90DD45",
       "device_id": null,
       "expires_at": 1767222818
-    },
-    {
-      "username": "Manomix",
-      "password": "123",
-      "key": "FERA-1CA70C85",
-      "device_id": null,
-      "expires_at": 1768518948
     }
   ]
 }
