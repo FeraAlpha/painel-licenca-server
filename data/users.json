@@ -272,13 +272,6 @@
       "key": "FERA-C260C7B6",
       "device_id": "12012ccccb6af23baf421cb775d337d7356e2e45544b736f8ee9cbfafaf98b1a",
       "expires_at": 1797796271
-    },
-    {
-      "username": "matheus",
-      "password": "123",
-      "key": "FERA-3717A27A",
-      "device_id": null,
-      "expires_at": 1768865079
     }
   ]
 }
