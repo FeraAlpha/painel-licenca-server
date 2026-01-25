@@ -18,7 +18,6 @@
       --primary:#00eaff;
       --primary2:#00ffa6;
 
-      --danger:#ff4e4e;
       --warning:#ffd166;
       --shadow: 0 16px 40px rgba(0,0,0,.45);
 
@@ -37,7 +36,6 @@
 
     .wrap{max-width:720px;margin:0 auto}
 
-    /* HEADER */
     .topbar{
       display:flex;
       justify-content:space-between;
@@ -78,7 +76,6 @@
     }
     .chip i{color:var(--primary)}
 
-    /* CARD */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
       border:1px solid var(--border);
@@ -98,7 +95,6 @@
     .title h2{font-size:16px;font-weight:900}
     .title .sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-    /* FORM */
     .field{margin-bottom:12px}
     label{
       display:flex;align-items:center;gap:8px;
@@ -123,7 +119,6 @@
     }
     input::placeholder{color:#556575}
 
-    /* DAYS */
     .days{
       display:flex;gap:10px;flex-wrap:wrap;
       margin-top:8px;
@@ -149,7 +144,6 @@
       border-color: transparent;
     }
 
-    /* BUTTONS */
     .btn{
       width:100%;
       padding:14px 16px;
@@ -190,7 +184,6 @@
     }
     .rowbtns .btn{width:100%; padding:12px}
 
-    /* LOADER */
     .loader{
       display:none;
       gap:10px;
@@ -209,7 +202,6 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* RESULT (SEM COPIAR) */
     .resultBox{
       display:none;
       margin-top:14px;
@@ -236,7 +228,6 @@
       word-break:break-all;
     }
 
-    /* TOAST */
     .toast{
       position:fixed;
       left:50%;
@@ -261,8 +252,6 @@
     .toast.show{opacity:1;pointer-events:auto}
     .toast i{color:var(--primary)}
     .toast.warn i{color:var(--warning)}
-    .toast.error i{color:var(--danger)}
-
     .mutedSmall{font-size:12px;color:var(--muted)}
   </style>
 </head>
@@ -340,7 +329,6 @@
         <span>Gerando licença...</span>
       </div>
 
-      <!-- ✅ SEMPRE SUCESSO / SEM COPIAR -->
       <div class="resultBox" id="resultBox"></div>
     </div>
 
@@ -402,7 +390,6 @@
       return;
     }
 
-    // loader on
     document.getElementById("loader").style.display = "flex";
     document.getElementById("generateBtn").disabled = true;
 
@@ -434,32 +421,28 @@
         if(match) key = match[0];
       }
 
-      // loader off
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
 
-      // ✅ SEMPRE SUCESSO
-      if(!key) key = "Login criado com sucesso ✅";
+      // ✅ SEMPRE SUCESSO / SEM MENSAGEM EXTRA
+      if(!key) key = "Login criado com sucesso!";
 
       localStorage.setItem(TOKEN_KEY, token);
 
       showMiniResult("Login criado com sucesso!", key);
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
-      // limpar campos
       document.getElementById("username").value = "";
       document.getElementById("password").value = "";
 
     }catch(err){
-      // loader off
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
 
-      // ✅ NUNCA MOSTRA ERRO
-      showMiniResult("Login criado com sucesso!", "Aguarde a key aparecer...");
+      // ✅ SEMPRE SUCESSO / SEM MENSAGEM EXTRA
+      showMiniResult("Login criado com sucesso!", "Login criado com sucesso!");
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
-      // limpar campos
       document.getElementById("username").value = "";
       document.getElementById("password").value = "";
 
@@ -489,9 +472,8 @@
     m.textContent = msg;
     s.textContent = sub;
 
-    t.classList.remove("warn","error");
+    t.classList.remove("warn");
     if(type === "warn") t.classList.add("warn");
-    if(type === "error") t.classList.add("error");
 
     t.classList.add("show");
     clearTimeout(window.__toastTimer);
