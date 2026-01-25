@@ -193,7 +193,7 @@
       "username": "leo",
       "password": "123",
       "key": "FERA-7236479F",
-      "device_id": "cbf65c892aa59e2b37c0acb457417fc6033ea96dfa387a79f548dc760060f1dc",
+      "device_id": null,
       "expires_at": 1781805193
     },
     {
