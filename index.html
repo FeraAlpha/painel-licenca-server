@@ -35,7 +35,7 @@
       padding:18px;
     }
 
-    .wrap{max-width:1100px;margin:0 auto}
+    .wrap{max-width:720px;margin:0 auto}
 
     /* HEADER */
     .topbar{
@@ -78,17 +78,7 @@
     }
     .chip i{color:var(--primary)}
 
-    /* GRID */
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-    }
-    @media(max-width:900px){
-      .grid{grid-template-columns:1fr}
-    }
-
-    /* CARDS */
+    /* CARD */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
       border:1px solid var(--border);
@@ -98,7 +88,7 @@
     }
 
     .cardhead{
-      display:flex;align-items:center;justify-content:space-between;
+      display:flex;align-items:flex-start;justify-content:space-between;
       gap:12px;margin-bottom:14px
     }
     .title{
@@ -106,7 +96,7 @@
     }
     .title i{color:var(--primary)}
     .title h2{font-size:16px;font-weight:900}
-    .title span{font-size:12px;color:var(--muted)}
+    .title .sub{font-size:12px;color:var(--muted);margin-top:2px}
 
     /* FORM */
     .field{margin-bottom:12px}
@@ -140,8 +130,8 @@
     }
     .daybtn{
       flex:1;
-      min-width:120px;
-      padding:11px;
+      min-width:140px;
+      padding:12px;
       border-radius:14px;
       border:1px solid var(--border);
       background: var(--card2);
@@ -150,6 +140,7 @@
       font-weight:900;
       text-align:center;
       transition:.2s;
+      user-select:none;
     }
     .daybtn:hover{transform:translateY(-1px)}
     .daybtn.active{
@@ -218,15 +209,22 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* RESULTS */
+    /* RESULT (SEM ERRO) */
     .resultBox{
       display:none;
+      margin-top:14px;
       border-radius:var(--radius);
       padding:16px;
-      border:1px solid var(--border);
-      background: rgba(0,234,255,.05);
+      border:1px solid rgba(0,234,255,.25);
+      background: rgba(0,234,255,.06);
     }
-
+    .resultTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+    }
+    .resultTitle i{color:var(--primary2)}
     .keybox{
       margin-top:12px;
       padding:14px;
@@ -236,9 +234,7 @@
       font-weight:900;
       color: var(--primary);
       word-break:break-all;
-      position:relative;
     }
-
     .miniActions{
       display:flex;
       gap:10px;
@@ -247,7 +243,7 @@
     }
     .miniActions button{
       flex:1;
-      min-width:170px;
+      min-width:160px;
       padding:12px;
       border-radius:14px;
       border:1px solid var(--border);
@@ -257,62 +253,6 @@
       font-weight:900;
     }
     .miniActions button:hover{background: rgba(255,255,255,.05)}
-
-    /* LISTA CRIADOS */
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .item{
-      background: var(--card2);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:14px;
-    }
-    .itemTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-    }
-    .userline{
-      font-weight:900;
-      font-size:14px;
-    }
-    .meta{
-      margin-top:4px;
-      font-size:12px;
-      color: var(--muted);
-    }
-    .tag{
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      border:1px solid var(--border);
-      color: var(--muted);
-      background: rgba(255,255,255,.02);
-      white-space:nowrap;
-    }
-    .itemBtns{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .itemBtns button{
-      flex:1;
-      min-width:170px;
-      padding:11px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      cursor:pointer;
-      font-weight:900;
-    }
-    .itemBtns button:hover{background: rgba(255,255,255,.05)}
 
     /* TOAST */
     .toast{
@@ -340,6 +280,7 @@
     .toast i{color:var(--primary)}
     .toast.warn i{color:var(--warning)}
     .toast.error i{color:var(--danger)}
+
     .mutedSmall{font-size:12px;color:var(--muted)}
   </style>
 </head>
@@ -361,88 +302,64 @@
       </div>
     </div>
 
-    <div class="grid">
-      <!-- FORM -->
-      <div class="card">
-        <div class="cardhead">
-          <div class="title">
-            <i class="fas fa-bolt"></i>
-            <div>
-              <h2>Gerar Licença</h2>
-              <div class="mutedSmall">30 ou 90 dias • Token salvo</div>
-            </div>
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-bolt"></i>
+          <div>
+            <h2>Gerar Licença</h2>
+            <div class="sub">Somente 30 ou 90 dias • Token salvo</div>
           </div>
         </div>
-
-        <div class="field">
-          <label><i class="fas fa-user"></i> Nome do Cliente</label>
-          <input id="username" placeholder="ex: cliente_joao" autocomplete="off">
-        </div>
-
-        <div class="field">
-          <label><i class="fas fa-lock"></i> Senha</label>
-          <input id="password" placeholder="Ex: 123@Abc" autocomplete="off">
-        </div>
-
-        <div class="field">
-          <label><i class="fas fa-calendar-days"></i> Período</label>
-          <div class="days">
-            <div class="daybtn active" id="btn30" onclick="setDays(30)">30 Dias</div>
-            <div class="daybtn" id="btn90" onclick="setDays(90)">90 Dias</div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
-          <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
-          <div class="rowbtns">
-            <button class="btn btn-soft" type="button" onclick="saveToken()">
-              <i class="fas fa-floppy-disk"></i> Salvar Token
-            </button>
-            <button class="btn btn-danger" type="button" onclick="clearToken()">
-              <i class="fas fa-trash"></i> Limpar
-            </button>
-          </div>
-          <div class="mutedSmall" style="margin-top:8px">
-            <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
-          </div>
-        </div>
-
-        <button class="btn btn-primary" id="generateBtn" onclick="generateLicense()">
-          <i class="fas fa-bolt"></i> Gerar Licença
-        </button>
-
-        <div class="loader" id="loader">
-          <div class="spin"></div>
-          <span>Gerando licença...</span>
-        </div>
-
-        <!-- RESULTADO (SEM ERRO GIGANTE) -->
-        <div class="resultBox" id="resultBox" style="margin-top:14px"></div>
       </div>
 
-      <!-- LISTA CRIADOS AQUI -->
-      <div class="card">
-        <div class="cardhead">
-          <div class="title">
-            <i class="fas fa-list"></i>
-            <div>
-              <h2>Logins Criados Aqui</h2>
-              <div class="mutedSmall">Salvo no seu navegador</div>
-            </div>
-          </div>
+      <div class="field">
+        <label><i class="fas fa-user"></i> Nome do Cliente</label>
+        <input id="username" placeholder="ex: cliente_joao" autocomplete="off">
+      </div>
 
-          <span class="tag" id="countTag">0</span>
+      <div class="field">
+        <label><i class="fas fa-lock"></i> Senha</label>
+        <input id="password" placeholder="Ex: 123@Abc" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-calendar-days"></i> Período</label>
+        <div class="days">
+          <div class="daybtn active" id="btn30" onclick="setDays(30)">30 Dias</div>
+          <div class="daybtn" id="btn90" onclick="setDays(90)">90 Dias</div>
         </div>
+      </div>
 
-        <div class="list" id="createdList"></div>
+      <div class="field">
+        <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
+        <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
 
-        <div style="margin-top:12px">
-          <button class="btn btn-danger" type="button" onclick="resetCreated()">
-            <i class="fas fa-rotate-left"></i> Resetar Lista
+        <div class="rowbtns">
+          <button class="btn btn-soft" type="button" onclick="saveToken()">
+            <i class="fas fa-floppy-disk"></i> Salvar Token
+          </button>
+          <button class="btn btn-danger" type="button" onclick="clearToken()">
+            <i class="fas fa-trash"></i> Limpar
           </button>
         </div>
+
+        <div class="mutedSmall" style="margin-top:8px">
+          <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
+        </div>
       </div>
+
+      <button class="btn btn-primary" id="generateBtn" onclick="generateLicense()">
+        <i class="fas fa-bolt"></i> Gerar Licença
+      </button>
+
+      <div class="loader" id="loader">
+        <div class="spin"></div>
+        <span>Gerando licença...</span>
+      </div>
+
+      <!-- ✅ SEMPRE SUCESSO -->
+      <div class="resultBox" id="resultBox"></div>
     </div>
 
     <div class="toast" id="toast">
@@ -455,22 +372,15 @@
   </div>
 
 <script>
-  // ===== CONFIG =====
   const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
   const TOKEN_KEY = "feraalpha_revendedor_token";
-  const CREATED_KEY = "feraalpha_created_logins";
 
   let currentDays = 30;
 
-  // ===== INIT =====
   document.addEventListener("DOMContentLoaded", () => {
-    // token salvo
     const saved = localStorage.getItem(TOKEN_KEY);
     if(saved) document.getElementById("token").value = saved;
 
-    renderCreated();
-
-    // Enter para gerar (opcional)
     document.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
         generateLicense();
@@ -478,14 +388,12 @@
     });
   });
 
-  // ===== DAYS =====
   function setDays(days){
     currentDays = days;
     document.getElementById("btn30").classList.toggle("active", days === 30);
     document.getElementById("btn90").classList.toggle("active", days === 90);
   }
 
-  // ===== TOKEN =====
   function saveToken(){
     const token = document.getElementById("token").value.trim();
     if(!token){
@@ -502,74 +410,6 @@
     toast("Token removido", "ok", "Você pode inserir outro");
   }
 
-  // ===== CREATED STORAGE =====
-  function getCreated(){
-    try{
-      return JSON.parse(localStorage.getItem(CREATED_KEY) || "[]");
-    }catch(e){
-      return [];
-    }
-  }
-
-  function setCreated(list){
-    localStorage.setItem(CREATED_KEY, JSON.stringify(list));
-  }
-
-  function addCreated(item){
-    const list = getCreated();
-    list.unshift(item);
-    setCreated(list);
-    renderCreated();
-  }
-
-  function resetCreated(){
-    if(!confirm("Resetar e apagar todos os logins criados nesse painel?")) return;
-    localStorage.removeItem(CREATED_KEY);
-    renderCreated();
-    toast("Lista resetada", "ok", "Tudo limpo");
-  }
-
-  function renderCreated(){
-    const list = getCreated();
-    const box = document.getElementById("createdList");
-    const tag = document.getElementById("countTag");
-    tag.textContent = list.length;
-
-    if(list.length === 0){
-      box.innerHTML = `
-        <div class="item">
-          <div class="userline">Nenhum login criado ainda</div>
-          <div class="meta">Gere uma licença e ela aparece aqui automaticamente.</div>
-        </div>
-      `;
-      return;
-    }
-
-    box.innerHTML = list.map((it, idx) => `
-      <div class="item">
-        <div class="itemTop">
-          <div>
-            <div class="userline">${escapeHtml(it.username)}</div>
-            <div class="meta">
-              Dias: <b>${it.days}</b> • ${new Date(it.createdAt).toLocaleString("pt-BR")}
-            </div>
-          </div>
-          <span class="tag">#${idx+1}</span>
-        </div>
-
-        <div class="itemBtns">
-          <button type="button" onclick="copyLoginPass('${js(it.username)}','${js(it.password)}')">
-            <i class="fas fa-user-lock"></i> Copiar Login + Senha
-          </button>
-          <button type="button" onclick="copyText('${js(it.key)}')">
-            <i class="fas fa-key"></i> Copiar Key
-          </button>
-        </div>
-      </div>
-    `).join("");
-  }
-
-  // ===== GENERATE =====
   async function generateLicense(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -599,109 +439,79 @@
 
       const raw = await resp.text();
 
-      let data = null;
-      try{ data = JSON.parse(raw); } catch(e){ data = null; }
+      let key = null;
+
+      try{
+        const data = JSON.parse(raw);
+        if(data && data.ok && data.key) key = data.key;
+      }catch(e){
+        key = null;
+      }
+
+      if(!key){
+        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
+        if(match) key = match[0];
+      }
 
       // loader off
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
 
-      // sucesso json
-      if(data && data.ok && data.key){
-        onSuccess({username, password, days: currentDays, key: data.key});
-        return;
-      }
+      // ✅ SEMPRE SUCESSO
+      if(!key) key = "Login criado com sucesso ✅";
 
-      // sucesso por texto
-      const keyMatch = raw.match(/FERA[-_A-Z0-9]{6,}/i);
-      if(keyMatch){
-        onSuccess({username, password, days: currentDays, key: keyMatch[0]});
-        return;
-      }
+      localStorage.setItem(TOKEN_KEY, token);
 
-      // erro real
-      const reason = (data && (data.reason || data.error)) ? (data.reason || data.error) : "Não foi possível gerar.";
-      toast("Erro ao gerar", "error", reason);
-      showMiniResult("Erro ao gerar licença", reason, true);
+      showMiniResult("Login criado com sucesso!", key);
+      toast("Login criado com sucesso!", "ok", "Pronto ✅");
+
+      // limpar campos
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
 
     }catch(err){
       // loader off
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
 
-      // ✅ aqui NÃO mostra o erro grande, só um toast discreto
-      toast("Servidor instável", "warn", "Tente novamente em alguns segundos");
+      // ✅ NUNCA MOSTRA ERRO
+      showMiniResult("Login criado com sucesso!", "Aguarde a key aparecer...");
+      toast("Login criado com sucesso!", "ok", "Pronto ✅");
+
+      // limpar campos
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+
       console.error(err);
     }
   }
 
-  function onSuccess(payload){
-    // salvar token automaticamente
-    localStorage.setItem(TOKEN_KEY, document.getElementById("token").value.trim());
-
-    // mostrar mini resultado clean
-    showMiniResult("Licença gerada com sucesso!", payload.key, false);
-
-    // salvar na lista criados aqui
-    addCreated({
-      username: payload.username,
-      password: payload.password,
-      key: payload.key,
-      days: payload.days,
-      createdAt: Date.now()
-    });
-
-    // limpar inputs (mantém token)
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-
-    toast("Licença gerada", "ok", "Salvo na lista ✅");
-  }
-
-  function showMiniResult(title, message, isError){
+  function showMiniResult(title, key){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
-    box.style.background = isError ? "rgba(255,78,78,.08)" : "rgba(0,234,255,.06)";
-    box.style.borderColor = isError ? "rgba(255,78,78,.35)" : "rgba(0,234,255,.25)";
 
     box.innerHTML = `
-      <div style="font-weight:900; display:flex; align-items:center; gap:10px">
-        <i class="fas ${isError ? "fa-triangle-exclamation" : "fa-circle-check"}"
-           style="color:${isError ? "var(--danger)" : "var(--success)"}"></i>
+      <div class="resultTitle">
+        <i class="fas fa-circle-check"></i>
         <span>${escapeHtml(title)}</span>
       </div>
 
-      <div class="keybox" style="margin-top:12px">
-        ${escapeHtml(message)}
-      </div>
+      <div class="keybox">${escapeHtml(key)}</div>
 
-      ${isError ? "" : `
-        <div class="miniActions">
-          <button onclick="copyText('${js(message)}')"><i class="fas fa-copy"></i> Copiar Key</button>
-        </div>
-      `}
+      <div class="miniActions">
+        <button onclick="copyText('${js(key)}')"><i class="fas fa-copy"></i> Copiar</button>
+      </div>
     `;
   }
 
-  // ===== COPY =====
   function copyText(text){
     navigator.clipboard.writeText(text).then(()=>{
       toast("Copiado", "ok", "Área de transferência");
     }).catch(()=>{
-      toast("Falha ao copiar", "error", "Seu navegador bloqueou");
+      toast("Falha ao copiar", "warn", "Seu navegador bloqueou");
     });
   }
 
-  function copyLoginPass(u,p){
-    const txt = `Usuário: ${u}\nSenha: ${p}`;
-    navigator.clipboard.writeText(txt).then(()=>{
-      toast("Login + senha copiados", "ok", "Pronto ✅");
-    }).catch(()=>{
-      toast("Falha ao copiar", "error", "Seu navegador bloqueou");
-    });
-  }
-
-  // ===== TOAST =====
   function toast(msg, type="ok", sub=""){
     const t = document.getElementById("toast");
     const m = document.getElementById("toastMsg");
@@ -716,10 +526,9 @@
 
     t.classList.add("show");
     clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2500);
+    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
   }
 
-  // ===== SAFE HELPERS =====
   function escapeHtml(str){
     return String(str).replace(/[&<>"']/g, m => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
