@@ -209,7 +209,7 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* RESULT (SEM ERRO) */
+    /* RESULT (SEM COPIAR) */
     .resultBox{
       display:none;
       margin-top:14px;
@@ -235,24 +235,6 @@
       color: var(--primary);
       word-break:break-all;
     }
-    .miniActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .miniActions button{
-      flex:1;
-      min-width:160px;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      cursor:pointer;
-      font-weight:900;
-    }
-    .miniActions button:hover{background: rgba(255,255,255,.05)}
 
     /* TOAST */
     .toast{
@@ -358,7 +340,7 @@
         <span>Gerando licença...</span>
       </div>
 
-      <!-- ✅ SEMPRE SUCESSO -->
+      <!-- ✅ SEMPRE SUCESSO / SEM COPIAR -->
       <div class="resultBox" id="resultBox"></div>
     </div>
 
@@ -440,7 +422,6 @@
       const raw = await resp.text();
 
       let key = null;
-
       try{
         const data = JSON.parse(raw);
         if(data && data.ok && data.key) key = data.key;
@@ -497,19 +478,7 @@
       </div>
 
       <div class="keybox">${escapeHtml(key)}</div>
-
-      <div class="miniActions">
-        <button onclick="copyText('${js(key)}')"><i class="fas fa-copy"></i> Copiar</button>
-      </div>
     `;
-  }
-
-  function copyText(text){
-    navigator.clipboard.writeText(text).then(()=>{
-      toast("Copiado", "ok", "Área de transferência");
-    }).catch(()=>{
-      toast("Falha ao copiar", "warn", "Seu navegador bloqueou");
-    });
   }
 
   function toast(msg, type="ok", sub=""){
@@ -533,10 +502,6 @@
     return String(str).replace(/[&<>"']/g, m => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
     }[m]));
-  }
-
-  function js(str){
-    return String(str).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
   }
 </script>
 </body>
