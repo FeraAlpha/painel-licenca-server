@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Revendedor Fera Alpha</title>
+    <title>Fera Alpha</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -40,13 +40,11 @@
             background-attachment: fixed;
         }
 
-        /* CONTAINER PRINCIPAL */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: center;
@@ -87,9 +85,6 @@
             font-size: 14px;
         }
 
-        /* REMOVIDO: user-info */
-
-        /* MAIN CONTENT GRID */
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -102,7 +97,6 @@
             }
         }
 
-        /* FORM CARD */
         .form-card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -234,7 +228,6 @@
             transform: none !important;
         }
 
-        /* RESULTS CARD */
         .results-card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -360,9 +353,6 @@
             color: var(--light);
         }
 
-        /* REMOVIDO: HISTORY SECTION */
-
-        /* LOADER */
         .loader {
             display: none;
             text-align: center;
@@ -383,7 +373,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* FOOTER */
         .footer {
             margin-top: 50px;
             padding-top: 20px;
@@ -412,7 +401,6 @@
             text-decoration: underline;
         }
 
-        /* TOAST NOTIFICATION */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -444,7 +432,6 @@
             color: var(--dark);
         }
 
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -461,7 +448,6 @@
             }
         }
 
-        /* SCROLLBAR */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -478,27 +464,48 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
+
+        /* NOVO: botões token */
+        .token-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .token-actions button {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            background: var(--darker);
+            color: #aaa;
+            transition: all 0.3s;
+            font-weight: 700;
+        }
+        .token-actions button:hover {
+            background: var(--gray);
+            color: var(--light);
+        }
     </style>
 </head>
 
 <body>
     <div class="main-container">
-        <!-- HEADER -->
         <header class="header">
             <div class="brand">
                 <div class="brand-icon">
                     <i class="fas fa-dragon"></i>
                 </div>
                 <div class="brand-text">
-                    <h1>Fera Alpha Revendedor</h1>
+                    <h1>Fera Alpha</h1>
                     <div class="subtitle">Painel de Geração de Licenças</div>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN CONTENT -->
         <div class="content-grid">
-            <!-- FORM CARD -->
             <div class="form-card">
                 <div class="card-header">
                     <i class="fas fa-plus-circle"></i>
@@ -525,6 +532,8 @@
                     <label class="form-label">
                         <i class="fas fa-calendar-alt"></i> Período da Licença
                     </label>
+
+                    <!-- SOMENTE 7 / 30 / 90 -->
                     <div class="days-selector">
                         <div class="day-option">
                             <div class="day-btn" onclick="setDays(7)">7 Dias</div>
@@ -535,15 +544,11 @@
                         <div class="day-option">
                             <div class="day-btn" onclick="setDays(90)">90 Dias</div>
                         </div>
-                        <div class="day-option">
-                            <div class="day-btn" onclick="setDays(180)">6 Meses</div>
-                        </div>
-                        <div class="day-option">
-                            <div class="day-btn" onclick="setDays(365)">1 Ano</div>
-                        </div>
                     </div>
+
+                    <!-- trava somente 7/30/90 -->
                     <input type="number" class="form-input" id="days" value="30" min="1" 
-                           onchange="updateDayButtons(this.value)">
+                           onchange="forceValidDays(this)">
                 </div>
                 
                 <div class="form-group">
@@ -552,7 +557,17 @@
                     </label>
                     <input type="password" class="form-input" id="token" 
                            placeholder="Seu token exclusivo" required>
-                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
+
+                    <div class="token-actions">
+                        <button type="button" onclick="saveToken()">
+                            <i class="fas fa-save"></i> Salvar Token
+                        </button>
+                        <button type="button" onclick="clearToken()">
+                            <i class="fas fa-trash"></i> Limpar Token
+                        </button>
+                    </div>
+
+                    <div style="font-size: 12px; color: #666; margin-top: 8px;">
                         <i class="fas fa-info-circle"></i> Token fornecido pelo administrador
                     </div>
                 </div>
@@ -561,27 +576,22 @@
                     <i class="fas fa-bolt"></i> Gerar Licença
                 </button>
                 
-                <!-- LOADER -->
                 <div class="loader" id="loader">
                     <div class="spinner"></div>
                     <p>Gerando licença...</p>
                 </div>
             </div>
 
-            <!-- RESULTS CARD -->
             <div class="results-card" id="resultsCard" style="display: none;">
                 <div class="card-header">
                     <i class="fas fa-check-circle"></i>
                     <h2>Licença Gerada</h2>
                 </div>
                 
-                <div id="resultContent">
-                    <!-- Resultado será inserido aqui -->
-                </div>
+                <div id="resultContent"></div>
             </div>
         </div>
 
-        <!-- FOOTER -->
         <footer class="footer">
             <p>Fera Alpha © 2024 - Sistema de Revendedores</p>
             <div class="footer-links">
@@ -595,7 +605,6 @@
         </footer>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage"></span>
@@ -605,27 +614,52 @@
         // ====== CONFIGURAÇÕES ======
         const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
         const UNLIMITED_EXPIRY = 9999999999999;
-        
+
+        // ====== TOKEN SALVO ======
+        const TOKEN_KEY = "feraalpha_revendedor_token";
+
         let currentDays = 30;
-        
+
         // ====== INICIALIZAÇÃO ======
         document.addEventListener('DOMContentLoaded', function() {
             setDays(30);
-            
-            // Permitir Enter para gerar
+
+            // 🔥 carregar token salvo
+            const savedToken = localStorage.getItem(TOKEN_KEY);
+            if (savedToken) {
+                document.getElementById("token").value = savedToken;
+            }
+
+            // permitir Enter para gerar
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     generateLicense();
                 }
             });
         });
-        
-        // ====== FUNÇÕES DE FORMULÁRIO ======
+
+        // ====== SALVAR / LIMPAR TOKEN ======
+        function saveToken() {
+            const token = document.getElementById("token").value.trim();
+            if (!token) {
+                showToast("Digite um token antes de salvar", "warning");
+                return;
+            }
+            localStorage.setItem(TOKEN_KEY, token);
+            showToast("✅ Token salvo com sucesso!", "success");
+        }
+
+        function clearToken() {
+            localStorage.removeItem(TOKEN_KEY);
+            document.getElementById("token").value = "";
+            showToast("🧹 Token removido!", "success");
+        }
+
+        // ====== FUNÇÕES DE FORMULÁRIO (DIAS) ======
         function setDays(days) {
             currentDays = days;
             document.getElementById('days').value = days;
-            
-            // Atualizar botões ativos
+
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (parseInt(btn.textContent) === days) {
@@ -633,39 +667,44 @@
                 }
             });
         }
-        
-        function updateDayButtons(value) {
-            currentDays = parseInt(value) || 30;
-            document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.textContent) === currentDays) {
-                    btn.classList.add('active');
-                }
-            });
+
+        // trava só 7/30/90
+        function forceValidDays(input) {
+            let val = parseInt(input.value) || 30;
+
+            if (![7, 30, 90].includes(val)) {
+                val = 30;
+                showToast("Somente 7, 30 ou 90 dias", "warning");
+            }
+
+            input.value = val;
+            setDays(val);
         }
-        
+
         // ====== GERAÇÃO DE LICENÇA ======
         async function generateLicense() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             const token = document.getElementById('token').value.trim();
             const days = document.getElementById('days').value.trim();
-            
-            // Validação
+
             if (!username || !password || !token) {
                 showToast('Preencha todos os campos obrigatórios', 'error');
                 return;
             }
-            
-            if (!days || parseInt(days) < 1) {
-                showToast('Período inválido', 'error');
+
+            // força dias válidos
+            if (![7, 30, 90].includes(parseInt(days))) {
+                showToast("Somente 7, 30 ou 90 dias", "warning");
+                document.getElementById("days").value = 30;
+                setDays(30);
                 return;
             }
-            
+
             // Mostrar loader
             document.getElementById('loader').style.display = 'block';
             document.getElementById('generateBtn').disabled = true;
-            
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -680,63 +719,62 @@
                         prefix: 'FERA'
                     })
                 });
-                
+
                 const data = await response.json();
-                
-                // Esconder loader
+
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
-                
+
                 if (!data.ok || data.error) {
-                    // Erro
                     showResultError(data.reason || 'Token inválido ou usuário já existe');
                     showToast('Erro ao gerar licença: ' + (data.reason || 'Token inválido'), 'error');
                 } else {
-                    // Sucesso
                     showResultSuccess(data);
                     showToast('Licença gerada com sucesso!', 'success');
-                    
-                    // Limpar formulário
+
+                    // salva token automaticamente quando gerar com sucesso
+                    localStorage.setItem(TOKEN_KEY, token);
+
+                    // limpar formulário
                     document.getElementById('username').value = '';
                     document.getElementById('password').value = '';
                 }
-                
+
             } catch (error) {
-                // Erro de conexão
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
-                
+
                 showResultError('Erro ao conectar ao servidor. Verifique sua conexão.');
                 showToast('Erro de conexão com o servidor', 'error');
                 console.error('Erro:', error);
             }
         }
-        
+
         // ====== EXIBIÇÃO DE RESULTADOS ======
         function showResultSuccess(data) {
             const resultsCard = document.getElementById('resultsCard');
             const resultContent = document.getElementById('resultContent');
-            
+
             const isUnlimited = data.expires_at === 0 || data.expires_at === UNLIMITED_EXPIRY;
-            const expiryDate = isUnlimited ? 'ILIMITADO' : 
+            const expiryDate = isUnlimited ? 'ILIMITADO' :
                 new Date(data.expires_at * 1000).toLocaleDateString('pt-BR');
-            
-            const daysLeft = isUnlimited ? '∞' : 
-                Math.max(0, Math.floor((data.expires_at - Math.floor(Date.now()/1000)) / 86400));
-            
+
+            const daysLeft = isUnlimited ? '∞' :
+                Math.max(0, Math.floor((data.expires_at - Math.floor(Date.now() / 1000)) / 86400));
+
             resultContent.innerHTML = `
                 <div class="result-success">
                     <div class="success-title">
                         <i class="fas fa-check-circle"></i> Licença Gerada com Sucesso!
                     </div>
-                    
+
                     <div class="key-display" id="generatedKey">
                         ${data.key}
                         <button class="copy-btn" onclick="copyKey('${data.key}')">
                             <i class="fas fa-copy"></i> Copiar
                         </button>
                     </div>
-                    
+
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Cliente</div>
@@ -755,21 +793,21 @@
                             <div class="info-value">${daysLeft}</div>
                         </div>
                     </div>
-                    
+
                     <div style="margin-top: 20px; font-size: 14px; color: #aaa;">
                         <i class="fas fa-info-circle"></i>
                         Envie os dados acima para seu cliente. A licença será ativada no primeiro login.
                     </div>
                 </div>
             `;
-            
+
             resultsCard.style.display = 'block';
         }
-        
+
         function showResultError(message) {
             const resultsCard = document.getElementById('resultsCard');
             const resultContent = document.getElementById('resultContent');
-            
+
             resultContent.innerHTML = `
                 <div class="result-error">
                     <div class="error-title">
@@ -787,10 +825,10 @@
                     </div>
                 </div>
             `;
-            
+
             resultsCard.style.display = 'block';
         }
-        
+
         // ====== FUNÇÕES UTILITÁRIAS ======
         function copyKey(key) {
             navigator.clipboard.writeText(key).then(() => {
@@ -799,11 +837,11 @@
                 showToast('Erro ao copiar: ' + err, 'error');
             });
         }
-        
+
         function refreshPage() {
             location.reload();
         }
-        
+
         function showHelp() {
             alert(
                 '📋 Ajuda - Painel do Revendedor\n\n' +
@@ -819,30 +857,27 @@
                 '📞 Suporte: Entre em contato com o administrador'
             );
         }
-        
-        // ====== TOAST NOTIFICATION ======
+
+        // ====== TOAST ======
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
-            
+
             toastMessage.textContent = message;
             toast.className = 'toast';
             toast.classList.add(type);
-            
-            // Mostrar
+
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10);
-            
-            // Esconder após 3 segundos
+
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
-        
-        // ====== ATALHOS DE TECLADO ======
+
+        // ====== ATALHOS ======
         document.addEventListener('keydown', function(e) {
-            // Ctrl+Enter para gerar
             if (e.ctrlKey && e.key === 'Enter') {
                 generateLicense();
             }
