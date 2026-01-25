@@ -1,899 +1,734 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fera Alpha</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary: #00eaff;
-            --primary-dark: #00c7dd;
-            --secondary: #ff6b35;
-            --success: #00ffa6;
-            --danger: #ff4e4e;
-            --warning: #ffd166;
-            --dark: #0d0d0d;
-            --darker: #050505;
-            --light: #ffffff;
-            --gray: #2a2a2a;
-            --card-bg: #151515;
-            --border-color: #2a2a2a;
-            --shadow: 0 10px 30px rgba(0, 234, 255, 0.1);
-            --radius: 16px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fera Alpha</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+  <style>
+    :root{
+      --bg:#0b0d10;
+      --card:#12161c;
+      --card2:#0f1318;
+      --border:#1c2430;
+      --text:#e9eef5;
+      --muted:#9aa7b6;
 
-        body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #121212 100%);
-            color: var(--light);
-            min-height: 100vh;
-            line-height: 1.6;
-            padding: 20px;
-            background-attachment: fixed;
-        }
+      --primary:#00eaff;
+      --primary2:#00ffa6;
 
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+      --danger:#ff4e4e;
+      --warning:#ffd166;
+      --shadow: 0 16px 40px rgba(0,0,0,.45);
 
-        .header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 25px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 30px;
-        }
+      --radius:18px;
+    }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+    body{
+      min-height:100vh;
+      background: radial-gradient(1200px 800px at 30% 0%, rgba(0,234,255,.08), transparent 55%),
+                  radial-gradient(1000px 700px at 80% 10%, rgba(0,255,166,.06), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      padding:18px;
+    }
 
-        .brand-icon {
-            background: linear-gradient(135deg, var(--primary), var(--success));
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
+    .wrap{max-width:1100px;margin:0 auto}
 
-        .brand-text h1 {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--success));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
+    /* HEADER */
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:16px 18px;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      box-shadow: var(--shadow);
+      margin-bottom:18px;
+    }
 
-        .brand-text .subtitle {
-            color: #aaa;
-            font-size: 14px;
-        }
+    .brand{
+      display:flex;align-items:center;gap:12px
+    }
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      display:flex;align-items:center;justify-content:center;
+      color:#061014;font-weight:900;
+      box-shadow: 0 10px 25px rgba(0,234,255,.18);
+    }
+    .brand h1{
+      font-size:18px;font-weight:900;letter-spacing:.3px
+    }
+    .brand p{font-size:12px;color:var(--muted);margin-top:2px}
 
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
+    .chip{
+      padding:8px 12px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background: rgba(255,255,255,.02);
+    }
+    .chip i{color:var(--primary)}
 
-        @media (max-width: 900px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+    /* GRID */
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    @media(max-width:900px){
+      .grid{grid-template-columns:1fr}
+    }
 
-        .form-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-        }
+    /* CARDS */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .cardhead{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;margin-bottom:14px
+    }
+    .title{
+      display:flex;align-items:center;gap:10px
+    }
+    .title i{color:var(--primary)}
+    .title h2{font-size:16px;font-weight:900}
+    .title span{font-size:12px;color:var(--muted)}
 
-        .card-header i {
-            color: var(--primary);
-            font-size: 24px;
-        }
+    /* FORM */
+    .field{margin-bottom:12px}
+    label{
+      display:flex;align-items:center;gap:8px;
+      font-size:12px;color:var(--muted);
+      margin-bottom:6px;font-weight:700;
+    }
+    label i{color:var(--primary)}
+    input{
+      width:100%;
+      padding:13px 14px;
+      background: var(--card2);
+      border:1px solid var(--border);
+      border-radius:14px;
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+      transition:.2s;
+    }
+    input:focus{
+      border-color: rgba(0,234,255,.8);
+      box-shadow: 0 0 0 3px rgba(0,234,255,.10);
+    }
+    input::placeholder{color:#556575}
 
-        .card-header h2 {
-            font-size: 22px;
-            font-weight: 700;
-        }
+    /* DAYS */
+    .days{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .daybtn{
+      flex:1;
+      min-width:120px;
+      padding:11px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: var(--card2);
+      color:var(--muted);
+      cursor:pointer;
+      font-weight:900;
+      text-align:center;
+      transition:.2s;
+    }
+    .daybtn:hover{transform:translateY(-1px)}
+    .daybtn.active{
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color:#061014;
+      border-color: transparent;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    /* BUTTONS */
+    .btn{
+      width:100%;
+      padding:14px 16px;
+      border:none;
+      border-radius:14px;
+      font-weight:900;
+      font-size:15px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      transition:.2s;
+      user-select:none;
+    }
+    .btn-primary{
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color:#061014;
+      box-shadow: 0 18px 40px rgba(0,234,255,.12);
+    }
+    .btn-primary:hover{transform:translateY(-2px)}
+    .btn-soft{
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      color:var(--text);
+    }
+    .btn-soft:hover{background: rgba(255,255,255,.05)}
+    .btn-danger{
+      background: rgba(255,78,78,.12);
+      border:1px solid rgba(255,78,78,.35);
+      color:#ffb9b9;
+    }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #ccc;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .rowbtns{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+    }
+    .rowbtns .btn{width:100%; padding:12px}
 
-        .form-label i {
-            color: var(--primary);
-        }
+    /* LOADER */
+    .loader{
+      display:none;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .spin{
+      width:18px;height:18px;
+      border-radius:999px;
+      border:3px solid rgba(255,255,255,.12);
+      border-top-color: var(--primary);
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--darker);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--light);
-            font-size: 16px;
-            transition: all 0.3s;
-        }
+    /* RESULTS */
+    .resultBox{
+      display:none;
+      border-radius:var(--radius);
+      padding:16px;
+      border:1px solid var(--border);
+      background: rgba(0,234,255,.05);
+    }
 
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.1);
-        }
+    .keybox{
+      margin-top:12px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid rgba(0,234,255,.35);
+      background: var(--card2);
+      font-weight:900;
+      color: var(--primary);
+      word-break:break-all;
+      position:relative;
+    }
 
-        .form-input::placeholder {
-            color: #666;
-        }
+    .miniActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .miniActions button{
+      flex:1;
+      min-width:170px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .miniActions button:hover{background: rgba(255,255,255,.05)}
 
-        .days-selector {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
+    /* LISTA CRIADOS */
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .item{
+      background: var(--card2);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
+    .itemTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+    .userline{
+      font-weight:900;
+      font-size:14px;
+    }
+    .meta{
+      margin-top:4px;
+      font-size:12px;
+      color: var(--muted);
+    }
+    .tag{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,.02);
+      white-space:nowrap;
+    }
+    .itemBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .itemBtns button{
+      flex:1;
+      min-width:170px;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .itemBtns button:hover{background: rgba(255,255,255,.05)}
 
-        .day-option {
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .day-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--darker);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: #aaa;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .day-btn:hover {
-            background: var(--gray);
-            color: var(--light);
-        }
-
-        .day-btn.active {
-            background: var(--primary);
-            color: var(--dark);
-            border-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .generate-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--success));
-            border: none;
-            border-radius: 10px;
-            color: var(--dark);
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-
-        .generate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 234, 255, 0.2);
-        }
-
-        .generate-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .results-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            height: fit-content;
-        }
-
-        .result-success {
-            background: rgba(0, 255, 166, 0.1);
-            border: 1px solid rgba(0, 255, 166, 0.3);
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        .result-error {
-            background: rgba(255, 78, 78, 0.1);
-            border: 1px solid rgba(255, 78, 78, 0.3);
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        .success-title {
-            color: var(--success);
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error-title {
-            color: var(--danger);
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .key-display {
-            background: var(--darker);
-            border: 2px solid var(--primary);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 20px 0;
-            letter-spacing: 2px;
-            word-break: break-all;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .key-display::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 234, 255, 0.1), transparent);
-            animation: shine 2s infinite;
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--primary);
-            color: var(--dark);
-            border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .copy-btn:hover {
-            background: var(--light);
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .info-item {
-            background: var(--darker);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--light);
-        }
-
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--border-color);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
-        }
-
-        .footer-links a {
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--success);
-            color: var(--dark);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-            transform: translateX(150%);
-            transition: transform 0.3s ease-out;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.error {
-            background: var(--danger);
-            color: white;
-        }
-
-        .toast.warning {
-            background: var(--warning);
-            color: var(--dark);
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-            }
-
-            .form-card, .results-card {
-                padding: 20px;
-            }
-
-            .key-display {
-                font-size: 18px;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--darker);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* BOTÕES TOKEN */
-        .token-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .token-actions button {
-            flex: 1;
-            min-width: 120px;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            background: var(--darker);
-            color: #aaa;
-            transition: all 0.3s;
-            font-weight: 700;
-        }
-        .token-actions button:hover {
-            background: var(--gray);
-            color: var(--light);
-        }
-    </style>
+    /* TOAST */
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      width:min(520px, 92vw);
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      backdrop-filter: blur(10px);
+      border-radius:16px;
+      padding:14px 16px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-start;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition:.22s;
+    }
+    .toast.show{opacity:1;pointer-events:auto}
+    .toast i{color:var(--primary)}
+    .toast.warn i{color:var(--warning)}
+    .toast.error i{color:var(--danger)}
+    .mutedSmall{font-size:12px;color:var(--muted)}
+  </style>
 </head>
 
 <body>
-    <div class="main-container">
-        <header class="header">
-            <div class="brand">
-                <div class="brand-icon">
-                    <i class="fas fa-dragon"></i>
-                </div>
-                <div class="brand-text">
-                    <h1>Fera Alpha</h1>
-                    <div class="subtitle">Painel de Geração de Licenças</div>
-                </div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"><i class="fas fa-dragon"></i></div>
+        <div>
+          <h1>Fera Alpha</h1>
+          <p>Painel de Geração de Licenças</p>
+        </div>
+      </div>
+
+      <div class="chip">
+        <i class="fas fa-shield-halved"></i>
+        <span>Revendedor</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- FORM -->
+      <div class="card">
+        <div class="cardhead">
+          <div class="title">
+            <i class="fas fa-bolt"></i>
+            <div>
+              <h2>Gerar Licença</h2>
+              <div class="mutedSmall">30 ou 90 dias • Token salvo</div>
             </div>
-        </header>
-
-        <div class="content-grid">
-            <div class="form-card">
-                <div class="card-header">
-                    <i class="fas fa-plus-circle"></i>
-                    <h2>Gerar Nova Licença</h2>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-user"></i> Nome do Cliente
-                    </label>
-                    <input type="text" class="form-input" id="username" placeholder="ex: cliente_joao" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-lock"></i> Senha
-                    </label>
-                    <input type="text" class="form-input" id="password" placeholder="Escolha uma senha segura" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-calendar-alt"></i> Período da Licença
-                    </label>
-
-                    <!-- SOMENTE 7 / 30 / 90 -->
-                    <div class="days-selector">
-                        <div class="day-option">
-                            <div class="day-btn" onclick="setDays(7)">7 Dias</div>
-                        </div>
-                        <div class="day-option">
-                            <div class="day-btn active" onclick="setDays(30)">30 Dias</div>
-                        </div>
-                        <div class="day-option">
-                            <div class="day-btn" onclick="setDays(90)">90 Dias</div>
-                        </div>
-                    </div>
-
-                    <input type="number" class="form-input" id="days" value="30" min="1" onchange="forceValidDays(this)">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-fingerprint"></i> Token de Revendedor
-                    </label>
-                    <input type="password" class="form-input" id="token" placeholder="Seu token exclusivo" required>
-
-                    <div class="token-actions">
-                        <button type="button" onclick="saveToken()">
-                            <i class="fas fa-save"></i> Salvar Token
-                        </button>
-                        <button type="button" onclick="clearToken()">
-                            <i class="fas fa-trash"></i> Limpar Token
-                        </button>
-                    </div>
-
-                    <div style="font-size: 12px; color: #666; margin-top: 8px;">
-                        <i class="fas fa-info-circle"></i> Token fornecido pelo administrador
-                    </div>
-                </div>
-
-                <button class="generate-btn" onclick="generateLicense()" id="generateBtn">
-                    <i class="fas fa-bolt"></i> Gerar Licença
-                </button>
-
-                <div class="loader" id="loader">
-                    <div class="spinner"></div>
-                    <p>Gerando licença...</p>
-                </div>
-            </div>
-
-            <div class="results-card" id="resultsCard" style="display: none;">
-                <div class="card-header">
-                    <i class="fas fa-check-circle"></i>
-                    <h2>Licença Gerada</h2>
-                </div>
-
-                <div id="resultContent"></div>
-            </div>
+          </div>
         </div>
 
-        <footer class="footer">
-            <p>Fera Alpha © 2024 - Sistema de Revendedores</p>
-            <div class="footer-links">
-                <a href="javascript:void(0)" onclick="showHelp()">
-                    <i class="fas fa-question-circle"></i> Ajuda
-                </a>
-                <a href="javascript:void(0)" onclick="refreshPage()">
-                    <i class="fas fa-sync-alt"></i> Atualizar
-                </a>
+        <div class="field">
+          <label><i class="fas fa-user"></i> Nome do Cliente</label>
+          <input id="username" placeholder="ex: cliente_joao" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label><i class="fas fa-lock"></i> Senha</label>
+          <input id="password" placeholder="Ex: 123@Abc" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label><i class="fas fa-calendar-days"></i> Período</label>
+          <div class="days">
+            <div class="daybtn active" id="btn30" onclick="setDays(30)">30 Dias</div>
+            <div class="daybtn" id="btn90" onclick="setDays(90)">90 Dias</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
+          <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
+          <div class="rowbtns">
+            <button class="btn btn-soft" type="button" onclick="saveToken()">
+              <i class="fas fa-floppy-disk"></i> Salvar Token
+            </button>
+            <button class="btn btn-danger" type="button" onclick="clearToken()">
+              <i class="fas fa-trash"></i> Limpar
+            </button>
+          </div>
+          <div class="mutedSmall" style="margin-top:8px">
+            <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="generateBtn" onclick="generateLicense()">
+          <i class="fas fa-bolt"></i> Gerar Licença
+        </button>
+
+        <div class="loader" id="loader">
+          <div class="spin"></div>
+          <span>Gerando licença...</span>
+        </div>
+
+        <!-- RESULTADO (SEM ERRO GIGANTE) -->
+        <div class="resultBox" id="resultBox" style="margin-top:14px"></div>
+      </div>
+
+      <!-- LISTA CRIADOS AQUI -->
+      <div class="card">
+        <div class="cardhead">
+          <div class="title">
+            <i class="fas fa-list"></i>
+            <div>
+              <h2>Logins Criados Aqui</h2>
+              <div class="mutedSmall">Salvo no seu navegador</div>
             </div>
-        </footer>
+          </div>
+
+          <span class="tag" id="countTag">0</span>
+        </div>
+
+        <div class="list" id="createdList"></div>
+
+        <div style="margin-top:12px">
+          <button class="btn btn-danger" type="button" onclick="resetCreated()">
+            <i class="fas fa-rotate-left"></i> Resetar Lista
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastMessage"></span>
+      <i class="fas fa-circle-check"></i>
+      <div>
+        <div id="toastMsg" style="font-weight:900"></div>
+        <div class="mutedSmall" id="toastSub"></div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // ====== CONFIGURAÇÕES ======
-        const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
-        const UNLIMITED_EXPIRY = 9999999999999;
+<script>
+  // ===== CONFIG =====
+  const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
+  const TOKEN_KEY = "feraalpha_revendedor_token";
+  const CREATED_KEY = "feraalpha_created_logins";
 
-        // ====== TOKEN SALVO ======
-        const TOKEN_KEY = "feraalpha_revendedor_token";
+  let currentDays = 30;
 
-        let currentDays = 30;
+  // ===== INIT =====
+  document.addEventListener("DOMContentLoaded", () => {
+    // token salvo
+    const saved = localStorage.getItem(TOKEN_KEY);
+    if(saved) document.getElementById("token").value = saved;
 
-        // ====== INICIALIZAÇÃO ======
-        document.addEventListener('DOMContentLoaded', function () {
-            setDays(30);
+    renderCreated();
 
-            // carregar token salvo
-            const savedToken = localStorage.getItem(TOKEN_KEY);
-            if (savedToken) {
-                document.getElementById("token").value = savedToken;
-            }
+    // Enter para gerar (opcional)
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        generateLicense();
+      }
+    });
+  });
 
-            // Enter gera
-            document.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    generateLicense();
-                }
-            });
-        });
+  // ===== DAYS =====
+  function setDays(days){
+    currentDays = days;
+    document.getElementById("btn30").classList.toggle("active", days === 30);
+    document.getElementById("btn90").classList.toggle("active", days === 90);
+  }
 
-        // ====== SALVAR / LIMPAR TOKEN ======
-        function saveToken() {
-            const token = document.getElementById("token").value.trim();
-            if (!token) {
-                showToast("Digite um token antes de salvar", "warning");
-                return;
-            }
-            localStorage.setItem(TOKEN_KEY, token);
-            showToast("✅ Token salvo com sucesso!", "success");
-        }
+  // ===== TOKEN =====
+  function saveToken(){
+    const token = document.getElementById("token").value.trim();
+    if(!token){
+      toast("Digite um token antes de salvar", "warn", "Campo vazio");
+      return;
+    }
+    localStorage.setItem(TOKEN_KEY, token);
+    toast("Token salvo", "ok", "Pronto ✅");
+  }
 
-        function clearToken() {
-            localStorage.removeItem(TOKEN_KEY);
-            document.getElementById("token").value = "";
-            showToast("🧹 Token removido!", "success");
-        }
+  function clearToken(){
+    localStorage.removeItem(TOKEN_KEY);
+    document.getElementById("token").value = "";
+    toast("Token removido", "ok", "Você pode inserir outro");
+  }
 
-        // ====== FUNÇÕES DIAS ======
-        function setDays(days) {
-            currentDays = days;
-            document.getElementById('days').value = days;
+  // ===== CREATED STORAGE =====
+  function getCreated(){
+    try{
+      return JSON.parse(localStorage.getItem(CREATED_KEY) || "[]");
+    }catch(e){
+      return [];
+    }
+  }
 
-            document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.textContent) === days) {
-                    btn.classList.add('active');
-                }
-            });
-        }
+  function setCreated(list){
+    localStorage.setItem(CREATED_KEY, JSON.stringify(list));
+  }
 
-        function forceValidDays(input) {
-            let val = parseInt(input.value) || 30;
+  function addCreated(item){
+    const list = getCreated();
+    list.unshift(item);
+    setCreated(list);
+    renderCreated();
+  }
 
-            if (![7, 30, 90].includes(val)) {
-                val = 30;
-                showToast("Somente 7, 30 ou 90 dias", "warning");
-            }
+  function resetCreated(){
+    if(!confirm("Resetar e apagar todos os logins criados nesse painel?")) return;
+    localStorage.removeItem(CREATED_KEY);
+    renderCreated();
+    toast("Lista resetada", "ok", "Tudo limpo");
+  }
 
-            input.value = val;
-            setDays(val);
-        }
+  function renderCreated(){
+    const list = getCreated();
+    const box = document.getElementById("createdList");
+    const tag = document.getElementById("countTag");
+    tag.textContent = list.length;
 
-        // ====== GERAÇÃO DE LICENÇA (CORRIGIDA PRA NÃO MOSTRAR ERRO FALSO) ======
-        async function generateLicense() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const token = document.getElementById('token').value.trim();
-            const days = document.getElementById('days').value.trim();
+    if(list.length === 0){
+      box.innerHTML = `
+        <div class="item">
+          <div class="userline">Nenhum login criado ainda</div>
+          <div class="meta">Gere uma licença e ela aparece aqui automaticamente.</div>
+        </div>
+      `;
+      return;
+    }
 
-            if (!username || !password || !token) {
-                showToast('Preencha todos os campos obrigatórios', 'error');
-                return;
-            }
+    box.innerHTML = list.map((it, idx) => `
+      <div class="item">
+        <div class="itemTop">
+          <div>
+            <div class="userline">${escapeHtml(it.username)}</div>
+            <div class="meta">
+              Dias: <b>${it.days}</b> • ${new Date(it.createdAt).toLocaleString("pt-BR")}
+            </div>
+          </div>
+          <span class="tag">#${idx+1}</span>
+        </div>
 
-            if (![7, 30, 90].includes(parseInt(days))) {
-                showToast("Somente 7, 30 ou 90 dias", "warning");
-                document.getElementById("days").value = 30;
-                setDays(30);
-                return;
-            }
+        <div class="itemBtns">
+          <button type="button" onclick="copyLoginPass('${js(it.username)}','${js(it.password)}')">
+            <i class="fas fa-user-lock"></i> Copiar Login + Senha
+          </button>
+          <button type="button" onclick="copyText('${js(it.key)}')">
+            <i class="fas fa-key"></i> Copiar Key
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
 
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
+  // ===== GENERATE =====
+  async function generateLicense(){
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const token = document.getElementById("token").value.trim();
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        username: username,
-                        password: password,
-                        expire_days: days,
-                        token: token,
-                        prefix: 'FERA'
-                    })
-                });
+    if(!username || !password || !token){
+      toast("Preencha todos os campos", "warn", "Usuário, senha e token");
+      return;
+    }
 
-                // ✅ ler como TEXTO primeiro (muito mais seguro)
-                const rawText = await response.text();
+    // loader on
+    document.getElementById("loader").style.display = "flex";
+    document.getElementById("generateBtn").disabled = true;
 
-                // tentar converter pra JSON
-                let data = null;
-                try {
-                    data = JSON.parse(rawText);
-                } catch (e) {
-                    data = null;
-                }
+    try{
+      const resp = await fetch(API_URL, {
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body: new URLSearchParams({
+          username,
+          password,
+          expire_days: String(currentDays),
+          token,
+          prefix: "FERA"
+        })
+      });
 
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('generateBtn').disabled = false;
+      const raw = await resp.text();
 
-                // ✅ SUCESSO via JSON
-                if (data && data.ok && data.key) {
-                    showResultSuccess(data);
-                    showToast('Licença gerada com sucesso!', 'success');
+      let data = null;
+      try{ data = JSON.parse(raw); } catch(e){ data = null; }
 
-                    // salvar token automático
-                    localStorage.setItem(TOKEN_KEY, token);
+      // loader off
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("generateBtn").disabled = false;
 
-                    // limpar formulário
-                    document.getElementById('username').value = '';
-                    document.getElementById('password').value = '';
-                    return;
-                }
+      // sucesso json
+      if(data && data.ok && data.key){
+        onSuccess({username, password, days: currentDays, key: data.key});
+        return;
+      }
 
-                // ✅ SUCESSO via texto (caso servidor responda bugado mas gerou)
-                const keyMatch = rawText.match(/FERA[-_A-Z0-9]{6,}/i);
-                if (keyMatch) {
-                    const fakeData = {
-                        ok: true,
-                        key: keyMatch[0],
-                        username: username,
-                        expires_at: Math.floor(Date.now() / 1000) + (parseInt(days) * 86400)
-                    };
+      // sucesso por texto
+      const keyMatch = raw.match(/FERA[-_A-Z0-9]{6,}/i);
+      if(keyMatch){
+        onSuccess({username, password, days: currentDays, key: keyMatch[0]});
+        return;
+      }
 
-                    showResultSuccess(fakeData);
-                    showToast('Licença gerada com sucesso!', 'success');
+      // erro real
+      const reason = (data && (data.reason || data.error)) ? (data.reason || data.error) : "Não foi possível gerar.";
+      toast("Erro ao gerar", "error", reason);
+      showMiniResult("Erro ao gerar licença", reason, true);
 
-                    localStorage.setItem(TOKEN_KEY, token);
+    }catch(err){
+      // loader off
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("generateBtn").disabled = false;
 
-                    document.getElementById('username').value = '';
-                    document.getElementById('password').value = '';
-                    return;
-                }
+      // ✅ aqui NÃO mostra o erro grande, só um toast discreto
+      toast("Servidor instável", "warn", "Tente novamente em alguns segundos");
+      console.error(err);
+    }
+  }
 
-                // ✅ ERRO real
-                if (data && (data.error || data.ok === false)) {
-                    showResultError(data.reason || 'Não foi possível gerar licença');
-                    showToast('Erro ao gerar licença: ' + (data.reason || 'Falha desconhecida'), 'error');
-                    return;
-                }
+  function onSuccess(payload){
+    // salvar token automaticamente
+    localStorage.setItem(TOKEN_KEY, document.getElementById("token").value.trim());
 
-                // fallback
-                showToast('Servidor respondeu em formato inválido', 'warning');
+    // mostrar mini resultado clean
+    showMiniResult("Licença gerada com sucesso!", payload.key, false);
 
-            } catch (error) {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('generateBtn').disabled = false;
+    // salvar na lista criados aqui
+    addCreated({
+      username: payload.username,
+      password: payload.password,
+      key: payload.key,
+      days: payload.days,
+      createdAt: Date.now()
+    });
 
-                // ✅ não mostrar card vermelho gigante se foi só falha de rede momentânea
-                showToast('Falha de rede. Tente novamente.', 'warning');
-                console.error('Erro:', error);
-            }
-        }
+    // limpar inputs (mantém token)
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
 
-        // ====== RESULTADOS ======
-        function showResultSuccess(data) {
-            const resultsCard = document.getElementById('resultsCard');
-            const resultContent = document.getElementById('resultContent');
+    toast("Licença gerada", "ok", "Salvo na lista ✅");
+  }
 
-            const isUnlimited = data.expires_at === 0 || data.expires_at === UNLIMITED_EXPIRY;
-            const expiryDate = isUnlimited ? 'ILIMITADO' :
-                new Date(data.expires_at * 1000).toLocaleDateString('pt-BR');
+  function showMiniResult(title, message, isError){
+    const box = document.getElementById("resultBox");
+    box.style.display = "block";
+    box.style.background = isError ? "rgba(255,78,78,.08)" : "rgba(0,234,255,.06)";
+    box.style.borderColor = isError ? "rgba(255,78,78,.35)" : "rgba(0,234,255,.25)";
 
-            const daysLeft = isUnlimited ? '∞' :
-                Math.max(0, Math.floor((data.expires_at - Math.floor(Date.now() / 1000)) / 86400));
+    box.innerHTML = `
+      <div style="font-weight:900; display:flex; align-items:center; gap:10px">
+        <i class="fas ${isError ? "fa-triangle-exclamation" : "fa-circle-check"}"
+           style="color:${isError ? "var(--danger)" : "var(--success)"}"></i>
+        <span>${escapeHtml(title)}</span>
+      </div>
 
-            resultContent.innerHTML = `
-                <div class="result-success">
-                    <div class="success-title">
-                        <i class="fas fa-check-circle"></i> Licença Gerada com Sucesso!
-                    </div>
+      <div class="keybox" style="margin-top:12px">
+        ${escapeHtml(message)}
+      </div>
 
-                    <div class="key-display" id="generatedKey">
-                        ${data.key}
-                        <button class="copy-btn" onclick="copyKey('${data.key}')">
-                            <i class="fas fa-copy"></i> Copiar
-                        </button>
-                    </div>
+      ${isError ? "" : `
+        <div class="miniActions">
+          <button onclick="copyText('${js(message)}')"><i class="fas fa-copy"></i> Copiar Key</button>
+        </div>
+      `}
+    `;
+  }
 
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Cliente</div>
-                            <div class="info-value">${data.username}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Expira em</div>
-                            <div class="info-value">${expiryDate}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Dias Restantes</div>
-                            <div class="info-value">${daysLeft}</div>
-                        </div>
-                    </div>
+  // ===== COPY =====
+  function copyText(text){
+    navigator.clipboard.writeText(text).then(()=>{
+      toast("Copiado", "ok", "Área de transferência");
+    }).catch(()=>{
+      toast("Falha ao copiar", "error", "Seu navegador bloqueou");
+    });
+  }
 
-                    <div style="margin-top: 20px; font-size: 14px; color: #aaa;">
-                        <i class="fas fa-info-circle"></i>
-                        Envie os dados acima para seu cliente. A licença será ativada no primeiro login.
-                    </div>
-                </div>
-            `;
+  function copyLoginPass(u,p){
+    const txt = `Usuário: ${u}\nSenha: ${p}`;
+    navigator.clipboard.writeText(txt).then(()=>{
+      toast("Login + senha copiados", "ok", "Pronto ✅");
+    }).catch(()=>{
+      toast("Falha ao copiar", "error", "Seu navegador bloqueou");
+    });
+  }
 
-            resultsCard.style.display = 'block';
-        }
+  // ===== TOAST =====
+  function toast(msg, type="ok", sub=""){
+    const t = document.getElementById("toast");
+    const m = document.getElementById("toastMsg");
+    const s = document.getElementById("toastSub");
 
-        function showResultError(message) {
-            const resultsCard = document.getElementById('resultsCard');
-            const resultContent = document.getElementById('resultContent');
+    m.textContent = msg;
+    s.textContent = sub;
 
-            resultContent.innerHTML = `
-                <div class="result-error">
-                    <div class="error-title">
-                        <i class="fas fa-exclamation-triangle"></i> Erro ao Gerar Licença
-                    </div>
-                    <p style="color: #ff9999; margin-bottom: 15px;">${message}</p>
-                </div>
-            `;
+    t.classList.remove("warn","error");
+    if(type === "warn") t.classList.add("warn");
+    if(type === "error") t.classList.add("error");
 
-            resultsCard.style.display = 'block';
-        }
+    t.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2500);
+  }
 
-        // ====== UTIL ======
-        function copyKey(key) {
-            navigator.clipboard.writeText(key).then(() => {
-                showToast('Key copiada!', 'success');
-            }).catch(err => {
-                showToast('Erro ao copiar: ' + err, 'error');
-            });
-        }
+  // ===== SAFE HELPERS =====
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
 
-        function refreshPage() {
-            location.reload();
-        }
-
-        function showHelp() {
-            alert(
-                '📋 Ajuda - Painel do Revendedor\n\n' +
-                '1. Preencha o nome do cliente\n' +
-                '2. Escolha uma senha\n' +
-                '3. Selecione 7 / 30 / 90 dias\n' +
-                '4. Insira seu token\n' +
-                '5. Clique em "Gerar Licença"'
-            );
-        }
-
-        // ====== TOAST ======
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-
-            toastMessage.textContent = message;
-            toast.className = 'toast';
-            toast.classList.add(type);
-
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Ctrl+Enter gera
-        document.addEventListener('keydown', function (e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                generateLicense();
-            }
-        });
-    </script>
+  function js(str){
+    return String(str).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+  }
+</script>
 </body>
 </html>
