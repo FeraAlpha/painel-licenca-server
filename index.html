@@ -438,11 +438,11 @@
                 align-items: center;
                 gap: 20px;
             }
-            
+
             .form-card, .results-card {
                 padding: 20px;
             }
-            
+
             .key-display {
                 font-size: 18px;
             }
@@ -465,7 +465,7 @@
             background: var(--primary-dark);
         }
 
-        /* NOVO: botões token */
+        /* BOTÕES TOKEN */
         .token-actions {
             display: flex;
             gap: 10px;
@@ -511,23 +511,21 @@
                     <i class="fas fa-plus-circle"></i>
                     <h2>Gerar Nova Licença</h2>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">
                         <i class="fas fa-user"></i> Nome do Cliente
                     </label>
-                    <input type="text" class="form-input" id="username" 
-                           placeholder="ex: cliente_joao" required>
+                    <input type="text" class="form-input" id="username" placeholder="ex: cliente_joao" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">
                         <i class="fas fa-lock"></i> Senha
                     </label>
-                    <input type="text" class="form-input" id="password" 
-                           placeholder="Escolha uma senha segura" required>
+                    <input type="text" class="form-input" id="password" placeholder="Escolha uma senha segura" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">
                         <i class="fas fa-calendar-alt"></i> Período da Licença
@@ -546,17 +544,14 @@
                         </div>
                     </div>
 
-                    <!-- trava somente 7/30/90 -->
-                    <input type="number" class="form-input" id="days" value="30" min="1" 
-                           onchange="forceValidDays(this)">
+                    <input type="number" class="form-input" id="days" value="30" min="1" onchange="forceValidDays(this)">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">
                         <i class="fas fa-fingerprint"></i> Token de Revendedor
                     </label>
-                    <input type="password" class="form-input" id="token" 
-                           placeholder="Seu token exclusivo" required>
+                    <input type="password" class="form-input" id="token" placeholder="Seu token exclusivo" required>
 
                     <div class="token-actions">
                         <button type="button" onclick="saveToken()">
@@ -571,11 +566,11 @@
                         <i class="fas fa-info-circle"></i> Token fornecido pelo administrador
                     </div>
                 </div>
-                
+
                 <button class="generate-btn" onclick="generateLicense()" id="generateBtn">
                     <i class="fas fa-bolt"></i> Gerar Licença
                 </button>
-                
+
                 <div class="loader" id="loader">
                     <div class="spinner"></div>
                     <p>Gerando licença...</p>
@@ -587,7 +582,7 @@
                     <i class="fas fa-check-circle"></i>
                     <h2>Licença Gerada</h2>
                 </div>
-                
+
                 <div id="resultContent"></div>
             </div>
         </div>
@@ -621,17 +616,17 @@
         let currentDays = 30;
 
         // ====== INICIALIZAÇÃO ======
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             setDays(30);
 
-            // 🔥 carregar token salvo
+            // carregar token salvo
             const savedToken = localStorage.getItem(TOKEN_KEY);
             if (savedToken) {
                 document.getElementById("token").value = savedToken;
             }
 
-            // permitir Enter para gerar
-            document.addEventListener('keypress', function(e) {
+            // Enter gera
+            document.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     generateLicense();
                 }
@@ -655,7 +650,7 @@
             showToast("🧹 Token removido!", "success");
         }
 
-        // ====== FUNÇÕES DE FORMULÁRIO (DIAS) ======
+        // ====== FUNÇÕES DIAS ======
         function setDays(days) {
             currentDays = days;
             document.getElementById('days').value = days;
@@ -668,7 +663,6 @@
             });
         }
 
-        // trava só 7/30/90
         function forceValidDays(input) {
             let val = parseInt(input.value) || 30;
 
@@ -681,7 +675,7 @@
             setDays(val);
         }
 
-        // ====== GERAÇÃO DE LICENÇA ======
+        // ====== GERAÇÃO DE LICENÇA (CORRIGIDA PRA NÃO MOSTRAR ERRO FALSO) ======
         async function generateLicense() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
@@ -693,7 +687,6 @@
                 return;
             }
 
-            // força dias válidos
             if (![7, 30, 90].includes(parseInt(days))) {
                 showToast("Somente 7, 30 ou 90 dias", "warning");
                 document.getElementById("days").value = 30;
@@ -701,7 +694,6 @@
                 return;
             }
 
-            // Mostrar loader
             document.getElementById('loader').style.display = 'block';
             document.getElementById('generateBtn').disabled = true;
 
@@ -720,37 +712,75 @@
                     })
                 });
 
-                const data = await response.json();
+                // ✅ ler como TEXTO primeiro (muito mais seguro)
+                const rawText = await response.text();
+
+                // tentar converter pra JSON
+                let data = null;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (e) {
+                    data = null;
+                }
 
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
 
-                if (!data.ok || data.error) {
-                    showResultError(data.reason || 'Token inválido ou usuário já existe');
-                    showToast('Erro ao gerar licença: ' + (data.reason || 'Token inválido'), 'error');
-                } else {
+                // ✅ SUCESSO via JSON
+                if (data && data.ok && data.key) {
                     showResultSuccess(data);
                     showToast('Licença gerada com sucesso!', 'success');
 
-                    // salva token automaticamente quando gerar com sucesso
+                    // salvar token automático
                     localStorage.setItem(TOKEN_KEY, token);
 
                     // limpar formulário
                     document.getElementById('username').value = '';
                     document.getElementById('password').value = '';
+                    return;
                 }
+
+                // ✅ SUCESSO via texto (caso servidor responda bugado mas gerou)
+                const keyMatch = rawText.match(/FERA[-_A-Z0-9]{6,}/i);
+                if (keyMatch) {
+                    const fakeData = {
+                        ok: true,
+                        key: keyMatch[0],
+                        username: username,
+                        expires_at: Math.floor(Date.now() / 1000) + (parseInt(days) * 86400)
+                    };
+
+                    showResultSuccess(fakeData);
+                    showToast('Licença gerada com sucesso!', 'success');
+
+                    localStorage.setItem(TOKEN_KEY, token);
+
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    return;
+                }
+
+                // ✅ ERRO real
+                if (data && (data.error || data.ok === false)) {
+                    showResultError(data.reason || 'Não foi possível gerar licença');
+                    showToast('Erro ao gerar licença: ' + (data.reason || 'Falha desconhecida'), 'error');
+                    return;
+                }
+
+                // fallback
+                showToast('Servidor respondeu em formato inválido', 'warning');
 
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
 
-                showResultError('Erro ao conectar ao servidor. Verifique sua conexão.');
-                showToast('Erro de conexão com o servidor', 'error');
+                // ✅ não mostrar card vermelho gigante se foi só falha de rede momentânea
+                showToast('Falha de rede. Tente novamente.', 'warning');
                 console.error('Erro:', error);
             }
         }
 
-        // ====== EXIBIÇÃO DE RESULTADOS ======
+        // ====== RESULTADOS ======
         function showResultSuccess(data) {
             const resultsCard = document.getElementById('resultsCard');
             const resultContent = document.getElementById('resultContent');
@@ -779,10 +809,6 @@
                         <div class="info-item">
                             <div class="info-label">Cliente</div>
                             <div class="info-value">${data.username}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Senha</div>
-                            <div class="info-value">${document.getElementById('password').value || '****'}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Expira em</div>
@@ -814,25 +840,16 @@
                         <i class="fas fa-exclamation-triangle"></i> Erro ao Gerar Licença
                     </div>
                     <p style="color: #ff9999; margin-bottom: 15px;">${message}</p>
-                    <div style="font-size: 14px; color: #aaa;">
-                        <strong>Possíveis causas:</strong>
-                        <ul style="margin-top: 10px; padding-left: 20px;">
-                            <li>Token de revendedor inválido ou expirado</li>
-                            <li>Nome de usuário já está em uso</li>
-                            <li>Servidor temporariamente indisponível</li>
-                            <li>Limite de licenças atingido</li>
-                        </ul>
-                    </div>
                 </div>
             `;
 
             resultsCard.style.display = 'block';
         }
 
-        // ====== FUNÇÕES UTILITÁRIAS ======
+        // ====== UTIL ======
         function copyKey(key) {
             navigator.clipboard.writeText(key).then(() => {
-                showToast('Key copiada para a área de transferência!', 'success');
+                showToast('Key copiada!', 'success');
             }).catch(err => {
                 showToast('Erro ao copiar: ' + err, 'error');
             });
@@ -845,16 +862,11 @@
         function showHelp() {
             alert(
                 '📋 Ajuda - Painel do Revendedor\n\n' +
-                '1. Preencha o nome do cliente (único para cada licença)\n' +
-                '2. Escolha uma senha para o cliente\n' +
-                '3. Selecione a duração da licença\n' +
-                '4. Insira seu token de revendedor\n' +
-                '5. Clique em "Gerar Licença"\n\n' +
-                '💡 Dicas:\n' +
-                '- Use nomes de clientes diferentes para cada licença\n' +
-                '- Escolha senhas seguras\n' +
-                '- Seu token é pessoal e intransferível\n\n' +
-                '📞 Suporte: Entre em contato com o administrador'
+                '1. Preencha o nome do cliente\n' +
+                '2. Escolha uma senha\n' +
+                '3. Selecione 7 / 30 / 90 dias\n' +
+                '4. Insira seu token\n' +
+                '5. Clique em "Gerar Licença"'
             );
         }
 
@@ -876,8 +888,8 @@
             }, 3000);
         }
 
-        // ====== ATALHOS ======
-        document.addEventListener('keydown', function(e) {
+        // Ctrl+Enter gera
+        document.addEventListener('keydown', function (e) {
             if (e.ctrlKey && e.key === 'Enter') {
                 generateLicense();
             }
