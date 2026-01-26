@@ -8,51 +8,39 @@
 
   <style>
     :root{
-      --bg:#07070a;
-      --card:#0e0f14;
-      --card2:#0b0c10;
-      --border:#1a1b22;
+      --bg:#f6f7ff;
+      --card:#ffffff;
+      --card2:#f0f3ff;
+      --border:#d7ddff;
 
-      --text:#eef2f8;
-      --muted:#9aa4b2;
+      --text:#0f172a;
+      --muted:#64748b;
 
-      /* ✅ Precision/FERA RED THEME */
-      --primary:#8b0d1a;     /* vinho escuro */
-      --primary2:#ff2b2b;    /* vermelho sangue */
-      --glow: rgba(255,43,43,.18);
+      /* ✅ GG Theme */
+      --primary:#4f7cff;
+      --primary2:#6a5cff;
+      --glow: rgba(79,124,255,.22);
 
       --warning:#ffd166;
-      --shadow: 0 18px 50px rgba(0,0,0,.62);
+      --shadow: 0 16px 45px rgba(15, 23, 42, .10);
 
       --radius:18px;
     }
 
-    *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+    *{
+      margin:0;padding:0;
+      box-sizing:border-box;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    }
+
     body{
       min-height:100vh;
       color:var(--text);
       padding:18px;
-
-      /* ✅ fundo agressivo + scan leve */
       background:
-        radial-gradient(1200px 800px at 30% 0%, rgba(255,43,43,.07), transparent 58%),
-        radial-gradient(900px 650px at 80% 10%, rgba(139,13,26,.08), transparent 62%),
-        linear-gradient(to bottom, rgba(255,255,255,.02), transparent 24%),
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255,255,255,.015) 0px,
-          rgba(255,255,255,.015) 1px,
-          transparent 1px,
-          transparent 7px
-        ),
-        var(--bg);
-
-      animation: bgScan 7s linear infinite;
-    }
-
-    @keyframes bgScan{
-      0%{ background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
-      100%{ background-position: 0 0, 0 0, 0 0, 0 120px, 0 0; }
+        radial-gradient(900px 550px at 20% 0%, rgba(79,124,255,.14), transparent 60%),
+        radial-gradient(900px 550px at 85% 15%, rgba(106,92,255,.12), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,1), rgba(246,247,255,1));
     }
 
     .wrap{max-width:720px;margin:0 auto}
@@ -64,40 +52,34 @@
       padding:16px 18px;
       border:1px solid var(--border);
       border-radius:var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      background: var(--card);
       box-shadow: var(--shadow);
       margin-bottom:18px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    /* ✅ brilho leve topbar */
-    .topbar::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: radial-gradient(800px 180px at 20% 0%, rgba(255,43,43,.10), transparent 60%);
-      pointer-events:none;
-      filter: blur(10px);
-      opacity:.8;
     }
 
     .brand{
-      display:flex;align-items:center;gap:12px;
-      position:relative;
-      z-index:2;
+      display:flex;
+      align-items:center;
+      gap:12px
     }
     .logo{
       width:42px;height:42px;border-radius:14px;
       background: linear-gradient(135deg, var(--primary), var(--primary2));
       display:flex;align-items:center;justify-content:center;
-      color:#110206;font-weight:900;
-      box-shadow: 0 14px 28px var(--glow);
+      color:white;
+      font-weight:900;
+      box-shadow: 0 12px 26px var(--glow);
     }
     .brand h1{
-      font-size:18px;font-weight:900;letter-spacing:.3px
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.3px
     }
-    .brand p{font-size:12px;color:var(--muted);margin-top:2px}
+    .brand p{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px
+    }
 
     .chip{
       padding:8px 12px;
@@ -108,84 +90,62 @@
       display:flex;
       align-items:center;
       gap:8px;
-      background: rgba(255,255,255,.02);
-      position:relative;
-      z-index:2;
+      background: var(--card2);
     }
-    .chip i{color:var(--primary2)}
+    .chip i{color:var(--primary)}
 
     .card{
-      position:relative;
+      background: var(--card);
+      border:1px solid var(--border);
       border-radius:var(--radius);
       padding:18px;
       box-shadow: var(--shadow);
-      overflow:hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.06);
     }
 
-    /* ✅ borda animada vermelha (bem premium e sutil) */
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        rgba(255,43,43,.35) 90deg,
-        transparent 170deg,
-        rgba(139,13,26,.30) 260deg,
-        transparent 360deg
-      );
-      filter: blur(14px);
-      opacity:.55;
-      animation: spinBorder 6s linear infinite;
-      pointer-events:none;
-    }
-
-    /* ✅ camada interna pra não "lavar" o conteúdo */
-    .card::after{
-      content:"";
-      position:absolute;
-      inset:1px;
-      border-radius: calc(var(--radius) - 1px);
-      background: rgba(10,10,14,.92);
-      border:1px solid rgba(255,255,255,.06);
-      pointer-events:none;
-    }
-
-    @keyframes spinBorder{
-      to{ transform: rotate(360deg); }
-    }
-
-    .card > *{
-      position:relative;
-      z-index:2;
-    }
+    .card + .card{margin-top:14px;}
 
     .cardhead{
-      display:flex;align-items:flex-start;justify-content:space-between;
-      gap:12px;margin-bottom:14px
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px
     }
+
     .title{
-      display:flex;align-items:center;gap:10px
+      display:flex;
+      align-items:center;
+      gap:10px
     }
-    .title i{color:var(--primary2)}
-    .title h2{font-size:16px;font-weight:900}
-    .title .sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .title i{color:var(--primary)}
+    .title h2{
+      font-size:16px;
+      font-weight:900
+    }
+    .title .sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px
+    }
 
     .field{margin-bottom:12px}
+
     label{
-      display:flex;align-items:center;gap:8px;
-      font-size:12px;color:var(--muted);
-      margin-bottom:6px;font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:700;
     }
-    label i{color:var(--primary2)}
+    label i{color:var(--primary)}
+
     input{
       width:100%;
       padding:13px 14px;
-      background: rgba(0,0,0,.35);
-      border:1px solid rgba(255,255,255,.08);
+      background: var(--card2);
+      border:1px solid var(--border);
       border-radius:14px;
       color:var(--text);
       outline:none;
@@ -193,13 +153,15 @@
       transition:.2s;
     }
     input:focus{
-      border-color: rgba(255,43,43,.85);
-      box-shadow: 0 0 0 3px rgba(255,43,43,.10);
+      border-color: rgba(79,124,255,.9);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.15);
     }
-    input::placeholder{color:#556575}
+    input::placeholder{color:#93a1b3}
 
     .days{
-      display:flex;gap:10px;flex-wrap:wrap;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
       margin-top:8px;
     }
     .daybtn{
@@ -207,8 +169,8 @@
       min-width:140px;
       padding:12px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.35);
+      border:1px solid var(--border);
+      background: var(--card2);
       color:var(--muted);
       cursor:pointer;
       font-weight:900;
@@ -219,9 +181,9 @@
     .daybtn:hover{transform:translateY(-1px)}
     .daybtn.active{
       background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color:#110206;
+      color:white;
       border-color: transparent;
-      box-shadow: 0 16px 40px rgba(255,43,43,.16);
+      box-shadow: 0 14px 30px rgba(79,124,255,.18);
     }
 
     .btn{
@@ -238,51 +200,46 @@
       gap:10px;
       transition:.2s;
       user-select:none;
+      white-space:nowrap;
     }
 
-    /* ✅ botão premium com glow pulsando */
     .btn-primary{
       background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color:#110206;
-      box-shadow: 0 22px 55px rgba(255,43,43,.18);
-      position:relative;
-      overflow:hidden;
+      color:white;
+      box-shadow: 0 18px 40px rgba(79,124,255,.20);
     }
-    .btn-primary::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: radial-gradient(300px 60px at 20% 30%, rgba(255,255,255,.22), transparent 60%);
-      opacity:.9;
-      transform: translateX(-40%);
-      animation: shine 3.5s ease-in-out infinite;
-      pointer-events:none;
-    }
-    @keyframes shine{
-      0%{ transform: translateX(-55%); opacity:.25; }
-      50%{ transform: translateX(35%); opacity:.55; }
-      100%{ transform: translateX(-55%); opacity:.25; }
-    }
-
     .btn-primary:hover{transform:translateY(-2px)}
+
     .btn-soft{
-      background: rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
+      background: var(--card2);
+      border:1px solid var(--border);
       color:var(--text);
     }
-    .btn-soft:hover{background: rgba(255,255,255,.05)}
+    .btn-soft:hover{
+      background: rgba(240,243,255,.7);
+    }
+
     .btn-danger{
       background: rgba(255,78,78,.10);
-      border:1px solid rgba(255,78,78,.30);
-      color:#ffb9b9;
+      border:1px solid rgba(255,78,78,.25);
+      color:#d32f2f;
     }
 
     .rowbtns{
       display:flex;
       gap:10px;
       margin-top:10px;
+      flex-wrap:wrap;
     }
-    .rowbtns .btn{width:100%; padding:12px}
+    .rowbtns .btn{
+      width:100%;
+      padding:12px
+    }
+
+    .rowbtns.two .btn{
+      flex:1;
+      min-width: 160px;
+    }
 
     .loader{
       display:none;
@@ -296,8 +253,8 @@
     .spin{
       width:18px;height:18px;
       border-radius:999px;
-      border:3px solid rgba(255,255,255,.12);
-      border-top-color: var(--primary2);
+      border:3px solid rgba(15, 23, 42, .15);
+      border-top-color: var(--primary);
       animation:spin 1s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -307,8 +264,8 @@
       margin-top:14px;
       border-radius:var(--radius);
       padding:16px;
-      border:1px solid rgba(255,43,43,.28);
-      background: rgba(255,43,43,.06);
+      border:1px solid rgba(79,124,255,.28);
+      background: rgba(79,124,255,.08);
     }
     .resultTitle{
       display:flex;
@@ -317,7 +274,7 @@
       font-weight:900;
       font-size:14px;
     }
-    .resultTitle i{color:var(--primary2)}
+    .resultTitle i{color:var(--primary)}
 
     .metaGrid{
       margin-top:12px;
@@ -328,8 +285,8 @@
     .metaItem{
       padding:12px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.30);
+      border:1px solid rgba(79,124,255,.20);
+      background: rgba(255,255,255,.65);
     }
     .metaLabel{
       font-size:11px;
@@ -339,7 +296,7 @@
       align-items:center;
       font-weight:800;
     }
-    .metaLabel i{color:var(--primary2)}
+    .metaLabel i{color:var(--primary)}
     .metaValue{
       margin-top:6px;
       font-weight:900;
@@ -351,11 +308,105 @@
       margin-top:12px;
       padding:14px;
       border-radius:14px;
-      border:1px solid rgba(255,43,43,.35);
-      background: rgba(0,0,0,.35);
+      border:1px solid rgba(79,124,255,.35);
+      background: rgba(255,255,255,.85);
       font-weight:900;
       color: var(--primary2);
       word-break:break-all;
+    }
+
+    /* ✅ Histórico */
+    .history{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .hItem{
+      border:1px solid var(--border);
+      background: var(--card2);
+      border-radius:16px;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .hLeft{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .hUser{
+      font-weight:900;
+      color:var(--text);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 340px;
+    }
+
+    .hMeta{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .hBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(79,124,255,.20);
+      font-size:12px;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .hBadge i{color:var(--primary);}
+
+    .hRight{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn-mini{
+      padding:10px 12px;
+      font-size:13px;
+      border-radius:14px;
+      border:1px solid rgba(79,124,255,.18);
+      background: rgba(255,255,255,.8);
+      cursor:pointer;
+      font-weight:900;
+      color:var(--text);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      transition:.18s;
+      user-select:none;
+    }
+    .btn-mini:hover{transform:translateY(-1px)}
+    .btn-mini i{color:var(--primary)}
+
+    .empty{
+      padding:12px;
+      border-radius:16px;
+      border:1px dashed rgba(79,124,255,.35);
+      background: rgba(79,124,255,.06);
+      color:var(--muted);
+      font-size:13px;
     }
 
     .toast{
@@ -364,8 +415,8 @@
       transform:translateX(-50%);
       bottom:18px;
       width:min(520px, 92vw);
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.85);
+      border:1px solid var(--border);
       backdrop-filter: blur(10px);
       border-radius:16px;
       padding:14px 16px;
@@ -380,7 +431,7 @@
       transition:.22s;
     }
     .toast.show{opacity:1;pointer-events:auto}
-    .toast i{color:var(--primary2)}
+    .toast i{color:var(--primary)}
     .toast.warn i{color:var(--warning)}
     .mutedSmall{font-size:12px;color:var(--muted)}
   </style>
@@ -403,6 +454,7 @@
       </div>
     </div>
 
+    <!-- ✅ GERAR LICENÇA -->
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -437,7 +489,7 @@
         <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
         <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
 
-        <div class="rowbtns">
+        <div class="rowbtns two">
           <button class="btn btn-soft" type="button" onclick="saveToken()">
             <i class="fas fa-floppy-disk"></i> Salvar Token
           </button>
@@ -463,6 +515,22 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
+    <!-- ✅ HISTÓRICO -->
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-clock-rotate-left"></i>
+          <div>
+            <h2>Últimos Gerados</h2>
+            <div class="sub">Histórico local (até 10)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history" id="historyList"></div>
+    </div>
+
+    <!-- ✅ TOAST -->
     <div class="toast" id="toast">
       <i class="fas fa-circle-check"></i>
       <div>
@@ -475,12 +543,16 @@
 <script>
   const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
   const TOKEN_KEY = "feraalpha_revendedor_token";
+  const HISTORY_KEY = "feraalpha_history_v1";
+  const PREFIX = "FERA";
 
   let currentDays = 30;
 
   document.addEventListener("DOMContentLoaded", () => {
     const saved = localStorage.getItem(TOKEN_KEY);
     if(saved) document.getElementById("token").value = saved;
+
+    renderHistory();
 
     document.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
@@ -534,7 +606,7 @@
           password,
           expire_days: String(currentDays),
           token,
-          prefix: "FERA"
+          prefix: PREFIX
         })
       });
 
@@ -560,12 +632,23 @@
 
       localStorage.setItem(TOKEN_KEY, token);
 
-      showMiniResult({
+      const now = new Date();
+      const timeStr = formatDateTime(now);
+
+      const payload = {
         title: "Login criado com sucesso!",
         username,
         days: currentDays,
-        key
-      });
+        key,
+        prefix: PREFIX,
+        status: "OK",
+        createdAt: now.toISOString(),
+        createdAtLabel: timeStr
+      };
+
+      showMiniResult(payload);
+      pushHistory(payload);
+      renderHistory();
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
@@ -576,12 +659,23 @@
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
 
-      showMiniResult({
+      const now = new Date();
+      const timeStr = formatDateTime(now);
+
+      const payload = {
         title: "Login criado com sucesso!",
         username,
         days: currentDays,
-        key: "Login criado com sucesso!"
-      });
+        key: "Login criado com sucesso!",
+        prefix: PREFIX,
+        status: "OK",
+        createdAt: now.toISOString(),
+        createdAtLabel: timeStr
+      };
+
+      showMiniResult(payload);
+      pushHistory(payload);
+      renderHistory();
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
@@ -592,7 +686,7 @@
     }
   }
 
-  function showMiniResult({ title, username, days, key }){
+  function showMiniResult({ title, username, days, key, status, prefix, createdAtLabel }){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
 
@@ -612,10 +706,161 @@
           <div class="metaLabel"><i class="fas fa-calendar-days"></i> Período</div>
           <div class="metaValue">${escapeHtml(days)} dias</div>
         </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-tag"></i> Prefixo</div>
+          <div class="metaValue">${escapeHtml(prefix)}</div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-shield-check"></i> Status</div>
+          <div class="metaValue">${escapeHtml(status)}</div>
+        </div>
+
+        <div class="metaItem" style="grid-column: 1 / -1;">
+          <div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div>
+          <div class="metaValue">${escapeHtml(createdAtLabel)}</div>
+        </div>
       </div>
 
-      <div class="keybox">${escapeHtml(key)}</div>
+      <div class="keybox" id="licenseKeyBox">${escapeHtml(key)}</div>
+
+      <div class="rowbtns two" style="margin-top:12px;">
+        <button class="btn btn-soft" type="button" onclick="copyLicenseOnly()">
+          <i class="fas fa-copy"></i> Copiar Licença
+        </button>
+        <button class="btn btn-primary" type="button" onclick="copyAllInfo()">
+          <i class="fas fa-bolt"></i> Copiar Tudo
+        </button>
+      </div>
     `;
+  }
+
+  // ✅ COPIAR APENAS LICENÇA
+  function copyLicenseOnly(){
+    const key = document.getElementById("licenseKeyBox")?.innerText || "";
+    if(!key){
+      toast("Nenhuma licença para copiar", "warn", "Gere uma licença primeiro");
+      return;
+    }
+    copyToClipboard(key);
+    toast("Licença copiada", "ok", "Pronto ✅");
+  }
+
+  // ✅ COPIAR TUDO
+  function copyAllInfo(){
+    const box = document.getElementById("resultBox");
+    if(!box || box.style.display === "none"){
+      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
+      return;
+    }
+
+    const username = box.querySelector(".metaGrid .metaItem:nth-child(1) .metaValue")?.innerText || "";
+    const days = box.querySelector(".metaGrid .metaItem:nth-child(2) .metaValue")?.innerText || "";
+    const prefix = box.querySelector(".metaGrid .metaItem:nth-child(3) .metaValue")?.innerText || "";
+    const status = box.querySelector(".metaGrid .metaItem:nth-child(4) .metaValue")?.innerText || "";
+    const createdAt = box.querySelector(".metaGrid .metaItem:nth-child(5) .metaValue")?.innerText || "";
+    const key = document.getElementById("licenseKeyBox")?.innerText || "";
+
+    const full = `Cliente: ${username}\nPeriodo: ${days}\nPrefixo: ${prefix}\nStatus: ${status}\nGerado em: ${createdAt}\nLicenca: ${key}`;
+    copyToClipboard(full);
+
+    toast("Tudo copiado", "ok", "Colado no clipboard ✅");
+  }
+
+  // ✅ HISTÓRICO
+  function getHistory(){
+    try{
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if(!raw) return [];
+      const arr = JSON.parse(raw);
+      if(!Array.isArray(arr)) return [];
+      return arr;
+    }catch(e){
+      return [];
+    }
+  }
+
+  function pushHistory(item){
+    const history = getHistory();
+    history.unshift(item);
+    const sliced = history.slice(0, 10);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(sliced));
+  }
+
+  function renderHistory(){
+    const list = document.getElementById("historyList");
+    if(!list) return;
+
+    const history = getHistory();
+
+    if(history.length === 0){
+      list.innerHTML = `<div class="empty">Nenhum login gerado ainda. Assim que você gerar, ele aparece aqui ✅</div>`;
+      return;
+    }
+
+    list.innerHTML = history.map((h, idx) => `
+      <div class="hItem">
+        <div class="hLeft">
+          <div class="hUser">${escapeHtml(h.username || "cliente")}</div>
+          <div class="hMeta">
+            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(h.days)} dias</span>
+            <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
+          </div>
+        </div>
+
+        <div class="hRight">
+          <button class="btn-mini" onclick="copyHistoryKey(${idx})">
+            <i class="fas fa-copy"></i> Copiar
+          </button>
+          <button class="btn-mini" onclick="useHistory(${idx})">
+            <i class="fas fa-arrow-up-right-from-square"></i> Abrir
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function copyHistoryKey(index){
+    const history = getHistory();
+    const item = history[index];
+    if(!item || !item.key){
+      toast("Erro ao copiar", "warn", "Licença não encontrada");
+      return;
+    }
+    copyToClipboard(item.key);
+    toast("Licença copiada", "ok", "Pronto ✅");
+  }
+
+  function useHistory(index){
+    const history = getHistory();
+    const item = history[index];
+    if(!item) return;
+
+    // mostra o histórico selecionado no resultado principal
+    showMiniResult(item);
+    toast("Resultado carregado", "ok", "Histórico aberto ✅");
+  }
+
+  // ✅ Clipboard confiável
+  function copyToClipboard(text){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).catch(()=> fallbackCopy(text));
+    }else{
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta);
   }
 
   function toast(msg, type="ok", sub=""){
@@ -638,6 +883,11 @@
     return String(str).replace(/[&<>"']/g, m => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
     }[m]));
+  }
+
+  function formatDateTime(d){
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 </script>
 </body>
