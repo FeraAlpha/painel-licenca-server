@@ -74,7 +74,7 @@
       "username": "fera",
       "password": "123",
       "key": "FERA-9A1DB89C",
-      "device_id": "web-gzukkqxlvdw",
+      "device_id": null,
       "expires_at": 1771942047
     },
     {
@@ -333,7 +333,7 @@
       "username": "feraa",
       "password": "123",
       "key": "FERA-6D6618B0",
-      "device_id": "web-3htkgulcoez",
+      "device_id": null,
       "expires_at": 1769616635
     }
   ]
