@@ -543,7 +543,7 @@
 <script>
   const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
   const TOKEN_KEY = "feraalpha_revendedor_token";
-  const HISTORY_KEY = "feraalpha_history_v1";
+  const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
 
   let currentDays = 30;
@@ -628,16 +628,13 @@
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
 
-      if(!key) key = "Login criado com sucesso!";
-
-      localStorage.setItem(TOKEN_KEY, token);
-
       const now = new Date();
       const timeStr = formatDateTime(now);
 
       const payload = {
         title: "Login criado com sucesso!",
         username,
+        password,                 // ✅ SALVA A SENHA
         days: currentDays,
         key,
         prefix: PREFIX,
@@ -665,8 +662,9 @@
       const payload = {
         title: "Login criado com sucesso!",
         username,
+        password,                 // ✅ SALVA A SENHA
         days: currentDays,
-        key: "Login criado com sucesso!",
+        key: null,
         prefix: PREFIX,
         status: "OK",
         createdAt: now.toISOString(),
@@ -686,7 +684,7 @@
     }
   }
 
-  function showMiniResult({ title, username, days, key, status, prefix, createdAtLabel }){
+  function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
 
@@ -698,12 +696,17 @@
 
       <div class="metaGrid">
         <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-user"></i> Cliente</div>
-          <div class="metaValue">${escapeHtml(username)}</div>
+          <div class="metaLabel"><i class="fas fa-user"></i> Usuário</div>
+          <div class="metaValue">${escapeHtml(username || "-")}</div>
         </div>
 
         <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-calendar-days"></i> Período</div>
+          <div class="metaLabel"><i class="fas fa-lock"></i> Senha</div>
+          <div class="metaValue">${escapeHtml(password || "-")}</div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div>
           <div class="metaValue">${escapeHtml(days)} dias</div>
         </div>
 
@@ -723,11 +726,11 @@
         </div>
       </div>
 
-      <div class="keybox" id="licenseKeyBox">${escapeHtml(key)}</div>
+      ${key ? `<div class="keybox" id="licenseKeyBox">${escapeHtml(key)}</div>` : ""}
 
       <div class="rowbtns two" style="margin-top:12px;">
-        <button class="btn btn-soft" type="button" onclick="copyLicenseOnly()">
-          <i class="fas fa-copy"></i> Copiar Licença
+        <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
+          <i class="fas fa-copy"></i> Copiar
         </button>
         <button class="btn btn-primary" type="button" onclick="copyAllInfo()">
           <i class="fas fa-bolt"></i> Copiar Tudo
@@ -736,15 +739,23 @@
     `;
   }
 
-  // ✅ COPIAR APENAS LICENÇA
-  function copyLicenseOnly(){
-    const key = document.getElementById("licenseKeyBox")?.innerText || "";
-    if(!key){
-      toast("Nenhuma licença para copiar", "warn", "Gere uma licença primeiro");
+  // ✅ COPIAR O QUE VOCÊ QUER: usuário + senha + dias
+  function copyUserPassDays(){
+    const box = document.getElementById("resultBox");
+    if(!box || box.style.display === "none"){
+      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
       return;
     }
-    copyToClipboard(key);
-    toast("Licença copiada", "ok", "Pronto ✅");
+
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+
+    const text = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}`;
+    copyToClipboard(text);
+
+    toast("Copiado", "ok", "Usuário + senha + dias ✅");
   }
 
   // ✅ COPIAR TUDO
@@ -755,17 +766,21 @@
       return;
     }
 
-    const username = box.querySelector(".metaGrid .metaItem:nth-child(1) .metaValue")?.innerText || "";
-    const days = box.querySelector(".metaGrid .metaItem:nth-child(2) .metaValue")?.innerText || "";
-    const prefix = box.querySelector(".metaGrid .metaItem:nth-child(3) .metaValue")?.innerText || "";
-    const status = box.querySelector(".metaGrid .metaItem:nth-child(4) .metaValue")?.innerText || "";
-    const createdAt = box.querySelector(".metaGrid .metaItem:nth-child(5) .metaValue")?.innerText || "";
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+    const prefix = values[3]?.innerText || "";
+    const status = values[4]?.innerText || "";
+    const createdAt = values[5]?.innerText || "";
+
     const key = document.getElementById("licenseKeyBox")?.innerText || "";
 
-    const full = `Cliente: ${username}\nPeriodo: ${days}\nPrefixo: ${prefix}\nStatus: ${status}\nGerado em: ${createdAt}\nLicenca: ${key}`;
-    copyToClipboard(full);
+    let full = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}\nPrefixo: ${prefix}\nStatus: ${status}\nGerado em: ${createdAt}`;
+    if(key) full += `\nLicenca: ${key}`;
 
-    toast("Tudo copiado", "ok", "Colado no clipboard ✅");
+    copyToClipboard(full);
+    toast("Tudo copiado", "ok", "Pronto ✅");
   }
 
   // ✅ HISTÓRICO
@@ -784,8 +799,7 @@
   function pushHistory(item){
     const history = getHistory();
     history.unshift(item);
-    const sliced = history.slice(0, 10);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(sliced));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
   }
 
   function renderHistory(){
@@ -810,7 +824,7 @@
         </div>
 
         <div class="hRight">
-          <button class="btn-mini" onclick="copyHistoryKey(${idx})">
+          <button class="btn-mini" onclick="copyHistoryData(${idx})">
             <i class="fas fa-copy"></i> Copiar
           </button>
           <button class="btn-mini" onclick="useHistory(${idx})">
@@ -821,15 +835,19 @@
     `).join("");
   }
 
-  function copyHistoryKey(index){
+  // ✅ COPIAR DO HISTÓRICO: usuário + senha + dias
+  function copyHistoryData(index){
     const history = getHistory();
     const item = history[index];
-    if(!item || !item.key){
-      toast("Erro ao copiar", "warn", "Licença não encontrada");
+    if(!item){
+      toast("Erro ao copiar", "warn", "Registro não encontrado");
       return;
     }
-    copyToClipboard(item.key);
-    toast("Licença copiada", "ok", "Pronto ✅");
+
+    const text = `Usuario: ${item.username || ""}\nSenha: ${item.password || ""}\nDias: ${item.days || ""} dias`;
+    copyToClipboard(text);
+
+    toast("Copiado", "ok", "Usuário + senha + dias ✅");
   }
 
   function useHistory(index){
@@ -837,7 +855,6 @@
     const item = history[index];
     if(!item) return;
 
-    // mostra o histórico selecionado no resultado principal
     showMiniResult(item);
     toast("Resultado carregado", "ok", "Histórico aberto ✅");
   }
