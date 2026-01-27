@@ -8,20 +8,6 @@
       "expires_at": 1776252020
     },
     {
-      "username": "Joaozinho",
-      "password": "joao2026",
-      "key": "FERA-305A47B8",
-      "device_id": null,
-      "expires_at": 1766669180
-    },
-    {
-      "username": "Saulo99",
-      "password": "99075222",
-      "key": "FERA-6D02E1E8",
-      "device_id": null,
-      "expires_at": 1766676766
-    },
-    {
       "username": "diegovilao",
       "password": "Lucas2015",
       "key": "FERA-7AB9A390",
@@ -57,13 +43,6 @@
       "expires_at": 1798751029
     },
     {
-      "username": "igor",
-      "password": "280424",
-      "key": "FERA-81324E93",
-      "device_id": null,
-      "expires_at": 1766690120
-    },
-    {
       "username": "mattheus.andrade",
       "password": "123",
       "key": "FERA-780C27A8",
@@ -92,32 +71,11 @@
       "expires_at": 1769492954
     },
     {
-      "username": "Johnny",
-      "password": "082223a.",
-      "key": "FERA-6A336B77",
-      "device_id": null,
-      "expires_at": 1766705129
-    },
-    {
-      "username": "samzzq",
-      "password": "01",
-      "key": "FERA-57DACCFC",
-      "device_id": null,
-      "expires_at": 1766705447
-    },
-    {
       "username": "RamonS24",
       "password": "789Ramon",
       "key": "FERA-C9A2D9FF",
       "device_id": null,
       "expires_at": 1795650403
-    },
-    {
-      "username": "Rogerwyll",
-      "password": "Roger&2027",
-      "key": "FERA-B49DF22F",
-      "device_id": null,
-      "expires_at": 1766776425
     },
     {
       "username": "ggrodrigo",
@@ -139,20 +97,6 @@
       "key": "FERA-2DFFA229",
       "device_id": "d541f3c0069577094e173fad4bb44e736b12e2d0e710b9971982124809a85293",
       "expires_at": 1777179645
-    },
-    {
-      "username": "Vitin456",
-      "password": "Vitin456",
-      "key": "FERA-8CCE2008",
-      "device_id": null,
-      "expires_at": 1767045138
-    },
-    {
-      "username": "Alison157gui",
-      "password": "123",
-      "key": "FERA-3B37CE3A",
-      "device_id": null,
-      "expires_at": 1767097917
     },
     {
       "username": "ferax",
@@ -211,20 +155,6 @@
       "expires_at": 1799763418
     },
     {
-      "username": "Kevin2020",
-      "password": "123",
-      "key": "FERA-F1AB9D00",
-      "device_id": null,
-      "expires_at": 1768330247
-    },
-    {
-      "username": "snider90",
-      "password": "123",
-      "key": "FERA-87A6F213",
-      "device_id": null,
-      "expires_at": 1768502842
-    },
-    {
       "username": "wiliam",
       "password": "123",
       "key": "FERA-C28865BA",
@@ -237,13 +167,6 @@
       "key": "FERA-C260C7B6",
       "device_id": "12012ccccb6af23baf421cb775d337d7356e2e45544b736f8ee9cbfafaf98b1a",
       "expires_at": 1797796271
-    },
-    {
-      "username": "MT",
-      "password": "123",
-      "key": "FERA-06BBB5C0",
-      "device_id": null,
-      "expires_at": 1768865715
     },
     {
       "username": "nanam",
