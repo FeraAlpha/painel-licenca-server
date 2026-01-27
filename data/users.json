@@ -249,7 +249,7 @@
       "username": "isa",
       "password": "123",
       "key": "FERA-52F69C99",
-      "device_id": "d5f85b2fe7a3fac67e93d256ab9e055cd34f109e0873f851a3ee19361fc33797",
+      "device_id": null,
       "expires_at": 1769786660
     },
     {
