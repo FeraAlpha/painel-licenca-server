@@ -293,6 +293,13 @@
       "key": "FERA-CA0EECDF",
       "device_id": "3f43a8ded9d7c72fa4d63c20fa18912ea3e5d41d8809c05b906dffcdc4189848",
       "expires_at": 1772147232
+    },
+    {
+      "username": "Paulo",
+      "password": "333",
+      "key": "FERA-8C400F3A",
+      "device_id": null,
+      "expires_at": 1772155458
     }
   ]
 }
