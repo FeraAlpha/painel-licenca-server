@@ -17,6 +17,7 @@
     --ok:#177a30;
     --warn:#f0ad4e;
     --radius:12px;
+    --shadow: 0 10px 22px rgba(0,0,0,.08);
   }
 
   *{
@@ -43,7 +44,8 @@
 
   h1{
     font-size:24px;
-    font-weight:700;
+    font-weight:800;
+    letter-spacing:.2px;
   }
 
   .card{
@@ -52,33 +54,50 @@
     padding:20px;
     border-radius:var(--radius);
     margin-bottom:20px;
+    box-shadow: var(--shadow);
   }
 
-  label{ font-weight:600; }
+  label{ font-weight:700; }
 
   input{
     width:100%;
     padding:11px;
-    border-radius:8px;
+    border-radius:10px;
     border:1px solid var(--border);
     margin-bottom:12px;
     background:white;
+    outline:none;
+    transition:.15s ease;
+  }
+  input:focus{
+    border-color: rgba(47,111,237,.55);
+    box-shadow: 0 0 0 3px rgba(47,111,237,.15);
   }
 
+  /* (14) Hover e animações */
   .btn{
     padding:10px 14px;
-    border-radius:9px;
+    border-radius:12px;
     cursor:pointer;
-    font-weight:700;
+    font-weight:800;
     border:0;
     font-size:14px;
     white-space:nowrap;
+    transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
   }
+  .btn:hover{ transform: translateY(-1px); opacity:.96; }
+  .btn:active{ transform: scale(.98); }
 
   .btn-primary{ background:var(--accent); color:white; }
   .btn-danger{ background:var(--danger); color:white; }
   .btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning{ background:var(--warn); color:white; }
+  .btn-mini{
+    padding:7px 10px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:900;
+  }
 
   table{
     width:100%;
@@ -98,7 +117,7 @@
   tbody td{
     padding:12px;
     border-bottom:1px solid var(--border);
-    word-break:break-all;
+    word-break:break-word;
     vertical-align:top;
   }
 
@@ -107,7 +126,7 @@
   .copy{
     color:var(--accent);
     cursor:pointer;
-    font-weight:700;
+    font-weight:900;
     margin-left:6px;
   }
 
@@ -116,7 +135,7 @@
     padding:6px 10px;
     border-radius:18px;
     font-size:13px;
-    font-weight:700;
+    font-weight:900;
     display:inline-block;
   }
   .badge-ok{ background:#d7f5dd; color:var(--ok); }
@@ -125,6 +144,7 @@
   .badge-unl{ background:#d4e6ff; color:#2f6fed; }
   .badge-danger{ background:#ffe1e1; color:#b32828; }
   .badge-info{ background:#e3f0ff; color:#2f6fed; }
+  .badge-never{ background:#eceff1; color:#54606a; }
 
   /* DARK MODE */
   body.dark{
@@ -133,7 +153,11 @@
     --border:#2a2e32;
     --text:#e5ecef;
     --text-light:#9aa4ab;
+    --shadow: 0 10px 22px rgba(0,0,0,.35);
   }
+  body.dark thead th{ background:#14181c; }
+  body.dark tbody tr:hover{ background:#14181c; }
+  body.dark input{ background:#0f1316; color:var(--text); }
 
   /* ADMIN TOOLS */
   .admin-tools{
@@ -142,10 +166,9 @@
     margin-bottom:20px;
     flex-wrap:wrap;
   }
-
   .admin-tools form{ display:inline-block; }
 
-  /* contador */
+  /* counter */
   .counter-bar{
     display:flex;
     justify-content:space-between;
@@ -154,18 +177,18 @@
     gap:12px;
     flex-wrap:wrap;
   }
-  .counter-bar .left{ font-weight:700; }
+  .counter-bar .left{ font-weight:900; }
   .counter-bar .right{ font-size:13px; color:var(--text-light); }
 
-  /* ALERT BOX */
+  /* alert */
   .alert-box{
     display:none;
     margin-bottom:14px;
     padding:12px 14px;
-    border-radius:12px;
+    border-radius:14px;
     border:1px solid var(--border);
     background:#fff3c9;
-    font-weight:800;
+    font-weight:900;
   }
   body.dark .alert-box{ background:#2a2410; }
 
@@ -179,6 +202,7 @@
     color:var(--text-light);
     margin-top:4px;
     display:block;
+    line-height:1.25;
   }
 
   .top-filters{
@@ -198,9 +222,75 @@
     padding:8px 12px;
     cursor:pointer;
     user-select:none;
-    font-weight:800;
+    font-weight:900;
     font-size:13px;
   }
+
+  /* (8) DASHBOARD */
+  .dash{
+    display:grid;
+    grid-template-columns: repeat(6, minmax(140px, 1fr));
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .dash .box{
+    background:rgba(255,255,255,.55);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px;
+  }
+  body.dark .dash .box{ background:rgba(0,0,0,.25); }
+  .dash .title{
+    font-size:12px;
+    color:var(--text-light);
+    font-weight:900;
+    margin-bottom:6px;
+  }
+  .dash .value{
+    font-size:18px;
+    font-weight:1000;
+  }
+
+  /* (13) TOAST */
+  .toast{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    width:min(360px, calc(100% - 36px));
+    background:rgba(20,20,20,.92);
+    color:white;
+    padding:12px 14px;
+    border-radius:16px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.25);
+    display:none;
+    z-index:9999;
+    font-weight:900;
+    letter-spacing:.2px;
+  }
+  .toast.show{ display:block; animation: toastIn .18s ease; }
+  @keyframes toastIn{
+    from{ transform: translateY(12px); opacity:0; }
+    to{ transform: translateY(0); opacity:1; }
+  }
+
+  /* (15) Ações organizadas */
+  .actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .actions .group{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    align-items:center;
+    padding:6px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:rgba(255,255,255,.45);
+  }
+  body.dark .actions .group{ background:rgba(0,0,0,.25); }
 </style>
 </head>
 
@@ -210,11 +300,9 @@
     <h1>Fera Alpha — Admin</h1>
     <div style="font-size:13px;color:var(--text-light)">Gerenciamento avançado</div>
   </div>
-
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
-<!-- ADMIN TOOLS -->
 <div class="admin-tools">
   <form method="post" action="/admin/reset_all_devices"
         onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
@@ -227,7 +315,6 @@
   </form>
 </div>
 
-<!-- GERAR KEY -->
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
@@ -254,13 +341,37 @@
   </form>
 </div>
 
-<!-- TABELA -->
 <div class="card">
-
-  <!-- ALERTA DE SUSPEITOS -->
   <div class="alert-box" id="alertSuspeitos">⚠️ ALERTA: Existem usuários com troca de device detectada!</div>
 
-  <!-- ✅ CONTADORES -->
+  <!-- (8) DASHBOARD -->
+  <div class="dash">
+    <div class="box">
+      <div class="title">Total</div>
+      <div class="value" id="d_total">0</div>
+    </div>
+    <div class="box">
+      <div class="title">Ativos</div>
+      <div class="value" id="d_active">0</div>
+    </div>
+    <div class="box">
+      <div class="title">Expirados</div>
+      <div class="value" id="d_expired">0</div>
+    </div>
+    <div class="box">
+      <div class="title">Ilimitados</div>
+      <div class="value" id="d_unlimited">0</div>
+    </div>
+    <div class="box">
+      <div class="title">Suspeitos</div>
+      <div class="value" id="d_suspects">0</div>
+    </div>
+    <div class="box">
+      <div class="title">Nunca logou</div>
+      <div class="value" id="d_never">0</div>
+    </div>
+  </div>
+
   <div class="counter-bar">
     <div class="left">
       Total de logins: <span id="totalUsers" style="color:var(--accent)">0</span>
@@ -320,51 +431,82 @@
 
         <td class="deviceCell">{{ u.device_id if u.device_id else '-' }}</td>
 
-        <!-- ✅ STATUS DEVICE (NOVO) -->
         <td class="deviceStatusCell"></td>
 
         <td class="expCell"></td>
 
-        <!-- ✅ FIXAR -->
         <td>
           <button type="button" class="btn btn-ghost" onclick="togglePin('{{ u.username }}', this)">📌</button>
         </td>
 
-        <td style="display:flex;gap:6px;flex-wrap:wrap">
-          <form method="post" action="/admin/renew/{{ loop.index0 }}">
-            <button type="submit" class="btn btn-primary">+30</button>
-          </form>
+        <!-- (15) ações organizadas -->
+        <td>
+          <div class="actions">
+            <div class="group">
+              <!-- (5) renovar rápido -->
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+                <input type="hidden" name="days" value="7">
+                <button type="submit" class="btn btn-primary btn-mini">+7</button>
+              </form>
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+                <input type="hidden" name="days" value="15">
+                <button type="submit" class="btn btn-primary btn-mini">+15</button>
+              </form>
+              <form method="post" action="/admin/renew/{{ loop.index0 }}">
+                <button type="submit" class="btn btn-primary btn-mini">+30</button>
+              </form>
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+                <input type="hidden" name="days" value="60">
+                <button type="submit" class="btn btn-primary btn-mini">+60</button>
+              </form>
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+                <input type="hidden" name="days" value="120">
+                <button type="submit" class="btn btn-primary btn-mini">+120</button>
+              </form>
 
-          <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-            <input type="number" name="days" min="1" value="7"
-                   style="width:55px;padding:6px">
-            <button type="submit" class="btn btn-primary">+Dias</button>
-          </form>
+              <!-- mantém o seu custom -->
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+                <input type="number" name="days" min="1" value="7"
+                       style="width:60px;padding:6px;border-radius:10px;border:1px solid var(--border);">
+                <button type="submit" class="btn btn-primary btn-mini">+Dias</button>
+              </form>
+            </div>
 
-          <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
-                onsubmit="return confirm('Tornar esta licença ilimitada?')">
-            <button type="submit" class="btn" style="background:#2f6fed;color:white">∞ Ilimitado</button>
-          </form>
+            <div class="group">
+              <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
+                    onsubmit="return confirm('Tornar esta licença ilimitada?')">
+                <button type="submit" class="btn btn-mini" style="background:#2f6fed;color:white">∞</button>
+              </form>
 
-          <form method="post" action="/admin/reset/{{ loop.index0 }}">
-            <button type="submit" class="btn btn-ghost">Reset Key</button>
-          </form>
+              <form method="post" action="/admin/reset/{{ loop.index0 }}">
+                <button type="submit" class="btn btn-ghost btn-mini">Reset Key</button>
+              </form>
 
-          <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-            <button type="submit" class="btn btn-danger">Reset Device</button>
-          </form>
+              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+                <button type="submit" class="btn btn-danger btn-mini">Reset Device</button>
+              </form>
 
-          <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                onsubmit="return confirm('Excluir usuário?')">
-            <button type="submit" class="btn btn-danger">Del</button>
-          </form>
+              <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                    onsubmit="return confirm('Excluir usuário?')">
+                <button type="submit" class="btn btn-danger btn-mini">Del</button>
+              </form>
+
+              <!-- (3) copiar completo -->
+              <button type="button" class="btn btn-ghost btn-mini"
+                      onclick="copiarTudoDaLinha(this)">
+                Copiar Tudo
+              </button>
+            </div>
+          </div>
         </td>
-
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<!-- (13) TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -372,20 +514,56 @@ function toggleDark(){ document.body.classList.toggle("dark"); }
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
   if(days == '0'){
-    alert("Licença será criada como ILIMITADA!");
+    toast("✅ Licença ilimitada selecionada!");
+  }else{
+    toast("✅ Expiração ajustada para " + days + " dias.");
   }
+}
+
+/* (13) Toast bonito */
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove("show"), 1600);
 }
 
 /* copiar */
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
-  setTimeout(()=> el.innerText = "copiar",1000);
+  toast("✅ Copiado!");
+  setTimeout(()=> el.innerText = "copiar",900);
 }
 
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
-  alert("Usuário + Senha copiados!");
+  toast("✅ Usuário + senha copiados!");
+}
+
+/* (3) Copiar login completo */
+function copiarTudoDaLinha(btn){
+  const tr = btn.closest("tr");
+  const username = tr.cells[1]?.innerText?.trim() || "-";
+  const senha = tr.cells[2]?.childNodes[0]?.textContent?.trim() || "-";
+  const key = tr.cells[3]?.childNodes[0]?.textContent?.trim() || "-";
+  const device = tr.querySelector(".deviceCell")?.innerText?.trim() || "-";
+  const status = tr.querySelector(".deviceStatusCell")?.innerText?.trim().replace(/\s+/g," ") || "-";
+  const exp = tr.querySelector(".expCell")?.innerText?.trim() || "-";
+
+  const txt =
+`Fera Alpha Login
+Usuário: ${username}
+Senha: ${senha}
+Key: ${key}
+Device: ${device}
+Status: ${status}
+Expiração: ${exp}`;
+
+  navigator.clipboard.writeText(txt);
+  toast("✅ Tudo copiado (login completo)!");
 }
 
 /* busca */
@@ -414,7 +592,13 @@ function sortTable(col){
   applyFilters();
 }
 
-/* expiração */
+/* (4) Expiração data exata + faltam X dias */
+function fmtDate(ts){
+  const d = new Date(ts * 1000);
+  const pad = n => String(n).padStart(2,"0");
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
 
@@ -428,34 +612,26 @@ function renderExp(){
     }
 
     if(exp < now){
-      cell.innerHTML = "<span class='badge badge-exp'>Expirado</span>";
+      cell.innerHTML = `<span class='badge badge-exp'>Expirado</span>
+                        <span class="mini">Expirou em: ${fmtDate(exp)}</span>`;
       return;
     }
 
-    let diff = Math.floor((exp-now)/86400);
+    let diffDays = Math.floor((exp-now)/86400);
 
-    if(diff < 3) cell.innerHTML = `<span class='badge badge-exp'>${diff} dias</span>`;
-    else if(diff < 7) cell.innerHTML = `<span class='badge badge-warn'>${diff} dias</span>`;
-    else cell.innerHTML = `<span class='badge badge-ok'>${diff} dias</span>`;
+    let badge = "";
+    if(diffDays < 3) badge = `<span class='badge badge-exp'>${diffDays} dias</span>`;
+    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
+    else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
+
+    cell.innerHTML = `${badge}
+                      <span class="mini">Expira em: ${fmtDate(exp)}</span>`;
   });
+
+  updateCountersAndDashboard();
 }
 renderExp();
 setInterval(renderExp, 10000);
-
-/* COUNTERS */
-function updateCounters(){
-  const rows = document.querySelectorAll("#usersTable tbody tr");
-  const visibleRows = Array.from(rows).filter(r => r.style.display !== "none");
-  const suspects = Array.from(rows).filter(r => r.dataset.suspect === "1");
-
-  document.getElementById("totalUsers").innerText = rows.length;
-  document.getElementById("shownUsers").innerText = visibleRows.length;
-  document.getElementById("suspectUsers").innerText = suspects.length;
-
-  const alertBox = document.getElementById("alertSuspeitos");
-  if(suspects.length > 0) alertBox.style.display = "block";
-  else alertBox.style.display = "none";
-}
 
 /* PIN SYSTEM */
 const PIN_KEY = "feraalpha_pinned_users";
@@ -479,9 +655,11 @@ function togglePin(username, btn){
   if(pinned.includes(username)){
     pinned = pinned.filter(u => u !== username);
     btn.innerText = "📌";
+    toast("📌 Desfixado!");
   }else{
     pinned.push(username);
     btn.innerText = "✅";
+    toast("✅ Fixado no topo!");
   }
 
   setPinned(pinned);
@@ -511,21 +689,15 @@ function applyPins(){
     }
   });
 
-  updateCounters();
+  updateCountersAndDashboard();
 }
 
-/* ================================
-   ✅ DETECÇÃO DE TROCA DE DEVICE
-   (funciona só com esse arquivo)
-================================ */
-const DEVICE_HISTORY_KEY = "feraalpha_device_history_v1";
+/* DETECÇÃO DE TROCA DE DEVICE */
+const DEVICE_HISTORY_KEY = "feraalpha_device_history_v2";
 
 function getHistory(){
-  try{
-    return JSON.parse(localStorage.getItem(DEVICE_HISTORY_KEY) || "{}");
-  }catch(e){
-    return {};
-  }
+  try{ return JSON.parse(localStorage.getItem(DEVICE_HISTORY_KEY) || "{}"); }
+  catch(e){ return {}; }
 }
 
 function setHistory(obj){
@@ -539,6 +711,7 @@ function clearLocalHistory(){
   }
 }
 
+/* (6) Nunca logou + status */
 function detectDeviceChanges(){
   const history = getHistory();
   const rows = document.querySelectorAll("#usersTable tbody tr");
@@ -546,35 +719,32 @@ function detectDeviceChanges(){
   rows.forEach(tr=>{
     const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
     const deviceNow = (tr.getAttribute("data-device") || "").trim();
-    const deviceCell = tr.querySelector(".deviceCell");
     const statusCell = tr.querySelector(".deviceStatusCell");
 
     tr.dataset.suspect = "0";
+    tr.dataset.never = "0";
     tr.classList.remove("row-suspect");
 
-    // se não tem device ainda
+    // nunca logou
     if(!deviceNow){
-      statusCell.innerHTML = `<span class="badge badge-info">Sem device</span>
-                              <span class="mini">Ainda não logou</span>`;
+      tr.dataset.never = "1";
+      statusCell.innerHTML = `<span class="badge badge-never">Nunca logou</span>
+                              <span class="mini">Sem device registrado</span>`;
       return;
     }
 
-    // histórico anterior
     const prev = history[username];
 
     if(!prev){
-      // primeira vez vendo esse user com device
       history[username] = deviceNow;
       statusCell.innerHTML = `<span class="badge badge-ok">OK</span>
                               <span class="mini">Device salvo</span>`;
       return;
     }
 
-    // mudou device
     if(prev !== deviceNow){
       tr.dataset.suspect = "1";
       tr.classList.add("row-suspect");
-
       statusCell.innerHTML = `
         <span class="badge badge-danger">TROCADO</span>
         <span class="mini">Antes: ${prev}<br>Agora: ${deviceNow}</span>
@@ -582,13 +752,12 @@ function detectDeviceChanges(){
       return;
     }
 
-    // igual
     statusCell.innerHTML = `<span class="badge badge-ok">OK</span>
                             <span class="mini">Device confirmado</span>`;
   });
 
   setHistory(history);
-  updateCounters();
+  updateCountersAndDashboard();
 }
 
 detectDeviceChanges();
@@ -599,22 +768,62 @@ function applyFilters(){
   document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
     let matchText = tr.innerText.toLowerCase().includes(q);
     let matchSuspect = !suspectsOnly || tr.dataset.suspect === "1";
-
     tr.style.display = (matchText && matchSuspect) ? "" : "none";
   });
-
-  updateCounters();
+  updateCountersAndDashboard();
 }
 
 function toggleSuspectsOnly(){
   suspectsOnly = !suspectsOnly;
   document.getElementById("suspectsOnlyState").innerText = suspectsOnly ? "ON" : "OFF";
+  toast(suspectsOnly ? "🚨 Mostrando só suspeitos" : "✅ Mostrando todos");
   applyFilters();
+}
+
+/* (8) Dashboard + counters */
+function updateCountersAndDashboard(){
+  const rows = Array.from(document.querySelectorAll("#usersTable tbody tr"));
+  const visibleRows = rows.filter(r => r.style.display !== "none");
+
+  const now = Math.floor(Date.now()/1000);
+
+  let total = rows.length;
+  let suspects = rows.filter(r => r.dataset.suspect === "1").length;
+  let never = rows.filter(r => r.dataset.never === "1").length;
+
+  let unlimited = 0;
+  let expired = 0;
+  let active = 0;
+
+  rows.forEach(tr=>{
+    let exp = parseInt(tr.getAttribute("data-expires") || "0");
+    if(!exp || exp === 0 || exp === 9999999999999){
+      unlimited++;
+      return;
+    }
+    if(exp < now) expired++;
+    else active++;
+  });
+
+  document.getElementById("totalUsers").innerText = total;
+  document.getElementById("shownUsers").innerText = visibleRows.length;
+  document.getElementById("suspectUsers").innerText = suspects;
+
+  document.getElementById("d_total").innerText = total;
+  document.getElementById("d_active").innerText = active;
+  document.getElementById("d_expired").innerText = expired;
+  document.getElementById("d_unlimited").innerText = unlimited;
+  document.getElementById("d_suspects").innerText = suspects;
+  document.getElementById("d_never").innerText = never;
+
+  const alertBox = document.getElementById("alertSuspeitos");
+  alertBox.style.display = suspects > 0 ? "block" : "none";
 }
 
 /* init */
 applyPins();
 applyFilters();
+updateCountersAndDashboard();
 </script>
 
 </body>
