@@ -18,6 +18,7 @@
     --warn:#f0ad4e;
     --radius:12px;
     --shadow: 0 10px 22px rgba(0,0,0,.08);
+    --vip:#6b2fd9;
   }
 
   *{
@@ -91,12 +92,15 @@
   .btn-danger{ background:var(--danger); color:white; }
   .btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning{ background:var(--warn); color:white; }
-
   .btn-mini{
     padding:7px 10px;
     border-radius:10px;
     font-size:12px;
     font-weight:900;
+  }
+  .btn-vip{
+    background:var(--vip);
+    color:white;
   }
 
   table{
@@ -142,12 +146,8 @@
   .badge-warn{ background:#fff3c9; color:#8a6c1e; }
   .badge-exp{ background:#ffe1e1; color:#b32828; }
   .badge-unl{ background:#d4e6ff; color:#2f6fed; }
-  .badge-danger{ background:#ffe1e1; color:#b32828; }
-  .badge-info{ background:#e3f0ff; color:#2f6fed; }
-  .badge-never{ background:#eceff1; color:#54606a; }
-  .badge-vip{ background:#efe4ff; color:#6b2fd9; }
+  .badge-vip{ background:#efe4ff; color:var(--vip); }
 
-  /* DARK MODE */
   body.dark{
     --bg:#0e1113;
     --card:#1a1d21;
@@ -178,87 +178,11 @@
   .counter-bar .left{ font-weight:900; }
   .counter-bar .right{ font-size:13px; color:var(--text-light); }
 
-  .alert-box{
-    display:none;
-    margin-bottom:14px;
-    padding:12px 14px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:#fff3c9;
-    font-weight:900;
-  }
-  body.dark .alert-box{ background:#2a2410; }
-
-  .row-suspect{
-    outline:2px solid rgba(217,60,60,0.35);
-    background:rgba(217,60,60,0.06);
-  }
-
-  .row-blocked{
-    opacity:.65;
-    filter: grayscale(.35);
-  }
-
-  .mini{
-    font-size:12px;
-    color:var(--text-light);
-    margin-top:4px;
-    display:block;
-    line-height:1.25;
-  }
-
-  .top-filters{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-    margin-bottom:12px;
-  }
-
-  .toggle-chip{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    border:1px solid var(--border);
-    border-radius:999px;
-    padding:8px 12px;
-    cursor:pointer;
-    user-select:none;
-    font-weight:900;
-    font-size:13px;
-  }
-
-  /* DASHBOARD */
-  .dash{
-    display:grid;
-    grid-template-columns: repeat(7, minmax(140px, 1fr));
-    gap:12px;
-    margin-bottom:14px;
-  }
-  .dash .box{
-    background:rgba(255,255,255,.55);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:12px;
-  }
-  body.dark .dash .box{ background:rgba(0,0,0,.25); }
-  .dash .title{
-    font-size:12px;
-    color:var(--text-light);
-    font-weight:900;
-    margin-bottom:6px;
-  }
-  .dash .value{
-    font-size:18px;
-    font-weight:1000;
-  }
-
-  /* Toast */
   .toast{
     position:fixed;
     right:18px;
     bottom:18px;
-    width:min(380px, calc(100% - 36px));
+    width:min(360px, calc(100% - 36px));
     background:rgba(20,20,20,.92);
     color:white;
     padding:12px 14px;
@@ -275,24 +199,13 @@
     to{ transform: translateY(0); opacity:1; }
   }
 
-  /* Ações */
-  .actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    align-items:center;
+  .mini{
+    font-size:12px;
+    color:var(--text-light);
+    margin-top:4px;
+    display:block;
+    line-height:1.25;
   }
-  .actions .group{
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-    align-items:center;
-    padding:6px;
-    border:1px solid var(--border);
-    border-radius:14px;
-    background:rgba(255,255,255,.45);
-  }
-  body.dark .actions .group{ background:rgba(0,0,0,.25); }
 </style>
 </head>
 
@@ -344,37 +257,17 @@
 </div>
 
 <div class="card">
-  <div class="alert-box" id="alertSuspeitos">⚠️ ALERTA: Existem usuários com troca de device detectada!</div>
-
-  <div class="dash">
-    <div class="box"><div class="title">Total</div><div class="value" id="d_total">0</div></div>
-    <div class="box"><div class="title">Ativos</div><div class="value" id="d_active">0</div></div>
-    <div class="box"><div class="title">Expirados</div><div class="value" id="d_expired">0</div></div>
-    <div class="box"><div class="title">Ilimitados</div><div class="value" id="d_unlimited">0</div></div>
-    <div class="box"><div class="title">Suspeitos</div><div class="value" id="d_suspects">0</div></div>
-    <div class="box"><div class="title">Nunca logou</div><div class="value" id="d_never">0</div></div>
-    <div class="box"><div class="title">VIP</div><div class="value" id="d_vip">0</div></div>
-  </div>
-
   <div class="counter-bar">
     <div class="left">
       Total de logins: <span id="totalUsers" style="color:var(--accent)">0</span>
-      <span style="margin-left:10px">Suspeitos: <span id="suspectUsers" style="color:var(--danger)">0</span></span>
+      <span style="margin-left:10px">VIP: <span id="vipUsers" style="color:var(--vip)">0</span></span>
     </div>
     <div class="right">
       Mostrando: <span id="shownUsers">0</span>
     </div>
   </div>
 
-  <div class="top-filters">
-    <input id="searchUser" placeholder="Buscar usuário, key ou device" style="flex:1;min-width:250px;margin-bottom:0">
-
-    <div class="toggle-chip" onclick="toggleSuspectsOnly()">
-      🚨 Mostrar só suspeitos: <span id="suspectsOnlyState">OFF</span>
-    </div>
-
-    <button class="btn btn-ghost" onclick="clearLocalHistory()">🧹 Limpar histórico local</button>
-  </div>
+  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -384,11 +277,8 @@
         <th>Senha</th>
         <th>Key</th>
         <th>Device</th>
-        <th>Status Device</th>
-        <th>VIP</th>
-        <th>Bloqueio</th>
-        <th onclick="sortTable(8)">Expiração</th>
-        <th>Fixar</th>
+        <th>VIP (Não vence)</th>
+        <th onclick="sortTable(6)">Expiração</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -412,79 +302,27 @@
           <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
         </td>
 
-        <td class="deviceCell">{{ u.device_id if u.device_id else '-' }}</td>
-        <td class="deviceStatusCell"></td>
+        <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-        <!-- VIP -->
         <td class="vipCell"></td>
-
-        <!-- Bloqueio -->
-        <td class="blockCell"></td>
 
         <td class="expCell"></td>
 
-        <td>
-          <button type="button" class="btn btn-ghost" onclick="togglePin('{{ u.username }}', this)">📌</button>
-        </td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          <button type="button" class="btn btn-vip btn-mini" onclick="toggleVipFromBtn(this)">VIP</button>
 
-        <td>
-          <div class="actions">
-            <div class="group">
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="hidden" name="days" value="7">
-                <button type="submit" class="btn btn-primary btn-mini">+7</button>
-              </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="hidden" name="days" value="15">
-                <button type="submit" class="btn btn-primary btn-mini">+15</button>
-              </form>
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-primary btn-mini">+30</button>
-              </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="hidden" name="days" value="60">
-                <button type="submit" class="btn btn-primary btn-mini">+60</button>
-              </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="hidden" name="days" value="120">
-                <button type="submit" class="btn btn-primary btn-mini">+120</button>
-              </form>
+          <form method="post" action="/admin/renew/{{ loop.index0 }}">
+            <button type="submit" class="btn btn-primary btn-mini">+30</button>
+          </form>
 
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="number" name="days" min="1" value="7"
-                       style="width:60px;padding:6px;border-radius:10px;border:1px solid var(--border);">
-                <button type="submit" class="btn btn-primary btn-mini">+Dias</button>
-              </form>
-            </div>
+          <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+            <button type="submit" class="btn btn-danger btn-mini">Reset Device</button>
+          </form>
 
-            <div class="group">
-              <!-- VIP ON/OFF -->
-              <button type="button" class="btn btn-mini" style="background:#6b2fd9;color:white"
-                      onclick="toggleVipFromBtn(this)">
-                VIP
-              </button>
-
-              <!-- Bloquear temporário -->
-              <button type="button" class="btn btn-warning btn-mini" onclick="blockUser(this, 1)">Block 1d</button>
-              <button type="button" class="btn btn-warning btn-mini" onclick="blockUser(this, 3)">Block 3d</button>
-              <button type="button" class="btn btn-warning btn-mini" onclick="blockUser(this, 7)">Block 7d</button>
-              <button type="button" class="btn btn-warning btn-mini" onclick="blockUser(this, 30)">Block 30d</button>
-              <button type="button" class="btn btn-ghost btn-mini" onclick="unblockUser(this)">Desbloq</button>
-
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-danger btn-mini">Reset Device</button>
-              </form>
-
-              <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                    onsubmit="return confirm('Excluir usuário?')">
-                <button type="submit" class="btn btn-danger btn-mini">Del</button>
-              </form>
-
-              <button type="button" class="btn btn-ghost btn-mini" onclick="copiarTudoDaLinha(this)">
-                Copiar Tudo
-              </button>
-            </div>
-          </div>
+          <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                onsubmit="return confirm('Excluir usuário?')">
+            <button type="submit" class="btn btn-danger btn-mini">Del</button>
+          </form>
         </td>
 
       </tr>
@@ -500,23 +338,25 @@ function toggleDark(){ document.body.classList.toggle("dark"); }
 
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
-  toast(days === "0" ? "✅ Licença ilimitada selecionada!" : "✅ Expiração ajustada: " + days + " dias");
+  toast(days === "0" ? "✅ Licença ilimitada selecionada!" : "✅ Expiração: " + days + " dias");
 }
 
-let toastTimer=null;
+/* Toast */
+let toastTimer = null;
 function toast(msg){
-  const el=document.getElementById("toast");
-  el.textContent=msg;
+  const el = document.getElementById("toast");
+  el.textContent = msg;
   el.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=> el.classList.remove("show"), 1700);
+  toastTimer = setTimeout(()=> el.classList.remove("show"), 1600);
 }
 
+/* copiar */
 function copiar(t, el){
   navigator.clipboard.writeText(t);
-  el.innerText="✓";
+  el.innerText = "✓";
   toast("✅ Copiado!");
-  setTimeout(()=> el.innerText="copiar",900);
+  setTimeout(()=> el.innerText = "copiar",900);
 }
 
 function copiarCred(u,p){
@@ -524,62 +364,33 @@ function copiarCred(u,p){
   toast("✅ Usuário + senha copiados!");
 }
 
-function copiarTudoDaLinha(btn){
-  const tr = btn.closest("tr");
-  const username = tr.cells[1]?.innerText?.trim() || "-";
-  const senha = tr.cells[2]?.childNodes[0]?.textContent?.trim() || "-";
-  const key = tr.cells[3]?.childNodes[0]?.textContent?.trim() || "-";
-  const device = tr.querySelector(".deviceCell")?.innerText?.trim() || "-";
-  const vipTxt = tr.querySelector(".vipCell")?.innerText?.trim().replace(/\s+/g," ") || "-";
-  const blockTxt = tr.querySelector(".blockCell")?.innerText?.trim().replace(/\s+/g," ") || "-";
-  const status = tr.querySelector(".deviceStatusCell")?.innerText?.trim().replace(/\s+/g," ") || "-";
-  const exp = tr.querySelector(".expCell")?.innerText?.trim().replace(/\s+/g," ") || "-";
+/* busca */
+document.getElementById("searchUser").addEventListener("input", function(){
+  const q = this.value.toLowerCase();
+  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
+    tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
+  });
+  updateCounters();
+});
 
-  const txt =
-`Fera Alpha Login
-Usuário: ${username}
-Senha: ${senha}
-Key: ${key}
-Device: ${device}
-Status: ${status}
-VIP: ${vipTxt}
-Bloqueio: ${blockTxt}
-Expiração: ${exp}`;
-
-  navigator.clipboard.writeText(txt);
-  toast("✅ Login completo copiado!");
-}
-
-let suspectsOnly=false;
-document.getElementById("searchUser").addEventListener("input", applyFilters);
-
+/* sort */
 function sortTable(col){
-  const table = document.getElementById("usersTable").tBodies[0];
-  const rows = Array.from(table.rows);
-  const asc = table.getAttribute("data-sort") != "asc";
+  const tbody = document.getElementById("usersTable").tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const asc = tbody.getAttribute("data-sort") !== "asc";
 
   rows.sort((a,b)=>{
-    let A=a.cells[col].innerText.toLowerCase();
-    let B=b.cells[col].innerText.toLowerCase();
+    let A = a.cells[col].innerText.toLowerCase();
+    let B = b.cells[col].innerText.toLowerCase();
     return asc ? A.localeCompare(B) : B.localeCompare(A);
   });
 
-  rows.forEach(r=> table.appendChild(r));
-  table.setAttribute("data-sort", asc ? "asc" : "desc");
-
-  applyPins();
-  applyFilters();
+  rows.forEach(r=> tbody.appendChild(r));
+  tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-function fmtDate(ts){
-  const d=new Date(ts*1000);
-  const pad=n=> String(n).padStart(2,"0");
-  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-/* ===== VIP + BLOQUEIO (LOCAL) ===== */
-const VIP_KEY="feraalpha_vip_users_v1";
-const BLOCK_KEY="feraalpha_block_users_v1";
+/* ===== VIP (não vence) ===== */
+const VIP_KEY = "feraalpha_vip_users_only";
 
 function getVip(){
   try{ return JSON.parse(localStorage.getItem(VIP_KEY) || "[]"); }
@@ -589,334 +400,106 @@ function setVip(list){ localStorage.setItem(VIP_KEY, JSON.stringify(list)); }
 function isVip(username){ return getVip().includes(username); }
 
 function toggleVip(username){
-  let list=getVip();
+  let list = getVip();
   if(list.includes(username)){
-    list=list.filter(x=> x!==username);
-    setVip(list);
+    list = list.filter(u => u !== username);
     toast("⭐ VIP desativado");
   }else{
     list.push(username);
-    setVip(list);
-    toast("⭐ VIP ativado");
+    toast("⭐ VIP ativado (não vence)");
   }
+  setVip(list);
   renderVipCells();
-  updateCountersAndDashboard();
+  renderExp();
+  updateCounters();
 }
 
 function toggleVipFromBtn(btn){
-  const tr=btn.closest("tr");
-  const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
+  const tr = btn.closest("tr");
+  const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
   toggleVip(username);
-}
-
-function getBlocks(){
-  try{ return JSON.parse(localStorage.getItem(BLOCK_KEY) || "{}"); }
-  catch(e){ return {}; }
-}
-function setBlocks(obj){ localStorage.setItem(BLOCK_KEY, JSON.stringify(obj)); }
-
-function blockUser(btn, days){
-  const tr=btn.closest("tr");
-  const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-
-  const now=Math.floor(Date.now()/1000);
-  const until= now + (days*86400);
-
-  const blocks=getBlocks();
-  blocks[username]={ until };
-  setBlocks(blocks);
-
-  toast(`🚫 ${username} bloqueado por ${days} dia(s)`);
-  renderBlockCells();
-  updateCountersAndDashboard();
-}
-
-function unblockUser(btn){
-  const tr=btn.closest("tr");
-  const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-  const blocks=getBlocks();
-  delete blocks[username];
-  setBlocks(blocks);
-
-  toast(`✅ ${username} desbloqueado`);
-  renderBlockCells();
-  updateCountersAndDashboard();
-}
-
-function getBlockStatus(username){
-  const blocks=getBlocks();
-  const b=blocks[username];
-  if(!b) return { blocked:false };
-
-  const now=Math.floor(Date.now()/1000);
-  if(b.until <= now){
-    // expirou, remove
-    delete blocks[username];
-    setBlocks(blocks);
-    return { blocked:false };
-  }
-
-  const left = Math.ceil((b.until - now)/86400);
-  return { blocked:true, leftDays:left, until:b.until };
 }
 
 function renderVipCells(){
   document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
-    const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-    const cell=tr.querySelector(".vipCell");
+    const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
+    const cell = tr.querySelector(".vipCell");
     if(!cell) return;
 
     if(isVip(username)){
-      cell.innerHTML=`<span class="badge badge-vip">⭐ VIP</span>`;
-      tr.dataset.vip="1";
+      cell.innerHTML = `<span class="badge badge-vip">⭐ VIP</span>
+                        <span class="mini">Não vence</span>`;
+      tr.dataset.vip = "1";
     }else{
-      cell.innerHTML=`<span class="badge badge-info">Normal</span>`;
-      tr.dataset.vip="0";
+      cell.innerHTML = `<span class="badge badge-ok">Normal</span>`;
+      tr.dataset.vip = "0";
     }
   });
 }
 
-function renderBlockCells(){
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
-    const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-    const cell=tr.querySelector(".blockCell");
-    if(!cell) return;
+/* Expiração (VIP vira ilimitado no painel) */
+function fmtDate(ts){
+  const d = new Date(ts * 1000);
+  const pad = n => String(n).padStart(2,"0");
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
-    const st=getBlockStatus(username);
+function renderExp(){
+  const now = Math.floor(Date.now()/1000);
 
-    tr.classList.remove("row-blocked");
-    tr.dataset.blocked="0";
+  document.querySelectorAll("tr[data-expires]").forEach(tr=>{
+    const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
+    const isVIP = isVip(username);
 
-    if(!st.blocked){
-      cell.innerHTML=`<span class="badge badge-ok">Livre</span>`;
+    let exp = parseInt(tr.getAttribute("data-expires") || "0");
+    let cell = tr.querySelector(".expCell");
+
+    // ✅ VIP = NÃO VENCE
+    if(isVIP){
+      cell.innerHTML = `<span class="badge badge-unl">Ilimitado</span>
+                        <span class="mini">VIP ativo</span>`;
       return;
     }
 
-    tr.classList.add("row-blocked");
-    tr.dataset.blocked="1";
-
-    cell.innerHTML=`<span class="badge badge-danger">BLOQUEADO</span>
-                    <span class="mini">Faltam: ${st.leftDays} dia(s)</span>`;
-  });
-}
-
-/* ===== Expiração ===== */
-function renderExp(){
-  const now=Math.floor(Date.now()/1000);
-
-  document.querySelectorAll("tr[data-expires]").forEach(tr=>{
-    let exp=parseInt(tr.getAttribute("data-expires"));
-    let cell=tr.querySelector(".expCell");
-
-    if(!exp || exp==0 || exp==9999999999999){
-      cell.innerHTML="<span class='badge badge-unl'>Ilimitado</span>";
-      tr.dataset.expStatus="unlimited";
+    if(!exp || exp == 0 || exp == 9999999999999){
+      cell.innerHTML = "<span class='badge badge-unl'>Ilimitado</span>";
       return;
     }
 
     if(exp < now){
-      cell.innerHTML=`<span class='badge badge-exp'>Expirado</span>
-                      <span class="mini">Expirou em: ${fmtDate(exp)}</span>`;
-      tr.dataset.expStatus="expired";
+      cell.innerHTML = `<span class='badge badge-exp'>Expirado</span>
+                        <span class="mini">Expirou em: ${fmtDate(exp)}</span>`;
       return;
     }
 
-    let diffDays=Math.floor((exp-now)/86400);
+    let diffDays = Math.floor((exp-now)/86400);
 
-    let badge="";
-    if(diffDays < 3) badge=`<span class='badge badge-exp'>${diffDays} dias</span>`;
-    else if(diffDays < 7) badge=`<span class='badge badge-warn'>${diffDays} dias</span>`;
-    else badge=`<span class='badge badge-ok'>${diffDays} dias</span>`;
+    let badge = "";
+    if(diffDays < 3) badge = `<span class='badge badge-exp'>${diffDays} dias</span>`;
+    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
+    else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
 
-    cell.innerHTML=`${badge}<span class="mini">Expira em: ${fmtDate(exp)}</span>`;
-    tr.dataset.expStatus="active";
-
-    // Anti-vencimento VIP (painel): só aviso visual
-    const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-    if(isVip(username) && diffDays <= 2){
-      tr.dataset.vipAlert="1";
-    }else{
-      tr.dataset.vipAlert="0";
-    }
+    cell.innerHTML = `${badge}
+                      <span class="mini">Expira em: ${fmtDate(exp)}</span>`;
   });
-
-  updateCountersAndDashboard();
-}
-renderExp();
-setInterval(()=>{ renderExp(); renderBlockCells(); }, 10000);
-
-/* PIN */
-const PIN_KEY="feraalpha_pinned_users";
-function getPinned(){ try{ return JSON.parse(localStorage.getItem(PIN_KEY)||"[]"); }catch(e){ return []; } }
-function setPinned(list){ localStorage.setItem(PIN_KEY, JSON.stringify(list)); }
-function isPinned(username){ return getPinned().includes(username); }
-
-function togglePin(username, btn){
-  let pinned=getPinned();
-  if(pinned.includes(username)){
-    pinned=pinned.filter(u=>u!==username);
-    btn.innerText="📌";
-    toast("📌 Desfixado!");
-  }else{
-    pinned.push(username);
-    btn.innerText="✅";
-    toast("✅ Fixado no topo!");
-  }
-  setPinned(pinned);
-  applyPins();
 }
 
-function applyPins(){
-  const tbody=document.querySelector("#usersTable tbody");
-  const rows=Array.from(tbody.querySelectorAll("tr"));
-  const pinnedRows=[];
-  const normalRows=[];
-
-  rows.forEach(tr=>{
-    const user=tr.cells[1]?.innerText?.trim();
-    if(user && isPinned(user)) pinnedRows.push(tr);
-    else normalRows.push(tr);
-  });
-
-  [...pinnedRows, ...normalRows].forEach(r=> tbody.appendChild(r));
-
-  rows.forEach(tr=>{
-    const user=tr.cells[1]?.innerText?.trim();
-    const pinBtn=tr.querySelector("button[onclick^='togglePin']");
-    if(pinBtn && user){
-      pinBtn.innerText=isPinned(user) ? "✅" : "📌";
-    }
-  });
-  updateCountersAndDashboard();
-}
-
-/* device trocado */
-const DEVICE_HISTORY_KEY="feraalpha_device_history_v2";
-function getHistory(){ try{ return JSON.parse(localStorage.getItem(DEVICE_HISTORY_KEY)||"{}"); }catch(e){ return {}; } }
-function setHistory(obj){ localStorage.setItem(DEVICE_HISTORY_KEY, JSON.stringify(obj)); }
-
-function clearLocalHistory(){
-  if(confirm("Apagar histórico local? (só afeta seu navegador)")){
-    localStorage.removeItem(DEVICE_HISTORY_KEY);
-    location.reload();
-  }
-}
-
-function detectDeviceChanges(){
-  const history=getHistory();
-
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
-    const username=tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-    const deviceNow=(tr.getAttribute("data-device") || "").trim();
-    const statusCell=tr.querySelector(".deviceStatusCell");
-
-    tr.dataset.suspect="0";
-    tr.dataset.never="0";
-    tr.classList.remove("row-suspect");
-
-    if(!deviceNow){
-      tr.dataset.never="1";
-      statusCell.innerHTML=`<span class="badge badge-never">Nunca logou</span>
-                            <span class="mini">Sem device registrado</span>`;
-      return;
-    }
-
-    const prev=history[username];
-
-    if(!prev){
-      history[username]=deviceNow;
-      statusCell.innerHTML=`<span class="badge badge-ok">OK</span>
-                            <span class="mini">Device salvo</span>`;
-      return;
-    }
-
-    if(prev !== deviceNow){
-      tr.dataset.suspect="1";
-      tr.classList.add("row-suspect");
-      statusCell.innerHTML=`<span class="badge badge-danger">TROCADO</span>
-                            <span class="mini">Antes: ${prev}<br>Agora: ${deviceNow}</span>`;
-      return;
-    }
-
-    statusCell.innerHTML=`<span class="badge badge-ok">OK</span>
-                          <span class="mini">Device confirmado</span>`;
-  });
-
-  setHistory(history);
-
-  const suspects = Array.from(document.querySelectorAll("#usersTable tbody tr"))
-    .filter(r=>r.dataset.suspect==="1").length;
-
-  document.getElementById("alertSuspeitos").style.display = suspects>0 ? "block" : "none";
-  updateCountersAndDashboard();
-}
-
-/* filtros */
-function applyFilters(){
-  const q=document.getElementById("searchUser").value.toLowerCase().trim();
-
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
-    let matchText=tr.innerText.toLowerCase().includes(q);
-    let matchSuspect=!suspectsOnly || tr.dataset.suspect==="1";
-    tr.style.display=(matchText && matchSuspect) ? "" : "none";
-  });
-
-  updateCountersAndDashboard();
-}
-
-function toggleSuspectsOnly(){
-  suspectsOnly=!suspectsOnly;
-  document.getElementById("suspectsOnlyState").innerText=suspectsOnly ? "ON" : "OFF";
-  toast(suspectsOnly ? "🚨 Só suspeitos" : "✅ Mostrando todos");
-  applyFilters();
-}
-
-/* dashboard */
-function updateCountersAndDashboard(){
+/* contadores */
+function updateCounters(){
   const rows = Array.from(document.querySelectorAll("#usersTable tbody tr"));
-  const visibleRows = rows.filter(r=>r.style.display!=="none");
+  const visibleRows = rows.filter(r=>r.style.display !== "none");
+  const vipCount = rows.filter(r=>r.dataset.vip === "1").length;
 
-  const now=Math.floor(Date.now()/1000);
-  let total=rows.length;
-  let suspects=rows.filter(r=>r.dataset.suspect==="1").length;
-  let never=rows.filter(r=>r.dataset.never==="1").length;
-  let vip=rows.filter(r=>r.dataset.vip==="1").length;
-
-  let unlimited=0, expired=0, active=0;
-
-  rows.forEach(tr=>{
-    let exp=parseInt(tr.getAttribute("data-expires")||"0");
-    if(!exp || exp===0 || exp===9999999999999){ unlimited++; return; }
-    if(exp<now) expired++;
-    else active++;
-  });
-
-  document.getElementById("totalUsers").innerText=total;
-  document.getElementById("shownUsers").innerText=visibleRows.length;
-  document.getElementById("suspectUsers").innerText=suspects;
-
-  document.getElementById("d_total").innerText=total;
-  document.getElementById("d_active").innerText=active;
-  document.getElementById("d_expired").innerText=expired;
-  document.getElementById("d_unlimited").innerText=unlimited;
-  document.getElementById("d_suspects").innerText=suspects;
-  document.getElementById("d_never").innerText=never;
-  document.getElementById("d_vip").innerText=vip;
-
-  // aviso VIP perto de vencer
-  const vipNear = rows.filter(r=>r.dataset.vipAlert==="1").length;
-  if(vipNear > 0){
-    toast("⭐ VIP perto de vencer: " + vipNear + " usuário(s)");
-  }
+  document.getElementById("totalUsers").innerText = rows.length;
+  document.getElementById("shownUsers").innerText = visibleRows.length;
+  document.getElementById("vipUsers").innerText = vipCount;
 }
 
 /* init */
-detectDeviceChanges();
 renderVipCells();
-renderBlockCells();
-applyPins();
-applyFilters();
-updateCountersAndDashboard();
+renderExp();
+updateCounters();
+setInterval(renderExp, 10000);
 </script>
 
 </body>
