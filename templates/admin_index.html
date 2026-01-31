@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <style>
-  :root {
+  :root{
     --bg:#cfd4d8;
     --card:#f5f6f7;
     --border:#c6c9cd;
@@ -15,23 +15,24 @@
     --accent:#2f6fed;
     --danger:#d93c3c;
     --ok:#177a30;
+    --warn:#f0ad4e;
     --radius:12px;
   }
 
-  * {
+  *{
     margin:0;
     padding:0;
     box-sizing:border-box;
     font-family:Inter, Arial, sans-serif;
   }
 
-  body {
+  body{
     background:var(--bg);
     padding:20px;
     color:var(--text);
   }
 
-  header {
+  header{
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -40,12 +41,12 @@
     flex-wrap:wrap;
   }
 
-  h1 {
+  h1{
     font-size:24px;
     font-weight:700;
   }
 
-  .card {
+  .card{
     background:var(--card);
     border:1px solid var(--border);
     padding:20px;
@@ -53,8 +54,9 @@
     margin-bottom:20px;
   }
 
-  label { font-weight:600; }
-  input {
+  label{ font-weight:600; }
+
+  input{
     width:100%;
     padding:11px;
     border-radius:8px;
@@ -63,7 +65,7 @@
     background:white;
   }
 
-  .btn {
+  .btn{
     padding:10px 14px;
     border-radius:9px;
     cursor:pointer;
@@ -73,37 +75,36 @@
     white-space:nowrap;
   }
 
-  .btn-primary { background:var(--accent); color:white; }
-  .btn-danger  { background:var(--danger); color:white; }
-  .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
-  .btn-warning { background:#f0ad4e; color:white; }
+  .btn-primary{ background:var(--accent); color:white; }
+  .btn-danger{ background:var(--danger); color:white; }
+  .btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--text); }
+  .btn-warning{ background:var(--warn); color:white; }
 
-  table {
+  table{
     width:100%;
     border-collapse:collapse;
     font-size:14px;
   }
 
-  thead th {
+  thead th{
     background:#eceff1;
     padding:12px;
     border-bottom:1px solid var(--border);
     cursor:pointer;
     text-align:left;
+    user-select:none;
   }
 
-  tbody td {
+  tbody td{
     padding:12px;
     border-bottom:1px solid var(--border);
     word-break:break-all;
     vertical-align:top;
   }
 
-  tbody tr:hover {
-    background:#eef2f5;
-  }
+  tbody tr:hover{ background:#eef2f5; }
 
-  .copy {
+  .copy{
     color:var(--accent);
     cursor:pointer;
     font-weight:700;
@@ -111,20 +112,22 @@
   }
 
   /* BADGES */
-  .badge {
+  .badge{
     padding:6px 10px;
     border-radius:18px;
     font-size:13px;
     font-weight:700;
     display:inline-block;
   }
-  .badge-ok { background:#d7f5dd; color:var(--ok); }
-  .badge-warn { background:#fff3c9; color:#8a6c1e; }
-  .badge-exp { background:#ffe1e1; color:#b32828; }
-  .badge-unl { background:#d4e6ff; color:#2f6fed; }
+  .badge-ok{ background:#d7f5dd; color:var(--ok); }
+  .badge-warn{ background:#fff3c9; color:#8a6c1e; }
+  .badge-exp{ background:#ffe1e1; color:#b32828; }
+  .badge-unl{ background:#d4e6ff; color:#2f6fed; }
+  .badge-danger{ background:#ffe1e1; color:#b32828; }
+  .badge-info{ background:#e3f0ff; color:#2f6fed; }
 
   /* DARK MODE */
-  body.dark {
+  body.dark{
     --bg:#0e1113;
     --card:#1a1d21;
     --border:#2a2e32;
@@ -133,16 +136,14 @@
   }
 
   /* ADMIN TOOLS */
-  .admin-tools {
+  .admin-tools{
     display:flex;
     gap:12px;
     margin-bottom:20px;
     flex-wrap:wrap;
   }
 
-  .admin-tools form {
-    display:inline-block;
-  }
+  .admin-tools form{ display:inline-block; }
 
   /* contador */
   .counter-bar{
@@ -153,18 +154,57 @@
     gap:12px;
     flex-wrap:wrap;
   }
-  .counter-bar .left{
-    font-weight:700;
+  .counter-bar .left{ font-weight:700; }
+  .counter-bar .right{ font-size:13px; color:var(--text-light); }
+
+  /* ALERT BOX */
+  .alert-box{
+    display:none;
+    margin-bottom:14px;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#fff3c9;
+    font-weight:800;
   }
-  .counter-bar .right{
-    font-size:13px;
+  body.dark .alert-box{ background:#2a2410; }
+
+  .row-suspect{
+    outline:2px solid rgba(217,60,60,0.35);
+    background:rgba(217,60,60,0.06);
+  }
+
+  .mini{
+    font-size:12px;
     color:var(--text-light);
+    margin-top:4px;
+    display:block;
+  }
+
+  .top-filters{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:12px;
+  }
+
+  .toggle-chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:8px 12px;
+    cursor:pointer;
+    user-select:none;
+    font-weight:800;
+    font-size:13px;
   }
 </style>
 </head>
 
 <body>
-
 <header>
   <div>
     <h1>Fera Alpha — Admin</h1>
@@ -217,18 +257,31 @@
 <!-- TABELA -->
 <div class="card">
 
+  <!-- ALERTA DE SUSPEITOS -->
+  <div class="alert-box" id="alertSuspeitos">⚠️ ALERTA: Existem usuários com troca de device detectada!</div>
+
   <!-- ✅ CONTADORES -->
   <div class="counter-bar">
     <div class="left">
       Total de logins: <span id="totalUsers" style="color:var(--accent)">0</span>
+      <span style="margin-left:10px">
+        Suspeitos: <span id="suspectUsers" style="color:var(--danger)">0</span>
+      </span>
     </div>
     <div class="right">
       Mostrando: <span id="shownUsers">0</span>
     </div>
   </div>
 
-  <input id="searchUser" placeholder="Buscar usuário, key ou device"
-         style="margin-bottom:12px">
+  <div class="top-filters">
+    <input id="searchUser" placeholder="Buscar usuário, key ou device" style="flex:1;min-width:250px;margin-bottom:0">
+
+    <div class="toggle-chip" onclick="toggleSuspectsOnly()" id="chipSuspects">
+      🚨 Mostrar só suspeitos: <span id="suspectsOnlyState">OFF</span>
+    </div>
+
+    <button class="btn btn-ghost" onclick="clearLocalHistory()">🧹 Limpar histórico local</button>
+  </div>
 
   <table id="usersTable">
     <thead>
@@ -238,7 +291,8 @@
         <th>Senha</th>
         <th>Key</th>
         <th>Device</th>
-        <th onclick="sortTable(5)">Expiração</th>
+        <th>Status Device</th>
+        <th onclick="sortTable(6)">Expiração</th>
         <th>Fixar</th>
         <th>Ações</th>
       </tr>
@@ -246,7 +300,9 @@
 
     <tbody>
       {% for u in users %}
-      <tr data-expires="{{ u.expires_at }}">
+      <tr data-expires="{{ u.expires_at }}"
+          data-username="{{ u.username }}"
+          data-device="{{ u.device_id if u.device_id else '' }}">
 
         <td>{{ loop.index0 }}</td>
 
@@ -262,7 +318,10 @@
           <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
         </td>
 
-        <td>{{ u.device_id if u.device_id else '-' }}</td>
+        <td class="deviceCell">{{ u.device_id if u.device_id else '-' }}</td>
+
+        <!-- ✅ STATUS DEVICE (NOVO) -->
+        <td class="deviceStatusCell"></td>
 
         <td class="expCell"></td>
 
@@ -272,7 +331,6 @@
         </td>
 
         <td style="display:flex;gap:6px;flex-wrap:wrap">
-
           <form method="post" action="/admin/renew/{{ loop.index0 }}">
             <button type="submit" class="btn btn-primary">+30</button>
           </form>
@@ -300,12 +358,11 @@
                 onsubmit="return confirm('Excluir usuário?')">
             <button type="submit" class="btn btn-danger">Del</button>
           </form>
-
         </td>
+
       </tr>
       {% endfor %}
     </tbody>
-
   </table>
 </div>
 
@@ -319,6 +376,7 @@ function setExpiration(days){
   }
 }
 
+/* copiar */
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
@@ -330,15 +388,14 @@ function copiarCred(u,p){
   alert("Usuário + Senha copiados!");
 }
 
-document.getElementById("searchUser").addEventListener("input", function(){
-  const q = this.value.toLowerCase();
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
-    tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
-  });
+/* busca */
+let suspectsOnly = false;
 
-  updateCounters();
+document.getElementById("searchUser").addEventListener("input", function(){
+  applyFilters();
 });
 
+/* sort */
 function sortTable(col){
   const table = document.getElementById("usersTable").tBodies[0];
   const rows = Array.from(table.rows);
@@ -354,8 +411,10 @@ function sortTable(col){
   table.setAttribute("data-sort", asc ? "asc" : "desc");
 
   applyPins();
+  applyFilters();
 }
 
+/* expiração */
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
 
@@ -383,25 +442,27 @@ function renderExp(){
 renderExp();
 setInterval(renderExp, 10000);
 
-// COUNTERS
+/* COUNTERS */
 function updateCounters(){
   const rows = document.querySelectorAll("#usersTable tbody tr");
   const visibleRows = Array.from(rows).filter(r => r.style.display !== "none");
+  const suspects = Array.from(rows).filter(r => r.dataset.suspect === "1");
 
   document.getElementById("totalUsers").innerText = rows.length;
   document.getElementById("shownUsers").innerText = visibleRows.length;
-}
-updateCounters();
+  document.getElementById("suspectUsers").innerText = suspects.length;
 
-// PIN SYSTEM
+  const alertBox = document.getElementById("alertSuspeitos");
+  if(suspects.length > 0) alertBox.style.display = "block";
+  else alertBox.style.display = "none";
+}
+
+/* PIN SYSTEM */
 const PIN_KEY = "feraalpha_pinned_users";
 
 function getPinned(){
-  try{
-    return JSON.parse(localStorage.getItem(PIN_KEY) || "[]");
-  }catch(e){
-    return [];
-  }
+  try{ return JSON.parse(localStorage.getItem(PIN_KEY) || "[]"); }
+  catch(e){ return []; }
 }
 
 function setPinned(list){
@@ -436,11 +497,8 @@ function applyPins(){
 
   rows.forEach(tr=>{
     const user = tr.cells[1]?.innerText?.trim();
-    if(user && isPinned(user)){
-      pinnedRows.push(tr);
-    }else{
-      normalRows.push(tr);
-    }
+    if(user && isPinned(user)) pinnedRows.push(tr);
+    else normalRows.push(tr);
   });
 
   [...pinnedRows, ...normalRows].forEach(r => tbody.appendChild(r));
@@ -455,7 +513,108 @@ function applyPins(){
 
   updateCounters();
 }
+
+/* ================================
+   ✅ DETECÇÃO DE TROCA DE DEVICE
+   (funciona só com esse arquivo)
+================================ */
+const DEVICE_HISTORY_KEY = "feraalpha_device_history_v1";
+
+function getHistory(){
+  try{
+    return JSON.parse(localStorage.getItem(DEVICE_HISTORY_KEY) || "{}");
+  }catch(e){
+    return {};
+  }
+}
+
+function setHistory(obj){
+  localStorage.setItem(DEVICE_HISTORY_KEY, JSON.stringify(obj));
+}
+
+function clearLocalHistory(){
+  if(confirm("Apagar histórico local de devices? (isso só afeta seu navegador)")){
+    localStorage.removeItem(DEVICE_HISTORY_KEY);
+    location.reload();
+  }
+}
+
+function detectDeviceChanges(){
+  const history = getHistory();
+  const rows = document.querySelectorAll("#usersTable tbody tr");
+
+  rows.forEach(tr=>{
+    const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
+    const deviceNow = (tr.getAttribute("data-device") || "").trim();
+    const deviceCell = tr.querySelector(".deviceCell");
+    const statusCell = tr.querySelector(".deviceStatusCell");
+
+    tr.dataset.suspect = "0";
+    tr.classList.remove("row-suspect");
+
+    // se não tem device ainda
+    if(!deviceNow){
+      statusCell.innerHTML = `<span class="badge badge-info">Sem device</span>
+                              <span class="mini">Ainda não logou</span>`;
+      return;
+    }
+
+    // histórico anterior
+    const prev = history[username];
+
+    if(!prev){
+      // primeira vez vendo esse user com device
+      history[username] = deviceNow;
+      statusCell.innerHTML = `<span class="badge badge-ok">OK</span>
+                              <span class="mini">Device salvo</span>`;
+      return;
+    }
+
+    // mudou device
+    if(prev !== deviceNow){
+      tr.dataset.suspect = "1";
+      tr.classList.add("row-suspect");
+
+      statusCell.innerHTML = `
+        <span class="badge badge-danger">TROCADO</span>
+        <span class="mini">Antes: ${prev}<br>Agora: ${deviceNow}</span>
+      `;
+      return;
+    }
+
+    // igual
+    statusCell.innerHTML = `<span class="badge badge-ok">OK</span>
+                            <span class="mini">Device confirmado</span>`;
+  });
+
+  setHistory(history);
+  updateCounters();
+}
+
+detectDeviceChanges();
+
+/* filtros */
+function applyFilters(){
+  const q = document.getElementById("searchUser").value.toLowerCase().trim();
+  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
+    let matchText = tr.innerText.toLowerCase().includes(q);
+    let matchSuspect = !suspectsOnly || tr.dataset.suspect === "1";
+
+    tr.style.display = (matchText && matchSuspect) ? "" : "none";
+  });
+
+  updateCounters();
+}
+
+function toggleSuspectsOnly(){
+  suspectsOnly = !suspectsOnly;
+  document.getElementById("suspectsOnlyState").innerText = suspectsOnly ? "ON" : "OFF";
+  applyFilters();
+}
+
+/* init */
 applyPins();
+applyFilters();
 </script>
 
 </body>
