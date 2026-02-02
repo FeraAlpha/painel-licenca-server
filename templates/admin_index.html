@@ -35,12 +35,20 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:20px;
+    margin-bottom:16px;
+    gap:12px;
+    flex-wrap:wrap;
   }
 
   h1 {
     font-size:24px;
-    font-weight:700;
+    font-weight:800;
+  }
+
+  .subtitle{
+    font-size:13px;
+    color:var(--text-light);
+    margin-top:4px;
   }
 
   .card {
@@ -48,27 +56,32 @@
     border:1px solid var(--border);
     padding:20px;
     border-radius:var(--radius);
-    margin-bottom:20px;
+    margin-bottom:18px;
   }
 
-  label { font-weight:600; }
+  label { font-weight:700; }
   input {
     width:100%;
     padding:11px;
-    border-radius:8px;
+    border-radius:10px;
     border:1px solid var(--border);
     margin-bottom:12px;
     background:white;
+    outline:none;
   }
+
+  input:focus{ border-color:var(--accent); }
 
   .btn {
     padding:10px 14px;
-    border-radius:9px;
+    border-radius:10px;
     cursor:pointer;
-    font-weight:700;
+    font-weight:800;
     border:0;
     font-size:14px;
+    transition:.15s;
   }
+  .btn:hover{ transform:translateY(-1px); }
 
   .btn-primary { background:var(--accent); color:white; }
   .btn-danger  { background:var(--danger); color:white; }
@@ -86,23 +99,23 @@
     padding:12px;
     border-bottom:1px solid var(--border);
     cursor:pointer;
+    user-select:none;
   }
 
   tbody td {
     padding:12px;
     border-bottom:1px solid var(--border);
     word-break:break-all;
+    vertical-align:middle;
   }
 
-  tbody tr:hover {
-    background:#eef2f5;
-  }
+  tbody tr:hover { background:#eef2f5; }
 
   .copy {
     color:var(--accent);
     cursor:pointer;
-    font-weight:700;
-    margin-left:6px;
+    font-weight:800;
+    margin-left:8px;
   }
 
   /* BADGES */
@@ -110,13 +123,12 @@
     padding:6px 10px;
     border-radius:18px;
     font-size:13px;
-    font-weight:700;
+    font-weight:800;
     display:inline-block;
   }
   .badge-ok { background:#d7f5dd; color:var(--ok); }
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
-  .badge-unl { background:#d4e6ff; color:#2f6fed; }
 
   /* DARK MODE */
   body.dark {
@@ -131,12 +143,58 @@
   .admin-tools {
     display:flex;
     gap:12px;
-    margin-bottom:20px;
+    margin-bottom:18px;
     flex-wrap:wrap;
   }
-  
-  .admin-tools form {
-    display:inline-block;
+  .admin-tools form { display:inline-block; }
+
+  /* DASH */
+  .top-info{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+
+  .mini-box{
+    background:rgba(255,255,255,.55);
+    border:1px solid var(--border);
+    padding:10px 12px;
+    border-radius:12px;
+    display:flex;
+    flex-direction:column;
+    min-width:180px;
+  }
+
+  .mini-box b{ font-size:14px; }
+  .mini-box span{
+    font-size:13px;
+    color:var(--text-light);
+    margin-top:2px;
+    font-weight:800;
+  }
+
+  /* TOAST */
+  .toast{
+    position:fixed;
+    bottom:18px;
+    right:18px;
+    background:#111;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(10px);
+    transition:.2s;
+    pointer-events:none;
+    z-index:999;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateY(0px);
   }
 </style>
 </head>
@@ -146,7 +204,7 @@
 <header>
   <div>
     <h1>Fera Alpha — Admin</h1>
-    <div style="font-size:13px;color:var(--text-light)">Gerenciamento avançado</div>
+    <div class="subtitle">Gerenciamento avançado</div>
   </div>
 
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
@@ -154,12 +212,12 @@
 
 <!-- ADMIN TOOLS -->
 <div class="admin-tools">
-  <form method="post" action="/admin/reset_all_devices" 
+  <form method="post" action="/admin/reset_all_devices"
         onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
     <button type="submit" class="btn btn-warning">🔄 Resetar Todos Devices</button>
   </form>
-  
-  <form method="post" action="/admin/clean_expired" 
+
+  <form method="post" action="/admin/clean_expired"
         onsubmit="return confirm('Remover TODOS os usuários expirados?')">
     <button type="submit" class="btn btn-danger">🗑️ Limpar Expirados</button>
   </form>
@@ -179,22 +237,43 @@
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
 
-    <label>Expiração (dias) - Use 0 para ilimitado</label>
-    <input name="expire_days" type="number" value="30" min="0">
-    
-    <div style="display:flex; gap:12px; margin-top:8px;">
+    <label>Expiração (dias)</label>
+    <input name="expire_days" type="number" value="30" min="1">
+
+    <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
       <button type="submit" class="btn btn-primary">Gerar</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('30')">30 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('90')">90 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('0')">Ilimitado</button>
     </div>
   </form>
 </div>
 
 <!-- TABELA -->
 <div class="card">
-  <input id="searchUser" placeholder="Buscar usuário, key ou device" 
-         style="margin-bottom:12px">
+
+  <!-- DASHBOARD -->
+  <div class="top-info">
+    <div class="mini-box">
+      <b>👥 Total</b>
+      <span id="dashTotal">0</span>
+    </div>
+    <div class="mini-box">
+      <b>✅ Ativos</b>
+      <span id="dashAtivos">0</span>
+    </div>
+    <div class="mini-box">
+      <b>⛔ Expirados</b>
+      <span id="dashExpirados">0</span>
+    </div>
+    <div class="mini-box">
+      <b>🚫 Bloqueados</b>
+      <span id="dashBloqueados">0</span>
+    </div>
+  </div>
+
+  <!-- BUSCA -->
+  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -205,6 +284,7 @@
         <th>Key</th>
         <th>Device</th>
         <th onclick="sortTable(5)">Expiração</th>
+        <th>Status</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -215,7 +295,7 @@
 
         <td>{{ loop.index0 }}</td>
 
-        <td>{{ u.username }}</td>
+        <td><b>{{ u.username }}</b></td>
 
         <td>
           {{ u.password }}
@@ -231,6 +311,14 @@
 
         <td class="expCell"></td>
 
+        <td class="statusCell" data-status="{{ u.status }}">
+          {% if u.status == "blocked" %}
+            <span class="badge badge-exp">Bloqueado</span>
+          {% else %}
+            <span class="badge badge-ok">Ativo</span>
+          {% endif %}
+        </td>
+
         <td style="display:flex;gap:6px;flex-wrap:wrap">
 
           <!-- +30 -->
@@ -240,28 +328,32 @@
 
           <!-- +DIAS -->
           <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-            <input type="number" name="days" min="1" value="7" 
-                   style="width:55px;padding:6px">
+            <input type="number" name="days" min="1" value="7"
+                   style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
             <button type="submit" class="btn btn-primary">+Dias</button>
           </form>
 
-          <!-- Make Unlimited -->
-          <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
-                onsubmit="return confirm('Tornar esta licença ilimitada?')">
-            <button type="submit" class="btn" style="background:#2f6fed;color:white">∞ Ilimitado</button>
+          <!-- BLOQUEAR/DESBLOQUEAR -->
+          <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                onsubmit="return confirm('Alterar status desse usuário?')">
+            {% if u.status == "blocked" %}
+              <button type="submit" class="btn btn-primary">✅ Desbloquear</button>
+            {% else %}
+              <button type="submit" class="btn btn-danger">🚫 Bloquear</button>
+            {% endif %}
           </form>
 
-          <!-- Reset Key -->
+          <!-- RESET KEY -->
           <form method="post" action="/admin/reset/{{ loop.index0 }}">
             <button type="submit" class="btn btn-ghost">Reset Key</button>
           </form>
 
-          <!-- Reset Device -->
+          <!-- RESET DEVICE -->
           <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
             <button type="submit" class="btn btn-danger">Reset Device</button>
           </form>
 
-          <!-- Delete -->
+          <!-- DELETE -->
           <form method="post" action="/admin/delete/{{ loop.index0 }}"
                 onsubmit="return confirm('Excluir usuário?')">
             <button type="submit" class="btn btn-danger">Del</button>
@@ -275,28 +367,36 @@
   </table>
 </div>
 
+<div id="toast" class="toast">Copiado!</div>
+
 <script>
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
 // Definir expiração
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
-  if(days == '0'){
-    alert("Licença será criada como ILIMITADA!");
-  }
+}
+
+// toast
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1200);
 }
 
 // copiar key
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
+  toast("Key copiada!");
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
 // copiar usuário + senha
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
-  alert("Usuário + Senha copiados!");
+  toast("Credenciais copiadas!");
 }
 
 // busca
@@ -309,9 +409,9 @@ document.getElementById("searchUser").addEventListener("input", function(){
 
 // ordenar
 function sortTable(col){
-  const table = document.getElementById("usersTable").tBodies[0];
-  const rows = Array.from(table.rows);
-  const asc = table.getAttribute("data-sort") != "asc";
+  const tbody = document.getElementById("usersTable").tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const asc = tbody.getAttribute("data-sort") !== "asc";
 
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
@@ -319,8 +419,8 @@ function sortTable(col){
     return asc ? A.localeCompare(B) : B.localeCompare(A);
   });
 
-  rows.forEach(r => table.appendChild(r));
-  table.setAttribute("data-sort", asc ? "asc" : "desc");
+  rows.forEach(r => tbody.appendChild(r));
+  tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
 // expirações
@@ -328,12 +428,11 @@ function renderExp(){
   const now = Math.floor(Date.now()/1000);
 
   document.querySelectorAll("tr[data-expires]").forEach(tr=>{
-    let exp = parseInt(tr.getAttribute("data-expires"));
+    let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
 
-    // Verificar se é ilimitado (0 ou valor muito grande)
-    if(!exp || exp == 0 || exp == 9999999999999){
-      cell.innerHTML = "<span class='badge badge-unl'>Ilimitado</span>";
+    if(exp <= 0){
+      cell.innerHTML = "<span class='badge badge-exp'>Sem data</span>";
       return;
     }
 
@@ -342,17 +441,54 @@ function renderExp(){
       return;
     }
 
-    let diff = Math.floor((exp-now)/86400);
+    const diffDays = Math.floor((exp-now)/86400);
 
-    if(diff < 3) cell.innerHTML = `<span class='badge badge-exp'>${diff} dias</span>`;
-    else if(diff < 7) cell.innerHTML = `<span class='badge badge-warn'>${diff} dias</span>`;
-    else cell.innerHTML = `<span class='badge badge-ok'>${diff} dias</span>`;
+    if(diffDays === 0) cell.innerHTML = "<span class='badge badge-exp'>Vence hoje</span>";
+    else if(diffDays === 1) cell.innerHTML = "<span class='badge badge-warn'>Vence amanhã</span>";
+    else if(diffDays < 7) cell.innerHTML = `<span class='badge badge-warn'>${diffDays} dias</span>`;
+    else cell.innerHTML = `<span class='badge badge-ok'>${diffDays} dias</span>`;
   });
 }
-renderExp();
 
-// Auto-refresh a cada 10 segundos
-setInterval(renderExp, 10000);
+// dashboard
+function updateDashboard(){
+  const now = Math.floor(Date.now()/1000);
+  const rows = document.querySelectorAll("#usersTable tbody tr");
+
+  let total = 0, ativos = 0, expirados = 0, bloqueados = 0;
+
+  rows.forEach(tr=>{
+    total++;
+
+    const exp = parseInt(tr.getAttribute("data-expires")) || 0;
+    const statusCell = tr.querySelector(".statusCell");
+    const status = statusCell ? statusCell.getAttribute("data-status") : "active";
+
+    if(status === "blocked"){
+      bloqueados++;
+      return;
+    }
+
+    if(exp > 0 && exp < now){
+      expirados++;
+    } else {
+      ativos++;
+    }
+  });
+
+  document.getElementById("dashTotal").innerText = total;
+  document.getElementById("dashAtivos").innerText = ativos;
+  document.getElementById("dashExpirados").innerText = expirados;
+  document.getElementById("dashBloqueados").innerText = bloqueados;
+}
+
+renderExp();
+updateDashboard();
+
+setInterval(() => {
+  renderExp();
+  updateDashboard();
+}, 10000);
 </script>
 
 </body>
