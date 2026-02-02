@@ -105,7 +105,7 @@
   tbody td {
     padding:12px;
     border-bottom:1px solid var(--border);
-    word-break:break-all;
+    word-break:break-word;
     vertical-align:middle;
   }
 
@@ -129,6 +129,7 @@
   .badge-ok { background:#d7f5dd; color:var(--ok); }
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
+  .badge-trash { background:#e4e6ea; color:#3f4a54; }
 
   /* DARK MODE */
   body.dark {
@@ -195,6 +196,11 @@
   .toast.show{
     opacity:1;
     transform:translateY(0px);
+  }
+
+  /* ROW VISUAL DELETED */
+  tr.deleted {
+    opacity:.72;
   }
 </style>
 </head>
@@ -273,7 +279,7 @@
   </div>
 
   <!-- BUSCA -->
-  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
+  <input id="searchUser" placeholder="Buscar usuário, key ou device, IP..." style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -285,17 +291,28 @@
         <th>Device</th>
         <th onclick="sortTable(5)">Expiração</th>
         <th>Status</th>
+        <th>Último Login</th>
+        <th>IP</th>
+        <th>Último Device</th>
         <th>Ações</th>
       </tr>
     </thead>
 
     <tbody>
       {% for u in users %}
-      <tr data-expires="{{ u.expires_at }}">
+      <tr
+        data-expires="{{ u.expires_at }}"
+        class="{% if u.deleted %}deleted{% endif %}"
+      >
 
         <td>{{ loop.index0 }}</td>
 
-        <td><b>{{ u.username }}</b></td>
+        <td>
+          <b>{{ u.username }}</b>
+          {% if u.pinned %}<span title="Fixado" style="margin-left:6px">⭐</span>{% endif %}
+          {% if u.suspect %}<span class="badge badge-warn" style="margin-left:6px">Suspeito</span>{% endif %}
+          {% if u.deleted %}<span class="badge badge-trash" style="margin-left:6px">Lixeira</span>{% endif %}
+        </td>
 
         <td>
           {{ u.password }}
@@ -319,15 +336,31 @@
           {% endif %}
         </td>
 
+        <td>{{ u.last_login_str if u.last_login_str else '-' }}</td>
+        <td>{{ u.last_ip if u.last_ip else '-' }}</td>
+        <td>{{ u.last_device if u.last_device else '-' }}</td>
+
         <td style="display:flex;gap:6px;flex-wrap:wrap">
 
+          <!-- FIXAR -->
+          <form method="post" action="/admin/toggle_pin/{{ loop.index0 }}"
+                onsubmit="return confirm('Fixar/Desfixar {{ u.username }}?')">
+            {% if u.pinned %}
+              <button type="submit" class="btn btn-ghost">⭐ Desfixar</button>
+            {% else %}
+              <button type="submit" class="btn btn-ghost">📌 Fixar</button>
+            {% endif %}
+          </form>
+
           <!-- +30 -->
-          <form method="post" action="/admin/renew/{{ loop.index0 }}">
+          <form method="post" action="/admin/renew/{{ loop.index0 }}"
+                onsubmit="return confirm('Renovar +30 dias para {{ u.username }}?')">
             <button type="submit" class="btn btn-primary">+30</button>
           </form>
 
           <!-- +DIAS -->
-          <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+          <form method="post" action="/admin/renew_custom/{{ loop.index0 }}"
+                onsubmit="return confirm('Adicionar dias para {{ u.username }}?')">
             <input type="number" name="days" min="1" value="7"
                    style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
             <button type="submit" class="btn btn-primary">+Dias</button>
@@ -335,7 +368,7 @@
 
           <!-- BLOQUEAR/DESBLOQUEAR -->
           <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
-                onsubmit="return confirm('Alterar status desse usuário?')">
+                onsubmit="return confirm('Alterar status de {{ u.username }}?')">
             {% if u.status == "blocked" %}
               <button type="submit" class="btn btn-primary">✅ Desbloquear</button>
             {% else %}
@@ -344,20 +377,29 @@
           </form>
 
           <!-- RESET KEY -->
-          <form method="post" action="/admin/reset/{{ loop.index0 }}">
+          <form method="post" action="/admin/reset/{{ loop.index0 }}"
+                onsubmit="return confirm('Resetar KEY de {{ u.username }}?')">
             <button type="submit" class="btn btn-ghost">Reset Key</button>
           </form>
 
           <!-- RESET DEVICE -->
-          <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+          <form method="post" action="/admin/reset_device/{{ loop.index0 }}"
+                onsubmit="return confirm('Resetar DEVICE de {{ u.username }}?')">
             <button type="submit" class="btn btn-danger">Reset Device</button>
           </form>
 
-          <!-- DELETE -->
-          <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                onsubmit="return confirm('Excluir usuário?')">
-            <button type="submit" class="btn btn-danger">Del</button>
+          <!-- LIXEIRA / RESTAURAR -->
+          {% if u.deleted %}
+          <form method="post" action="/admin/restore/{{ loop.index0 }}"
+                onsubmit="return confirm('Restaurar {{ u.username }}?')">
+            <button type="submit" class="btn btn-primary">♻️ Restaurar</button>
           </form>
+          {% else %}
+          <form method="post" action="/admin/trash/{{ loop.index0 }}"
+                onsubmit="return confirm('Mover {{ u.username }} para lixeira?')">
+            <button type="submit" class="btn btn-danger">🗑️ Lixeira</button>
+          </form>
+          {% endif %}
 
         </td>
       </tr>
@@ -367,7 +409,7 @@
   </table>
 </div>
 
-<div id="toast" class="toast">Copiado!</div>
+<div id="toast" class="toast">OK</div>
 
 <script>
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -382,8 +424,15 @@ function toast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 1200);
+  setTimeout(()=>t.classList.remove("show"), 1400);
 }
+
+// pegar msg da URL (toast global)
+(function(){
+  const url = new URL(window.location.href);
+  const msg = url.searchParams.get("msg");
+  if(msg) toast(msg);
+})();
 
 // copiar key
 function copiar(t, el){
@@ -423,7 +472,15 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// expirações
+// expirações com data exata
+function formatDateBR(ts){
+  const d = new Date(ts * 1000);
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = d.getFullYear();
+  return `${dd}/${mm}/${yy}`;
+}
+
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
 
@@ -432,21 +489,33 @@ function renderExp(){
     let cell = tr.querySelector(".expCell");
 
     if(exp <= 0){
-      cell.innerHTML = "<span class='badge badge-exp'>Sem data</span>";
+      cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
       return;
     }
 
     if(exp < now){
-      cell.innerHTML = "<span class='badge badge-exp'>Expirado</span>";
+      cell.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span class='badge badge-exp'>Expirado</span>
+          <span style="font-size:12px;color:var(--text-light)">📅 ${formatDateBR(exp)}</span>
+        </div>`;
       return;
     }
 
     const diffDays = Math.floor((exp-now)/86400);
+    const dateText = formatDateBR(exp);
 
-    if(diffDays === 0) cell.innerHTML = "<span class='badge badge-exp'>Vence hoje</span>";
-    else if(diffDays === 1) cell.innerHTML = "<span class='badge badge-warn'>Vence amanhã</span>";
-    else if(diffDays < 7) cell.innerHTML = `<span class='badge badge-warn'>${diffDays} dias</span>`;
-    else cell.innerHTML = `<span class='badge badge-ok'>${diffDays} dias</span>`;
+    let badge = "";
+    if(diffDays === 0) badge = "<span class='badge badge-exp'>Vence hoje</span>";
+    else if(diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
+    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
+    else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
+
+    cell.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${badge}
+        <span style="font-size:12px;color:var(--text-light)">📅 ${dateText}</span>
+      </div>`;
   });
 }
 
