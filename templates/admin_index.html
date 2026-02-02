@@ -105,7 +105,7 @@
   tbody td {
     padding:12px;
     border-bottom:1px solid var(--border);
-    word-break:break-word;
+    word-break:break-all;
     vertical-align:middle;
   }
 
@@ -129,7 +129,6 @@
   .badge-ok { background:#d7f5dd; color:var(--ok); }
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
-  .badge-trash { background:#e4e6ea; color:#3f4a54; }
 
   /* DARK MODE */
   body.dark {
@@ -198,9 +197,62 @@
     transform:translateY(0px);
   }
 
-  /* ROW VISUAL DELETED */
-  tr.deleted {
-    opacity:.72;
+  /* ===========================
+     11) MOBILE: AÇÕES VIRAM MENU ⋮
+     =========================== */
+  .actionsBox{
+    position:relative;
+  }
+
+  .actionsWrap{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .menuBtn{
+    display:none;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:transparent;
+    font-weight:900;
+    cursor:pointer;
+  }
+
+  .actionsMenu{
+    display:none;
+    position:absolute;
+    right:10px;
+    top:46px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px;
+    min-width:220px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    z-index:50;
+  }
+
+  .actionsMenu form{ margin-bottom:8px; }
+  .actionsMenu form:last-child{ margin-bottom:0; }
+
+  @media (max-width: 820px){
+    thead { display:none; }
+
+    table, tbody, tr, td { display:block; width:100%; }
+    tr {
+      border:1px solid var(--border);
+      border-radius:14px;
+      margin-bottom:12px;
+      background:var(--card);
+      overflow:hidden;
+    }
+    td { border:0; border-bottom:1px solid var(--border); }
+    td:last-child{ border-bottom:0; }
+
+    .actionsWrap{ display:none; }
+    .menuBtn{ display:inline-block; }
   }
 </style>
 </head>
@@ -279,7 +331,7 @@
   </div>
 
   <!-- BUSCA -->
-  <input id="searchUser" placeholder="Buscar usuário, key ou device, IP..." style="margin-bottom:12px">
+  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -291,28 +343,17 @@
         <th>Device</th>
         <th onclick="sortTable(5)">Expiração</th>
         <th>Status</th>
-        <th>Último Login</th>
-        <th>IP</th>
-        <th>Último Device</th>
         <th>Ações</th>
       </tr>
     </thead>
 
     <tbody>
       {% for u in users %}
-      <tr
-        data-expires="{{ u.expires_at }}"
-        class="{% if u.deleted %}deleted{% endif %}"
-      >
+      <tr data-expires="{{ u.expires_at }}">
 
         <td>{{ loop.index0 }}</td>
 
-        <td>
-          <b>{{ u.username }}</b>
-          {% if u.pinned %}<span title="Fixado" style="margin-left:6px">⭐</span>{% endif %}
-          {% if u.suspect %}<span class="badge badge-warn" style="margin-left:6px">Suspeito</span>{% endif %}
-          {% if u.deleted %}<span class="badge badge-trash" style="margin-left:6px">Lixeira</span>{% endif %}
-        </td>
+        <td><b>{{ u.username }}</b></td>
 
         <td>
           {{ u.password }}
@@ -326,6 +367,7 @@
 
         <td>{{ u.device_id if u.device_id else '-' }}</td>
 
+        <!-- 4) EXPIRAÇÃO (dias + data exata) -->
         <td class="expCell"></td>
 
         <td class="statusCell" data-status="{{ u.status }}">
@@ -336,70 +378,87 @@
           {% endif %}
         </td>
 
-        <td>{{ u.last_login_str if u.last_login_str else '-' }}</td>
-        <td>{{ u.last_ip if u.last_ip else '-' }}</td>
-        <td>{{ u.last_device if u.last_device else '-' }}</td>
+        <!-- 11) AÇÕES COM MENU NO CELULAR -->
+        <td class="actionsBox">
 
-        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          <!-- DESKTOP -->
+          <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
 
-          <!-- FIXAR -->
-          <form method="post" action="/admin/toggle_pin/{{ loop.index0 }}"
-                onsubmit="return confirm('Fixar/Desfixar {{ u.username }}?')">
-            {% if u.pinned %}
-              <button type="submit" class="btn btn-ghost">⭐ Desfixar</button>
-            {% else %}
-              <button type="submit" class="btn btn-ghost">📌 Fixar</button>
-            {% endif %}
-          </form>
+            <!-- +30 -->
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary">+30</button>
+            </form>
 
-          <!-- +30 -->
-          <form method="post" action="/admin/renew/{{ loop.index0 }}"
-                onsubmit="return confirm('Renovar +30 dias para {{ u.username }}?')">
-            <button type="submit" class="btn btn-primary">+30</button>
-          </form>
+            <!-- +DIAS -->
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <input type="number" name="days" min="1" value="7"
+                     style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
+              <button type="submit" class="btn btn-primary">+Dias</button>
+            </form>
 
-          <!-- +DIAS -->
-          <form method="post" action="/admin/renew_custom/{{ loop.index0 }}"
-                onsubmit="return confirm('Adicionar dias para {{ u.username }}?')">
-            <input type="number" name="days" min="1" value="7"
-                   style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
-            <button type="submit" class="btn btn-primary">+Dias</button>
-          </form>
+            <!-- BLOQUEAR/DESBLOQUEAR -->
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('Alterar status desse usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-primary">✅ Desbloquear</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger">🚫 Bloquear</button>
+              {% endif %}
+            </form>
 
-          <!-- BLOQUEAR/DESBLOQUEAR -->
-          <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
-                onsubmit="return confirm('Alterar status de {{ u.username }}?')">
-            {% if u.status == "blocked" %}
-              <button type="submit" class="btn btn-primary">✅ Desbloquear</button>
-            {% else %}
-              <button type="submit" class="btn btn-danger">🚫 Bloquear</button>
-            {% endif %}
-          </form>
+            <!-- RESET KEY -->
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-ghost">Reset Key</button>
+            </form>
 
-          <!-- RESET KEY -->
-          <form method="post" action="/admin/reset/{{ loop.index0 }}"
-                onsubmit="return confirm('Resetar KEY de {{ u.username }}?')">
-            <button type="submit" class="btn btn-ghost">Reset Key</button>
-          </form>
+            <!-- RESET DEVICE -->
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-danger">Reset Device</button>
+            </form>
 
-          <!-- RESET DEVICE -->
-          <form method="post" action="/admin/reset_device/{{ loop.index0 }}"
-                onsubmit="return confirm('Resetar DEVICE de {{ u.username }}?')">
-            <button type="submit" class="btn btn-danger">Reset Device</button>
-          </form>
+            <!-- DELETE -->
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                  onsubmit="return confirm('Excluir usuário?')">
+              <button type="submit" class="btn btn-danger">Del</button>
+            </form>
+          </div>
 
-          <!-- LIXEIRA / RESTAURAR -->
-          {% if u.deleted %}
-          <form method="post" action="/admin/restore/{{ loop.index0 }}"
-                onsubmit="return confirm('Restaurar {{ u.username }}?')">
-            <button type="submit" class="btn btn-primary">♻️ Restaurar</button>
-          </form>
-          {% else %}
-          <form method="post" action="/admin/trash/{{ loop.index0 }}"
-                onsubmit="return confirm('Mover {{ u.username }} para lixeira?')">
-            <button type="submit" class="btn btn-danger">🗑️ Lixeira</button>
-          </form>
-          {% endif %}
+          <!-- MOBILE -->
+          <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
+
+          <div class="actionsMenu">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary" style="width:100%">+30</button>
+            </form>
+
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <input type="number" name="days" min="1" value="7"
+                     style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
+              <button type="submit" class="btn btn-primary" style="width:100%">+Dias</button>
+            </form>
+
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('Alterar status desse usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-primary" style="width:100%">✅ Desbloquear</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" style="width:100%">🚫 Bloquear</button>
+              {% endif %}
+            </form>
+
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-ghost" style="width:100%">Reset Key</button>
+            </form>
+
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-danger" style="width:100%">Reset Device</button>
+            </form>
+
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                  onsubmit="return confirm('Excluir usuário?')">
+              <button type="submit" class="btn btn-danger" style="width:100%">Del</button>
+            </form>
+          </div>
 
         </td>
       </tr>
@@ -414,6 +473,13 @@
 <script>
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
+// 12) Toast via URL ?msg=
+(function(){
+  const url = new URL(window.location.href);
+  const msg = url.searchParams.get("msg");
+  if(msg) toast(msg);
+})();
+
 // Definir expiração
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
@@ -426,13 +492,6 @@ function toast(msg){
   t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"), 1400);
 }
-
-// pegar msg da URL (toast global)
-(function(){
-  const url = new URL(window.location.href);
-  const msg = url.searchParams.get("msg");
-  if(msg) toast(msg);
-})();
 
 // copiar key
 function copiar(t, el){
@@ -472,7 +531,7 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// expirações com data exata
+// 4) expirações (dias + data exata)
 function formatDateBR(ts){
   const d = new Date(ts * 1000);
   const dd = String(d.getDate()).padStart(2,"0");
@@ -550,6 +609,26 @@ function updateDashboard(){
   document.getElementById("dashExpirados").innerText = expirados;
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
+
+// 11) abrir/fechar menu ⋮
+function toggleMenu(btn){
+  const box = btn.closest(".actionsBox");
+  const menu = box.querySelector(".actionsMenu");
+
+  // fecha todos os outros
+  document.querySelectorAll(".actionsMenu").forEach(m=>{
+    if(m !== menu) m.style.display = "none";
+  });
+
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+// clicou fora, fecha
+document.addEventListener("click", (e)=>{
+  if(!e.target.closest(".actionsBox")){
+    document.querySelectorAll(".actionsMenu").forEach(m=> m.style.display="none");
+  }
+});
 
 renderExp();
 updateDashboard();
