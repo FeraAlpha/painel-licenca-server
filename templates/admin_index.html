@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <style>
-  :root{
+  :root {
     --bg:#cfd4d8;
     --card:#f5f6f7;
     --border:#c6c9cd;
@@ -15,221 +15,157 @@
     --accent:#2f6fed;
     --danger:#d93c3c;
     --ok:#177a30;
-    --warn:#f0ad4e;
     --radius:12px;
-    --shadow: 0 10px 22px rgba(0,0,0,.08);
-    --vip:#6b2fd9;
   }
 
-  *{
+  * {
     margin:0;
     padding:0;
     box-sizing:border-box;
     font-family:Inter, Arial, sans-serif;
   }
 
-  body{
+  body {
     background:var(--bg);
     padding:20px;
     color:var(--text);
   }
 
-  header{
+  header {
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:20px;
-    gap:12px;
-    flex-wrap:wrap;
   }
 
-  h1{
+  h1 {
     font-size:24px;
-    font-weight:800;
-    letter-spacing:.2px;
+    font-weight:700;
   }
 
-  .card{
+  .card {
     background:var(--card);
     border:1px solid var(--border);
     padding:20px;
     border-radius:var(--radius);
     margin-bottom:20px;
-    box-shadow: var(--shadow);
   }
 
-  label{ font-weight:700; }
-
-  input{
+  label { font-weight:600; }
+  input {
     width:100%;
     padding:11px;
-    border-radius:10px;
+    border-radius:8px;
     border:1px solid var(--border);
     margin-bottom:12px;
     background:white;
-    outline:none;
-    transition:.15s ease;
-  }
-  input:focus{
-    border-color: rgba(47,111,237,.55);
-    box-shadow: 0 0 0 3px rgba(47,111,237,.15);
   }
 
-  .btn{
+  .btn {
     padding:10px 14px;
-    border-radius:12px;
+    border-radius:9px;
     cursor:pointer;
-    font-weight:800;
+    font-weight:700;
     border:0;
     font-size:14px;
-    white-space:nowrap;
-    transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
-  }
-  .btn:hover{ transform: translateY(-1px); opacity:.96; }
-  .btn:active{ transform: scale(.98); }
-
-  .btn-primary{ background:var(--accent); color:white; }
-  .btn-danger{ background:var(--danger); color:white; }
-  .btn-ghost{ background:transparent; border:1px solid var(--border); color:var(--text); }
-  .btn-warning{ background:var(--warn); color:white; }
-  .btn-mini{
-    padding:7px 10px;
-    border-radius:10px;
-    font-size:12px;
-    font-weight:900;
-  }
-  .btn-vip{
-    background:var(--vip);
-    color:white;
   }
 
-  table{
+  .btn-primary { background:var(--accent); color:white; }
+  .btn-danger  { background:var(--danger); color:white; }
+  .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
+  .btn-warning { background:#f0ad4e; color:white; }
+
+  table {
     width:100%;
     border-collapse:collapse;
     font-size:14px;
   }
 
-  thead th{
+  thead th {
     background:#eceff1;
     padding:12px;
     border-bottom:1px solid var(--border);
     cursor:pointer;
-    text-align:left;
-    user-select:none;
   }
 
-  tbody td{
+  tbody td {
     padding:12px;
     border-bottom:1px solid var(--border);
-    word-break:break-word;
-    vertical-align:top;
+    word-break:break-all;
   }
 
-  tbody tr:hover{ background:#eef2f5; }
+  tbody tr:hover {
+    background:#eef2f5;
+  }
 
-  .copy{
+  .copy {
     color:var(--accent);
     cursor:pointer;
-    font-weight:900;
+    font-weight:700;
     margin-left:6px;
   }
 
   /* BADGES */
-  .badge{
+  .badge {
     padding:6px 10px;
     border-radius:18px;
     font-size:13px;
-    font-weight:900;
+    font-weight:700;
     display:inline-block;
   }
-  .badge-ok{ background:#d7f5dd; color:var(--ok); }
-  .badge-warn{ background:#fff3c9; color:#8a6c1e; }
-  .badge-exp{ background:#ffe1e1; color:#b32828; }
-  .badge-unl{ background:#d4e6ff; color:#2f6fed; }
-  .badge-vip{ background:#efe4ff; color:var(--vip); }
+  .badge-ok { background:#d7f5dd; color:var(--ok); }
+  .badge-warn { background:#fff3c9; color:#8a6c1e; }
+  .badge-exp { background:#ffe1e1; color:#b32828; }
+  .badge-unl { background:#d4e6ff; color:#2f6fed; }
 
-  body.dark{
+  /* DARK MODE */
+  body.dark {
     --bg:#0e1113;
     --card:#1a1d21;
     --border:#2a2e32;
     --text:#e5ecef;
     --text-light:#9aa4ab;
-    --shadow: 0 10px 22px rgba(0,0,0,.35);
   }
-  body.dark thead th{ background:#14181c; }
-  body.dark tbody tr:hover{ background:#14181c; }
-  body.dark input{ background:#0f1316; color:var(--text); }
 
-  .admin-tools{
+  /* ADMIN TOOLS */
+  .admin-tools {
     display:flex;
     gap:12px;
     margin-bottom:20px;
     flex-wrap:wrap;
   }
-
-  .counter-bar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:10px;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-  .counter-bar .left{ font-weight:900; }
-  .counter-bar .right{ font-size:13px; color:var(--text-light); }
-
-  .toast{
-    position:fixed;
-    right:18px;
-    bottom:18px;
-    width:min(360px, calc(100% - 36px));
-    background:rgba(20,20,20,.92);
-    color:white;
-    padding:12px 14px;
-    border-radius:16px;
-    box-shadow: 0 14px 40px rgba(0,0,0,.25);
-    display:none;
-    z-index:9999;
-    font-weight:900;
-    letter-spacing:.2px;
-  }
-  .toast.show{ display:block; animation: toastIn .18s ease; }
-  @keyframes toastIn{
-    from{ transform: translateY(12px); opacity:0; }
-    to{ transform: translateY(0); opacity:1; }
-  }
-
-  .mini{
-    font-size:12px;
-    color:var(--text-light);
-    margin-top:4px;
-    display:block;
-    line-height:1.25;
+  
+  .admin-tools form {
+    display:inline-block;
   }
 </style>
 </head>
 
 <body>
+
 <header>
   <div>
     <h1>Fera Alpha — Admin</h1>
     <div style="font-size:13px;color:var(--text-light)">Gerenciamento avançado</div>
   </div>
+
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
+<!-- ADMIN TOOLS -->
 <div class="admin-tools">
-  <form method="post" action="/admin/reset_all_devices"
+  <form method="post" action="/admin/reset_all_devices" 
         onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
     <button type="submit" class="btn btn-warning">🔄 Resetar Todos Devices</button>
   </form>
-
-  <form method="post" action="/admin/clean_expired"
+  
+  <form method="post" action="/admin/clean_expired" 
         onsubmit="return confirm('Remover TODOS os usuários expirados?')">
     <button type="submit" class="btn btn-danger">🗑️ Limpar Expirados</button>
   </form>
 </div>
 
+<!-- GERAR KEY -->
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
@@ -245,29 +181,20 @@
 
     <label>Expiração (dias) - Use 0 para ilimitado</label>
     <input name="expire_days" type="number" value="30" min="0">
-
-    <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap;">
+    
+    <div style="display:flex; gap:12px; margin-top:8px;">
       <button type="submit" class="btn btn-primary">Gerar</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('30')">30 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('60')">60 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('120')">120 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('90')">90 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('0')">Ilimitado</button>
     </div>
   </form>
 </div>
 
+<!-- TABELA -->
 <div class="card">
-  <div class="counter-bar">
-    <div class="left">
-      Total de logins: <span id="totalUsers" style="color:var(--accent)">0</span>
-      <span style="margin-left:10px">VIP: <span id="vipUsers" style="color:var(--vip)">0</span></span>
-    </div>
-    <div class="right">
-      Mostrando: <span id="shownUsers">0</span>
-    </div>
-  </div>
-
-  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
+  <input id="searchUser" placeholder="Buscar usuário, key ou device" 
+         style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -277,19 +204,17 @@
         <th>Senha</th>
         <th>Key</th>
         <th>Device</th>
-        <th>VIP (Não vence)</th>
-        <th onclick="sortTable(6)">Expiração</th>
+        <th onclick="sortTable(5)">Expiração</th>
         <th>Ações</th>
       </tr>
     </thead>
 
     <tbody>
       {% for u in users %}
-      <tr data-expires="{{ u.expires_at }}"
-          data-username="{{ u.username }}"
-          data-device="{{ u.device_id if u.device_id else '' }}">
+      <tr data-expires="{{ u.expires_at }}">
 
         <td>{{ loop.index0 }}</td>
+
         <td>{{ u.username }}</td>
 
         <td>
@@ -304,80 +229,89 @@
 
         <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-        <td class="vipCell"></td>
-
         <td class="expCell"></td>
 
         <td style="display:flex;gap:6px;flex-wrap:wrap">
-          <button type="button" class="btn btn-vip btn-mini" onclick="toggleVipFromBtn(this)">VIP</button>
 
+          <!-- +30 -->
           <form method="post" action="/admin/renew/{{ loop.index0 }}">
-            <button type="submit" class="btn btn-primary btn-mini">+30</button>
+            <button type="submit" class="btn btn-primary">+30</button>
           </form>
 
+          <!-- +DIAS -->
+          <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+            <input type="number" name="days" min="1" value="7" 
+                   style="width:55px;padding:6px">
+            <button type="submit" class="btn btn-primary">+Dias</button>
+          </form>
+
+          <!-- Make Unlimited -->
+          <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
+                onsubmit="return confirm('Tornar esta licença ilimitada?')">
+            <button type="submit" class="btn" style="background:#2f6fed;color:white">∞ Ilimitado</button>
+          </form>
+
+          <!-- Reset Key -->
+          <form method="post" action="/admin/reset/{{ loop.index0 }}">
+            <button type="submit" class="btn btn-ghost">Reset Key</button>
+          </form>
+
+          <!-- Reset Device -->
           <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-            <button type="submit" class="btn btn-danger btn-mini">Reset Device</button>
+            <button type="submit" class="btn btn-danger">Reset Device</button>
           </form>
 
+          <!-- Delete -->
           <form method="post" action="/admin/delete/{{ loop.index0 }}"
                 onsubmit="return confirm('Excluir usuário?')">
-            <button type="submit" class="btn btn-danger btn-mini">Del</button>
+            <button type="submit" class="btn btn-danger">Del</button>
           </form>
-        </td>
 
+        </td>
       </tr>
       {% endfor %}
     </tbody>
+
   </table>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
+// Definir expiração
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
-  toast(days === "0" ? "✅ Licença ilimitada selecionada!" : "✅ Expiração: " + days + " dias");
+  if(days == '0'){
+    alert("Licença será criada como ILIMITADA!");
+  }
 }
 
-/* Toast */
-let toastTimer = null;
-function toast(msg){
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> el.classList.remove("show"), 1600);
-}
-
-/* copiar */
+// copiar key
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
-  toast("✅ Copiado!");
-  setTimeout(()=> el.innerText = "copiar",900);
+  setTimeout(()=> el.innerText = "copiar",1000);
 }
 
+// copiar usuário + senha
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
-  toast("✅ Usuário + senha copiados!");
+  alert("Usuário + Senha copiados!");
 }
 
-/* busca */
+// busca
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
+  document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
     tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
   });
-  updateCounters();
 });
 
-/* sort */
+// ordenar
 function sortTable(col){
-  const tbody = document.getElementById("usersTable").tBodies[0];
-  const rows = Array.from(tbody.rows);
-  const asc = tbody.getAttribute("data-sort") !== "asc";
+  const table = document.getElementById("usersTable").tBodies[0];
+  const rows = Array.from(table.rows);
+  const asc = table.getAttribute("data-sort") != "asc";
 
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
@@ -385,120 +319,39 @@ function sortTable(col){
     return asc ? A.localeCompare(B) : B.localeCompare(A);
   });
 
-  rows.forEach(r=> tbody.appendChild(r));
-  tbody.setAttribute("data-sort", asc ? "asc" : "desc");
+  rows.forEach(r => table.appendChild(r));
+  table.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-/* ===== VIP (não vence) ===== */
-const VIP_KEY = "feraalpha_vip_users_only";
-
-function getVip(){
-  try{ return JSON.parse(localStorage.getItem(VIP_KEY) || "[]"); }
-  catch(e){ return []; }
-}
-function setVip(list){ localStorage.setItem(VIP_KEY, JSON.stringify(list)); }
-function isVip(username){ return getVip().includes(username); }
-
-function toggleVip(username){
-  let list = getVip();
-  if(list.includes(username)){
-    list = list.filter(u => u !== username);
-    toast("⭐ VIP desativado");
-  }else{
-    list.push(username);
-    toast("⭐ VIP ativado (não vence)");
-  }
-  setVip(list);
-  renderVipCells();
-  renderExp();
-  updateCounters();
-}
-
-function toggleVipFromBtn(btn){
-  const tr = btn.closest("tr");
-  const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-  toggleVip(username);
-}
-
-function renderVipCells(){
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr=>{
-    const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-    const cell = tr.querySelector(".vipCell");
-    if(!cell) return;
-
-    if(isVip(username)){
-      cell.innerHTML = `<span class="badge badge-vip">⭐ VIP</span>
-                        <span class="mini">Não vence</span>`;
-      tr.dataset.vip = "1";
-    }else{
-      cell.innerHTML = `<span class="badge badge-ok">Normal</span>`;
-      tr.dataset.vip = "0";
-    }
-  });
-}
-
-/* Expiração (VIP vira ilimitado no painel) */
-function fmtDate(ts){
-  const d = new Date(ts * 1000);
-  const pad = n => String(n).padStart(2,"0");
-  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
+// expirações
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
 
   document.querySelectorAll("tr[data-expires]").forEach(tr=>{
-    const username = tr.getAttribute("data-username") || tr.cells[1]?.innerText?.trim();
-    const isVIP = isVip(username);
-
-    let exp = parseInt(tr.getAttribute("data-expires") || "0");
+    let exp = parseInt(tr.getAttribute("data-expires"));
     let cell = tr.querySelector(".expCell");
 
-    // ✅ VIP = NÃO VENCE
-    if(isVIP){
-      cell.innerHTML = `<span class="badge badge-unl">Ilimitado</span>
-                        <span class="mini">VIP ativo</span>`;
-      return;
-    }
-
+    // Verificar se é ilimitado (0 ou valor muito grande)
     if(!exp || exp == 0 || exp == 9999999999999){
       cell.innerHTML = "<span class='badge badge-unl'>Ilimitado</span>";
       return;
     }
 
     if(exp < now){
-      cell.innerHTML = `<span class='badge badge-exp'>Expirado</span>
-                        <span class="mini">Expirou em: ${fmtDate(exp)}</span>`;
+      cell.innerHTML = "<span class='badge badge-exp'>Expirado</span>";
       return;
     }
 
-    let diffDays = Math.floor((exp-now)/86400);
+    let diff = Math.floor((exp-now)/86400);
 
-    let badge = "";
-    if(diffDays < 3) badge = `<span class='badge badge-exp'>${diffDays} dias</span>`;
-    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
-    else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
-
-    cell.innerHTML = `${badge}
-                      <span class="mini">Expira em: ${fmtDate(exp)}</span>`;
+    if(diff < 3) cell.innerHTML = `<span class='badge badge-exp'>${diff} dias</span>`;
+    else if(diff < 7) cell.innerHTML = `<span class='badge badge-warn'>${diff} dias</span>`;
+    else cell.innerHTML = `<span class='badge badge-ok'>${diff} dias</span>`;
   });
 }
-
-/* contadores */
-function updateCounters(){
-  const rows = Array.from(document.querySelectorAll("#usersTable tbody tr"));
-  const visibleRows = rows.filter(r=>r.style.display !== "none");
-  const vipCount = rows.filter(r=>r.dataset.vip === "1").length;
-
-  document.getElementById("totalUsers").innerText = rows.length;
-  document.getElementById("shownUsers").innerText = visibleRows.length;
-  document.getElementById("vipUsers").innerText = vipCount;
-}
-
-/* init */
-renderVipCells();
 renderExp();
-updateCounters();
+
+// Auto-refresh a cada 10 segundos
 setInterval(renderExp, 10000);
 </script>
 
