@@ -326,7 +326,7 @@
       "username": "ISMAELFF",
       "password": "123",
       "key": "FERA-90DD776A",
-      "device_id": "043c0590e23201b6ca557daa4e2eee4b2cb2aacdca2c3cf9a57149d0ec597f18",
+      "device_id": null,
       "expires_at": 1772893141
     }
   ]
