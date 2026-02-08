@@ -342,13 +342,6 @@
       "key": "FERA-E3169CA1",
       "device_id": "fcbdd122fc70f8da32635bffe3c0ca982b6fcdac635e98d9f799e2ca28732e25",
       "expires_at": 1772126659
-    },
-    {
-      "username": "Admin",
-      "password": "123",
-      "key": "FERA-BF59FF33",
-      "device_id": null,
-      "expires_at": 1773186884
     }
   ]
 }
