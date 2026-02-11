@@ -270,7 +270,7 @@
       "username": "Paulo",
       "password": "333",
       "key": "FERA-8C400F3A",
-      "device_id": "5cfc0d4e3b31b916b524a649df8f5e4d1393b0862681800edbc11752de6fab0c",
+      "device_id": null,
       "expires_at": 1773883458
     },
     {
