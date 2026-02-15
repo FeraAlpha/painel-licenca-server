@@ -405,13 +405,6 @@
       "key": "FERA-554BA94F",
       "device_id": "93e5198ddebbae4b1485be2c0ca829bdbeef6d2f34fc633c81359a2d30d3a93b",
       "expires_at": 1773680513
-    },
-    {
-      "username": "kdsh",
-      "password": "123",
-      "key": "FERA-764BB98A",
-      "device_id": "e7d77cfcbec159f3d5c8519045e94b55b1a4b5e1fe43e52ebe34b7bf58789f41",
-      "expires_at": 1773761984
     }
   ]
 }
