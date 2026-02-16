@@ -403,7 +403,7 @@
       "username": "mineiroff",
       "password": "123",
       "key": "FERA-554BA94F",
-      "device_id": "93e5198ddebbae4b1485be2c0ca829bdbeef6d2f34fc633c81359a2d30d3a93b",
+      "device_id": null,
       "expires_at": 1773680513
     }
   ]
