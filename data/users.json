@@ -410,15 +410,8 @@
       "username": "Feera1",
       "password": "Feera1",
       "key": "FERA-7E9A380A",
-      "device_id": "e9de1a505f16fea0279e31557deef40739798612d9f9681be8b0e3e0cf1cee04",
-      "expires_at": 1773850468
-    },
-    {
-      "username": "Leo",
-      "password": "Leo",
-      "key": "FERA-3D5EA3DF",
       "device_id": null,
-      "expires_at": 1773851844
+      "expires_at": 1773850468
     }
   ]
 }
