@@ -151,7 +151,7 @@
       "username": "Manomix",
       "password": "123",
       "key": "FERA-C260C7B6",
-      "device_id": "12012ccccb6af23baf421cb775d337d7356e2e45544b736f8ee9cbfafaf98b1a",
+      "device_id": null,
       "expires_at": 1797796271
     },
     {
@@ -221,7 +221,7 @@
       "username": "wesley-wcf",
       "password": "123",
       "key": "FERA-052F0A13",
-      "device_id": null,
+      "device_id": "a14c4f8ff3ec4fbc912ecf7e75790110b08567b628ad5df9affb422076b3d19c",
       "expires_at": 1772225384
     },
     {
