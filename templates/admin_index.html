@@ -1,343 +1,585 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fera Alpha — Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<title>Fera Alpha — Admin</title>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+            padding: 24px;
+            line-height: 1.5;
+        }
 
-<style>
-:root{
-  --bg:#0e1015;
-  --card:#161a22;
-  --border:#23283a;
-  --text:#eaeaf0;
-  --muted:#9aa0b3;
-  --primary:#4f7cff;
-  --danger:#ff4d4d;
-  --ok:#2ecc71;
-  --exp:#f1c40f;
-}
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:var(--bg);
-  color:var(--text);
-}
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            transition: box-shadow 0.2s;
+        }
 
-h1,h2{margin:0 0 10px}
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
 
-.container{
-  max-width:1300px;
-  margin:auto;
-  padding:20px;
-}
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
 
-/* ---------- CARDS ---------- */
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:18px;
-}
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-/* ---------- FORM ---------- */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
-}
+        .theme-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.field label{
-  font-size:13px;
-  color:var(--muted);
-  display:block;
-  margin-bottom:4px;
-}
+        .theme-btn:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
 
-.field input{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  background:#0c0f16;
-  border:1px solid var(--border);
-  color:var(--text);
-}
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
 
-/* ---------- BUTTONS ---------- */
-.btn{
-  padding:11px 14px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  font-weight:600;
-}
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
 
-.btn-primary{background:var(--primary);color:#fff}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-ghost{
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--text);
-}
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
 
-.quick-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:14px;
-}
+        .stat-content h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-/* ---------- STATS ---------- */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:12px;
-}
+        .stat-content .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.2;
+        }
 
-.stat{
-  background:#0c0f16;
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:14px;
-}
+        /* Gerar Key Card */
+        .generate-card {
+            margin-bottom: 32px;
+        }
 
-.stat span{
-  font-size:22px;
-  font-weight:700;
-}
+        .generate-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
 
-.stat.ok span{color:var(--ok)}
-.stat.exp span{color:var(--exp)}
-.stat.block span{color:var(--danger)}
+        .form-group {
+            flex: 1 1 160px;
+        }
 
-/* ---------- TABLE ---------- */
-.tableWrap{
-  overflow-x:auto;
-}
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 6px;
+        }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:1000px;
-}
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 15px;
+            transition: border 0.2s, box-shadow 0.2s;
+            background: white;
+        }
 
-th,td{
-  padding:12px;
-  border-bottom:1px solid var(--border);
-  text-align:left;
-}
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
 
-th{
-  color:var(--muted);
-  font-size:13px;
-}
+        .expiration-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
 
-.badge{
-  padding:5px 10px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:600;
-}
+        .expiration-buttons button {
+            background: #f1f5f9;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.badge-ok{background:#1e7f46}
-.badge-exp{background:#7a5a00}
-.badge-block{background:#7a1e1e}
+        .expiration-buttons button:hover {
+            background: #e2e8f0;
+        }
 
-.copy{
-  cursor:pointer;
-  color:var(--primary);
-  margin-left:6px;
-  font-size:12px;
-}
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
 
-/* ---------- ACTIONS ---------- */
-.actionsWrap{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
 
-.menuBtn{
-  display:none;
-}
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
 
-.actionsMenu{
-  display:none;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:10px;
-  margin-top:6px;
-}
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
 
-@media(max-width:900px){
-  .actionsWrap{display:none}
-  .menuBtn{
-    display:block;
-    background:#0c0f16;
-    border:1px solid var(--border);
-    color:#fff;
-    padding:10px;
-    border-radius:10px;
-  }
-}
-</style>
+        .btn-ghost:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Tabela */
+        .table-container {
+            background: white;
+            border-radius: 24px;
+            overflow-x: auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 18px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #eef2f6;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fafbfc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-ok {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-exp {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .copy {
+            margin-left: 8px;
+            font-size: 12px;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: underline dotted;
+        }
+
+        .actionsWrap {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Mobile menu */
+        .menuBtn {
+            display: none;
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .actionsMenu {
+            display: none;
+            position: absolute;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            padding: 12px;
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .actionsMenu.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .actionsWrap {
+                display: none;
+            }
+            .menuBtn {
+                display: inline-block;
+            }
+            .actionsMenu {
+                right: 0;
+                left: auto;
+            }
+        }
+
+        /* Ajustes para o card de ações */
+        .actionsBox {
+            position: relative;
+        }
+
+        /* Resetar dispositivos e limpar expirados */
+        .top-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .top-actions button {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-actions button:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <h1>⚡ Fera Alpha — Admin</h1>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="top-actions">
+                    <button>🔄 Resetar Todos Devices</button>
+                    <button>🗑️ Limpar Expirados</button>
+                </div>
+                <button class="theme-btn">🌙 Tema</button>
+            </div>
+        </div>
 
-<h1>🔥 Fera Alpha — Painel Admin</h1>
-<p style="color:var(--muted)">Gerenciamento avançado de usuários e licenças</p>
+        <!-- Cards de estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e0f2fe; color: #0369a1;">👥</div>
+                <div class="stat-content">
+                    <h3>Total</h3>
+                    <div class="value">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #dcfce7; color: #166534;">✅</div>
+                <div class="stat-content">
+                    <h3>Ativos</h3>
+                    <div class="value">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fff3cd; color: #856404;">⛔</div>
+                <div class="stat-content">
+                    <h3>Expirados</h3>
+                    <div class="value">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fee2e2; color: #991b1b;">🚫</div>
+                <div class="stat-content">
+                    <h3>Bloqueados</h3>
+                    <div class="value">0</div>
+                </div>
+            </div>
+        </div>
 
-<!-- GERAR KEY -->
-<div class="card">
-<h2>🔑 Gerar Nova Key</h2>
+        <!-- Card Gerar Nova Key -->
+        <div class="card generate-card">
+            <h2 style="margin-bottom: 20px; font-size: 22px; font-weight: 600;">🔑 Gerar Nova Key</h2>
+            <form method="post" action="/admin/generate" class="generate-form">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <input type="text" name="username" required placeholder="ex: joaosilva">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="text" name="password" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Prefixo</label>
+                    <input type="text" name="prefix" value="FERA" placeholder="FERA">
+                </div>
+                <div class="form-group">
+                    <label>Expiração (dias)</label>
+                    <input type="number" name="expire_days" id="expire_days" value="30" min="1" step="1">
+                </div>
+                <div style="flex: 0 0 auto;">
+                    <button type="submit" class="btn-primary">✨ Gerar</button>
+                </div>
+            </form>
+            <div class="expiration-buttons" style="margin-top: 16px;">
+                <button type="button" onclick="setExpiration('15')">15 dias</button>
+                <button type="button" onclick="setExpiration('40')">40 dias</button>
+                <button type="button" onclick="setExpiration('70')">70 dias</button>
+                <button type="button" onclick="setExpiration('110')">110 dias</button>
+            </div>
+        </div>
 
-<form method="post" action="/admin/generate">
-<div class="grid">
+        <!-- Tabela de usuários -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuário</th>
+                        <th>Senha</th>
+                        <th>Key</th>
+                        <th>Device</th>
+                        <th>Expiração</th>
+                        <th>Status</th>
+                        <th style="text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr data-expires="{{ u.expires_at }}">
+                        <td>{{ loop.index0 }}</td>
+                        <td><b>{{ u.username }}</b></td>
+                        <td>
+                            {{ u.password }}
+                            <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
+                        </td>
+                        <td>
+                            {{ u.key }}
+                            <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
+                        </td>
+                        <td>{{ u.device_id if u.device_id else '-' }}</td>
+                        <td class="expCell"></td>
+                        <td class="statusCell" data-status="{{ u.status }}">
+                            {% if u.status == "blocked" %}
+                                <span class="badge badge-exp">Bloqueado</span>
+                            {% else %}
+                                <span class="badge badge-ok">Ativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="actionsBox">
+                            <!-- DESKTOP -->
+                            <div class="actionsWrap">
+                                <form method="post" action="/admin/renew/{{ loop.index0 }}" style="display: inline;">
+                                    <button type="submit" class="btn-primary">+30</button>
+                                </form>
+                                <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" style="display: inline; display: flex; gap: 4px;">
+                                    <input type="number" name="days" min="1" value="7" style="width: 70px; padding: 8px; border-radius: 30px; border: 1px solid #e2e8f0;">
+                                    <button type="submit" class="btn-primary">+Dias</button>
+                                </form>
+                                <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" onsubmit="return confirm('Alterar status desse usuário?')" style="display: inline;">
+                                    {% if u.status == "blocked" %}
+                                        <button type="submit" class="btn-primary">✅ Desbloquear</button>
+                                    {% else %}
+                                        <button type="submit" class="btn-danger">🚫 Bloquear</button>
+                                    {% endif %}
+                                </form>
+                                <form method="post" action="/admin/reset/{{ loop.index0 }}" style="display: inline;">
+                                    <button type="submit" class="btn-ghost">Reset Key</button>
+                                </form>
+                                <form method="post" action="/admin/reset_device/{{ loop.index0 }}" style="display: inline;">
+                                    <button type="submit" class="btn-danger">Reset Device</button>
+                                </form>
+                                <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')" style="display: inline;">
+                                    <button type="submit" class="btn-danger">Del</button>
+                                </form>
+                            </div>
 
-<div class="field">
-<label>Usuário</label>
-<input name="username" required>
-</div>
+                            <!-- MOBILE -->
+                            <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
+                            <div class="actionsMenu">
+                                <form method="post" action="/admin/renew/{{ loop.index0 }}">
+                                    <button type="submit" class="btn-primary" style="width:100%">+30</button>
+                                </form>
+                                <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+                                    <input type="number" name="days" min="1" value="7" style="width:100%; padding:10px; border-radius:30px; border:1px solid #e2e8f0; margin:8px 0;">
+                                    <button type="submit" class="btn-primary" style="width:100%">+Dias</button>
+                                </form>
+                                <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" onsubmit="return confirm('Alterar status desse usuário?')">
+                                    {% if u.status == "blocked" %}
+                                        <button type="submit" class="btn-primary" style="width:100%">✅ Desbloquear</button>
+                                    {% else %}
+                                        <button type="submit" class="btn-danger" style="width:100%">🚫 Bloquear</button>
+                                    {% endif %}
+                                </form>
+                                <form method="post" action="/admin/reset/{{ loop.index0 }}">
+                                    <button type="submit" class="btn-ghost" style="width:100%">Reset Key</button>
+                                </form>
+                                <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+                                    <button type="submit" class="btn-danger" style="width:100%">Reset Device</button>
+                                </form>
+                                <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')">
+                                    <button type="submit" class="btn-danger" style="width:100%">Del</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<div class="field">
-<label>Senha</label>
-<input name="password" required>
-</div>
+    <script>
+        // Função para definir a expiração (ajusta o input)
+        function setExpiration(days) {
+            document.getElementById('expire_days').value = days;
+        }
 
-<div class="field">
-<label>Prefixo</label>
-<input name="prefix" value="FERA">
-</div>
+        // Função para copiar texto (exemplo simples)
+        function copiar(texto, elemento) {
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('Copiado: ' + texto);
+            });
+        }
 
-<div class="field">
-<label>Expiração (dias)</label>
-<input id="expire_days" name="expire_days" type="number" value="15">
-</div>
+        function copiarCred(user, pass) {
+            navigator.clipboard.writeText(`${user}:${pass}`).then(() => {
+                alert('Credenciais copiadas');
+            });
+        }
 
-</div>
+        // Menu mobile
+        function toggleMenu(btn) {
+            const menu = btn.nextElementSibling;
+            menu.classList.toggle('show');
+        }
 
-<div class="quick-actions">
-<button type="button" class="btn btn-ghost" onclick="setExp(15)">15 Dias</button>
-<button type="button" class="btn btn-ghost" onclick="setExp(40)">40 Dias</button>
-<button type="button" class="btn btn-ghost" onclick="setExp(70)">70 Dias</button>
-<button type="button" class="btn btn-ghost" onclick="setExp(110)">110 Dias</button>
-<button class="btn btn-primary">Gerar Key</button>
-</div>
-</form>
-</div>
-
-<!-- STATS -->
-<div class="stats">
-<div class="stat"><b>👥 Total</b><span>{{ total }}</span></div>
-<div class="stat ok"><b>✅ Ativos</b><span>{{ ativos }}</span></div>
-<div class="stat exp"><b>⛔ Expirados</b><span>{{ expirados }}</span></div>
-<div class="stat block"><b>🚫 Bloqueados</b><span>{{ bloqueados }}</span></div>
-</div>
-
-<!-- USERS -->
-<div class="card tableWrap">
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Usuário</th>
-<th>Senha</th>
-<th>Key</th>
-<th>Device</th>
-<th>Expiração</th>
-<th>Status</th>
-<th>Ações</th>
-</tr>
-</thead>
-
-<tbody>
-{% for u in users %}
-<tr data-exp="{{ u.expires_at }}">
-
-<td>{{ loop.index }}</td>
-<td><b>{{ u.username }}</b></td>
-
-<td>
-{{ u.password }}
-<span class="copy" onclick="copyText('{{ u.password }}')">copiar</span>
-</td>
-
-<td>
-{{ u.key }}
-<span class="copy" onclick="copyText('{{ u.key }}')">copiar</span>
-</td>
-
-<td>{{ u.device_id or '-' }}</td>
-
-<td class="expCell"></td>
-
-<td>
-{% if u.status == 'blocked' %}
-<span class="badge badge-block">Bloqueado</span>
-{% else %}
-<span class="badge badge-ok">Ativo</span>
-{% endif %}
-</td>
-
-<td>
-<div class="actionsWrap">
-<form method="post" action="/admin/renew/{{ loop.index0 }}">
-<button class="btn btn-primary">+30</button>
-</form>
-
-<form method="post" action="/admin/toggle_block/{{ loop.index0 }}">
-<button class="btn btn-danger">Bloquear</button>
-</form>
-
-<form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-<button class="btn btn-ghost">Reset Device</button>
-</form>
-
-<form method="post" action="/admin/delete/{{ loop.index0 }}">
-<button class="btn btn-danger">Del</button>
-</form>
-</div>
-
-<button class="menuBtn" onclick="toggleMenu(this)">⋮ Ações</button>
-<div class="actionsMenu"></div>
-</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-
-</div>
-
-<script>
-function setExp(d){
- document.getElementById('expire_days').value=d;
-}
-
-function copyText(t){
- navigator.clipboard.writeText(t);
-}
-
-document.querySelectorAll('tr[data-exp]').forEach(r=>{
- let exp=new Date(r.dataset.exp);
- let now=new Date();
- let days=Math.ceil((exp-now)/86400000);
- r.querySelector('.expCell').innerHTML=
-  `<b>${days>0?days+' dias':'Expirado'}</b><br><small>${exp.toLocaleDateString()}</small>`;
-});
-
-function toggleMenu(btn){
- let m=btn.nextElementSibling;
- m.style.display=m.style.display==='block'?'none':'block';
-}
-</script>
-
-</body>
-</html>
+        // Fechar menu ao clicar fora (opcional)
+        document.addEventListener('click', function(event) {
+          
