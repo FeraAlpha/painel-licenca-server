@@ -89,7 +89,7 @@
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
 
-  /* ------- MELHORIA 7: LOADING NOS BOTÕES ------- */
+  /* LOADING NOS BOTÕES (melhoria 7) */
   .btn-loading {
     color: transparent !important;
     pointer-events: none;
@@ -140,7 +140,7 @@
     margin-left:8px;
   }
 
-  /* ------- MELHORIA 1: OCULTAR SENHA COM TOGGLE ------- */
+  /* OCULTAR SENHA COM TOGGLE (melhoria 1) */
   .password-value { display: none; }
   .password-toggle {
     background: none;
@@ -152,6 +152,16 @@
     border-radius: 6px;
   }
   .password-toggle:hover { background: rgba(0,0,0,0.05); }
+
+  /* DESTAQUE DA LINHA (melhoria 13) */
+  .highlight {
+    animation: highlightFade 2s ease-out;
+  }
+  @keyframes highlightFade {
+    0% { background-color: #fff3b0; }
+    70% { background-color: #fff3b0; }
+    100% { background-color: transparent; }
+  }
 
   /* BADGES */
   .badge {
@@ -233,7 +243,7 @@
   }
 
   /* ===========================
-     11) MOBILE: AÇÕES VIRAM MENU ⋮
+     MOBILE: AÇÕES VIRAM MENU ⋮
      =========================== */
   .actionsBox{
     position:relative;
@@ -385,14 +395,14 @@
 
     <tbody>
       {% for u in users %}
-      <!-- MELHORIA 2: Adicionamos data-id para preparar migração futura -->
+      <!-- ATRIBUTO DATA-ID (melhoria 2) -->
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
 
         <td><b>{{ u.username }}</b></td>
 
-        <!-- MELHORIA 1: Senha oculta com toggle -->
+        <!-- SENHA OCULTA COM TOGGLE (melhoria 1) -->
         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
@@ -417,25 +427,19 @@
           {% endif %}
         </td>
 
-        <!-- AÇÕES COM MENU NO CELULAR -->
+        <!-- AÇÕES -->
         <td class="actionsBox">
 
           <!-- DESKTOP -->
           <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
-
-            <!-- +30 -->
             <form method="post" action="/admin/renew/{{ loop.index0 }}">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
             </form>
-
-            <!-- +DIAS -->
             <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
             </form>
-
-            <!-- BLOQUEAR/DESBLOQUEAR -->
             <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
@@ -444,18 +448,12 @@
                 <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
-
-            <!-- RESET KEY -->
             <form method="post" action="/admin/reset/{{ loop.index0 }}">
               <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
             </form>
-
-            <!-- RESET DEVICE -->
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
             </form>
-
-            <!-- DELETE -->
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
@@ -464,7 +462,6 @@
 
           <!-- MOBILE -->
           <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
-
           <div class="actionsMenu">
             <form method="post" action="/admin/renew/{{ loop.index0 }}">
               <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
@@ -493,20 +490,16 @@
               <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
             </form>
           </div>
-
         </td>
       </tr>
       {% endfor %}
     </tbody>
-
   </table>
 </div>
 
 <div id="toast" class="toast">OK</div>
 
 <script>
-function toggleDark(){ document.body.classList.toggle("dark"); }
-
 // Toast via URL ?msg=
 (function(){
   const url = new URL(window.location.href);
@@ -514,12 +507,10 @@ function toggleDark(){ document.body.classList.toggle("dark"); }
   if(msg) toast(msg);
 })();
 
-// Definir expiração
-function setExpiration(days){
-  document.querySelector('input[name="expire_days"]').value = days;
-}
+// ================== TEMA ESCURO ==================
+function toggleDark(){ document.body.classList.toggle("dark"); }
 
-// toast
+// ================== TOAST ==================
 function toast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
@@ -527,7 +518,12 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"), 1400);
 }
 
-// copiar key
+// ================== SET EXPIRAÇÃO ==================
+function setExpiration(days){
+  document.querySelector('input[name="expire_days"]').value = days;
+}
+
+// ================== COPIAR ==================
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
@@ -535,13 +531,12 @@ function copiar(t, el){
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
-// copiar usuário + senha
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
   toast("Credenciais copiadas!");
 }
 
-// ------- MELHORIA 1: TOGGLE SENHA -------
+// ================== TOGGLE SENHA (melhoria 1) ==================
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -562,20 +557,21 @@ function togglePassword(btn) {
   }
 }
 
-// ------- MELHORIA 7: LOADING EM BOTÕES -------
+// ================== LOADING NOS BOTÕES (melhoria 7) ==================
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
 
-// busca
+// ================== BUSCA ==================
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
   document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
     tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
   });
+  updateDashboard();
 });
 
-// ordenar
+// ================== ORDENAR ==================
 function sortTable(col){
   const tbody = document.getElementById("usersTable").tBodies[0];
   const rows = Array.from(tbody.rows);
@@ -591,7 +587,7 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// expirações (dias + data exata)
+// ================== EXPIRAÇÕES ==================
 function formatDateBR(ts){
   const d = new Date(ts * 1000);
   const dd = String(d.getDate()).padStart(2,"0");
@@ -602,16 +598,13 @@ function formatDateBR(ts){
 
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
-
   document.querySelectorAll("tr[data-expires]").forEach(tr=>{
     let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
-
     if(exp <= 0){
       cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
       return;
     }
-
     if(exp < now){
       cell.innerHTML = `
         <div style="display:flex;flex-direction:column;gap:4px">
@@ -620,16 +613,13 @@ function renderExp(){
         </div>`;
       return;
     }
-
     const diffDays = Math.floor((exp-now)/86400);
     const dateText = formatDateBR(exp);
-
     let badge = "";
     if(diffDays === 0) badge = "<span class='badge badge-exp'>Vence hoje</span>";
     else if(diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
     else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
     else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
-
     cell.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:4px">
         ${badge}
@@ -638,60 +628,72 @@ function renderExp(){
   });
 }
 
-// dashboard
+// ================== DASHBOARD ==================
 function updateDashboard(){
   const now = Math.floor(Date.now()/1000);
   const rows = document.querySelectorAll("#usersTable tbody tr");
-
   let total = 0, ativos = 0, expirados = 0, bloqueados = 0;
-
   rows.forEach(tr=>{
+    if (tr.style.display === 'none') return;
     total++;
-
     const exp = parseInt(tr.getAttribute("data-expires")) || 0;
     const statusCell = tr.querySelector(".statusCell");
     const status = statusCell ? statusCell.getAttribute("data-status") : "active";
-
     if(status === "blocked"){
       bloqueados++;
       return;
     }
-
     if(exp > 0 && exp < now){
       expirados++;
     } else {
       ativos++;
     }
   });
-
   document.getElementById("dashTotal").innerText = total;
   document.getElementById("dashAtivos").innerText = ativos;
   document.getElementById("dashExpirados").innerText = expirados;
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
 
-// abrir/fechar menu ⋮
+// ================== MENU MOBILE ==================
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
-
-  // fecha todos os outros
   document.querySelectorAll(".actionsMenu").forEach(m=>{
     if(m !== menu) m.style.display = "none";
   });
-
   menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
 
-// clicou fora, fecha
 document.addEventListener("click", (e)=>{
   if(!e.target.closest(".actionsBox")){
     document.querySelectorAll(".actionsMenu").forEach(m=> m.style.display="none");
   }
 });
 
+// ================== DESTAQUE DA LINHA (melhoria 13) ==================
+function highlightUserFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const highlightId = urlParams.get('highlight');
+  if (highlightId) {
+    const row = document.querySelector(`tr[data-id="${highlightId}"]`);
+    if (row) {
+      row.classList.add('highlight');
+      setTimeout(() => {
+        row.classList.remove('highlight');
+      }, 2000);
+      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    // Remove o parâmetro da URL sem recarregar
+    const newUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+}
+
+// ================== INICIALIZAÇÃO ==================
 renderExp();
 updateDashboard();
+highlightUserFromURL();
 
 setInterval(() => {
   renderExp();
