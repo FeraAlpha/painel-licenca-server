@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fera Alpha — Admin</title>
+<title>Fera Alpha — Painel Admin</title>
 
 <style>
 :root{
@@ -12,22 +12,19 @@
   --border:#1f2937;
   --text:#e5e7eb;
   --muted:#9ca3af;
-
-  --starter:#38bdf8;
-  --pro:#22c55e;
-  --advanced:#facc15;
-  --ultra:#a855f7;
-
+  --primary:#22c55e;
   --danger:#ef4444;
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
   background:var(--bg);
   color:var(--text);
 }
+
+h1,h2{margin:0 0 10px}
 
 .container{
   max-width:1200px;
@@ -43,11 +40,17 @@ body{
   margin-bottom:20px;
 }
 
-h1,h2{margin:0 0 10px}
+.formGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+}
 
 label{
   font-size:13px;
   color:var(--muted);
+  display:block;
+  margin-bottom:4px;
 }
 
 input,select{
@@ -59,12 +62,6 @@ input,select{
   color:var(--text);
 }
 
-.formGrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:12px;
-}
-
 .btn{
   padding:10px 14px;
   border-radius:12px;
@@ -73,7 +70,7 @@ input,select{
   font-weight:600;
 }
 
-.btn-primary{background:#22c55e;color:#022c22}
+.btn-primary{background:var(--primary);color:#022c22}
 .btn-danger{background:var(--danger);color:#fff}
 .btn-ghost{
   background:transparent;
@@ -85,6 +82,7 @@ input,select{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
   gap:12px;
+  margin-top:10px;
 }
 
 .stat{
@@ -103,23 +101,25 @@ table{
 th,td{
   padding:10px;
   border-bottom:1px solid var(--border);
+  text-align:left;
   font-size:14px;
 }
 
-.badge{
+.badge-ok{
+  background:#064e3b;
+  color:#6ee7b7;
   padding:4px 10px;
   border-radius:999px;
   font-size:12px;
-  font-weight:700;
 }
 
-.plan-starter{background:#0c4a6e;color:#7dd3fc}
-.plan-pro{background:#064e3b;color:#6ee7b7}
-.plan-advanced{background:#78350f;color:#fde68a}
-.plan-ultra{background:#3b0764;color:#e9d5ff}
-
-.status-ok{background:#064e3b;color:#6ee7b7}
-.status-block{background:#450a0a;color:#fca5a5}
+.badge-exp{
+  background:#450a0a;
+  color:#fca5a5;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
 
 .actionsWrap{
   display:flex;
@@ -127,8 +127,17 @@ th,td{
   flex-wrap:wrap;
 }
 
-.menuBtn{display:none}
-.actionsMenu{display:none}
+.selectDays{
+  min-width:90px;
+}
+
+.menuBtn{
+  display:none;
+}
+
+.actionsMenu{
+  display:none;
+}
 
 @media(max-width:900px){
   .actionsWrap{display:none}
@@ -176,17 +185,18 @@ th,td{
       <input name="prefix" value="FERA">
     </div>
     <div>
-      <label>Plano</label>
-      <select id="expire_days" name="expire_days">
-        <option value="15">Starter — 15 dias</option>
-        <option value="40">Pro — 40 dias</option>
-        <option value="70">Advanced — 70 dias</option>
-        <option value="110">ULTRA — 110 dias</option>
-      </select>
+      <label>Expiração (dias)</label>
+      <input id="expire_days" name="expire_days" type="number" value="15">
     </div>
   </div>
 
-  <button class="btn btn-primary" style="margin-top:12px">Gerar Key</button>
+  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+    <button class="btn btn-primary">Gerar</button>
+    <button type="button" class="btn btn-ghost" onclick="setExpiration(15)">15 Dias</button>
+    <button type="button" class="btn btn-ghost" onclick="setExpiration(40)">40 Dias</button>
+    <button type="button" class="btn btn-ghost" onclick="setExpiration(70)">70 Dias</button>
+    <button type="button" class="btn btn-ghost" onclick="setExpiration(110)">110 Dias</button>
+  </div>
 </form>
 </div>
 
@@ -205,9 +215,10 @@ th,td{
 <tr>
 <th>ID</th>
 <th>Usuário</th>
-<th>Plano</th>
+<th>Senha</th>
 <th>Key</th>
 <th>Device</th>
+<th>Expiração</th>
 <th>Status</th>
 <th>Ações</th>
 </tr>
@@ -218,54 +229,66 @@ th,td{
 <tr>
 <td>{{ loop.index0 }}</td>
 <td><b>{{ u.username }}</b></td>
-
-<td>
-{% if u.expire_days == 15 %}
-<span class="badge plan-starter">Starter</span>
-{% elif u.expire_days == 40 %}
-<span class="badge plan-pro">Pro</span>
-{% elif u.expire_days == 70 %}
-<span class="badge plan-advanced">Advanced</span>
-{% else %}
-<span class="badge plan-ultra">ULTRA</span>
-{% endif %}
-</td>
-
+<td>{{ u.password }}</td>
 <td>{{ u.key }}</td>
 <td>{{ u.device_id or '-' }}</td>
-
+<td class="expCell"></td>
 <td>
 {% if u.status == "blocked" %}
-<span class="badge status-block">Bloqueado</span>
+<span class="badge-exp">Bloqueado</span>
 {% else %}
-<span class="badge status-ok">Ativo</span>
+<span class="badge-ok">Ativo</span>
 {% endif %}
 </td>
 
 <td>
+<!-- DESKTOP -->
 <div class="actionsWrap">
+<form method="post" action="/admin/renew/{{ loop.index0 }}">
+  <button class="btn btn-primary">+30</button>
+</form>
+
 <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-<select name="days">
-  <option value="15">+15</option>
-  <option value="40">+40</option>
-  <option value="70">+70</option>
-  <option value="110">+110</option>
-</select>
-<button class="btn btn-primary">Renovar</button>
+  <select name="days" class="selectDays">
+    <option value="15">+15</option>
+    <option value="40">+40</option>
+    <option value="70">+70</option>
+    <option value="110">+110</option>
+  </select>
+  <button class="btn btn-primary">Aplicar</button>
 </form>
 
 <form method="post" action="/admin/toggle_block/{{ loop.index0 }}">
-{% if u.status == "blocked" %}
-<button class="btn btn-primary">Desbloquear</button>
-{% else %}
-<button class="btn btn-danger">Bloquear</button>
-{% endif %}
+  {% if u.status == "blocked" %}
+  <button class="btn btn-primary">Desbloquear</button>
+  {% else %}
+  <button class="btn btn-danger">Bloquear</button>
+  {% endif %}
+</form>
+
+<form method="post" action="/admin/reset/{{ loop.index0 }}">
+  <button class="btn btn-ghost">Reset Key</button>
 </form>
 
 <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-<button class="btn btn-danger">Reset Device</button>
+  <button class="btn btn-danger">Reset Device</button>
 </form>
 </div>
+
+<!-- MOBILE -->
+<button class="menuBtn" onclick="toggleMenu(this)">⋮ Ações</button>
+<div class="actionsMenu">
+<form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+<select name="days">
+  <option value="15">+15 Dias</option>
+  <option value="40">+40 Dias</option>
+  <option value="70">+70 Dias</option>
+  <option value="110">+110 Dias</option>
+</select>
+<button class="btn btn-primary" style="width:100%;margin-top:6px">Aplicar</button>
+</form>
+</div>
+
 </td>
 </tr>
 {% endfor %}
@@ -274,5 +297,17 @@ th,td{
 </div>
 
 </div>
+
+<script>
+function setExpiration(d){
+  document.getElementById('expire_days').value = d
+}
+
+function toggleMenu(btn){
+  const menu = btn.nextElementSibling
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block'
+}
+</script>
+
 </body>
 </html>
