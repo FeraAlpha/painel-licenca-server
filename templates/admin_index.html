@@ -80,6 +80,7 @@
     border:0;
     font-size:14px;
     transition:.15s;
+    position: relative;
   }
   .btn:hover{ transform:translateY(-1px); }
 
@@ -87,6 +88,27 @@
   .btn-danger  { background:var(--danger); color:white; }
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
+
+  /* ------- MELHORIA 7: LOADING NOS BOTÕES ------- */
+  .btn-loading {
+    color: transparent !important;
+    pointer-events: none;
+  }
+  .btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 50%;
+    left: 50%;
+    margin-left: -9px;
+    margin-top: -9px;
+    border: 2px solid white;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   table {
     width:100%;
@@ -117,6 +139,19 @@
     font-weight:800;
     margin-left:8px;
   }
+
+  /* ------- MELHORIA 1: OCULTAR SENHA COM TOGGLE ------- */
+  .password-value { display: none; }
+  .password-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 4px;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .password-toggle:hover { background: rgba(0,0,0,0.05); }
 
   /* BADGES */
   .badge {
@@ -272,12 +307,12 @@
 <div class="admin-tools">
   <form method="post" action="/admin/reset_all_devices"
         onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
-    <button type="submit" class="btn btn-warning">🔄 Resetar Todos Devices</button>
+    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Devices</button>
   </form>
 
   <form method="post" action="/admin/clean_expired"
         onsubmit="return confirm('Remover TODOS os usuários expirados?')">
-    <button type="submit" class="btn btn-danger">🗑️ Limpar Expirados</button>
+    <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
   </form>
 </div>
 
@@ -299,8 +334,7 @@
     <input name="expire_days" type="number" value="30" min="1">
 
     <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
-      <button type="submit" class="btn btn-primary">Gerar</button>
-      <!-- ALTERAÇÃO AQUI: botões de atalho com 15, 40, 70 e 110 dias -->
+      <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('15')">15 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('40')">40 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('70')">70 Dias</button>
@@ -351,14 +385,18 @@
 
     <tbody>
       {% for u in users %}
-      <tr data-expires="{{ u.expires_at }}">
+      <!-- MELHORIA 2: Adicionamos data-id para preparar migração futura -->
+      <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
 
         <td><b>{{ u.username }}</b></td>
 
+        <!-- MELHORIA 1: Senha oculta com toggle -->
         <td>
-          {{ u.password }}
+          <span class="password-mask">••••••</span>
+          <span class="password-value">{{ u.password }}</span>
+          <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
           <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
         </td>
 
@@ -369,7 +407,6 @@
 
         <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-        <!-- 4) EXPIRAÇÃO (dias + data exata) -->
         <td class="expCell"></td>
 
         <td class="statusCell" data-status="{{ u.status }}">
@@ -380,7 +417,7 @@
           {% endif %}
         </td>
 
-        <!-- 11) AÇÕES COM MENU NO CELULAR -->
+        <!-- AÇÕES COM MENU NO CELULAR -->
         <td class="actionsBox">
 
           <!-- DESKTOP -->
@@ -388,40 +425,40 @@
 
             <!-- +30 -->
             <form method="post" action="/admin/renew/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-primary">+30</button>
+              <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
             </form>
 
             <!-- +DIAS -->
             <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
-              <button type="submit" class="btn btn-primary">+Dias</button>
+              <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
             </form>
 
             <!-- BLOQUEAR/DESBLOQUEAR -->
             <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
-                <button type="submit" class="btn btn-primary">✅ Desbloquear</button>
+                <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
               {% else %}
-                <button type="submit" class="btn btn-danger">🚫 Bloquear</button>
+                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
 
             <!-- RESET KEY -->
             <form method="post" action="/admin/reset/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-ghost">Reset Key</button>
+              <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
             </form>
 
             <!-- RESET DEVICE -->
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-danger">Reset Device</button>
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
             </form>
 
             <!-- DELETE -->
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
-              <button type="submit" class="btn btn-danger">Del</button>
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
             </form>
           </div>
 
@@ -430,35 +467,30 @@
 
           <div class="actionsMenu">
             <form method="post" action="/admin/renew/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-primary" style="width:100%">+30</button>
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
             </form>
-
             <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
-              <button type="submit" class="btn btn-primary" style="width:100%">+Dias</button>
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
             </form>
-
             <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
-                <button type="submit" class="btn btn-primary" style="width:100%">✅ Desbloquear</button>
+                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
               {% else %}
-                <button type="submit" class="btn btn-danger" style="width:100%">🚫 Bloquear</button>
+                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
-
             <form method="post" action="/admin/reset/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-ghost" style="width:100%">Reset Key</button>
+              <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
             </form>
-
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-danger" style="width:100%">Reset Device</button>
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
             </form>
-
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
-              <button type="submit" class="btn btn-danger" style="width:100%">Del</button>
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
             </form>
           </div>
 
@@ -475,7 +507,7 @@
 <script>
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
-// 12) Toast via URL ?msg=
+// Toast via URL ?msg=
 (function(){
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
@@ -509,6 +541,32 @@ function copiarCred(u,p){
   toast("Credenciais copiadas!");
 }
 
+// ------- MELHORIA 1: TOGGLE SENHA -------
+function togglePassword(btn) {
+  const td = btn.closest('td');
+  const mask = td.querySelector('.password-mask');
+  const value = td.querySelector('.password-value');
+  if (mask.style.display === 'none') {
+    mask.style.display = 'inline';
+    value.style.display = 'none';
+    btn.textContent = '👁️';
+  } else {
+    mask.style.display = 'none';
+    value.style.display = 'inline';
+    btn.textContent = '🔒';
+    setTimeout(() => {
+      mask.style.display = 'inline';
+      value.style.display = 'none';
+      btn.textContent = '👁️';
+    }, 3000);
+  }
+}
+
+// ------- MELHORIA 7: LOADING EM BOTÕES -------
+function setLoading(btn) {
+  btn.classList.add('btn-loading');
+}
+
 // busca
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
@@ -533,7 +591,7 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// 4) expirações (dias + data exata)
+// expirações (dias + data exata)
 function formatDateBR(ts){
   const d = new Date(ts * 1000);
   const dd = String(d.getDate()).padStart(2,"0");
@@ -612,7 +670,7 @@ function updateDashboard(){
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
 
-// 11) abrir/fechar menu ⋮
+// abrir/fechar menu ⋮
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
