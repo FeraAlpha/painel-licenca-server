@@ -1,284 +1,278 @@
-<!-- Painel Admin Fera Alpha – Versão Profissional -->
-<div class="admin-panel">
-    <!-- Cabeçalho com ações globais -->
-    <div class="header-actions">
-        <button class="btn btn-ghost theme-toggle" onclick="toggleTheme()">🌙 Tema</button>
-        <div class="global-buttons">
-            <button class="btn btn-danger" onclick="resetAllDevices()">🔄 Resetar Todos Devices</button>
-            <button class="btn btn-warning" onclick="clearExpired()">🗑️ Limpar Expirados</button>
-        </div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fera Alpha — Admin</title>
+
+<style>
+:root{
+  --bg:#0b0f14;
+  --card:#111827;
+  --border:#1f2937;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+
+  --starter:#38bdf8;
+  --pro:#22c55e;
+  --advanced:#facc15;
+  --ultra:#a855f7;
+
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+}
+
+h1,h2{margin:0 0 10px}
+
+label{
+  font-size:13px;
+  color:var(--muted);
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:var(--text);
+}
+
+.formGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+}
+
+.btn{
+  padding:10px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn-primary{background:#22c55e;color:#022c22}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-ghost{
+  background:transparent;
+  color:var(--text);
+  border:1px dashed var(--border);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;
+}
+
+.stat{
+  background:#020617;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:10px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.plan-starter{background:#0c4a6e;color:#7dd3fc}
+.plan-pro{background:#064e3b;color:#6ee7b7}
+.plan-advanced{background:#78350f;color:#fde68a}
+.plan-ultra{background:#3b0764;color:#e9d5ff}
+
+.status-ok{background:#064e3b;color:#6ee7b7}
+.status-block{background:#450a0a;color:#fca5a5}
+
+.actionsWrap{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.menuBtn{display:none}
+.actionsMenu{display:none}
+
+@media(max-width:900px){
+  .actionsWrap{display:none}
+  .menuBtn{
+    display:block;
+    background:#020617;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:8px 12px;
+    border-radius:10px;
+  }
+  .actionsMenu{
+    background:#020617;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:10px;
+    margin-top:6px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Fera Alpha — Admin</h1>
+<p style="color:var(--muted)">Gerenciamento avançado</p>
+
+<!-- GERAR KEY -->
+<div class="card">
+<h2>🔑 Gerar Nova Key</h2>
+
+<form method="post" action="/admin/generate">
+  <div class="formGrid">
+    <div>
+      <label>Usuário</label>
+      <input name="username" required>
     </div>
-
-    <!-- Formulário de Gerar Nova Key (melhorado) -->
-    <div class="card">
-        <h3>Gerar Nova Key</h3>
-        <form method="post" action="/admin/generate" class="form-generate">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Usuário</label>
-                    <input type="text" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="text" name="password" required>
-                </div>
-                <div class="form-group">
-                    <label>Prefixo</label>
-                    <input type="text" name="prefix" value="FERA">
-                </div>
-                <div class="form-group">
-                    <label>Expiração (dias)</label>
-                    <input type="number" name="expire_days" id="expire_days" value="30" min="1">
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Gerar</button>
-                <!-- Botões de atalho atualizados: 15, 40, 70, 110 -->
-                <button type="button" class="btn btn-ghost" onclick="setExpiration(15)">15 Dias</button>
-                <button type="button" class="btn btn-ghost" onclick="setExpiration(40)">40 Dias</button>
-                <button type="button" class="btn btn-ghost" onclick="setExpiration(70)">70 Dias</button>
-                <button type="button" class="btn btn-ghost" onclick="setExpiration(110)">110 Dias</button>
-            </div>
-        </form>
+    <div>
+      <label>Senha</label>
+      <input name="password" required>
     </div>
-
-    <!-- Cards de estatísticas -->
-    <div class="stats-grid">
-        <div class="stat-card">👥 <strong>Total</strong> <span>0</span></div>
-        <div class="stat-card">✅ <strong>Ativos</strong> <span>0</span></div>
-        <div class="stat-card">⛔ <strong>Expirados</strong> <span>0</span></div>
-        <div class="stat-card">🚫 <strong>Bloqueados</strong> <span>0</span></div>
+    <div>
+      <label>Prefixo</label>
+      <input name="prefix" value="FERA">
     </div>
-
-    <!-- Tabela de usuários (com melhorias de responsividade) -->
-    <div class="table-responsive">
-        <table class="users-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuário</th>
-                    <th>Senha</th>
-                    <th>Key</th>
-                    <th>Device</th>
-                    <th>Expiração</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in users %}
-                <tr data-expires="{{ u.expires_at }}">
-                    <td>{{ loop.index0 }}</td>
-                    <td><b>{{ u.username }}</b></td>
-                    <td>
-                        {{ u.password }}
-                        <span class="copy-btn" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">📋</span>
-                    </td>
-                    <td>
-                        {{ u.key }}
-                        <span class="copy-btn" onclick="copiar('{{ u.key }}', this)">📋</span>
-                    </td>
-                    <td>{{ u.device_id if u.device_id else '-' }}</td>
-                    <td class="expCell"></td> <!-- preenchido via JS -->
-                    <td class="statusCell" data-status="{{ u.status }}">
-                        {% if u.status == "blocked" %}
-                            <span class="badge badge-exp">Bloqueado</span>
-                        {% else %}
-                            <span class="badge badge-ok">Ativo</span>
-                        {% endif %}
-                    </td>
-                    <td class="actions-cell">
-                        <!-- Versão Desktop -->
-                        <div class="desktop-actions">
-                            <!-- Botões de renovação rápida: 15, 40, 70, 110 -->
-                            <form method="post" action="/admin/renew/{{ loop.index0 }}/15" class="inline-form">
-                                <button type="submit" class="btn btn-primary" title="+15 dias">+15</button>
-                            </form>
-                            <form method="post" action="/admin/renew/{{ loop.index0 }}/40" class="inline-form">
-                                <button type="submit" class="btn btn-primary" title="+40 dias">+40</button>
-                            </form>
-                            <form method="post" action="/admin/renew/{{ loop.index0 }}/70" class="inline-form">
-                                <button type="submit" class="btn btn-primary" title="+70 dias">+70</button>
-                            </form>
-                            <form method="post" action="/admin/renew/{{ loop.index0 }}/110" class="inline-form">
-                                <button type="submit" class="btn btn-primary" title="+110 dias">+110</button>
-                            </form>
-
-                            <!-- Input para dias personalizados + botão -->
-                            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" class="inline-form custom-days">
-                                <input type="number" name="days" min="1" value="7" placeholder="Dias">
-                                <button type="submit" class="btn btn-primary">+</button>
-                            </form>
-
-                            <!-- Demais ações com ícones -->
-                            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" class="inline-form">
-                                {% if u.status == "blocked" %}
-                                    <button type="submit" class="btn btn-success" title="Desbloquear">✅</button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-danger" title="Bloquear">🚫</button>
-                                {% endif %}
-                            </form>
-
-                            <form method="post" action="/admin/reset/{{ loop.index0 }}" class="inline-form">
-                                <button type="submit" class="btn btn-ghost" title="Reset Key">🔄</button>
-                            </form>
-
-                            <form method="post" action="/admin/reset_device/{{ loop.index0 }}" class="inline-form">
-                                <button type="submit" class="btn btn-danger" title="Reset Device">📱</button>
-                            </form>
-
-                            <form method="post" action="/admin/delete/{{ loop.index0 }}" class="inline-form" onsubmit="return confirm('Excluir usuário?')">
-                                <button type="submit" class="btn btn-danger" title="Excluir">🗑️</button>
-                            </form>
-                        </div>
-
-                        <!-- Versão Mobile (menu dropdown) -->
-                        <div class="mobile-actions">
-                            <button class="menu-btn" onclick="toggleMobileMenu(this)">⋮ Ações</button>
-                            <div class="mobile-menu hidden">
-                                <!-- Mesmas opções, mas em coluna -->
-                                <form method="post" action="/admin/renew/{{ loop.index0 }}/15"><button class="btn btn-primary">+15 dias</button></form>
-                                <form method="post" action="/admin/renew/{{ loop.index0 }}/40"><button class="btn btn-primary">+40 dias</button></form>
-                                <form method="post" action="/admin/renew/{{ loop.index0 }}/70"><button class="btn btn-primary">+70 dias</button></form>
-                                <form method="post" action="/admin/renew/{{ loop.index0 }}/110"><button class="btn btn-primary">+110 dias</button></form>
-                                <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" class="custom-mobile">
-                                    <input type="number" name="days" min="1" value="7" placeholder="Dias">
-                                    <button type="submit" class="btn btn-primary">+</button>
-                                </form>
-                                <form method="post" action="/admin/toggle_block/{{ loop.index0 }}">
-                                    {% if u.status == "blocked" %}
-                                        <button class="btn btn-success">✅ Desbloquear</button>
-                                    {% else %}
-                                        <button class="btn btn-danger">🚫 Bloquear</button>
-                                    {% endif %}
-                                </form>
-                                <form method="post" action="/admin/reset/{{ loop.index0 }}"><button class="btn btn-ghost">🔄 Reset Key</button></form>
-                                <form method="post" action="/admin/reset_device/{{ loop.index0 }}"><button class="btn btn-danger">📱 Reset Device</button></form>
-                                <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')"><button class="btn btn-danger">🗑️ Del</button></form>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div>
+      <label>Plano</label>
+      <select id="expire_days" name="expire_days">
+        <option value="15">Starter — 15 dias</option>
+        <option value="40">Pro — 40 dias</option>
+        <option value="70">Advanced — 70 dias</option>
+        <option value="110">ULTRA — 110 dias</option>
+      </select>
     </div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:12px">Gerar Key</button>
+</form>
 </div>
 
-<!-- CSS adicional para o novo visual (pode ser incorporado ao seu arquivo existente) -->
-<style>
-    :root {
-        --bg: #f8fafc;
-        --card: #ffffff;
-        --text: #1e293b;
-        --border: #e2e8f0;
-        --primary: #3b82f6;
-        --danger: #ef4444;
-        --success: #10b981;
-        --warning: #f59e0b;
-    }
-    body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; }
-    .admin-panel { max-width: 1400px; margin: 0 auto; }
-    .card { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 24px; }
-    .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-    .global-buttons { display: flex; gap: 8px; }
-    .btn { padding: 10px 16px; border: none; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 14px; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn:hover { filter: brightness(0.95); transform: translateY(-1px); }
-    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-weight: 500; color: var(--text); }
-    .form-group input { padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
-    .form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; font-size: 1.2rem; }
-    .table-responsive { overflow-x: auto; background: var(--card); border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-    .users-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-    .users-table th { text-align: left; padding: 16px; background: #f1f5f9; color: #475569; font-weight: 600; }
-    .users-table td { padding: 16px; border-bottom: 1px solid var(--border); }
-    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-    .badge-ok { background: #d1fae5; color: #065f46; }
-    .badge-exp { background: #fee2e2; color: #991b1b; }
-    .copy-btn { margin-left: 6px; cursor: pointer; opacity: 0.6; font-size: 1.1rem; }
-    .copy-btn:hover { opacity: 1; }
-    .desktop-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-    .inline-form { display: inline; }
-    .custom-days { display: inline-flex; align-items: center; gap: 4px; }
-    .custom-days input { width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: 8px; }
-    .mobile-actions { display: none; position: relative; }
-    .menu-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
-    .mobile-menu { position: absolute; right: 0; top: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 10; min-width: 200px; }
-    .mobile-menu form { margin-bottom: 8px; }
-    .mobile-menu button { width: 100%; }
-    .hidden { display: none; }
-    @media (max-width: 768px) {
-        .desktop-actions { display: none; }
-        .mobile-actions { display: block; }
-        .stats-grid { grid-template-columns: 1fr 1fr; }
-    }
-</style>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><b>👥 Total</b><br>{{ total }}</div>
+  <div class="stat"><b>✅ Ativos</b><br>{{ ativos }}</div>
+  <div class="stat"><b>⛔ Expirados</b><br>{{ expirados }}</div>
+  <div class="stat"><b>🚫 Bloqueados</b><br>{{ bloqueados }}</div>
+</div>
 
-<!-- JavaScript para as funções auxiliares -->
-<script>
-    function setExpiration(days) {
-        document.getElementById('expire_days').value = days;
-    }
+<!-- TABELA -->
+<div class="card">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Usuário</th>
+<th>Plano</th>
+<th>Key</th>
+<th>Device</th>
+<th>Status</th>
+<th>Ações</th>
+</tr>
+</thead>
 
-    function copiarCred(user, pass) {
-        navigator.clipboard.writeText(`Usuário: ${user}\nSenha: ${pass}`);
-        alert('Credenciais copiadas!');
-    }
+<tbody>
+{% for u in users %}
+<tr>
+<td>{{ loop.index0 }}</td>
+<td><b>{{ u.username }}</b></td>
 
-    function copiar(texto, elemento) {
-        navigator.clipboard.writeText(texto);
-        elemento.innerText = 'copiado!';
-        setTimeout(() => elemento.innerText = 'copiar', 1000);
-    }
+<td>
+{% if u.expire_days == 15 %}
+<span class="badge plan-starter">Starter</span>
+{% elif u.expire_days == 40 %}
+<span class="badge plan-pro">Pro</span>
+{% elif u.expire_days == 70 %}
+<span class="badge plan-advanced">Advanced</span>
+{% else %}
+<span class="badge plan-ultra">ULTRA</span>
+{% endif %}
+</td>
 
-    // Preenche a coluna de expiração com base no atributo data-expires
-    document.querySelectorAll('tr[data-expires]').forEach(tr => {
-        const expires = tr.dataset.expires;
-        const cell = tr.querySelector('.expCell');
-        if (expires) {
-            const data = new Date(expires);
-            const hoje = new Date();
-            const diff = Math.ceil((data - hoje) / (1000 * 60 * 60 * 24));
-            cell.innerHTML = `${diff} dias<br><small>${data.toLocaleDateString()}</small>`;
-        } else {
-            cell.innerHTML = '—';
-        }
-    });
+<td>{{ u.key }}</td>
+<td>{{ u.device_id or '-' }}</td>
 
-    function toggleMobileMenu(btn) {
-        const menu = btn.nextElementSibling;
-        menu.classList.toggle('hidden');
-    }
+<td>
+{% if u.status == "blocked" %}
+<span class="badge status-block">Bloqueado</span>
+{% else %}
+<span class="badge status-ok">Ativo</span>
+{% endif %}
+</td>
 
-    // Fecha o menu ao clicar fora (opcional)
-    document.addEventListener('click', function(event) {
-        if (!event.target.matches('.menu-btn')) {
-            document.querySelectorAll('.mobile-menu').forEach(menu => menu.classList.add('hidden'));
-        }
-    });
+<td>
+<div class="actionsWrap">
+<form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+<select name="days">
+  <option value="15">+15</option>
+  <option value="40">+40</option>
+  <option value="70">+70</option>
+  <option value="110">+110</option>
+</select>
+<button class="btn btn-primary">Renovar</button>
+</form>
 
-    function toggleTheme() {
-        // Lógica para alternar tema (pode ser implementada depois)
-        alert('Troca de tema pode ser adicionada com CSS variables');
-    }
+<form method="post" action="/admin/toggle_block/{{ loop.index0 }}">
+{% if u.status == "blocked" %}
+<button class="btn btn-primary">Desbloquear</button>
+{% else %}
+<button class="btn btn-danger">Bloquear</button>
+{% endif %}
+</form>
 
-    function resetAllDevices() {
-        if (confirm('Resetar todos os devices?')) {
-            // chamada para rota /admin/reset_all_devices
-            fetch('/admin/reset_all_devices', { method: 'POST' }).then(() => location.reload());
-        }
-    }
+<form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+<button class="btn btn-danger">Reset Device</button>
+</form>
+</div>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
 
-    function clearExpired() {
-        if (confirm('Limpar usuários expirados?')) {
-            fetch('/admin/clear_expired', { method: 'POST' }).then(() => location.reload());
-        }
-    }
-</script>
+</div>
+</body>
+</html>
