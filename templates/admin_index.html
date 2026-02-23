@@ -29,40 +29,7 @@
     background:var(--bg);
     padding:20px;
     color:var(--text);
-    transition: filter 0.2s;
   }
-
-  /* ------- TELA DE LOGIN (SENHA FeraAlpha) ------- */
-  .login-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  .login-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 30px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-  }
-  .login-card h2 { margin-bottom: 20px; }
-  .login-card input {
-    width: 100%;
-    padding: 11px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    margin-bottom: 15px;
-    background: white;
-    outline: none;
-  }
-  .login-card .btn { width: 100%; }
 
   header {
     display:flex;
@@ -122,7 +89,7 @@
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
 
-  /* ------- LOADING NOS BOTÕES (melhoria 7) ------- */
+  /* ------- MELHORIA 7: LOADING NOS BOTÕES ------- */
   .btn-loading {
     color: transparent !important;
     pointer-events: none;
@@ -173,7 +140,7 @@
     margin-left:8px;
   }
 
-  /* ------- OCULTAR SENHA COM TOGGLE (melhoria 1) ------- */
+  /* ------- MELHORIA 1: OCULTAR SENHA COM TOGGLE ------- */
   .password-value { display: none; }
   .password-toggle {
     background: none;
@@ -185,16 +152,6 @@
     border-radius: 6px;
   }
   .password-toggle:hover { background: rgba(0,0,0,0.05); }
-
-  /* ------- DESTAQUE DA LINHA (melhoria 13) ------- */
-  .highlight {
-    animation: highlightFade 2s ease-out;
-  }
-  @keyframes highlightFade {
-    0% { background-color: #fff3b0; }
-    70% { background-color: #fff3b0; }
-    100% { background-color: transparent; }
-  }
 
   /* BADGES */
   .badge {
@@ -276,7 +233,7 @@
   }
 
   /* ===========================
-     MOBILE: AÇÕES VIRAM MENU ⋮
+     11) MOBILE: AÇÕES VIRAM MENU ⋮
      =========================== */
   .actionsBox{
     position:relative;
@@ -337,237 +294,232 @@
 
 <body>
 
-<!-- TELA DE LOGIN -->
-<div id="loginOverlay" class="login-overlay">
-  <div class="login-card">
-    <h2>🔐 Acesso Restrito</h2>
-    <p style="margin-bottom:15px; color:var(--text-light);">Digite a senha mestra para continuar</p>
-    <input type="password" id="adminPassword" placeholder="Senha">
-    <button class="btn btn-primary" onclick="checkLogin()">Entrar</button>
-    <p style="margin-top:15px; font-size:12px; color:var(--text-light);">(Senha: FeraAlpha)</p>
+<header>
+  <div>
+    <h1>Fera Alpha — Admin</h1>
+    <div class="subtitle">Gerenciamento avançado</div>
   </div>
+
+  <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
+</header>
+
+<!-- ADMIN TOOLS -->
+<div class="admin-tools">
+  <form method="post" action="/admin/reset_all_devices"
+        onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
+    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Devices</button>
+  </form>
+
+  <form method="post" action="/admin/clean_expired"
+        onsubmit="return confirm('Remover TODOS os usuários expirados?')">
+    <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
+  </form>
 </div>
 
-<!-- CONTEÚDO PRINCIPAL (INICIALMENTE OCULTO) -->
-<div id="mainContent" style="display: none;">
-  <header>
-    <div>
-      <h1>Fera Alpha — Admin</h1>
-      <div class="subtitle">Gerenciamento avançado</div>
+<!-- GERAR KEY -->
+<div class="card">
+  <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
+
+  <form method="post" action="/admin/generate">
+    <label>Usuário</label>
+    <input name="username" required>
+
+    <label>Senha</label>
+    <input name="password" required>
+
+    <label>Prefixo</label>
+    <input name="prefix" value="FERA">
+
+    <label>Expiração (dias)</label>
+    <input name="expire_days" type="number" value="30" min="1">
+
+    <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
+      <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('15')">15 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('40')">40 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('70')">70 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
     </div>
-    <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
-  </header>
+  </form>
+</div>
 
-  <!-- ADMIN TOOLS -->
-  <div class="admin-tools">
-    <form method="post" action="/admin/reset_all_devices"
-          onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
-      <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Devices</button>
-    </form>
+<!-- TABELA -->
+<div class="card">
 
-    <form method="post" action="/admin/clean_expired"
-          onsubmit="return confirm('Remover TODOS os usuários expirados?')">
-      <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
-    </form>
-  </div>
-
-  <!-- GERAR KEY -->
-  <div class="card">
-    <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
-
-    <form method="post" action="/admin/generate">
-      <label>Usuário</label>
-      <input name="username" required>
-
-      <label>Senha</label>
-      <input name="password" required>
-
-      <label>Prefixo</label>
-      <input name="prefix" value="FERA">
-
-      <label>Expiração (dias)</label>
-      <input name="expire_days" type="number" value="30" min="1">
-
-      <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
-        <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
-        <button type="button" class="btn btn-ghost" onclick="setExpiration('15')">15 Dias</button>
-        <button type="button" class="btn btn-ghost" onclick="setExpiration('40')">40 Dias</button>
-        <button type="button" class="btn btn-ghost" onclick="setExpiration('70')">70 Dias</button>
-        <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- TABELA -->
-  <div class="card">
-
-    <!-- DASHBOARD -->
-    <div class="top-info">
-      <div class="mini-box">
-        <b>👥 Total</b>
-        <span id="dashTotal">0</span>
-      </div>
-      <div class="mini-box">
-        <b>✅ Ativos</b>
-        <span id="dashAtivos">0</span>
-      </div>
-      <div class="mini-box">
-        <b>⛔ Expirados</b>
-        <span id="dashExpirados">0</span>
-      </div>
-      <div class="mini-box">
-        <b>🚫 Bloqueados</b>
-        <span id="dashBloqueados">0</span>
-      </div>
+  <!-- DASHBOARD -->
+  <div class="top-info">
+    <div class="mini-box">
+      <b>👥 Total</b>
+      <span id="dashTotal">0</span>
     </div>
-
-    <!-- BUSCA -->
-    <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
-
-    <table id="usersTable">
-      <thead>
-        <tr>
-          <th onclick="sortTable(0)">ID</th>
-          <th onclick="sortTable(1)">Usuário</th>
-          <th>Senha</th>
-          <th>Key</th>
-          <th>Device</th>
-          <th onclick="sortTable(5)">Expiração</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for u in users %}
-        <!-- data-id preparado para uso futuro -->
-        <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
-
-          <td>{{ loop.index0 }}</td>
-
-          <td><b>{{ u.username }}</b></td>
-
-          <!-- Senha oculta com toggle -->
-          <td>
-            <span class="password-mask">••••••</span>
-            <span class="password-value">{{ u.password }}</span>
-            <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
-            <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
-          </td>
-
-          <td>
-            {{ u.key }}
-            <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
-          </td>
-
-          <td>{{ u.device_id if u.device_id else '-' }}</td>
-
-          <td class="expCell"></td>
-
-          <td class="statusCell" data-status="{{ u.status }}">
-            {% if u.status == "blocked" %}
-              <span class="badge badge-exp">Bloqueado</span>
-            {% else %}
-              <span class="badge badge-ok">Ativo</span>
-            {% endif %}
-          </td>
-
-          <!-- AÇÕES -->
-          <td class="actionsBox">
-
-            <!-- DESKTOP -->
-            <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
-              </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="number" name="days" min="1" value="7"
-                       style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
-                <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
-              </form>
-              <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
-                    onsubmit="return confirm('Alterar status desse usuário?')">
-                {% if u.status == "blocked" %}
-                  <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
-                {% else %}
-                  <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
-                {% endif %}
-              </form>
-              <form method="post" action="/admin/reset/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
-              </form>
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
-              </form>
-              <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                    onsubmit="return confirm('Excluir usuário?')">
-                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
-              </form>
-            </div>
-
-            <!-- MOBILE -->
-            <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
-            <div class="actionsMenu">
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
-              </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
-                <input type="number" name="days" min="1" value="7"
-                       style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
-                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
-              </form>
-              <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
-                    onsubmit="return confirm('Alterar status desse usuário?')">
-                {% if u.status == "blocked" %}
-                  <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
-                {% else %}
-                  <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
-                {% endif %}
-              </form>
-              <form method="post" action="/admin/reset/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
-              </form>
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
-              </form>
-              <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                    onsubmit="return confirm('Excluir usuário?')">
-                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="mini-box">
+      <b>✅ Ativos</b>
+      <span id="dashAtivos">0</span>
+    </div>
+    <div class="mini-box">
+      <b>⛔ Expirados</b>
+      <span id="dashExpirados">0</span>
+    </div>
+    <div class="mini-box">
+      <b>🚫 Bloqueados</b>
+      <span id="dashBloqueados">0</span>
+    </div>
   </div>
+
+  <!-- BUSCA -->
+  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
+
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">ID</th>
+        <th onclick="sortTable(1)">Usuário</th>
+        <th>Senha</th>
+        <th>Key</th>
+        <th>Device</th>
+        <th onclick="sortTable(5)">Expiração</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for u in users %}
+      <!-- MELHORIA 2: Adicionamos data-id para preparar migração futura -->
+      <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
+
+        <td>{{ loop.index0 }}</td>
+
+        <td><b>{{ u.username }}</b></td>
+
+        <!-- MELHORIA 1: Senha oculta com toggle -->
+        <td>
+          <span class="password-mask">••••••</span>
+          <span class="password-value">{{ u.password }}</span>
+          <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
+          <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
+        </td>
+
+        <td>
+          {{ u.key }}
+          <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
+        </td>
+
+        <td>{{ u.device_id if u.device_id else '-' }}</td>
+
+        <td class="expCell"></td>
+
+        <td class="statusCell" data-status="{{ u.status }}">
+          {% if u.status == "blocked" %}
+            <span class="badge badge-exp">Bloqueado</span>
+          {% else %}
+            <span class="badge badge-ok">Ativo</span>
+          {% endif %}
+        </td>
+
+        <!-- AÇÕES COM MENU NO CELULAR -->
+        <td class="actionsBox">
+
+          <!-- DESKTOP -->
+          <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
+
+            <!-- +30 -->
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
+            </form>
+
+            <!-- +DIAS -->
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <input type="number" name="days" min="1" value="7"
+                     style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
+              <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
+            </form>
+
+            <!-- BLOQUEAR/DESBLOQUEAR -->
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('Alterar status desse usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
+              {% endif %}
+            </form>
+
+            <!-- RESET KEY -->
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
+            </form>
+
+            <!-- RESET DEVICE -->
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
+            </form>
+
+            <!-- DELETE -->
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                  onsubmit="return confirm('Excluir usuário?')">
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
+            </form>
+          </div>
+
+          <!-- MOBILE -->
+          <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
+
+          <div class="actionsMenu">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
+            </form>
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <input type="number" name="days" min="1" value="7"
+                     style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
+            </form>
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('Alterar status desse usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
+              {% endif %}
+            </form>
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
+            </form>
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
+            </form>
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                  onsubmit="return confirm('Excluir usuário?')">
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
+            </form>
+          </div>
+
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
 </div>
 
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== AUTENTICAÇÃO ==================
-function checkLogin() {
-  const pwd = document.getElementById('adminPassword').value;
-  if (pwd === 'FeraAlpha') {
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    renderExp();
-    updateDashboard();
-    highlightUserFromURL(); // MELHORIA 13
-    setInterval(() => {
-      renderExp();
-      updateDashboard();
-    }, 10000);
-  } else {
-    toast('Senha incorreta!');
-  }
-}
-
-// ================== TEMA ESCURO ==================
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
-// ================== TOAST ==================
+// Toast via URL ?msg=
+(function(){
+  const url = new URL(window.location.href);
+  const msg = url.searchParams.get("msg");
+  if(msg) toast(msg);
+})();
+
+// Definir expiração
+function setExpiration(days){
+  document.querySelector('input[name="expire_days"]').value = days;
+}
+
+// toast
 function toast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
@@ -575,12 +527,7 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"), 1400);
 }
 
-// ================== SET EXPIRAÇÃO ==================
-function setExpiration(days){
-  document.querySelector('input[name="expire_days"]').value = days;
-}
-
-// ================== COPIAR ==================
+// copiar key
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
@@ -588,12 +535,13 @@ function copiar(t, el){
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
+// copiar usuário + senha
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
   toast("Credenciais copiadas!");
 }
 
-// ================== TOGGLE SENHA (melhoria 1) ==================
+// ------- MELHORIA 1: TOGGLE SENHA -------
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -614,21 +562,20 @@ function togglePassword(btn) {
   }
 }
 
-// ================== LOADING NOS BOTÕES (melhoria 7) ==================
+// ------- MELHORIA 7: LOADING EM BOTÕES -------
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
 
-// ================== BUSCA ==================
+// busca
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
   document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
     tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
   });
-  updateDashboard();
 });
 
-// ================== ORDENAR ==================
+// ordenar
 function sortTable(col){
   const tbody = document.getElementById("usersTable").tBodies[0];
   const rows = Array.from(tbody.rows);
@@ -644,7 +591,7 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// ================== EXPIRAÇÕES ==================
+// expirações (dias + data exata)
 function formatDateBR(ts){
   const d = new Date(ts * 1000);
   const dd = String(d.getDate()).padStart(2,"0");
@@ -655,13 +602,16 @@ function formatDateBR(ts){
 
 function renderExp(){
   const now = Math.floor(Date.now()/1000);
+
   document.querySelectorAll("tr[data-expires]").forEach(tr=>{
     let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
+
     if(exp <= 0){
       cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
       return;
     }
+
     if(exp < now){
       cell.innerHTML = `
         <div style="display:flex;flex-direction:column;gap:4px">
@@ -670,9 +620,84 @@ function renderExp(){
         </div>`;
       return;
     }
+
     const diffDays = Math.floor((exp-now)/86400);
     const dateText = formatDateBR(exp);
+
     let badge = "";
     if(diffDays === 0) badge = "<span class='badge badge-exp'>Vence hoje</span>";
     else if(diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
-    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${di
+    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
+    else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
+
+    cell.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${badge}
+        <span style="font-size:12px;color:var(--text-light)">📅 ${dateText}</span>
+      </div>`;
+  });
+}
+
+// dashboard
+function updateDashboard(){
+  const now = Math.floor(Date.now()/1000);
+  const rows = document.querySelectorAll("#usersTable tbody tr");
+
+  let total = 0, ativos = 0, expirados = 0, bloqueados = 0;
+
+  rows.forEach(tr=>{
+    total++;
+
+    const exp = parseInt(tr.getAttribute("data-expires")) || 0;
+    const statusCell = tr.querySelector(".statusCell");
+    const status = statusCell ? statusCell.getAttribute("data-status") : "active";
+
+    if(status === "blocked"){
+      bloqueados++;
+      return;
+    }
+
+    if(exp > 0 && exp < now){
+      expirados++;
+    } else {
+      ativos++;
+    }
+  });
+
+  document.getElementById("dashTotal").innerText = total;
+  document.getElementById("dashAtivos").innerText = ativos;
+  document.getElementById("dashExpirados").innerText = expirados;
+  document.getElementById("dashBloqueados").innerText = bloqueados;
+}
+
+// abrir/fechar menu ⋮
+function toggleMenu(btn){
+  const box = btn.closest(".actionsBox");
+  const menu = box.querySelector(".actionsMenu");
+
+  // fecha todos os outros
+  document.querySelectorAll(".actionsMenu").forEach(m=>{
+    if(m !== menu) m.style.display = "none";
+  });
+
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+// clicou fora, fecha
+document.addEventListener("click", (e)=>{
+  if(!e.target.closest(".actionsBox")){
+    document.querySelectorAll(".actionsMenu").forEach(m=> m.style.display="none");
+  }
+});
+
+renderExp();
+updateDashboard();
+
+setInterval(() => {
+  renderExp();
+  updateDashboard();
+}, 10000);
+</script>
+
+</body>
+</html>
