@@ -12,15 +12,18 @@
       --card:#ffffff;
       --card2:#f0f3ff;
       --border:#d7ddff;
+
       --text:#0f172a;
       --muted:#64748b;
 
+      /* ✅ GG Theme */
       --primary:#4f7cff;
       --primary2:#6a5cff;
       --glow: rgba(79,124,255,.22);
 
       --warning:#ffd166;
       --shadow: 0 16px 45px rgba(15, 23, 42, .10);
+
       --radius:18px;
     }
 
@@ -37,7 +40,7 @@
       background:
         radial-gradient(900px 550px at 20% 0%, rgba(79,124,255,.14), transparent 60%),
         radial-gradient(900px 550px at 85% 15%, rgba(106,92,255,.12), transparent 60%),
-        linear-gradient(180deg, #fff, #f6f7ff);
+        linear-gradient(180deg, rgba(255,255,255,1), rgba(246,247,255,1));
     }
 
     .wrap{max-width:720px;margin:0 auto}
@@ -54,13 +57,28 @@
       margin-bottom:18px;
     }
 
-    .brand{display:flex;align-items:center;gap:12px}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px
+    }
     .logo{
       width:42px;height:42px;border-radius:14px;
       background: linear-gradient(135deg, var(--primary), var(--primary2));
       display:flex;align-items:center;justify-content:center;
-      color:white;font-weight:900;
+      color:white;
+      font-weight:900;
       box-shadow: 0 12px 26px var(--glow);
+    }
+    .brand h1{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.3px
+    }
+    .brand p{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px
     }
 
     .chip{
@@ -74,6 +92,7 @@
       gap:8px;
       background: var(--card2);
     }
+    .chip i{color:var(--primary)}
 
     .card{
       background: var(--card);
@@ -82,22 +101,45 @@
       padding:18px;
       box-shadow: var(--shadow);
     }
+
     .card + .card{margin-top:14px;}
 
-    .title{display:flex;align-items:center;gap:10px}
-    .title i{color:var(--primary)}
-    .title h2{font-size:16px;font-weight:900}
-    .sub{font-size:12px;color:var(--muted)}
+    .cardhead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px
+    }
 
-    .field{margin-bottom:12px}
-    label{
+    .title{
+      display:flex;
+      align-items:center;
+      gap:10px
+    }
+    .title i{color:var(--primary)}
+    .title h2{
+      font-size:16px;
+      font-weight:900
+    }
+    .title .sub{
       font-size:12px;
       color:var(--muted);
-      font-weight:700;
-      display:flex;
-      gap:8px;
-      margin-bottom:6px;
+      margin-top:2px
     }
+
+    .field{margin-bottom:12px}
+
+    label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:700;
+    }
+    label i{color:var(--primary)}
 
     input{
       width:100%;
@@ -105,10 +147,23 @@
       background: var(--card2);
       border:1px solid var(--border);
       border-radius:14px;
+      color:var(--text);
+      outline:none;
       font-size:14px;
+      transition:.2s;
     }
+    input:focus{
+      border-color: rgba(79,124,255,.9);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.15);
+    }
+    input::placeholder{color:#93a1b3}
 
-    .days{display:flex;gap:10px;flex-wrap:wrap}
+    .days{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
     .daybtn{
       flex:1;
       min-width:140px;
@@ -116,155 +171,742 @@
       border-radius:14px;
       border:1px solid var(--border);
       background: var(--card2);
+      color:var(--muted);
+      cursor:pointer;
       font-weight:900;
       text-align:center;
-      cursor:pointer;
       transition:.2s;
+      user-select:none;
     }
-
+    .daybtn:hover{transform:translateY(-1px)}
     .daybtn.active{
       background: linear-gradient(135deg, var(--primary), var(--primary2));
       color:white;
-      border-color:transparent;
+      border-color: transparent;
+      box-shadow: 0 14px 30px rgba(79,124,255,.18);
     }
 
     .btn{
       width:100%;
-      padding:14px;
-      border-radius:14px;
+      padding:14px 16px;
       border:none;
+      border-radius:14px;
       font-weight:900;
+      font-size:15px;
       cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
+      transition:.2s;
+      user-select:none;
+      white-space:nowrap;
     }
 
     .btn-primary{
       background: linear-gradient(135deg, var(--primary), var(--primary2));
       color:white;
+      box-shadow: 0 18px 40px rgba(79,124,255,.20);
     }
+    .btn-primary:hover{transform:translateY(-2px)}
 
     .btn-soft{
       background: var(--card2);
       border:1px solid var(--border);
+      color:var(--text);
+    }
+    .btn-soft:hover{
+      background: rgba(240,243,255,.7);
     }
 
-    .rowbtns{display:flex;gap:10px;margin-top:10px}
-    .rowbtns .btn{flex:1}
+    .btn-danger{
+      background: rgba(255,78,78,.10);
+      border:1px solid rgba(255,78,78,.25);
+      color:#d32f2f;
+    }
 
-    .loader{display:none;gap:10px;margin-top:12px}
+    .rowbtns{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .rowbtns .btn{
+      width:100%;
+      padding:12px
+    }
+
+    .rowbtns.two .btn{
+      flex:1;
+      min-width: 160px;
+    }
+
+    .loader{
+      display:none;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+    }
     .spin{
-      width:18px;height:18px;border-radius:50%;
-      border:3px solid rgba(0,0,0,.15);
-      border-top-color:var(--primary);
+      width:18px;height:18px;
+      border-radius:999px;
+      border:3px solid rgba(15, 23, 42, .15);
+      border-top-color: var(--primary);
       animation:spin 1s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    .resultBox{
+      display:none;
+      margin-top:14px;
+      border-radius:var(--radius);
+      padding:16px;
+      border:1px solid rgba(79,124,255,.28);
+      background: rgba(79,124,255,.08);
+    }
+    .resultTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      font-size:14px;
+    }
+    .resultTitle i{color:var(--primary)}
+
+    .metaGrid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .metaItem{
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(79,124,255,.20);
+      background: rgba(255,255,255,.65);
+    }
+    .metaLabel{
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      font-weight:800;
+    }
+    .metaLabel i{color:var(--primary)}
+    .metaValue{
+      margin-top:6px;
+      font-weight:900;
+      color:var(--text);
+      word-break:break-word;
+    }
+
+    .keybox{
+      margin-top:12px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid rgba(79,124,255,.35);
+      background: rgba(255,255,255,.85);
+      font-weight:900;
+      color: var(--primary2);
+      word-break:break-all;
+    }
+
+    /* ✅ Histórico */
+    .history{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .hItem{
+      border:1px solid var(--border);
+      background: var(--card2);
+      border-radius:16px;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .hLeft{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .hUser{
+      font-weight:900;
+      color:var(--text);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 340px;
+    }
+
+    .hMeta{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .hBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(79,124,255,.20);
+      font-size:12px;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .hBadge i{color:var(--primary);}
+
+    .hRight{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn-mini{
+      padding:10px 12px;
+      font-size:13px;
+      border-radius:14px;
+      border:1px solid rgba(79,124,255,.18);
+      background: rgba(255,255,255,.8);
+      cursor:pointer;
+      font-weight:900;
+      color:var(--text);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      transition:.18s;
+      user-select:none;
+    }
+    .btn-mini:hover{transform:translateY(-1px)}
+    .btn-mini i{color:var(--primary)}
+
+    .empty{
+      padding:12px;
+      border-radius:16px;
+      border:1px dashed rgba(79,124,255,.35);
+      background: rgba(79,124,255,.06);
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      width:min(520px, 92vw);
+      background: rgba(255,255,255,.85);
+      border:1px solid var(--border);
+      backdrop-filter: blur(10px);
+      border-radius:16px;
+      padding:14px 16px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-start;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition:.22s;
+    }
+    .toast.show{opacity:1;pointer-events:auto}
+    .toast i{color:var(--primary)}
+    .toast.warn i{color:var(--warning)}
+    .mutedSmall{font-size:12px;color:var(--muted)}
   </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"><i class="fas fa-dragon"></i></div>
+        <div>
+          <h1>Fera Alpha</h1>
+          <p>Painel de Geração de Licenças</p>
+        </div>
+      </div>
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo"><i class="fas fa-dragon"></i></div>
+      <div class="chip">
+        <i class="fas fa-shield-halved"></i>
+        <span>Revendedor</span>
+      </div>
+    </div>
+
+    <!-- ✅ GERAR LICENÇA -->
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-bolt"></i>
+          <div>
+            <h2>Gerar Licença</h2>
+            <div class="sub">Somente 40, 70 ou 110 dias • Token salvo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-user"></i> Nome do Cliente</label>
+        <input id="username" placeholder="ex: cliente_joao" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-lock"></i> Senha</label>
+        <input id="password" placeholder="Ex: 123@Abc" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-calendar-days"></i> Período</label>
+        <div class="days">
+          <div class="daybtn active" id="btn40" onclick="setDays(40)">40 Dias</div>
+          <div class="daybtn" id="btn70" onclick="setDays(70)">70 Dias</div>
+          <div class="daybtn" id="btn110" onclick="setDays(110)">110 Dias</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
+        <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
+
+        <div class="rowbtns two">
+          <button class="btn btn-soft" type="button" onclick="saveToken()">
+            <i class="fas fa-floppy-disk"></i> Salvar Token
+          </button>
+          <button class="btn btn-danger" type="button" onclick="clearToken()">
+            <i class="fas fa-trash"></i> Limpar
+          </button>
+        </div>
+
+        <div class="mutedSmall" style="margin-top:8px">
+          <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="generateBtn" onclick="generateLicense()">
+        <i class="fas fa-bolt"></i> Gerar Licença
+      </button>
+
+      <div class="loader" id="loader">
+        <div class="spin"></div>
+        <span>Gerando licença...</span>
+      </div>
+
+      <div class="resultBox" id="resultBox"></div>
+    </div>
+
+    <!-- ✅ HISTÓRICO -->
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-clock-rotate-left"></i>
+          <div>
+            <h2>Últimos Gerados</h2>
+            <div class="sub">Histórico local (até 10)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history" id="historyList"></div>
+    </div>
+
+    <!-- ✅ TOAST -->
+    <div class="toast" id="toast">
+      <i class="fas fa-circle-check"></i>
       <div>
-        <h1>Fera Alpha</h1>
-        <p class="sub">Painel de Geração de Licenças</p>
+        <div id="toastMsg" style="font-weight:900"></div>
+        <div class="mutedSmall" id="toastSub"></div>
       </div>
-    </div>
-    <div class="chip"><i class="fas fa-shield-halved"></i> Revendedor</div>
-  </div>
-
-  <div class="card">
-    <div class="title">
-      <i class="fas fa-bolt"></i>
-      <div>
-        <h2>Gerar Licença</h2>
-        <div class="sub">Somente 40, 70 ou 110 dias • Token salvo</div>
-      </div>
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-user"></i> Nome do Cliente</label>
-      <input id="username">
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-lock"></i> Senha</label>
-      <input id="password">
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-calendar-days"></i> Período</label>
-      <div class="days">
-        <div class="daybtn active" id="btn40" onclick="setDays(40)">40 Dias</div>
-        <div class="daybtn" id="btn70" onclick="setDays(70)">70 Dias</div>
-        <div class="daybtn" id="btn110" onclick="setDays(110)">110 Dias</div>
-      </div>
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-fingerprint"></i> Token</label>
-      <input id="token" type="password">
-      <div class="rowbtns">
-        <button class="btn btn-soft" onclick="saveToken()">Salvar Token</button>
-        <button class="btn btn-soft" onclick="clearToken()">Limpar</button>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generateLicense()">
-      <i class="fas fa-bolt"></i> Gerar Licença
-    </button>
-
-    <div class="loader" id="loader">
-      <div class="spin"></div> Gerando...
     </div>
   </div>
-
-</div>
 
 <script>
-const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
-const TOKEN_KEY = "feraalpha_revendedor_token";
-const PREFIX = "FERA";
+  const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
+  const TOKEN_KEY = "feraalpha_revendedor_token";
+  const HISTORY_KEY = "feraalpha_history_v2";
+  const PREFIX = "FERA";
 
-let currentDays = 40;
+  let currentDays = 40;  // <-- alterado para 40
 
-function setDays(days){
-  currentDays = days;
-  ["40","70","110"].forEach(d=>{
-    document.getElementById("btn"+d).classList.toggle("active", Number(d)===days);
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem(TOKEN_KEY);
+    if(saved) document.getElementById("token").value = saved;
+
+    renderHistory();
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        generateLicense();
+      }
+    });
   });
-}
 
-function saveToken(){
-  localStorage.setItem(TOKEN_KEY, token.value.trim());
-}
+  function setDays(days){
+    currentDays = days;
+    // atualiza classes active para os novos botões
+    document.getElementById("btn40").classList.toggle("active", days === 40);
+    document.getElementById("btn70").classList.toggle("active", days === 70);
+    document.getElementById("btn110").classList.toggle("active", days === 110);
+  }
 
-function clearToken(){
-  localStorage.removeItem(TOKEN_KEY);
-  token.value="";
-}
+  function saveToken(){
+    const token = document.getElementById("token").value.trim();
+    if(!token){
+      toast("Digite um token antes de salvar", "warn", "Campo vazio");
+      return;
+    }
+    localStorage.setItem(TOKEN_KEY, token);
+    toast("Token salvo", "ok", "Pronto ✅");
+  }
 
-async function generateLicense(){
-  loader.style.display="flex";
-  await fetch(API_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/x-www-form-urlencoded"},
-    body:new URLSearchParams({
-      username:username.value,
-      password:password.value,
-      expire_days:String(currentDays),
-      token:token.value,
-      prefix:PREFIX
-    })
-  });
-  loader.style.display="none";
-}
+  function clearToken(){
+    localStorage.removeItem(TOKEN_KEY);
+    document.getElementById("token").value = "";
+    toast("Token removido", "ok", "Você pode inserir outro");
+  }
+
+  async function generateLicense(){
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const token = document.getElementById("token").value.trim();
+
+    if(!username || !password || !token){
+      toast("Preencha todos os campos", "warn", "Usuário, senha e token");
+      return;
+    }
+
+    document.getElementById("loader").style.display = "flex";
+    document.getElementById("generateBtn").disabled = true;
+
+    try{
+      const resp = await fetch(API_URL, {
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body: new URLSearchParams({
+          username,
+          password,
+          expire_days: String(currentDays),
+          token,
+          prefix: PREFIX
+        })
+      });
+
+      const raw = await resp.text();
+
+      let key = null;
+      try{
+        const data = JSON.parse(raw);
+        if(data && data.ok && data.key) key = data.key;
+      }catch(e){
+        key = null;
+      }
+
+      if(!key){
+        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
+        if(match) key = match[0];
+      }
+
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("generateBtn").disabled = false;
+
+      const now = new Date();
+      const timeStr = formatDateTime(now);
+
+      const payload = {
+        title: "Login criado com sucesso!",
+        username,
+        password,                 // ✅ SALVA A SENHA
+        days: currentDays,
+        key,
+        prefix: PREFIX,
+        status: "OK",
+        createdAt: now.toISOString(),
+        createdAtLabel: timeStr
+      };
+
+      showMiniResult(payload);
+      pushHistory(payload);
+      renderHistory();
+
+      toast("Login criado com sucesso!", "ok", "Pronto ✅");
+
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+
+    }catch(err){
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("generateBtn").disabled = false;
+
+      const now = new Date();
+      const timeStr = formatDateTime(now);
+
+      const payload = {
+        title: "Login criado com sucesso!",
+        username,
+        password,                 // ✅ SALVA A SENHA
+        days: currentDays,
+        key: null,
+        prefix: PREFIX,
+        status: "OK",
+        createdAt: now.toISOString(),
+        createdAtLabel: timeStr
+      };
+
+      showMiniResult(payload);
+      pushHistory(payload);
+      renderHistory();
+
+      toast("Login criado com sucesso!", "ok", "Pronto ✅");
+
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+
+      console.error(err);
+    }
+  }
+
+  function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
+    const box = document.getElementById("resultBox");
+    box.style.display = "block";
+
+    box.innerHTML = `
+      <div class="resultTitle">
+        <i class="fas fa-circle-check"></i>
+        <span>${escapeHtml(title)}</span>
+      </div>
+
+      <div class="metaGrid">
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-user"></i> Usuário</div>
+          <div class="metaValue">${escapeHtml(username || "-")}</div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-lock"></i> Senha</div>
+          <div class="metaValue">${escapeHtml(password || "-")}</div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div>
+          <div class="metaValue">${escapeHtml(days)} dias</div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-tag"></i> Prefixo</div>
+          <div class="metaValue">${escapeHtml(prefix)}</div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaLabel"><i class="fas fa-shield-check"></i> Status</div>
+          <div class="metaValue">${escapeHtml(status)}</div>
+        </div>
+
+        <div class="metaItem" style="grid-column: 1 / -1;">
+          <div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div>
+          <div class="metaValue">${escapeHtml(createdAtLabel)}</div>
+        </div>
+      </div>
+
+      ${key ? `<div class="keybox" id="licenseKeyBox">${escapeHtml(key)}</div>` : ""}
+
+      <div class="rowbtns two" style="margin-top:12px;">
+        <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
+          <i class="fas fa-copy"></i> Copiar
+        </button>
+        <button class="btn btn-primary" type="button" onclick="copyAllInfo()">
+          <i class="fas fa-bolt"></i> Copiar Tudo
+        </button>
+      </div>
+    `;
+  }
+
+  // ✅ COPIAR O QUE VOCÊ QUER: usuário + senha + dias
+  function copyUserPassDays(){
+    const box = document.getElementById("resultBox");
+    if(!box || box.style.display === "none"){
+      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
+      return;
+    }
+
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+
+    const text = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}`;
+    copyToClipboard(text);
+
+    toast("Copiado", "ok", "Usuário + senha + dias ✅");
+  }
+
+  // ✅ COPIAR TUDO
+  function copyAllInfo(){
+    const box = document.getElementById("resultBox");
+    if(!box || box.style.display === "none"){
+      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
+      return;
+    }
+
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+    const prefix = values[3]?.innerText || "";
+    const status = values[4]?.innerText || "";
+    const createdAt = values[5]?.innerText || "";
+
+    const key = document.getElementById("licenseKeyBox")?.innerText || "";
+
+    let full = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}\nPrefixo: ${prefix}\nStatus: ${status}\nGerado em: ${createdAt}`;
+    if(key) full += `\nLicenca: ${key}`;
+
+    copyToClipboard(full);
+    toast("Tudo copiado", "ok", "Pronto ✅");
+  }
+
+  // ✅ HISTÓRICO
+  function getHistory(){
+    try{
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if(!raw) return [];
+      const arr = JSON.parse(raw);
+      if(!Array.isArray(arr)) return [];
+      return arr;
+    }catch(e){
+      return [];
+    }
+  }
+
+  function pushHistory(item){
+    const history = getHistory();
+    history.unshift(item);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
+  }
+
+  function renderHistory(){
+    const list = document.getElementById("historyList");
+    if(!list) return;
+
+    const history = getHistory();
+
+    if(history.length === 0){
+      list.innerHTML = `<div class="empty">Nenhum login gerado ainda. Assim que você gerar, ele aparece aqui ✅</div>`;
+      return;
+    }
+
+    list.innerHTML = history.map((h, idx) => `
+      <div class="hItem">
+        <div class="hLeft">
+          <div class="hUser">${escapeHtml(h.username || "cliente")}</div>
+          <div class="hMeta">
+            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(h.days)} dias</span>
+            <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
+          </div>
+        </div>
+
+        <div class="hRight">
+          <button class="btn-mini" onclick="copyHistoryData(${idx})">
+            <i class="fas fa-copy"></i> Copiar
+          </button>
+          <button class="btn-mini" onclick="useHistory(${idx})">
+            <i class="fas fa-arrow-up-right-from-square"></i> Abrir
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // ✅ COPIAR DO HISTÓRICO: usuário + senha + dias
+  function copyHistoryData(index){
+    const history = getHistory();
+    const item = history[index];
+    if(!item){
+      toast("Erro ao copiar", "warn", "Registro não encontrado");
+      return;
+    }
+
+    const text = `Usuario: ${item.username || ""}\nSenha: ${item.password || ""}\nDias: ${item.days || ""} dias`;
+    copyToClipboard(text);
+
+    toast("Copiado", "ok", "Usuário + senha + dias ✅");
+  }
+
+  function useHistory(index){
+    const history = getHistory();
+    const item = history[index];
+    if(!item) return;
+
+    showMiniResult(item);
+    toast("Resultado carregado", "ok", "Histórico aberto ✅");
+  }
+
+  // ✅ Clipboard confiável
+  function copyToClipboard(text){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).catch(()=> fallbackCopy(text));
+    }else{
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  function toast(msg, type="ok", sub=""){
+    const t = document.getElementById("toast");
+    const m = document.getElementById("toastMsg");
+    const s = document.getElementById("toastSub");
+
+    m.textContent = msg;
+    s.textContent = sub;
+
+    t.classList.remove("warn");
+    if(type === "warn") t.classList.add("warn");
+
+    t.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  function formatDateTime(d){
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
 </script>
 </body>
 </html>
