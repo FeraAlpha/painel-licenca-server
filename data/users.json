@@ -116,7 +116,7 @@
       "username": "DORA7",
       "password": "1036",
       "key": "FERA-75ED8236",
-      "device_id": "78e7b6e31c40d655b2fdebc5c31f7056b186f51aebaafa994fdadb05974cfe55",
+      "device_id": null,
       "expires_at": 1773632950
     },
     {
@@ -333,7 +333,7 @@
       "username": "FFera",
       "password": "123",
       "key": "FERA-54A309B7",
-      "device_id": "63ff4ce9ecee145f2685dc3aba54271c68bccbcfb4034716f48445076d4d1947",
+      "device_id": null,
       "expires_at": 1779289211
     },
     {
