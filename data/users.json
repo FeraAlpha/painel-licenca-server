@@ -412,6 +412,13 @@
       "key": "FERA-F12554F9",
       "device_id": null,
       "expires_at": 1772375463
+    },
+    {
+      "username": "Vega",
+      "password": "Vega",
+      "key": "FERA-36842B3B",
+      "device_id": null,
+      "expires_at": 1774535903
     }
   ]
 }
