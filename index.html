@@ -461,7 +461,7 @@
           <i class="fas fa-bolt"></i>
           <div>
             <h2>Gerar Licença</h2>
-            <div class="sub">Somente 30, 60 ou 120 dias • Token salvo</div>
+            <div class="sub">Somente 40, 70 ou 110 dias • Token salvo</div>
           </div>
         </div>
       </div>
@@ -479,9 +479,9 @@
       <div class="field">
         <label><i class="fas fa-calendar-days"></i> Período</label>
         <div class="days">
-          <div class="daybtn active" id="btn30" onclick="setDays(30)">30 Dias</div>
-          <div class="daybtn" id="btn60" onclick="setDays(60)">60 Dias</div>
-          <div class="daybtn" id="btn120" onclick="setDays(120)">120 Dias</div>
+          <div class="daybtn active" id="btn40" onclick="setDays(40)">40 Dias</div>
+          <div class="daybtn" id="btn70" onclick="setDays(70)">70 Dias</div>
+          <div class="daybtn" id="btn110" onclick="setDays(110)">110 Dias</div>
         </div>
       </div>
 
@@ -546,7 +546,7 @@
   const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
 
-  let currentDays = 30;
+  let currentDays = 40;  // <-- alterado para 40
 
   document.addEventListener("DOMContentLoaded", () => {
     const saved = localStorage.getItem(TOKEN_KEY);
@@ -563,9 +563,10 @@
 
   function setDays(days){
     currentDays = days;
-    document.getElementById("btn30").classList.toggle("active", days === 30);
-    document.getElementById("btn60").classList.toggle("active", days === 60);
-    document.getElementById("btn120").classList.toggle("active", days === 120);
+    // atualiza classes active para os novos botões
+    document.getElementById("btn40").classList.toggle("active", days === 40);
+    document.getElementById("btn70").classList.toggle("active", days === 70);
+    document.getElementById("btn110").classList.toggle("active", days === 110);
   }
 
   function saveToken(){
@@ -769,143 +770,4 @@
     const values = box.querySelectorAll(".metaGrid .metaValue");
     const username = values[0]?.innerText || "";
     const password = values[1]?.innerText || "";
-    const days = values[2]?.innerText || "";
-    const prefix = values[3]?.innerText || "";
-    const status = values[4]?.innerText || "";
-    const createdAt = values[5]?.innerText || "";
-
-    const key = document.getElementById("licenseKeyBox")?.innerText || "";
-
-    let full = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}\nPrefixo: ${prefix}\nStatus: ${status}\nGerado em: ${createdAt}`;
-    if(key) full += `\nLicenca: ${key}`;
-
-    copyToClipboard(full);
-    toast("Tudo copiado", "ok", "Pronto ✅");
-  }
-
-  // ✅ HISTÓRICO
-  function getHistory(){
-    try{
-      const raw = localStorage.getItem(HISTORY_KEY);
-      if(!raw) return [];
-      const arr = JSON.parse(raw);
-      if(!Array.isArray(arr)) return [];
-      return arr;
-    }catch(e){
-      return [];
-    }
-  }
-
-  function pushHistory(item){
-    const history = getHistory();
-    history.unshift(item);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
-  }
-
-  function renderHistory(){
-    const list = document.getElementById("historyList");
-    if(!list) return;
-
-    const history = getHistory();
-
-    if(history.length === 0){
-      list.innerHTML = `<div class="empty">Nenhum login gerado ainda. Assim que você gerar, ele aparece aqui ✅</div>`;
-      return;
-    }
-
-    list.innerHTML = history.map((h, idx) => `
-      <div class="hItem">
-        <div class="hLeft">
-          <div class="hUser">${escapeHtml(h.username || "cliente")}</div>
-          <div class="hMeta">
-            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(h.days)} dias</span>
-            <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
-          </div>
-        </div>
-
-        <div class="hRight">
-          <button class="btn-mini" onclick="copyHistoryData(${idx})">
-            <i class="fas fa-copy"></i> Copiar
-          </button>
-          <button class="btn-mini" onclick="useHistory(${idx})">
-            <i class="fas fa-arrow-up-right-from-square"></i> Abrir
-          </button>
-        </div>
-      </div>
-    `).join("");
-  }
-
-  // ✅ COPIAR DO HISTÓRICO: usuário + senha + dias
-  function copyHistoryData(index){
-    const history = getHistory();
-    const item = history[index];
-    if(!item){
-      toast("Erro ao copiar", "warn", "Registro não encontrado");
-      return;
-    }
-
-    const text = `Usuario: ${item.username || ""}\nSenha: ${item.password || ""}\nDias: ${item.days || ""} dias`;
-    copyToClipboard(text);
-
-    toast("Copiado", "ok", "Usuário + senha + dias ✅");
-  }
-
-  function useHistory(index){
-    const history = getHistory();
-    const item = history[index];
-    if(!item) return;
-
-    showMiniResult(item);
-    toast("Resultado carregado", "ok", "Histórico aberto ✅");
-  }
-
-  // ✅ Clipboard confiável
-  function copyToClipboard(text){
-    if(navigator.clipboard && window.isSecureContext){
-      navigator.clipboard.writeText(text).catch(()=> fallbackCopy(text));
-    }else{
-      fallbackCopy(text);
-    }
-  }
-
-  function fallbackCopy(text){
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try{ document.execCommand("copy"); }catch(e){}
-    document.body.removeChild(ta);
-  }
-
-  function toast(msg, type="ok", sub=""){
-    const t = document.getElementById("toast");
-    const m = document.getElementById("toastMsg");
-    const s = document.getElementById("toastSub");
-
-    m.textContent = msg;
-    s.textContent = sub;
-
-    t.classList.remove("warn");
-    if(type === "warn") t.classList.add("warn");
-
-    t.classList.add("show");
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
-  }
-
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  function formatDateTime(d){
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-</script>
-</body>
-</html>
+    const days 
