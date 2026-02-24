@@ -433,6 +433,13 @@
       "key": "FERA-0A717C83",
       "device_id": "aa212d627b2f1af83144d4a77115bf3ea16b18019186af10698b89dd08d5f479",
       "expires_at": 1772376335
+    },
+    {
+      "username": "Gabi",
+      "password": "Gabi",
+      "key": "FERA-74C44785",
+      "device_id": null,
+      "expires_at": 1772378720
     }
   ]
 }
