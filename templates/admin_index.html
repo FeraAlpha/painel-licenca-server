@@ -89,7 +89,7 @@
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
 
-  /* LOADING NOS BOTÕES (melhoria 7) */
+  /* LOADING NOS BOTÕES */
   .btn-loading {
     color: transparent !important;
     pointer-events: none;
@@ -140,7 +140,7 @@
     margin-left:8px;
   }
 
-  /* OCULTAR SENHA COM TOGGLE (melhoria 1) */
+  /* OCULTAR SENHA COM TOGGLE */
   .password-value { display: none; }
   .password-toggle {
     background: none;
@@ -153,7 +153,7 @@
   }
   .password-toggle:hover { background: rgba(0,0,0,0.05); }
 
-  /* DESTAQUE DA LINHA (melhoria 13) */
+  /* DESTAQUE DA LINHA */
   .highlight {
     animation: highlightFade 2s ease-out;
   }
@@ -282,6 +282,21 @@
   .actionsMenu form{ margin-bottom:8px; }
   .actionsMenu form:last-child{ margin-bottom:0; }
 
+  /* ===========================
+     MELHORIAS MOBILE (formulário)
+     =========================== */
+  .day-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .day-buttons .btn {
+    width: 100%;
+    padding: 12px 8px;
+  }
+
   @media (max-width: 820px){
     thead { display:none; }
 
@@ -298,6 +313,16 @@
 
     .actionsWrap{ display:none; }
     .menuBtn{ display:inline-block; }
+
+    .day-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .day-buttons {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -330,26 +355,27 @@
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
-  <form method="post" action="/admin/generate">
+  <form method="post" action="/admin/generate" id="generateForm">
     <label>Usuário</label>
     <input name="username" required>
 
-    <label>Senha</label>
-    <input name="password" required>
+    <label>Senha <small>(gerada automaticamente, pode editar)</small></label>
+    <input name="password" id="autoPassword" required>
 
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
 
     <label>Expiração (dias)</label>
-    <input name="expire_days" type="number" value="30" min="1">
+    <input name="expire_days" type="number" value="35" min="1" id="expireDays">
 
-    <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
-      <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('15')">15 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('40')">40 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('70')">70 Dias</button>
+    <div class="day-buttons">
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
     </div>
+
+    <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
   </form>
 </div>
 
@@ -395,14 +421,14 @@
 
     <tbody>
       {% for u in users %}
-      <!-- ATRIBUTO DATA-ID (melhoria 2) -->
+      <!-- ATRIBUTO DATA-ID -->
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
 
         <td><b>{{ u.username }}</b></td>
 
-        <!-- SENHA OCULTA COM TOGGLE (melhoria 1) -->
+        <!-- SENHA OCULTA COM TOGGLE -->
         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
@@ -500,12 +526,36 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// Toast via URL ?msg=
-(function(){
+// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA ==================
+function generateRandomPassword() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let password = 'Fera@';
+  for (let i = 0; i < 6; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  // Adiciona um caractere especial no final para ficar mais forte
+  const specials = '!@#$%&*';
+  password += specials.charAt(Math.floor(Math.random() * specials.length));
+  return password;
+}
+
+// ================== PREENCHER CAMPO DE SENHA AUTOMATICAMENTE ==================
+document.addEventListener("DOMContentLoaded", function() {
+  const passField = document.getElementById('autoPassword');
+  if (passField) {
+    passField.value = generateRandomPassword();
+  }
+
+  // Toast via URL ?msg=
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
   if(msg) toast(msg);
-})();
+
+  // Inicializa as funções
+  renderExp();
+  updateDashboard();
+  highlightUserFromURL();
+});
 
 // ================== TEMA ESCURO ==================
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -536,7 +586,7 @@ function copiarCred(u,p){
   toast("Credenciais copiadas!");
 }
 
-// ================== TOGGLE SENHA (melhoria 1) ==================
+// ================== TOGGLE SENHA ==================
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -557,7 +607,7 @@ function togglePassword(btn) {
   }
 }
 
-// ================== LOADING NOS BOTÕES (melhoria 7) ==================
+// ================== LOADING NOS BOTÕES ==================
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
@@ -671,7 +721,7 @@ document.addEventListener("click", (e)=>{
   }
 });
 
-// ================== DESTAQUE DA LINHA (melhoria 13) ==================
+// ================== DESTAQUE DA LINHA ==================
 function highlightUserFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const highlightId = urlParams.get('highlight');
@@ -684,17 +734,12 @@ function highlightUserFromURL() {
       }, 2000);
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    // Remove o parâmetro da URL sem recarregar
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
   }
 }
 
-// ================== INICIALIZAÇÃO ==================
-renderExp();
-updateDashboard();
-highlightUserFromURL();
-
+// ================== ATUALIZAÇÕES PERIÓDICAS ==================
 setInterval(() => {
   renderExp();
   updateDashboard();
