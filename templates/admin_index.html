@@ -413,7 +413,8 @@
         <th>Senha</th>
         <th>Key</th>
         <th>Device</th>
-        <th onclick="sortTable(5)">Expiração</th>
+        <th>Revendedor</th>  <!-- NOVA COLUNA -->
+        <th onclick="sortTable(6)">Expiração</th>  <!-- ÍNDICE AJUSTADO -->
         <th>Status</th>
         <th>Ações</th>
       </tr>
@@ -442,6 +443,9 @@
         </td>
 
         <td>{{ u.device_id if u.device_id else '-' }}</td>
+
+        <!-- NOVA CÉLULA: REVENDEDOR -->
+        <td>{{ u.reseller if u.reseller else "Admin" }}</td>
 
         <td class="expCell"></td>
 
