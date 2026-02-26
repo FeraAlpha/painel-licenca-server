@@ -242,7 +242,9 @@
     transform:translateY(0px);
   }
 
-  /* MOBILE: AÇÕES VIRAM MENU ⋮ */
+  /* ===========================
+     MOBILE: AÇÕES VIRAM MENU ⋮
+     =========================== */
   .actionsBox{
     position:relative;
   }
@@ -280,6 +282,21 @@
   .actionsMenu form{ margin-bottom:8px; }
   .actionsMenu form:last-child{ margin-bottom:0; }
 
+  /* ===========================
+     MELHORIAS MOBILE (formulário)
+     =========================== */
+  .day-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .day-buttons .btn {
+    width: 100%;
+    padding: 12px 8px;
+  }
+
   @media (max-width: 820px){
     thead { display:none; }
 
@@ -296,6 +313,16 @@
 
     .actionsWrap{ display:none; }
     .menuBtn{ display:inline-block; }
+
+    .day-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .day-buttons {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -328,26 +355,27 @@
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
-  <form method="post" action="/admin/generate">
+  <form method="post" action="/admin/generate" id="generateForm">
     <label>Usuário</label>
     <input name="username" required>
 
-    <label>Senha</label>
-    <input name="password" required>
+    <label>Senha <small>(gerada automaticamente, pode editar)</small></label>
+    <input name="password" id="autoPassword" required>
 
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
 
     <label>Expiração (dias)</label>
-    <input name="expire_days" type="number" value="35" min="1">
+    <input name="expire_days" type="number" value="35" min="1" id="expireDays">
 
-    <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
-      <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
+    <div class="day-buttons">
       <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
     </div>
+
+    <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
   </form>
 </div>
 
@@ -498,12 +526,36 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// Toast via URL ?msg=
-(function(){
+// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA ==================
+function generateRandomPassword() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let password = 'Fera@';
+  for (let i = 0; i < 6; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  // Adiciona um caractere especial no final para ficar mais forte
+  const specials = '!@#$%&*';
+  password += specials.charAt(Math.floor(Math.random() * specials.length));
+  return password;
+}
+
+// ================== PREENCHER CAMPO DE SENHA AUTOMATICAMENTE ==================
+document.addEventListener("DOMContentLoaded", function() {
+  const passField = document.getElementById('autoPassword');
+  if (passField) {
+    passField.value = generateRandomPassword();
+  }
+
+  // Toast via URL ?msg=
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
   if(msg) toast(msg);
-})();
+
+  // Inicializa as funções
+  renderExp();
+  updateDashboard();
+  highlightUserFromURL();
+});
 
 // ================== TEMA ESCURO ==================
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -687,11 +739,7 @@ function highlightUserFromURL() {
   }
 }
 
-// ================== INICIALIZAÇÃO ==================
-renderExp();
-updateDashboard();
-highlightUserFromURL();
-
+// ================== ATUALIZAÇÕES PERIÓDICAS ==================
 setInterval(() => {
   renderExp();
   updateDashboard();
