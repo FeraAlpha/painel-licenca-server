@@ -508,15 +508,8 @@
       "username": "vgt",
       "password": "123",
       "key": "FERA-E3D5B7CB",
-      "device_id": null,
+      "device_id": "70173238ba14d4ccb448a30130e5c6bae35fe95c400c9c7121ad6d71e8f34cbe",
       "expires_at": 1775171426
-    },
-    {
-      "username": "Leandro",
-      "password": "123",
-      "key": "FERA-0947AFBD",
-      "device_id": "37f91dc6e846fdbd43f6a0d32a582adcd3c4b951c61fb9dcacf86a7e237ae742",
-      "expires_at": 1775171490
     }
   ]
 }
