@@ -941,12 +941,18 @@ def admin_delete(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
+#   CONFIGURAÇÃO DE MÚLTIPLOS TOKENS DE REVENDEDOR (MELHORIA ADICIONADA)
+# ------------------------------
+# Antes era:
+# RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
+# Agora suporta múltiplos tokens separados por vírgula:
+RESELLER_TOKENS = set(os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR").split(','))
+
+# ------------------------------
 #   REVENDEDOR - GERAR KEY EXTERNA (TOKEN) - ATUALIZADA
 # ------------------------------
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
-    RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
-
     token = request.form.get("token")
     username = request.form.get("username")
     password = request.form.get("password")
@@ -958,7 +964,8 @@ def reseller_generate():
     except Exception:
         expire_days = 30
 
-    if token != RESELLER_TOKEN:
+    # Verifica se o token fornecido está na lista de tokens permitidos
+    if token not in RESELLER_TOKENS:
         log_security("reseller_invalid_token")
         return jsonify({"error": "invalid_token"}), 403
 
