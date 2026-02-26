@@ -510,14 +510,6 @@
       "key": "FERA-E3D5B7CB",
       "device_id": null,
       "expires_at": 1775171426
-    },
-    {
-      "username": "Lkk",
-      "password": "Fera@6092",
-      "key": "FERA-B386F798",
-      "device_id": null,
-      "expires_at": 1775173651,
-      "reseller": "revendedor_super_fera_2025"
     }
   ]
 }
