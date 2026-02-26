@@ -89,7 +89,7 @@
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
 
-  /* LOADING NOS BOTÕES (melhoria 7) */
+  /* LOADING NOS BOTÕES */
   .btn-loading {
     color: transparent !important;
     pointer-events: none;
@@ -140,7 +140,7 @@
     margin-left:8px;
   }
 
-  /* OCULTAR SENHA COM TOGGLE (melhoria 1) */
+  /* OCULTAR SENHA COM TOGGLE */
   .password-value { display: none; }
   .password-toggle {
     background: none;
@@ -153,7 +153,7 @@
   }
   .password-toggle:hover { background: rgba(0,0,0,0.05); }
 
-  /* DESTAQUE DA LINHA (melhoria 13) */
+  /* DESTAQUE DA LINHA */
   .highlight {
     animation: highlightFade 2s ease-out;
   }
@@ -242,9 +242,7 @@
     transform:translateY(0px);
   }
 
-  /* ===========================
-     MOBILE: AÇÕES VIRAM MENU ⋮
-     =========================== */
+  /* MOBILE: AÇÕES VIRAM MENU ⋮ */
   .actionsBox{
     position:relative;
   }
@@ -341,13 +339,13 @@
     <input name="prefix" value="FERA">
 
     <label>Expiração (dias)</label>
-    <input name="expire_days" type="number" value="30" min="1">
+    <input name="expire_days" type="number" value="35" min="1">
 
     <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
       <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('15')">15 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('40')">40 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('70')">70 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
     </div>
   </form>
@@ -395,14 +393,14 @@
 
     <tbody>
       {% for u in users %}
-      <!-- ATRIBUTO DATA-ID (melhoria 2) -->
+      <!-- ATRIBUTO DATA-ID -->
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
 
         <td><b>{{ u.username }}</b></td>
 
-        <!-- SENHA OCULTA COM TOGGLE (melhoria 1) -->
+        <!-- SENHA OCULTA COM TOGGLE -->
         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
@@ -536,7 +534,7 @@ function copiarCred(u,p){
   toast("Credenciais copiadas!");
 }
 
-// ================== TOGGLE SENHA (melhoria 1) ==================
+// ================== TOGGLE SENHA ==================
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -557,7 +555,7 @@ function togglePassword(btn) {
   }
 }
 
-// ================== LOADING NOS BOTÕES (melhoria 7) ==================
+// ================== LOADING NOS BOTÕES ==================
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
@@ -671,7 +669,7 @@ document.addEventListener("click", (e)=>{
   }
 });
 
-// ================== DESTAQUE DA LINHA (melhoria 13) ==================
+// ================== DESTAQUE DA LINHA ==================
 function highlightUserFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const highlightId = urlParams.get('highlight');
@@ -684,7 +682,6 @@ function highlightUserFromURL() {
       }, 2000);
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    // Remove o parâmetro da URL sem recarregar
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
   }
