@@ -89,7 +89,7 @@
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
 
-  /* LOADING NOS BOTÕES */
+  /* LOADING NOS BOTÕES (melhoria 7) */
   .btn-loading {
     color: transparent !important;
     pointer-events: none;
@@ -140,7 +140,7 @@
     margin-left:8px;
   }
 
-  /* OCULTAR SENHA COM TOGGLE */
+  /* OCULTAR SENHA COM TOGGLE (melhoria 1) */
   .password-value { display: none; }
   .password-toggle {
     background: none;
@@ -153,7 +153,7 @@
   }
   .password-toggle:hover { background: rgba(0,0,0,0.05); }
 
-  /* DESTAQUE DA LINHA */
+  /* DESTAQUE DA LINHA (melhoria 13) */
   .highlight {
     animation: highlightFade 2s ease-out;
   }
@@ -282,21 +282,6 @@
   .actionsMenu form{ margin-bottom:8px; }
   .actionsMenu form:last-child{ margin-bottom:0; }
 
-  /* ===========================
-     MELHORIAS MOBILE (formulário)
-     =========================== */
-  .day-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-    margin-top: 8px;
-    margin-bottom: 12px;
-  }
-  .day-buttons .btn {
-    width: 100%;
-    padding: 12px 8px;
-  }
-
   @media (max-width: 820px){
     thead { display:none; }
 
@@ -313,16 +298,6 @@
 
     .actionsWrap{ display:none; }
     .menuBtn{ display:inline-block; }
-
-    .day-buttons {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .day-buttons {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
 </head>
@@ -355,27 +330,26 @@
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
-  <form method="post" action="/admin/generate" id="generateForm">
+  <form method="post" action="/admin/generate">
     <label>Usuário</label>
     <input name="username" required>
 
-    <label>Senha <small>(gerada automaticamente, pode editar)</small></label>
-    <input name="password" id="autoPassword" required>
+    <label>Senha</label>
+    <input name="password" required>
 
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
 
     <label>Expiração (dias)</label>
-    <input name="expire_days" type="number" value="35" min="1" id="expireDays">
+    <input name="expire_days" type="number" value="30" min="1">
 
-    <div class="day-buttons">
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
+    <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
+      <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('15')">15 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('40')">40 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('70')">70 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
     </div>
-
-    <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
   </form>
 </div>
 
@@ -421,19 +395,19 @@
 
     <tbody>
       {% for u in users %}
-      <!-- ATRIBUTO DATA-ID (agora usando o ID real) -->
+      <!-- ATRIBUTO DATA-ID (melhoria 2) -->
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
 
         <td><b>{{ u.username }}</b></td>
 
-        <!-- SENHA OCULTA COM TOGGLE -->
+        <!-- SENHA OCULTA COM TOGGLE (melhoria 1) -->
         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
           <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
-          <span class="copy" onclick="copiarCred(this, '{{ u.username }}', '{{ u.password }}')">copiar</span>
+          <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
         </td>
 
         <td>
@@ -458,18 +432,15 @@
 
           <!-- DESKTOP -->
           <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
-            <!-- Botão para copiar tudo (usuário, senha, expiração, key) -->
-            <button type="button" class="btn btn-ghost" onclick="copiarTudo(this)">📋 Copiar Tudo</button>
-
-            <form method="post" action="/admin/renew/{{ u.id }}">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
             </form>
-            <form method="post" action="/admin/renew_custom/{{ u.id }}">
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
             </form>
-            <form method="post" action="/admin/toggle_block/{{ u.id }}"
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
                 <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
@@ -477,13 +448,13 @@
                 <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
-            <form method="post" action="/admin/reset/{{ u.id }}">
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
               <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
             </form>
-            <form method="post" action="/admin/reset_device/{{ u.id }}">
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
             </form>
-            <form method="post" action="/admin/delete/{{ u.id }}"
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
             </form>
@@ -492,16 +463,15 @@
           <!-- MOBILE -->
           <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
           <div class="actionsMenu">
-            <button type="button" class="btn btn-ghost" style="width:100%; margin-bottom:8px;" onclick="copiarTudo(this)">📋 Copiar Tudo</button>
-            <form method="post" action="/admin/renew/{{ u.id }}">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
               <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
             </form>
-            <form method="post" action="/admin/renew_custom/{{ u.id }}">
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
               <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
             </form>
-            <form method="post" action="/admin/toggle_block/{{ u.id }}"
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
                 <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
@@ -509,13 +479,13 @@
                 <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
-            <form method="post" action="/admin/reset/{{ u.id }}">
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
               <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
             </form>
-            <form method="post" action="/admin/reset_device/{{ u.id }}">
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
               <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
             </form>
-            <form method="post" action="/admin/delete/{{ u.id }}"
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
               <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
             </form>
@@ -530,35 +500,12 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA ==================
-function generateRandomPassword() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let password = 'Fera@';
-  for (let i = 0; i < 6; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  const specials = '!@#$%&*';
-  password += specials.charAt(Math.floor(Math.random() * specials.length));
-  return password;
-}
-
-// ================== PREENCHER CAMPO DE SENHA AUTOMATICAMENTE ==================
-document.addEventListener("DOMContentLoaded", function() {
-  const passField = document.getElementById('autoPassword');
-  if (passField) {
-    passField.value = generateRandomPassword();
-  }
-
-  // Toast via URL ?msg=
+// Toast via URL ?msg=
+(function(){
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
   if(msg) toast(msg);
-
-  // Inicializa as funções
-  renderExp();
-  updateDashboard();
-  highlightUserFromURL();
-});
+})();
 
 // ================== TEMA ESCURO ==================
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -584,48 +531,12 @@ function copiar(t, el){
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
-// Nova função: copiar credenciais + expiração
-function copiarCred(el, username, password) {
-  // Encontra a linha (tr) mais próxima
-  const tr = el.closest('tr');
-  const expires = tr.getAttribute('data-expires');
-  let expText = '';
-  if (expires && expires > 0) {
-    const d = new Date(expires * 1000);
-    const dataStr = d.toLocaleDateString('pt-BR');
-    const diffDays = Math.floor((expires - Math.floor(Date.now()/1000)) / 86400);
-    expText = `Expira em: ${diffDays} dias (${dataStr})`;
-  } else {
-    expText = 'Expiração: não definida';
-  }
-  const text = `Usuário: ${username}\nSenha: ${password}\n${expText}`;
-  navigator.clipboard.writeText(text);
-  toast("Credenciais + expiração copiadas!");
+function copiarCred(u,p){
+  navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
+  toast("Credenciais copiadas!");
 }
 
-// Nova função: copiar tudo (usuário, senha, expiração, key)
-function copiarTudo(btn) {
-  const tr = btn.closest('tr');
-  const username = tr.querySelector('td:nth-child(2)').innerText.trim();
-  const passwordSpan = tr.querySelector('.password-value');
-  const password = passwordSpan ? passwordSpan.innerText.trim() : '';
-  const key = tr.querySelector('td:nth-child(4)').innerText.replace('copiar', '').trim();
-  const expires = tr.getAttribute('data-expires');
-  let expText = '';
-  if (expires && expires > 0) {
-    const d = new Date(expires * 1000);
-    const dataStr = d.toLocaleDateString('pt-BR');
-    const diffDays = Math.floor((expires - Math.floor(Date.now()/1000)) / 86400);
-    expText = `Expira em: ${diffDays} dias (${dataStr})`;
-  } else {
-    expText = 'Expiração: não definida';
-  }
-  const text = `Usuário: ${username}\nSenha: ${password}\n${expText}\nKey: ${key}`;
-  navigator.clipboard.writeText(text);
-  toast("Tudo copiado!");
-}
-
-// ================== TOGGLE SENHA ==================
+// ================== TOGGLE SENHA (melhoria 1) ==================
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -646,7 +557,7 @@ function togglePassword(btn) {
   }
 }
 
-// ================== LOADING NOS BOTÕES ==================
+// ================== LOADING NOS BOTÕES (melhoria 7) ==================
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
@@ -760,7 +671,7 @@ document.addEventListener("click", (e)=>{
   }
 });
 
-// ================== DESTAQUE DA LINHA ==================
+// ================== DESTAQUE DA LINHA (melhoria 13) ==================
 function highlightUserFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const highlightId = urlParams.get('highlight');
@@ -773,12 +684,17 @@ function highlightUserFromURL() {
       }, 2000);
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+    // Remove o parâmetro da URL sem recarregar
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
   }
 }
 
-// ================== ATUALIZAÇÕES PERIÓDICAS ==================
+// ================== INICIALIZAÇÃO ==================
+renderExp();
+updateDashboard();
+highlightUserFromURL();
+
 setInterval(() => {
   renderExp();
   updateDashboard();
