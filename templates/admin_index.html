@@ -421,7 +421,7 @@
 
     <tbody>
       {% for u in users %}
-      <!-- ATRIBUTO DATA-ID -->
+      <!-- ATRIBUTO DATA-ID (agora usando o ID real) -->
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
@@ -433,7 +433,7 @@
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
           <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
-          <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
+          <span class="copy" onclick="copiarCred(this, '{{ u.username }}', '{{ u.password }}')">copiar</span>
         </td>
 
         <td>
@@ -458,15 +458,18 @@
 
           <!-- DESKTOP -->
           <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
-            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+            <!-- Botão para copiar tudo (usuário, senha, expiração, key) -->
+            <button type="button" class="btn btn-ghost" onclick="copiarTudo(this)">📋 Copiar Tudo</button>
+
+            <form method="post" action="/admin/renew/{{ u.id }}">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
             </form>
-            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+            <form method="post" action="/admin/renew_custom/{{ u.id }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
             </form>
-            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+            <form method="post" action="/admin/toggle_block/{{ u.id }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
                 <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
@@ -474,13 +477,13 @@
                 <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
-            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+            <form method="post" action="/admin/reset/{{ u.id }}">
               <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
             </form>
-            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+            <form method="post" action="/admin/reset_device/{{ u.id }}">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
             </form>
-            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+            <form method="post" action="/admin/delete/{{ u.id }}"
                   onsubmit="return confirm('Excluir usuário?')">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
             </form>
@@ -489,15 +492,16 @@
           <!-- MOBILE -->
           <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
           <div class="actionsMenu">
-            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+            <button type="button" class="btn btn-ghost" style="width:100%; margin-bottom:8px;" onclick="copiarTudo(this)">📋 Copiar Tudo</button>
+            <form method="post" action="/admin/renew/{{ u.id }}">
               <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
             </form>
-            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+            <form method="post" action="/admin/renew_custom/{{ u.id }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
               <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
             </form>
-            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+            <form method="post" action="/admin/toggle_block/{{ u.id }}"
                   onsubmit="return confirm('Alterar status desse usuário?')">
               {% if u.status == "blocked" %}
                 <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
@@ -505,13 +509,13 @@
                 <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
               {% endif %}
             </form>
-            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+            <form method="post" action="/admin/reset/{{ u.id }}">
               <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
             </form>
-            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+            <form method="post" action="/admin/reset_device/{{ u.id }}">
               <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
             </form>
-            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+            <form method="post" action="/admin/delete/{{ u.id }}"
                   onsubmit="return confirm('Excluir usuário?')">
               <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
             </form>
@@ -533,7 +537,6 @@ function generateRandomPassword() {
   for (let i = 0; i < 6; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  // Adiciona um caractere especial no final para ficar mais forte
   const specials = '!@#$%&*';
   password += specials.charAt(Math.floor(Math.random() * specials.length));
   return password;
@@ -581,9 +584,45 @@ function copiar(t, el){
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
-function copiarCred(u,p){
-  navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
-  toast("Credenciais copiadas!");
+// Nova função: copiar credenciais + expiração
+function copiarCred(el, username, password) {
+  // Encontra a linha (tr) mais próxima
+  const tr = el.closest('tr');
+  const expires = tr.getAttribute('data-expires');
+  let expText = '';
+  if (expires && expires > 0) {
+    const d = new Date(expires * 1000);
+    const dataStr = d.toLocaleDateString('pt-BR');
+    const diffDays = Math.floor((expires - Math.floor(Date.now()/1000)) / 86400);
+    expText = `Expira em: ${diffDays} dias (${dataStr})`;
+  } else {
+    expText = 'Expiração: não definida';
+  }
+  const text = `Usuário: ${username}\nSenha: ${password}\n${expText}`;
+  navigator.clipboard.writeText(text);
+  toast("Credenciais + expiração copiadas!");
+}
+
+// Nova função: copiar tudo (usuário, senha, expiração, key)
+function copiarTudo(btn) {
+  const tr = btn.closest('tr');
+  const username = tr.querySelector('td:nth-child(2)').innerText.trim();
+  const passwordSpan = tr.querySelector('.password-value');
+  const password = passwordSpan ? passwordSpan.innerText.trim() : '';
+  const key = tr.querySelector('td:nth-child(4)').innerText.replace('copiar', '').trim();
+  const expires = tr.getAttribute('data-expires');
+  let expText = '';
+  if (expires && expires > 0) {
+    const d = new Date(expires * 1000);
+    const dataStr = d.toLocaleDateString('pt-BR');
+    const diffDays = Math.floor((expires - Math.floor(Date.now()/1000)) / 86400);
+    expText = `Expira em: ${diffDays} dias (${dataStr})`;
+  } else {
+    expText = 'Expiração: não definida';
+  }
+  const text = `Usuário: ${username}\nSenha: ${password}\n${expText}\nKey: ${key}`;
+  navigator.clipboard.writeText(text);
+  toast("Tudo copiado!");
 }
 
 // ================== TOGGLE SENHA ==================
