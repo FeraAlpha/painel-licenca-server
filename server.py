@@ -642,6 +642,7 @@ def admin_generate():
             u["password"] = password
             u["key"] = key
             u["expires_at"] = expires_at
+            # admin não altera revendedor
             save_users(data)
             
             log_security("admin_user_updated", details={"username": username, "expires_at": expires_at})
@@ -653,6 +654,7 @@ def admin_generate():
         "key": key,
         "device_id": None,
         "expires_at": expires_at
+        # sem campo "reseller" (será None)
     })
 
     save_users(data)
@@ -941,12 +943,19 @@ def admin_delete(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   CONFIGURAÇÃO DE MÚLTIPLOS TOKENS DE REVENDEDOR (MELHORIA ADICIONADA)
+#   CONFIGURAÇÃO DE MÚLTIPLOS REVENDEDORES (MELHORIA)
 # ------------------------------
-# Antes era:
-# RESELLER_TOKEN = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
-# Agora suporta múltiplos tokens separados por vírgula:
-RESELLER_TOKENS = set(os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR").split(','))
+# Formato esperado: "Nome1|token1,Nome2|token2" ou apenas "token1,token2" (compatibilidade)
+_raw_reseller = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
+RESELLER_MAP = {}
+for part in _raw_reseller.split(','):
+    part = part.strip()
+    if '|' in part:
+        nome, token = part.split('|', 1)
+        RESELLER_MAP[token.strip()] = nome.strip()
+    else:
+        # compatibilidade: token sozinho, usa o próprio token como nome
+        RESELLER_MAP[part] = part
 
 # ------------------------------
 #   REVENDEDOR - GERAR KEY EXTERNA (TOKEN) - ATUALIZADA
@@ -964,10 +973,13 @@ def reseller_generate():
     except Exception:
         expire_days = 30
 
-    # Verifica se o token fornecido está na lista de tokens permitidos
-    if token not in RESELLER_TOKENS:
+    # Verifica se o token fornecido está no mapa
+    if token not in RESELLER_MAP:
         log_security("reseller_invalid_token")
         return jsonify({"error": "invalid_token"}), 403
+
+    # Obtém o nome do revendedor
+    reseller_nome = RESELLER_MAP[token]
 
     if not username or not password:
         return jsonify({"error": "missing_fields"}), 400
@@ -988,9 +1000,10 @@ def reseller_generate():
             u["password"] = password
             u["key"] = key
             u["expires_at"] = expires_at
+            u["reseller"] = reseller_nome          # <-- adiciona/atualiza revendedor
             save_users(data)
             
-            log_security("reseller_updated", details={"username": username})
+            log_security("reseller_updated", details={"username": username, "reseller": reseller_nome})
             return jsonify({
                 "ok": True,
                 "key": key,
@@ -998,17 +1011,19 @@ def reseller_generate():
                 "expires_at": expires_at
             })
 
+    # Novo usuário
     users.append({
         "username": username,
         "password": password,
         "key": key,
         "device_id": None,
-        "expires_at": expires_at
+        "expires_at": expires_at,
+        "reseller": reseller_nome                    # <-- salva revendedor
     })
 
     save_users(data)
     
-    log_security("reseller_created", details={"username": username, "expires_at": expires_at})
+    log_security("reseller_created", details={"username": username, "expires_at": expires_at, "reseller": reseller_nome})
     return jsonify({
         "ok": True,
         "key": key,
