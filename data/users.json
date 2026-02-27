@@ -550,14 +550,6 @@
       "device_id": null,
       "expires_at": 1775181384,
       "reseller": "PING_FPS"
-    },
-    {
-      "username": "Test",
-      "password": "Fera@9051",
-      "key": "FERA-8E59236C",
-      "device_id": "f2aaf3ab46ae1e959f0d5bed3f31a48b6d8aa1c0f44064a7022937907f5e0869",
-      "expires_at": 1775181920,
-      "reseller": "P4NC4K3"
     }
   ]
 }
