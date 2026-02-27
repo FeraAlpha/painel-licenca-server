@@ -566,6 +566,14 @@
       "device_id": null,
       "expires_at": 1775181592,
       "reseller": "LKZ"
+    },
+    {
+      "username": "Test",
+      "password": "Fera@9051",
+      "key": "FERA-8E59236C",
+      "device_id": null,
+      "expires_at": 1775181920,
+      "reseller": "P4NC4K3"
     }
   ]
 }
