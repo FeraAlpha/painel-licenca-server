@@ -527,6 +527,15 @@
       "expires_at": 1775192795,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772168795
+    },
+    {
+      "username": "Bb",
+      "password": "Fera@9134",
+      "key": "FERA-771C9ACC",
+      "device_id": null,
+      "expires_at": 1775193076,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772169076
     }
   ]
 }
