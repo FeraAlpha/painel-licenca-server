@@ -610,7 +610,7 @@ def admin_usage_report():
     return render_template("usage_report.html", usage_data=usage_data)
 
 # ------------------------------
-#   GERAR KEY (ADMIN) - ATUALIZADA
+#   GERAR KEY (ADMIN) - ATUALIZADA (COM CREATED_AT)
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -653,7 +653,8 @@ def admin_generate():
         "password": password,
         "key": key,
         "device_id": None,
-        "expires_at": expires_at
+        "expires_at": expires_at,
+        "created_at": int(time.time())   # <-- NOVO
         # sem campo "reseller" (será None)
     })
 
@@ -979,7 +980,7 @@ def carregar_revendedores():
 RESELLER_MAP = carregar_revendedores()
 
 # ------------------------------
-#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN) - ATUALIZADA
+#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN) - ATUALIZADA (COM CREATED_AT)
 # ------------------------------
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
@@ -1039,7 +1040,8 @@ def reseller_generate():
         "key": key,
         "device_id": None,
         "expires_at": expires_at,
-        "reseller": reseller_nome                    # <-- salva revendedor
+        "reseller": reseller_nome,                  # <-- salva revendedor
+        "created_at": int(time.time())               # <-- NOVO
     })
 
     save_users(data)
@@ -1053,7 +1055,7 @@ def reseller_generate():
     })
 
 # ------------------------------
-#   ESTATÍSTICAS POR REVENDEDOR (ATUALIZADA)
+#   ESTATÍSTICAS POR REVENDEDOR (ATUALIZADA COM GRÁFICO)
 # ------------------------------
 @app.route("/admin/reseller_stats")
 @need_admin
@@ -1083,7 +1085,8 @@ def admin_reseller_stats():
     # Inicializar variáveis
     total_usuarios_criados = 0
     total_ativacoes = 0
-    stats = []  # para exibir os registros de ativação
+    stats = []  # últimos 50 registros de ativação
+    chart_data = {}  # para o gráfico: data -> contagem
 
     if reseller_filter:
         # Filtrar usuários do revendedor
@@ -1098,7 +1101,7 @@ def admin_reseller_stats():
             cursor = conn.cursor()
             placeholders = ','.join(['?' for _ in fingerprints])
 
-            # Contar ativações
+            # Contar ativações totais no período
             cursor.execute(f'''
                 SELECT COUNT(*) as total
                 FROM license_usage
@@ -1107,6 +1110,17 @@ def admin_reseller_stats():
             row = cursor.fetchone()
             if row:
                 total_ativacoes = row[0]
+
+            # Dados para o gráfico: ativações por dia
+            cursor.execute(f'''
+                SELECT DATE(timestamp, 'unixepoch') as dia, COUNT(*) as total
+                FROM license_usage
+                WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
+                GROUP BY dia
+                ORDER BY dia ASC
+            ''', fingerprints + [since])
+            for row in cursor.fetchall():
+                chart_data[row[0]] = row[1]  # ex: "2025-03-20" -> 5
 
             # Listar últimos 50 registros de ativação
             cursor.execute(f'''
@@ -1132,7 +1146,8 @@ def admin_reseller_stats():
                            days=days,
                            total_usuarios_criados=total_usuarios_criados,
                            total_ativacoes=total_ativacoes,
-                           stats=stats)
+                           stats=stats,
+                           chart_data=chart_data)
 
 # ------------------------------
 #   RUN
