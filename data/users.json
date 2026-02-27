@@ -553,15 +553,6 @@
       "expires_at": 1775251704,
       "reseller": "JCGAMER",
       "created_at": 1772227704
-    },
-    {
-      "username": "B",
-      "password": "Fera@9036",
-      "key": "FERA-B14BC35B",
-      "device_id": null,
-      "expires_at": 1775252152,
-      "reseller": "P4NC4K3",
-      "created_at": 1772228152
     }
   ]
 }
