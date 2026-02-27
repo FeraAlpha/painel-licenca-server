@@ -1,1 +1,126 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Estatísticas por Revendedor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 24px; margin-bottom: 20px; }
+        .filters {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label { font-weight: bold; margin-bottom: 5px; }
+        select, input, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #2f6fed;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .summary {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f5f5f5;
+        }
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #2f6fed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin" class="back">← Voltar ao Painel</a>
+        <h1>Estatísticas de Ativações por Revendedor</h1>
 
+        <form method="get" class="filters">
+            <div class="filter-group">
+                <label for="reseller">Revendedor:</label>
+                <select name="reseller" id="reseller">
+                    <option value="">Selecione</option>
+                    {% for r in revendedores %}
+                    <option value="{{ r }}" {% if r == selected %}selected{% endif %}>{{ r }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="days">Últimos (dias):</label>
+                <input type="number" name="days" id="days" value="{{ days }}" min="1">
+            </div>
+            <button type="submit">Filtrar</button>
+        </form>
+
+        {% if selected %}
+        <div class="summary">
+            Total de ativações nos últimos {{ days }} dias: <strong>{{ total_uso }}</strong>
+        </div>
+
+        {% if stats %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fingerprint</th>
+                    <th>Ação</th>
+                    <th>Data/Hora</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stats %}
+                <tr>
+                    <td>{{ s.fingerprint }}</td>
+                    <td>{{ s.action }}</td>
+                    <td>{{ s.timestamp }}</td>
+                    <td>{{ s.ip }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Nenhum registro encontrado para este revendedor no período.</p>
+        {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
