@@ -518,15 +518,6 @@
       "device_id": "41e38dce3418e4045f6062fe7077031d12aa361d2901c548305e6860ba8ab2aa",
       "expires_at": 1772766084,
       "created_at": 1772161284
-    },
-    {
-      "username": "L",
-      "password": "Fera@1872",
-      "key": "FERA-ADE15659",
-      "device_id": null,
-      "expires_at": 1775192795,
-      "reseller": "revendedor_super_fera_2025",
-      "created_at": 1772168795
     }
   ]
 }
