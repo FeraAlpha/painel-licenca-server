@@ -1053,6 +1053,83 @@ def reseller_generate():
     })
 
 # ------------------------------
+#   ESTATÍSTICAS POR REVENDEDOR (NOVA ROTA)
+# ------------------------------
+@app.route("/admin/reseller_stats")
+@need_admin
+def admin_reseller_stats():
+    # Parâmetros
+    reseller_filter = request.args.get("reseller", "")
+    days = request.args.get("days", "7")
+    try:
+        days = int(days)
+    except:
+        days = 7
+
+    # Calcular timestamp de início
+    since = int(time.time()) - (days * 86400)
+
+    # Carregar usuários para obter fingerprints por revendedor
+    data = load_users()
+    users = data.get("users", [])
+
+    # Mapear revendedores disponíveis (nomes únicos)
+    revendedores = set()
+    for u in users:
+        if u.get("reseller"):
+            revendedores.add(u["reseller"])
+    revendedores = sorted(revendedores)
+
+    # Se um revendedor foi selecionado, buscar fingerprints
+    fingerprints = []
+    if reseller_filter:
+        for u in users:
+            if u.get("reseller") == reseller_filter and u.get("device_id"):
+                fingerprints.append(u["device_id"])
+
+    # Consultar uso
+    stats = []
+    total_uso = 0
+    if fingerprints:
+        conn = get_db()
+        cursor = conn.cursor()
+        placeholders = ','.join(['?' for _ in fingerprints])
+        # Contar ações de ativação
+        cursor.execute(f'''
+            SELECT action, COUNT(*) as total
+            FROM license_usage
+            WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
+            GROUP BY action
+        ''', fingerprints + [since])
+        row = cursor.fetchone()
+        if row:
+            total_uso = row[1]
+        # Listar últimos 50 usos
+        cursor.execute(f'''
+            SELECT fingerprint, action, timestamp, ip_address
+            FROM license_usage
+            WHERE fingerprint IN ({placeholders}) AND timestamp >= ?
+            ORDER BY timestamp DESC
+            LIMIT 50
+        ''', fingerprints + [since])
+        recent = cursor.fetchall()
+        for r in recent:
+            stats.append({
+                "fingerprint": r[0],
+                "action": r[1],
+                "timestamp": datetime.fromtimestamp(r[2]).strftime("%Y-%m-%d %H:%M:%S"),
+                "ip": r[3]
+            })
+        conn.close()
+
+    return render_template("reseller_stats.html",
+                           revendedores=revendedores,
+                           selected=reseller_filter,
+                           days=days,
+                           total_uso=total_uso,
+                           stats=stats)
+
+# ------------------------------
 #   RUN
 # ------------------------------
 if __name__ == "__main__":
