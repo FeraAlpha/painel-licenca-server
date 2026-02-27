@@ -514,27 +514,19 @@
     },
     {
       "username": "N",
-      "password": "Fera@9995",
-      "key": "FERA-11D17037",
+      "password": "Fera@4499",
+      "key": "FERA-3C12206B",
       "device_id": null,
-      "expires_at": 1775175265,
+      "expires_at": 1775175388,
       "reseller": "ANZOL"
     },
     {
-      "username": "An",
-      "password": "Fera@9411",
-      "key": "FERA-A928E43A",
+      "username": "Dsan",
+      "password": "Fera@1709",
+      "key": "FERA-63BBAD37",
       "device_id": null,
-      "expires_at": 1775175455,
-      "reseller": "JCGAMER"
-    },
-    {
-      "username": "Aaln",
-      "password": "Fera@1360",
-      "key": "FERA-F7D1A1E2",
-      "device_id": null,
-      "expires_at": 1775175507,
-      "reseller": "LKZ"
+      "expires_at": 1775175585,
+      "reseller": "TIO_TCHOCO"
     }
   ]
 }
