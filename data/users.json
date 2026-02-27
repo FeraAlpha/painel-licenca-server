@@ -553,6 +553,15 @@
       "expires_at": 1775251704,
       "reseller": "JCGAMER",
       "created_at": 1772227704
+    },
+    {
+      "username": "Gabriel1",
+      "password": "Gabriel1",
+      "key": "FERA-E32C02A4",
+      "device_id": null,
+      "expires_at": 1775252961,
+      "reseller": "LKZ",
+      "created_at": 1772228961
     }
   ]
 }
