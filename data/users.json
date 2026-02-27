@@ -571,6 +571,15 @@
       "expires_at": 1775253620,
       "reseller": "P4NC4K3",
       "created_at": 1772229620
+    },
+    {
+      "username": "Guiii0706",
+      "password": "123",
+      "key": "FERA-49C9886E",
+      "device_id": null,
+      "expires_at": 1775260735,
+      "reseller": "JCGAMER",
+      "created_at": 1772236735
     }
   ]
 }
