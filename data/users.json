@@ -511,6 +511,14 @@
       "device_id": null,
       "expires_at": 1775175209,
       "reseller": "DORA7"
+    },
+    {
+      "username": "N",
+      "password": "Fera@9995",
+      "key": "FERA-11D17037",
+      "device_id": null,
+      "expires_at": 1775175265,
+      "reseller": "ANZOL"
     }
   ]
 }
