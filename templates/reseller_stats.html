@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <title>Estatísticas por Revendedor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,9 +50,27 @@
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
         .summary-item {
             margin-bottom: 5px;
+        }
+        .chart-container {
+            margin: 30px 0;
+            height: 300px;
+        }
+        .export-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
         table {
             width: 100%;
@@ -64,6 +84,7 @@
         }
         th {
             background: #f5f5f5;
+            cursor: pointer;
         }
         .back {
             display: inline-block;
@@ -97,19 +118,61 @@
 
         {% if selected %}
         <div class="summary">
-            <div class="summary-item">📦 Licenças criadas pelo revendedor: <strong>{{ total_usuarios_criados }}</strong></div>
-            <div class="summary-item">🔑 Total de ativações nos últimos {{ days }} dias: <strong>{{ total_ativacoes }}</strong></div>
+            <div>
+                <div class="summary-item">📦 Licenças criadas: <strong>{{ total_usuarios_criados }}</strong></div>
+                <div class="summary-item">🔑 Ativações ({{ days }} dias): <strong>{{ total_ativacoes }}</strong></div>
+            </div>
+            <button class="export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
         </div>
 
+        <!-- GRÁFICO -->
+        {% if chart_data %}
+        <div class="chart-container">
+            <canvas id="activationsChart"></canvas>
+        </div>
+        <script>
+            const ctx = document.getElementById('activationsChart').getContext('2d');
+            const chartData = {{ chart_data | tojson }};
+            const labels = Object.keys(chartData).sort();
+            const values = labels.map(d => chartData[d]);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ativações por dia',
+                        data: values,
+                        borderColor: '#2f6fed',
+                        backgroundColor: 'rgba(47, 111, 237, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, precision: 0 }
+                    }
+                }
+            });
+        </script>
+        {% endif %}
+
+        <!-- TABELA DE ATIVAÇÕES -->
         {% if stats %}
-        <h3>Últimas ativações</h3>
-        <table>
+        <h3>Últimas 50 ativações</h3>
+        <table id="activationsTable">
             <thead>
                 <tr>
-                    <th>Fingerprint</th>
-                    <th>Ação</th>
-                    <th>Data/Hora</th>
-                    <th>IP</th>
+                    <th onclick="sortTable(0)">Fingerprint</th>
+                    <th onclick="sortTable(1)">Ação</th>
+                    <th onclick="sortTable(2)">Data/Hora</th>
+                    <th onclick="sortTable(3)">IP</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,5 +191,51 @@
         {% endif %}
         {% endif %}
     </div>
+
+    <script>
+        // Ordenação simples da tabela
+        function sortTable(col) {
+            const table = document.getElementById('activationsTable');
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+            const asc = tbody.getAttribute('data-sort') !== 'asc';
+
+            rows.sort((a, b) => {
+                let A = a.cells[col].innerText.toLowerCase();
+                let B = b.cells[col].innerText.toLowerCase();
+                if (col === 2) { // coluna de data
+                    A = new Date(A).getTime();
+                    B = new Date(B).getTime();
+                }
+                if (!isNaN(A) && !isNaN(B)) {
+                    return asc ? A - B : B - A;
+                }
+                return asc ? A.localeCompare(B) : B.localeCompare(A);
+            });
+
+            rows.forEach(r => tbody.appendChild(r));
+            tbody.setAttribute('data-sort', asc ? 'asc' : 'desc');
+        }
+
+        // Exportar tabela para CSV
+        function exportToCSV() {
+            const rows = document.querySelectorAll('#activationsTable tbody tr');
+            if (rows.length === 0) return;
+
+            let csv = 'Fingerprint,Ação,Data/Hora,IP\n';
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                csv += `"${cols[0].innerText}","${cols[1].innerText}","${cols[2].innerText}","${cols[3].innerText}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ativacoes_${selected}_${days}dias.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
 </body>
 </html>
