@@ -544,15 +544,13 @@
   const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
 
-  let currentDays = 35;  // padrão agora é 35
+  let currentDays = 35;
 
   document.addEventListener("DOMContentLoaded", () => {
     const saved = localStorage.getItem(TOKEN_KEY);
     if(saved) document.getElementById("token").value = saved;
 
-    // Gera uma senha aleatória inicial
     generateNewPassword();
-
     renderHistory();
 
     document.addEventListener("keydown", (e) => {
@@ -562,9 +560,8 @@
     });
   });
 
-  // Gera uma senha no formato Fera@XXXX (ex: Fera@4821)
   function generateNewPassword() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
     const newPass = `Fera@${randomNum}`;
     document.getElementById("password").value = newPass;
   }
@@ -619,20 +616,31 @@
         })
       });
 
-      const raw = await resp.text();
-
-      let key = null;
-      try{
-        const data = JSON.parse(raw);
-        if(data && data.ok && data.key) key = data.key;
-      }catch(e){
-        key = null;
+      // Tenta obter o JSON da resposta
+      let data;
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await resp.json();
+      } else {
+        const text = await resp.text();
+        toast("Erro inesperado do servidor", "warn", "Resposta não JSON");
+        console.error("Resposta não JSON:", text);
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("generateBtn").disabled = false;
+        return;
       }
 
-      if(!key){
-        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
-        if(match) key = match[0];
+      // Se a resposta não for OK (status 2xx) ou se o campo "ok" não for true
+      if (!resp.ok || !data.ok) {
+        const errorMsg = data.error || "Erro desconhecido";
+        toast(`Falha: ${errorMsg}`, "warn", "Token inválido ou outro erro");
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("generateBtn").disabled = false;
+        return;
       }
+
+      // Se chegou aqui, a licença foi criada com sucesso
+      const key = data.key;
 
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
@@ -665,31 +673,7 @@
     }catch(err){
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
-
-      const now = new Date();
-      const timeStr = formatDateTime(now);
-
-      const payload = {
-        title: "Login criado com sucesso!",
-        username,
-        password,
-        days: currentDays,
-        key: null,
-        prefix: PREFIX,
-        status: "OK",
-        createdAt: now.toISOString(),
-        createdAtLabel: timeStr
-      };
-
-      showMiniResult(payload);
-      pushHistory(payload);
-      renderHistory();
-
-      toast("Login criado com sucesso!", "ok", "Pronto ✅");
-
-      document.getElementById("username").value = "";
-      generateNewPassword();
-
+      toast("Erro de rede ou servidor", "warn", "Tente novamente");
       console.error(err);
     }
   }
