@@ -945,17 +945,38 @@ def admin_delete(index):
 # ------------------------------
 #   CONFIGURAÇÃO DE MÚLTIPLOS REVENDEDORES (MELHORIA)
 # ------------------------------
-# Formato esperado: "Nome1|token1,Nome2|token2" ou apenas "token1,token2" (compatibilidade)
-_raw_reseller = os.getenv("RESELLER_TOKEN", "MINHA_SENHA_REVENDEDOR")
-RESELLER_MAP = {}
-for part in _raw_reseller.split(','):
-    part = part.strip()
-    if '|' in part:
-        nome, token = part.split('|', 1)
-        RESELLER_MAP[token.strip()] = nome.strip()
-    else:
-        # compatibilidade: token sozinho, usa o próprio token como nome
-        RESELLER_MAP[part] = part
+def carregar_revendedores():
+    """
+    Lê todas as variáveis de ambiente que começam com 'RESELLER_' 
+    e também a variável legada RESELLER_TOKEN (se existir).
+    Retorna um dicionário {token: nome_do_revendedor}
+    """
+    revendedores = {}
+    
+    # 1. Variáveis individuais: RESELLER_NOME=token
+    for chave, valor in os.environ.items():
+        if chave.startswith('RESELLER_') and chave != 'RESELLER_TOKEN':
+            nome = chave[9:]  # remove 'RESELLER_'
+            token = valor.strip()
+            if token:  # ignora valores vazios
+                revendedores[token] = nome
+    
+    # 2. Variável legada RESELLER_TOKEN (formato "nome|token,nome|token" ou "token,token")
+    token_legado = os.getenv('RESELLER_TOKEN')
+    if token_legado:
+        for parte in token_legado.split(','):
+            parte = parte.strip()
+            if '|' in parte:
+                nome, token = parte.split('|', 1)
+                revendedores[token.strip()] = nome.strip()
+            else:
+                # apenas token, usa o próprio token como nome (compatibilidade)
+                revendedores[parte] = parte
+    
+    return revendedores
+
+# Mapeamento global: token -> nome do revendedor
+RESELLER_MAP = carregar_revendedores()
 
 # ------------------------------
 #   REVENDEDOR - GERAR KEY EXTERNA (TOKEN) - ATUALIZADA
@@ -973,9 +994,9 @@ def reseller_generate():
     except Exception:
         expire_days = 30
 
-    # Verifica se o token fornecido está no mapa
+    # Verifica se o token está no mapeamento
     if token not in RESELLER_MAP:
-        log_security("reseller_invalid_token")
+        log_security("reseller_invalid_token", details={"token": token})
         return jsonify({"error": "invalid_token"}), 403
 
     # Obtém o nome do revendedor
@@ -1000,7 +1021,7 @@ def reseller_generate():
             u["password"] = password
             u["key"] = key
             u["expires_at"] = expires_at
-            u["reseller"] = reseller_nome          # <-- adiciona/atualiza revendedor
+            u["reseller"] = reseller_nome          # <-- salva revendedor
             save_users(data)
             
             log_security("reseller_updated", details={"username": username, "reseller": reseller_nome})
