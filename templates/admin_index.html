@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <style>
+  /* (mesmo estilo anterior, inalterado) */
   :root {
     --bg:#cfd4d8;
     --card:#f5f6f7;
@@ -89,7 +90,6 @@
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
 
-  /* LOADING NOS BOTÕES */
   .btn-loading {
     color: transparent !important;
     pointer-events: none;
@@ -140,7 +140,6 @@
     margin-left:8px;
   }
 
-  /* OCULTAR SENHA COM TOGGLE */
   .password-value { display: none; }
   .password-toggle {
     background: none;
@@ -153,7 +152,6 @@
   }
   .password-toggle:hover { background: rgba(0,0,0,0.05); }
 
-  /* DESTAQUE DA LINHA */
   .highlight {
     animation: highlightFade 2s ease-out;
   }
@@ -163,7 +161,6 @@
     100% { background-color: transparent; }
   }
 
-  /* BADGES */
   .badge {
     padding:6px 10px;
     border-radius:18px;
@@ -175,7 +172,6 @@
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
 
-  /* DARK MODE */
   body.dark {
     --bg:#0e1113;
     --card:#1a1d21;
@@ -184,7 +180,6 @@
     --text-light:#9aa4ab;
   }
 
-  /* ADMIN TOOLS */
   .admin-tools {
     display:flex;
     gap:12px;
@@ -193,7 +188,6 @@
   }
   .admin-tools form { display:inline-block; }
 
-  /* DASH */
   .top-info{
     display:flex;
     gap:12px;
@@ -221,7 +215,6 @@
     font-weight:800;
   }
 
-  /* TOAST */
   .toast{
     position:fixed;
     bottom:18px;
@@ -242,9 +235,6 @@
     transform:translateY(0px);
   }
 
-  /* ===========================
-     MOBILE: AÇÕES VIRAM MENU ⋮
-     =========================== */
   .actionsBox{
     position:relative;
   }
@@ -282,9 +272,6 @@
   .actionsMenu form{ margin-bottom:8px; }
   .actionsMenu form:last-child{ margin-bottom:0; }
 
-  /* ===========================
-     MELHORIAS MOBILE (formulário)
-     =========================== */
   .day-buttons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -350,7 +337,6 @@
     <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
   </form>
 
-  <!-- NOVO LINK PARA ESTATÍSTICAS -->
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
@@ -417,7 +403,8 @@
         <th>Key</th>
         <th>Device</th>
         <th>Revendedor</th>
-        <th onclick="sortTable(6)">Expiração</th>
+        <th onclick="sortTable(6)">Criado em</th>          <!-- NOVA COLUNA -->
+        <th onclick="sortTable(7)">Expiração</th>          <!-- ÍNDICE AJUSTADO -->
         <th>Status</th>
         <th>Ações</th>
       </tr>
@@ -425,14 +412,12 @@
 
     <tbody>
       {% for u in users %}
-      <!-- ATRIBUTO DATA-ID -->
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
         <td>{{ loop.index0 }}</td>
 
         <td><b>{{ u.username }}</b></td>
 
-        <!-- SENHA OCULTA COM TOGGLE -->
         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
@@ -447,8 +432,10 @@
 
         <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-        <!-- REVENDEDOR -->
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
+
+        <!-- NOVA CÉLULA: Criado em -->
+        <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
 
         <td class="expCell"></td>
 
@@ -540,7 +527,6 @@ function generateRandomPassword() {
   for (let i = 0; i < 6; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  // Adiciona um caractere especial no final para ficar mais forte
   const specials = '!@#$%&*';
   password += specials.charAt(Math.floor(Math.random() * specials.length));
   return password;
@@ -553,12 +539,10 @@ document.addEventListener("DOMContentLoaded", function() {
     passField.value = generateRandomPassword();
   }
 
-  // Toast via URL ?msg=
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
   if(msg) toast(msg);
 
-  // Inicializa as funções
   renderExp();
   updateDashboard();
   highlightUserFromURL();
@@ -637,6 +621,14 @@ function sortTable(col){
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
+    // Se for a coluna de data (Criado em ou Expiração), converter para número para ordenar corretamente
+    if (col === 6 || col === 7) { // índices das colunas de data
+      const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
+      const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
+      A = parseInt(dateA) || 0;
+      B = parseInt(dateB) || 0;
+      return asc ? A - B : B - A;
+    }
     return asc ? A.localeCompare(B) : B.localeCompare(A);
   });
 
@@ -658,6 +650,8 @@ function renderExp(){
   document.querySelectorAll("tr[data-expires]").forEach(tr=>{
     let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
+    // Guardar timestamp para ordenação
+    cell.setAttribute('data-timestamp', exp);
     if(exp <= 0){
       cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
       return;
