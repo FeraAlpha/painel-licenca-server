@@ -514,11 +514,19 @@
     },
     {
       "username": "N",
-      "password": "Fera@4499",
-      "key": "FERA-3C12206B",
+      "password": "Fera@9995",
+      "key": "FERA-11D17037",
       "device_id": null,
-      "expires_at": 1775175388,
+      "expires_at": 1775175265,
       "reseller": "ANZOL"
+    },
+    {
+      "username": "An",
+      "password": "Fera@9411",
+      "key": "FERA-A928E43A",
+      "device_id": null,
+      "expires_at": 1775175455,
+      "reseller": "JCGAMER"
     }
   ]
 }
