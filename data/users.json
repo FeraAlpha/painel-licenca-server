@@ -535,6 +535,15 @@
       "device_id": null,
       "expires_at": 1772814485,
       "created_at": 1772209685
+    },
+    {
+      "username": "Leandroabel",
+      "password": "123",
+      "key": "FERA-88D7E1AB",
+      "device_id": null,
+      "expires_at": 1775235645,
+      "reseller": "JCGAMER",
+      "created_at": 1772211645
     }
   ]
 }
