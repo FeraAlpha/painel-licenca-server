@@ -2,11 +2,10 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Fera Alpha — Painel Admin</title>
+<title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <style>
-  /* (mesmo estilo anterior, inalterado) */
   :root {
     --bg:#cfd4d8;
     --card:#f5f6f7;
@@ -318,7 +317,7 @@
 
 <header>
   <div>
-    <h1>Fera Alpha — Admin</h1>
+    <h1>Fera Alpha — Painel Administrativo</h1>
     <div class="subtitle">Gerenciamento avançado</div>
   </div>
 
@@ -328,8 +327,8 @@
 <!-- ADMIN TOOLS -->
 <div class="admin-tools">
   <form method="post" action="/admin/reset_all_devices"
-        onsubmit="return confirm('⚠️ Resetar TODOS os devices? Esta ação não pode ser desfeita.')">
-    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Devices</button>
+        onsubmit="return confirm('⚠️ Resetar TODOS os dispositivos? Esta ação não pode ser desfeita.')">
+    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Dispositivos</button>
   </form>
 
   <form method="post" action="/admin/clean_expired"
@@ -392,7 +391,7 @@
   </div>
 
   <!-- BUSCA -->
-  <input id="searchUser" placeholder="Buscar usuário, key ou device" style="margin-bottom:12px">
+  <input id="searchUser" placeholder="Buscar usuário, key ou dispositivo" style="margin-bottom:12px">
 
   <table id="usersTable">
     <thead>
@@ -401,10 +400,10 @@
         <th onclick="sortTable(1)">Usuário</th>
         <th>Senha</th>
         <th>Key</th>
-        <th>Device</th>
+        <th>Dispositivo</th>
         <th>Revendedor</th>
-        <th onclick="sortTable(6)">Criado em</th>          <!-- NOVA COLUNA -->
-        <th onclick="sortTable(7)">Expiração</th>          <!-- ÍNDICE AJUSTADO -->
+        <th onclick="sortTable(6)">Criado em</th>
+        <th onclick="sortTable(7)">Expiração</th>
         <th>Status</th>
         <th>Ações</th>
       </tr>
@@ -434,7 +433,6 @@
 
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
 
-        <!-- NOVA CÉLULA: Criado em -->
         <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
 
         <td class="expCell"></td>
@@ -472,7 +470,7 @@
               <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
             </form>
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Dispositivo</button>
             </form>
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
@@ -503,7 +501,7 @@
               <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
             </form>
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Dispositivo</button>
             </form>
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
                   onsubmit="return confirm('Excluir usuário?')">
@@ -520,16 +518,11 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA ==================
+// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA (simples) ==================
 function generateRandomPassword() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let password = 'Fera@';
-  for (let i = 0; i < 6; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  const specials = '!@#$%&*';
-  password += specials.charAt(Math.floor(Math.random() * specials.length));
-  return password;
+  // Apenas números: Fera + 4 dígitos (ex: Fera4821)
+  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
+  return `Fera${randomNum}`;
 }
 
 // ================== PREENCHER CAMPO DE SENHA AUTOMATICAMENTE ==================
@@ -621,8 +614,8 @@ function sortTable(col){
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
-    // Se for a coluna de data (Criado em ou Expiração), converter para número para ordenar corretamente
-    if (col === 6 || col === 7) { // índices das colunas de data
+    // Se for coluna de data (Criado em ou Expiração), converter para número
+    if (col === 6 || col === 7) {
       const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
       const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
       A = parseInt(dateA) || 0;
@@ -650,7 +643,6 @@ function renderExp(){
   document.querySelectorAll("tr[data-expires]").forEach(tr=>{
     let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
-    // Guardar timestamp para ordenação
     cell.setAttribute('data-timestamp', exp);
     if(exp <= 0){
       cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
