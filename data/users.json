@@ -543,6 +543,13 @@
       "device_id": null,
       "expires_at": 1775178670,
       "reseller": "JCGAMER"
+    },
+    {
+      "username": "Ping",
+      "password": "Ping",
+      "key": "FERA-F26F14AD",
+      "device_id": null,
+      "expires_at": 1775178933
     }
   ]
 }
