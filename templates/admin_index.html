@@ -349,6 +349,9 @@
         onsubmit="return confirm('Remover TODOS os usuários expirados?')">
     <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
   </form>
+
+  <!-- NOVO LINK PARA ESTATÍSTICAS -->
+  <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
 <!-- GERAR KEY -->
@@ -413,8 +416,8 @@
         <th>Senha</th>
         <th>Key</th>
         <th>Device</th>
-        <th>Revendedor</th>  <!-- NOVA COLUNA -->
-        <th onclick="sortTable(6)">Expiração</th>  <!-- ÍNDICE AJUSTADO -->
+        <th>Revendedor</th>
+        <th onclick="sortTable(6)">Expiração</th>
         <th>Status</th>
         <th>Ações</th>
       </tr>
@@ -444,7 +447,7 @@
 
         <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-        <!-- NOVA CÉLULA: REVENDEDOR -->
+        <!-- REVENDEDOR -->
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
 
         <td class="expCell"></td>
