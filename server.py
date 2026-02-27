@@ -1055,7 +1055,7 @@ def reseller_generate():
     })
 
 # ------------------------------
-#   ESTATÍSTICAS POR REVENDEDOR (ATUALIZADA COM GRÁFICO)
+#   ESTATÍSTICAS POR REVENDEDOR (ATUALIZADA COM LISTA DE USUÁRIOS)
 # ------------------------------
 @app.route("/admin/reseller_stats")
 @need_admin
@@ -1087,11 +1087,46 @@ def admin_reseller_stats():
     total_ativacoes = 0
     stats = []  # últimos 50 registros de ativação
     chart_data = {}  # para o gráfico: data -> contagem
+    usuarios_lista = []  # lista de usuários do revendedor (detalhes)
 
     if reseller_filter:
         # Filtrar usuários do revendedor
         usuarios_rev = [u for u in users if u.get("reseller") == reseller_filter]
         total_usuarios_criados = len(usuarios_rev)
+
+        # Preparar lista de usuários com detalhes
+        now_ts = int(time.time())
+        for u in usuarios_rev:
+            created = u.get("created_at")
+            expires = u.get("expires_at")
+            status = u.get("status", "active")
+            # Calcular dias desde a criação
+            dias_desde_criacao = (now_ts - created) // 86400 if created else None
+            # Formatar data de criação
+            data_criacao = datetime.fromtimestamp(created).strftime("%d/%m/%Y %H:%M") if created else "—"
+            # Formatar expiração
+            if expires == UNLIMITED_EXPIRY:
+                expiracao_str = "Ilimitado"
+            elif expires:
+                expiracao_str = datetime.fromtimestamp(expires).strftime("%d/%m/%Y %H:%M")
+            else:
+                expiracao_str = "—"
+            # Status amigável
+            if status == "blocked":
+                status_str = "Bloqueado"
+            elif expires and expires < now_ts and expires != UNLIMITED_EXPIRY:
+                status_str = "Expirado"
+            else:
+                status_str = "Ativo"
+
+            usuarios_lista.append({
+                "username": u["username"],
+                "data_criacao": data_criacao,
+                "dias_desde_criacao": dias_desde_criacao,
+                "expiracao": expiracao_str,
+                "status": status_str,
+                "device_id": u.get("device_id", "—")
+            })
 
         # Obter fingerprints dos usuários que já ativaram
         fingerprints = [u["device_id"] for u in usuarios_rev if u.get("device_id")]
@@ -1120,7 +1155,7 @@ def admin_reseller_stats():
                 ORDER BY dia ASC
             ''', fingerprints + [since])
             for row in cursor.fetchall():
-                chart_data[row[0]] = row[1]  # ex: "2025-03-20" -> 5
+                chart_data[row[0]] = row[1]
 
             # Listar últimos 50 registros de ativação
             cursor.execute(f'''
@@ -1147,7 +1182,8 @@ def admin_reseller_stats():
                            total_usuarios_criados=total_usuarios_criados,
                            total_ativacoes=total_ativacoes,
                            stats=stats,
-                           chart_data=chart_data)
+                           chart_data=chart_data,
+                           usuarios_lista=usuarios_lista)  # <-- NOVO
 
 # ------------------------------
 #   RUN
