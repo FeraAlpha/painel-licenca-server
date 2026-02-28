@@ -606,6 +606,15 @@
       "device_id": "f400813611e6469e2b59e4c162bab1209c1ea0056444f206a3ddad77975f3ac5",
       "expires_at": 1781749719,
       "created_at": 1772245719
+    },
+    {
+      "username": "jakson",
+      "password": "Fera@3756",
+      "key": "FERA-E47DD14C",
+      "device_id": null,
+      "expires_at": 1775302878,
+      "reseller": "JCGAMER",
+      "created_at": 1772278878
     }
   ]
 }
