@@ -193,7 +193,7 @@
       "username": "ninja",
       "password": "123",
       "key": "FERA-E1C845C4",
-      "device_id": "d3f6803e23b85224294561288e97999066cc5725de6c405b1773a5b6b1a133b4",
+      "device_id": null,
       "expires_at": 1772988277
     },
     {
