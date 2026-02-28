@@ -598,6 +598,14 @@
       "expires_at": 1775265981,
       "reseller": "JCGAMER",
       "created_at": 1772241981
+    },
+    {
+      "username": "Preto",
+      "password": "Fera@TD380",
+      "key": "FERA-5782F4EC",
+      "device_id": null,
+      "expires_at": 1781749719,
+      "created_at": 1772245719
     }
   ]
 }
