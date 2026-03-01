@@ -772,23 +772,6 @@
     }
   }
 
-  // ========== MELHORIA 5: Envio WhatsApp ==========
-  function enviarWhatsApp(username, password, days, key) {
-    // Número do cliente? Poderia ser informado em outro campo, mas vamos apenas gerar a mensagem
-    // e o usuário escolhe o contato.
-    const mensagem = `✅ *Licença Fera Alpha gerada!*\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n📅 Dias: ${days}\n🔐 Chave: ${key || "N/A"}\n\nAcesse: [link do app]`;
-    const msgEncoded = encodeURIComponent(mensagem);
-    // Abre WhatsApp Web com a mensagem (o usuário escolhe o contato)
-    window.open(`https://web.whatsapp.com/send?text=${msgEncoded}`, '_blank');
-    // Para mobile, usaria `https://api.whatsapp.com/send?text=...` mas pode abrir o app se instalado.
-    // Deixamos ambos: se for mobile, talvez seja melhor usar a API.
-    // Vamos detectar se é mobile:
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      window.location.href = `whatsapp://send?text=${msgEncoded}`;
-    }
-    toast("Mensagem preparada!", "ok", "Escolha o contato no WhatsApp");
-  }
-
   function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
@@ -840,9 +823,7 @@
         <button class="btn btn-primary" type="button" onclick="copyAllInfo()">
           <i class="fas fa-bolt"></i> Copiar Tudo
         </button>
-        <button class="btn btn-success" type="button" onclick="enviarWhatsApp('${username}', '${password}', ${days}, '${key || ''}')">
-          <i class="fab fa-whatsapp"></i> WhatsApp
-        </button>
+        <!-- Botão WhatsApp removido -->
       </div>
     `;
   }
@@ -963,9 +944,7 @@
           <button class="btn-mini" onclick="useHistory(${idx})">
             <i class="fas fa-arrow-up-right-from-square"></i> Abrir
           </button>
-          <button class="btn-mini success" onclick="enviarWhatsApp('${h.username}', '${h.password}', ${h.days}, '${h.key || ''}')">
-            <i class="fab fa-whatsapp"></i>
-          </button>
+          <!-- Botão WhatsApp removido -->
           <button class="btn-mini" onclick="resetHistory(${idx})">
             <i class="fas fa-rotate-right"></i> Resetar
           </button>
