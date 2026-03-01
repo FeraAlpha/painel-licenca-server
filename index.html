@@ -562,10 +562,10 @@
     });
   });
 
-  // Gera uma senha no formato Fera@XXXX (ex: Fera@4821)
+  // Gera uma senha no formato FeraXXXX (apenas letras/números, sem caracteres especiais)
   function generateNewPassword() {
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
-    const newPass = `Fera@${randomNum}`;
+    const newPass = `Fera${randomNum}`;
     document.getElementById("password").value = newPass;
   }
 
@@ -692,6 +692,35 @@
 
       console.error(err);
     }
+  }
+
+  // Função para resetar uma licença a partir do histórico
+  function resetHistory(index) {
+    const history = getHistory();
+    const item = history[index];
+    if (!item) {
+      toast("Erro ao resetar", "warn", "Registro não encontrado");
+      return;
+    }
+
+    // Preenche o campo de usuário com o nome original
+    document.getElementById("username").value = item.username || "";
+
+    // Define os dias conforme o item (se for um dos valores conhecidos)
+    if (item.days && [7, 35, 65, 110].includes(item.days)) {
+      setDays(item.days);
+    } else {
+      // Se não for um dos valores, mantém o atual (padrão 35)
+      setDays(35);
+    }
+
+    // Gera uma nova senha automaticamente
+    generateNewPassword();
+
+    // Rola a página até o formulário e foca no campo de usuário (opcional)
+    document.getElementById("username").scrollIntoView({ behavior: "smooth", block: "center" });
+
+    toast("Pronto! Agora clique em Gerar Licença para recriar.", "ok", "Revise os dados e confirme");
   }
 
   function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
@@ -836,6 +865,9 @@
           </button>
           <button class="btn-mini" onclick="useHistory(${idx})">
             <i class="fas fa-arrow-up-right-from-square"></i> Abrir
+          </button>
+          <button class="btn-mini" onclick="resetHistory(${idx})">
+            <i class="fas fa-rotate-right"></i> Resetar
           </button>
         </div>
       </div>
