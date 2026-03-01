@@ -790,6 +790,14 @@
       "expires_at": 1775426286,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772402286
+    },
+    {
+      "username": "Mt",
+      "password": "Mt",
+      "key": "FERA-F8CD901F",
+      "device_id": null,
+      "expires_at": 1775428260,
+      "created_at": 1772404260
     }
   ]
 }
