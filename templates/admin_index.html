@@ -5,6 +5,9 @@
 <title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
+<!-- Chart.js para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <style>
   :root {
     --bg:#cfd4d8;
@@ -283,6 +286,256 @@
     padding: 12px 8px;
   }
 
+  /* ========== NOVOS ESTILOS DO DASHBOARD ========== */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .dashboard-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .icon-blue { background: linear-gradient(135deg, #2f6fed, #5f8eef); color: white; }
+  .icon-green { background: linear-gradient(135deg, #177a30, #2ecc71); color: white; }
+  .icon-purple { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+  .icon-orange { background: linear-gradient(135deg, #e67e22, #f39c12); color: white; }
+
+  .card-content {
+    flex: 1;
+  }
+
+  .card-label {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+
+  .card-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .card-trend {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .trend-up { color: var(--ok); }
+  .trend-down { color: var(--danger); }
+
+  /* Gráficos */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .chart-header h3 {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chart-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .chart-btn {
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .chart-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .chart-body {
+    height: 250px;
+    position: relative;
+  }
+
+  /* Ranking */
+  .ranking-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .ranking-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .ranking-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .ranking-header h3 {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .period-badge {
+    padding: 4px 12px;
+    background: var(--bg);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .ranking-item:last-child {
+    border-bottom: none;
+  }
+
+  .rank-position {
+    width: 28px;
+    height: 28px;
+    background: var(--bg);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .rank-position.gold { background: #f1c40f; color: #000; }
+  .rank-position.silver { background: #bdc3c7; color: #000; }
+  .rank-position.bronze { background: #e67e22; color: #fff; }
+
+  .rank-info {
+    flex: 1;
+  }
+
+  .rank-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .rank-stats {
+    font-size: 11px;
+    color: var(--text-light);
+  }
+
+  .rank-value {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Meta item */
+  .goal-item {
+    margin-bottom: 16px;
+  }
+
+  .goal-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .goal-progress {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2px;
+  }
+
+  .goal-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #5f8eef);
+    border-radius: 10px;
+    transition: width 0.3s;
+  }
+
+  .goal-footer {
+    font-size: 11px;
+    color: var(--text-light);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Responsividade */
+  @media (max-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .charts-row {
+      grid-template-columns: 1fr;
+    }
+    .ranking-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @media (max-width: 820px){
     thead { display:none; }
 
@@ -307,6 +560,9 @@
 
   @media (max-width: 480px) {
     .day-buttons {
+      grid-template-columns: 1fr;
+    }
+    .dashboard-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -337,6 +593,93 @@
   </form>
 
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
+</div>
+
+<!-- ========== NOVO DASHBOARD VISUAL ========== -->
+<div class="dashboard-grid" id="dashboardMetrics">
+  <div class="dashboard-card">
+    <div class="card-icon icon-blue">💰</div>
+    <div class="card-content">
+      <div class="card-label">Faturamento Mensal</div>
+      <div class="card-value" id="metricFaturamento">R$ 0</div>
+      <div class="card-trend trend-up" id="trendFaturamento">↑ 23%</div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-icon icon-green">👥</div>
+    <div class="card-content">
+      <div class="card-label">Revendedores Ativos</div>
+      <div class="card-value" id="metricRevendedores">0</div>
+      <div class="card-trend" id="trendRevendedores">+3 este mês</div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-icon icon-purple">🔑</div>
+    <div class="card-content">
+      <div class="card-label">Keys Vendidas</div>
+      <div class="card-value" id="metricKeys">0</div>
+      <div class="card-trend trend-up" id="trendKeys">↑ 12%</div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-icon icon-orange">🎫</div>
+    <div class="card-content">
+      <div class="card-label">Ticket Médio</div>
+      <div class="card-value" id="metricTicket">R$ 0</div>
+      <div class="card-trend trend-down" id="trendTicket">↓ 2%</div>
+    </div>
+  </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3>📈 Vendas por Período</h3>
+      <div class="chart-actions">
+        <button class="chart-btn active" onclick="changePeriod('week', this)">Semana</button>
+        <button class="chart-btn" onclick="changePeriod('month', this)">Mês</button>
+        <button class="chart-btn" onclick="changePeriod('year', this)">Ano</button>
+      </div>
+    </div>
+    <div class="chart-body">
+      <canvas id="salesChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3>🥧 Market Share</h3>
+    </div>
+    <div class="chart-body">
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- RANKING E METAS -->
+<div class="ranking-grid">
+  <div class="ranking-card">
+    <div class="ranking-header">
+      <h3>🏆 Top Revendedores</h3>
+      <span class="period-badge">Este mês</span>
+    </div>
+    <div id="topResellers">
+      <!-- Preenchido via JS -->
+    </div>
+  </div>
+
+  <div class="ranking-card">
+    <div class="ranking-header">
+      <h3>🎯 Metas do Mês</h3>
+    </div>
+    <div id="monthlyGoals">
+      <!-- Preenchido via JS -->
+    </div>
+  </div>
 </div>
 
 <!-- GERAR KEY -->
@@ -370,7 +713,7 @@
 <!-- TABELA -->
 <div class="card">
 
-  <!-- DASHBOARD -->
+  <!-- DASHBOARD (antigo) - Mantido para compatibilidade -->
   <div class="top-info">
     <div class="mini-box">
       <b>👥 Total</b>
@@ -433,7 +776,8 @@
 
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
 
-        <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
+        <!-- CORREÇÃO DO HORÁRIO: usando filtro personalizado -->
+        <td>{{ u.created_at|formatar_data_br if u.created_at else "—" }}</td>
 
         <td class="expCell"></td>
 
@@ -518,14 +862,12 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA (simples) ==================
+// ================== FUNÇÕES ORIGINAIS (mantidas intactas) ==================
 function generateRandomPassword() {
-  // Apenas números: Fera + 4 dígitos (ex: Fera4821)
-  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
   return `Fera${randomNum}`;
 }
 
-// ================== PREENCHER CAMPO DE SENHA AUTOMATICAMENTE ==================
 document.addEventListener("DOMContentLoaded", function() {
   const passField = document.getElementById('autoPassword');
   if (passField) {
@@ -539,12 +881,13 @@ document.addEventListener("DOMContentLoaded", function() {
   renderExp();
   updateDashboard();
   highlightUserFromURL();
+  
+  // Inicializar novo dashboard
+  initDashboard();
 });
 
-// ================== TEMA ESCURO ==================
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
-// ================== TOAST ==================
 function toast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
@@ -552,12 +895,10 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"), 1400);
 }
 
-// ================== SET EXPIRAÇÃO ==================
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
 }
 
-// ================== COPIAR ==================
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
@@ -570,7 +911,6 @@ function copiarCred(u,p){
   toast("Credenciais copiadas!");
 }
 
-// ================== TOGGLE SENHA ==================
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -591,12 +931,10 @@ function togglePassword(btn) {
   }
 }
 
-// ================== LOADING NOS BOTÕES ==================
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
 
-// ================== BUSCA ==================
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
   document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
@@ -605,7 +943,6 @@ document.getElementById("searchUser").addEventListener("input", function(){
   updateDashboard();
 });
 
-// ================== ORDENAR ==================
 function sortTable(col){
   const tbody = document.getElementById("usersTable").tBodies[0];
   const rows = Array.from(tbody.rows);
@@ -614,7 +951,6 @@ function sortTable(col){
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
-    // Se for coluna de data (Criado em ou Expiração), converter para número
     if (col === 6 || col === 7) {
       const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
       const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
@@ -629,7 +965,6 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// ================== EXPIRAÇÕES ==================
 function formatDateBR(ts){
   const d = new Date(ts * 1000);
   const dd = String(d.getDate()).padStart(2,"0");
@@ -671,7 +1006,6 @@ function renderExp(){
   });
 }
 
-// ================== DASHBOARD ==================
 function updateDashboard(){
   const now = Math.floor(Date.now()/1000);
   const rows = document.querySelectorAll("#usersTable tbody tr");
@@ -696,9 +1030,11 @@ function updateDashboard(){
   document.getElementById("dashAtivos").innerText = ativos;
   document.getElementById("dashExpirados").innerText = expirados;
   document.getElementById("dashBloqueados").innerText = bloqueados;
+  
+  // Atualizar novo dashboard com os mesmos dados
+  updateNewDashboard(total, ativos, expirados, bloqueados);
 }
 
-// ================== MENU MOBILE ==================
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
@@ -714,7 +1050,6 @@ document.addEventListener("click", (e)=>{
   }
 });
 
-// ================== DESTAQUE DA LINHA ==================
 function highlightUserFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const highlightId = urlParams.get('highlight');
@@ -732,11 +1067,173 @@ function highlightUserFromURL() {
   }
 }
 
-// ================== ATUALIZAÇÕES PERIÓDICAS ==================
 setInterval(() => {
   renderExp();
   updateDashboard();
 }, 10000);
+
+// ================== NOVAS FUNÇÕES DO DASHBOARD ==================
+
+// Dados simulados para o dashboard
+const resellerData = [
+  { name: "João Silva", sales: 45, revenue: 6750, goal: 50, progress: 45 },
+  { name: "Maria Oliveira", sales: 78, revenue: 11700, goal: 80, progress: 78 },
+  { name: "Carlos Santos", sales: 32, revenue: 4800, goal: 40, progress: 32 },
+  { name: "Ana Paula", sales: 56, revenue: 8400, goal: 60, progress: 56 },
+  { name: "Pedro Mendes", sales: 23, revenue: 3450, goal: 30, progress: 23 }
+];
+
+let salesChart, pieChart;
+
+function initDashboard() {
+  // Calcular totais
+  const totalRevenue = resellerData.reduce((acc, r) => acc + r.revenue, 0);
+  const totalSales = resellerData.reduce((acc, r) => acc + r.sales, 0);
+  const avgTicket = totalRevenue / totalSales;
+  
+  // Atualizar métricas
+  document.getElementById('metricFaturamento').innerText = `R$ ${totalRevenue.toLocaleString('pt-BR')}`;
+  document.getElementById('metricRevendedores').innerText = resellerData.length;
+  document.getElementById('metricKeys').innerText = totalSales;
+  document.getElementById('metricTicket').innerText = `R$ ${avgTicket.toFixed(2)}`;
+  
+  // Criar gráficos
+  createSalesChart();
+  createPieChart();
+  
+  // Renderizar ranking e metas
+  renderTopResellers();
+  renderGoals();
+}
+
+function updateNewDashboard(total, ativos, expirados, bloqueados) {
+  // Atualizar métricas com dados reais da tabela
+  // Assumindo ticket médio de R$150 (ajuste conforme sua realidade)
+  const ticketMedio = 150;
+  const faturamento = ativos * ticketMedio;
+  
+  document.getElementById('metricFaturamento').innerText = `R$ ${faturamento.toLocaleString('pt-BR')}`;
+  document.getElementById('metricRevendedores').innerText = ativos;
+  document.getElementById('metricKeys').innerText = ativos;
+  document.getElementById('metricTicket').innerText = `R$ ${ticketMedio.toFixed(2)}`;
+}
+
+function createSalesChart() {
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  salesChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+      datasets: [{
+        label: 'Vendas',
+        data: [12, 19, 15, 25, 22, 30, 28],
+        borderColor: '#2f6fed',
+        backgroundColor: 'rgba(47, 111, 237, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+function createPieChart() {
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: resellerData.map(r => r.name),
+      datasets: [{
+        data: resellerData.map(r => r.sales),
+        backgroundColor: ['#2f6fed', '#177a30', '#f39c12', '#9b59b6', '#e74c3c']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+}
+
+function renderTopResellers() {
+  const container = document.getElementById('topResellers');
+  container.innerHTML = '';
+  
+  const sorted = [...resellerData].sort((a, b) => b.sales - a.sales);
+  
+  sorted.slice(0, 5).forEach((reseller, index) => {
+    let positionClass = '';
+    if (index === 0) positionClass = 'gold';
+    else if (index === 1) positionClass = 'silver';
+    else if (index === 2) positionClass = 'bronze';
+    
+    container.innerHTML += `
+      <div class="ranking-item">
+        <div class="rank-position ${positionClass}">${index + 1}</div>
+        <div class="rank-info">
+          <div class="rank-name">${reseller.name}</div>
+          <div class="rank-stats">${reseller.sales} keys · R$ ${reseller.revenue}</div>
+        </div>
+        <div class="rank-value">${Math.round(reseller.progress / reseller.goal * 100)}%</div>
+      </div>
+    `;
+  });
+}
+
+function renderGoals() {
+  const container = document.getElementById('monthlyGoals');
+  container.innerHTML = '';
+  
+  resellerData.forEach(reseller => {
+    const percentage = (reseller.progress / reseller.goal) * 100;
+    container.innerHTML += `
+      <div class="goal-item">
+        <div class="goal-header">
+          <span>${reseller.name}</span>
+          <span>${percentage.toFixed(0)}%</span>
+        </div>
+        <div class="goal-progress">
+          <div class="goal-bar" style="width: ${percentage}%"></div>
+        </div>
+        <div class="goal-footer">
+          <span>${reseller.progress} / ${reseller.goal} keys</span>
+          <span>Faltam ${reseller.goal - reseller.progress}</span>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function changePeriod(period, btn) {
+  document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  let data = [];
+  let labels = [];
+  
+  if (period === 'week') {
+    labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    data = [12, 19, 15, 25, 22, 30, 28];
+  } else if (period === 'month') {
+    labels = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
+    data = [45, 62, 58, 70];
+  } else {
+    labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+    data = [180, 210, 195, 245, 280, 310];
+  }
+  
+  salesChart.data.labels = labels;
+  salesChart.data.datasets[0].data = data;
+  salesChart.update();
+}
+
+// Exportar função para uso global
+window.changePeriod = changePeriod;
 </script>
 
 </body>
