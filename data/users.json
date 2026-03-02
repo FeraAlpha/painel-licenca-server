@@ -840,6 +840,15 @@
       "device_id": null,
       "expires_at": 1775452720,
       "created_at": 1772428720
+    },
+    {
+      "username": "Jjwksjs",
+      "password": "Fera7715",
+      "key": "FERA-F3B7D5BE",
+      "device_id": null,
+      "expires_at": 1775458385,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772434385
     }
   ]
 }
