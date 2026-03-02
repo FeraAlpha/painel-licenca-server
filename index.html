@@ -7,22 +7,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
+    /* (seus estilos existentes - mantenha iguais) */
     :root{
       --bg:#f6f7ff;
       --card:#ffffff;
       --card2:#f0f3ff;
       --border:#d7ddff;
-
       --text:#0f172a;
       --muted:#64748b;
-
       --primary:#4f7cff;
       --primary2:#6a5cff;
       --glow: rgba(79,124,255,.22);
-
       --warning:#ffd166;
       --shadow: 0 16px 45px rgba(15, 23, 42, .10);
-
       --radius:18px;
     }
 
@@ -471,6 +468,62 @@
       color:var(--muted);
       margin-top:4px;
     }
+    
+    /* Link de download */
+    .download-section {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(79,124,255,.05);
+      border-radius: 14px;
+      border: 1px solid rgba(79,124,255,.15);
+    }
+    
+    .download-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .download-header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .download-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      word-break: break-all;
+      font-size: 13px;
+    }
+    
+    .download-link i {
+      color: var(--primary);
+      font-size: 18px;
+    }
+    
+    .download-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      flex: 1;
+    }
+    
+    .download-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .sync-badge {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: rgba(79,124,255,.1);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
   </style>
 </head>
 
@@ -540,6 +593,23 @@
           <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
         </div>
       </div>
+      
+      <!-- Link de Download do APK (AGORA CENTRALIZADO) -->
+      <div class="download-section">
+        <div class="download-header">
+          <span><i class="fas fa-cloud"></i> Link oficial (gerenciado pelo admin)</span>
+          <span class="sync-badge" id="syncBadge">
+            <i class="fas fa-sync-alt"></i> <span id="syncTime">sincronizando...</span>
+          </span>
+        </div>
+        <div class="download-link">
+          <i class="fas fa-download"></i>
+          <a href="#" target="_blank" id="downloadLink">Carregando...</a>
+        </div>
+        <div class="mutedSmall" style="margin-top:8px;">
+          <i class="fas fa-info-circle"></i> Link atualizado automaticamente pelo administrador
+        </div>
+      </div>
 
       <button class="btn btn-primary" id="generateBtn" onclick="generateLicense()">
         <i class="fas fa-bolt"></i> Gerar Licença
@@ -553,7 +623,7 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
-    <!-- DASHBOARD DE VENDAS (melhoria 2) -->
+    <!-- DASHBOARD DE VENDAS -->
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -621,19 +691,75 @@
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
+  
+  // ===== CONFIGURAÇÃO CENTRALIZADA =====
+  // Altere esta URL para o local do seu arquivo de configuração
+  const CONFIG_URL = "https://SEU-SERVIDOR.com/config.json"; // ou config.php
+  
+  // Variáveis que serão atualizadas dinamicamente
+  let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/5584fq6wsix3ymh/PrecisipnBoosterV2.apk/file";
+  let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PrecisionBoosterV2";
 
-  // Preços para cálculo do valor estimado (melhoria 2)
+  // Preços para cálculo do valor estimado
   const PRECO_DIAS = { 7: 0, 35: 30, 65: 50, 110: 75 };
 
   let currentDays = 35;
 
-  document.addEventListener("DOMContentLoaded", () => {
+  // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO SERVIDOR =====
+  async function buscarConfiguracao() {
+    try {
+      // Adiciona timestamp para evitar cache
+      const response = await fetch(CONFIG_URL + '?t=' + Date.now());
+      const config = await response.json();
+      
+      LINK_APK = config.link_download;
+      NOME_APP = config.nome_app || NOME_APP;
+      
+      // Salvar no localStorage como cache
+      localStorage.setItem('LINK_APK_CACHE', LINK_APK);
+      localStorage.setItem('NOME_APP_CACHE', NOME_APP);
+      
+      // Atualizar o link na tela
+      const linkElement = document.getElementById('downloadLink');
+      linkElement.href = LINK_APK;
+      linkElement.innerText = NOME_APP;
+      
+      // Atualizar badge de sincronização
+      const syncTime = document.getElementById('syncTime');
+      const agora = new Date();
+      syncTime.innerText = `atualizado ${agora.getHours()}:${String(agora.getMinutes()).padStart(2,'0')}`;
+      
+      console.log('Configuração carregada:', config);
+      return true;
+      
+    } catch (error) {
+      console.log('Erro ao carregar config, usando cache:', error);
+      
+      // Usar valores do cache
+      LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
+      NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
+      
+      document.getElementById('downloadLink').href = LINK_APK;
+      document.getElementById('downloadLink').innerText = NOME_APP;
+      
+      document.getElementById('syncTime').innerText = 'offline (cache)';
+      return false;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
     const saved = localStorage.getItem(TOKEN_KEY);
     if(saved) document.getElementById("token").value = saved;
 
     generateNewPassword();
     renderHistory();
-    updateDashboardStats(); // Atualiza estatísticas ao carregar
+    updateDashboardStats();
+    
+    // Buscar configuração do servidor
+    await buscarConfiguracao();
+    
+    // Sincronizar a cada 2 minutos
+    setInterval(buscarConfiguracao, 120000); // 2 minutos
 
     document.addEventListener("keydown", (e) => {
       if(e.key === "Enter") generateLicense();
@@ -732,7 +858,7 @@
       showMiniResult(payload);
       pushHistory(payload);
       renderHistory();
-      updateDashboardStats(); // Atualiza estatísticas após nova licença
+      updateDashboardStats();
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
@@ -818,14 +944,37 @@
 
       <div class="rowbtns two" style="margin-top:12px;">
         <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
-          <i class="fas fa-copy"></i> Copiar
+          <i class="fas fa-copy"></i> Copiar Credenciais
         </button>
-        <button class="btn btn-primary" type="button" onclick="copyAllInfo()">
-          <i class="fas fa-bolt"></i> Copiar Tudo
+        <button class="btn btn-primary" type="button" onclick="copyAllWithLink()">
+          <i class="fas fa-bolt"></i> Copiar Tudo + Link
         </button>
-        <!-- Botão WhatsApp removido -->
       </div>
     `;
+  }
+
+  // ========== FUNÇÃO PRINCIPAL: COPIAR TUDO COM LINK ==========
+  function copyAllWithLink() {
+    const box = document.getElementById("resultBox");
+    if(!box || box.style.display === "none"){
+      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
+      return;
+    }
+
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+
+    const texto = `🎯 *ACESSO LIBERADO - ${NOME_APP}* 🎯\n\n` +
+                  `👤 *Usuário:* ${username}\n` +
+                  `🔑 *Senha:* ${password}\n` +
+                  `⏱️ *Validade:* ${days}\n\n` +
+                  `📲 *Link do APK:*\n${LINK_APK}\n\n` +
+                  `⚡ Faça o download e aproveite! ⚡`;
+
+    copyToClipboard(texto);
+    toast("✅ Tudo copiado!", "ok", "Credenciais + Link prontos para enviar!");
   }
 
   function copyUserPassDays(){
@@ -840,37 +989,17 @@
     const password = values[1]?.innerText || "";
     const days = values[2]?.innerText || "";
 
-    const text = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}`;
-    copyToClipboard(text);
+    const texto = `👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Link: ${LINK_APK}`;
+    copyToClipboard(texto);
 
-    toast("Copiado", "ok", "Usuário + senha + dias ✅");
+    toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
   }
 
   function copyAllInfo(){
-    const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
-
-    const values = box.querySelectorAll(".metaGrid .metaValue");
-    const username = values[0]?.innerText || "";
-    const password = values[1]?.innerText || "";
-    const days = values[2]?.innerText || "";
-    const prefix = values[3]?.innerText || "";
-    const status = values[4]?.innerText || "";
-    const createdAt = values[5]?.innerText || "";
-
-    const key = document.getElementById("licenseKeyBox")?.innerText || "";
-
-    let full = `Usuario: ${username}\nSenha: ${password}\nDias: ${days}\nPrefixo: ${prefix}\nStatus: ${status}\nGerado em: ${createdAt}`;
-    if(key) full += `\nLicenca: ${key}`;
-
-    copyToClipboard(full);
-    toast("Tudo copiado", "ok", "Pronto ✅");
+    copyAllWithLink(); // Redireciona para a função principal
   }
 
-  // ========== MELHORIA 2: Estatísticas ==========
+  // ========== Estatísticas ==========
   function updateDashboardStats() {
     const history = getHistory();
     const hoje = new Date();
@@ -944,7 +1073,6 @@
           <button class="btn-mini" onclick="useHistory(${idx})">
             <i class="fas fa-arrow-up-right-from-square"></i> Abrir
           </button>
-          <!-- Botão WhatsApp removido -->
           <button class="btn-mini" onclick="resetHistory(${idx})">
             <i class="fas fa-rotate-right"></i> Resetar
           </button>
@@ -961,10 +1089,10 @@
       return;
     }
 
-    const text = `Usuario: ${item.username || ""}\nSenha: ${item.password || ""}\nDias: ${item.days || ""} dias`;
-    copyToClipboard(text);
+    const texto = `👤 Usuário: ${item.username || ""}\n🔑 Senha: ${item.password || ""}\n⏱️ Dias: ${item.days || ""}\n\n📲 Link: ${LINK_APK}`;
+    copyToClipboard(texto);
 
-    toast("Copiado", "ok", "Usuário + senha + dias ✅");
+    toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
   }
 
   function useHistory(index){
