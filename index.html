@@ -472,61 +472,7 @@
       margin-top:4px;
     }
     
-    /* Link de download */
-    .download-section {
-      margin-top: 15px;
-      padding: 12px;
-      background: rgba(79,124,255,.05);
-      border-radius: 14px;
-      border: 1px solid rgba(79,124,255,.15);
-    }
-    
-    .download-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    
-    .download-header span {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    
-    .download-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      word-break: break-all;
-      font-size: 13px;
-    }
-    
-    .download-link i {
-      color: var(--primary);
-      font-size: 18px;
-    }
-    
-    .download-link a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      flex: 1;
-    }
-    
-    .download-link a:hover {
-      text-decoration: underline;
-    }
-    
-    .sync-badge {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 12px;
-      background: rgba(79,124,255,.1);
-      color: var(--primary);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
+    /* Link de download - REMOVIDO conforme solicitado */
   </style>
 </head>
 
@@ -594,23 +540,6 @@
 
         <div class="mutedSmall" style="margin-top:8px">
           <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
-        </div>
-      </div>
-      
-      <!-- Link de Download do APK (AGORA CENTRALIZADO via update.json) -->
-      <div class="download-section">
-        <div class="download-header">
-          <span><i class="fas fa-cloud"></i> Link oficial (gerenciado pelo admin)</span>
-          <span class="sync-badge" id="syncBadge">
-            <i class="fas fa-sync-alt"></i> <span id="syncTime">sincronizando...</span>
-          </span>
-        </div>
-        <div class="download-link">
-          <i class="fas fa-download"></i>
-          <a href="#" target="_blank" id="downloadLink">Carregando...</a>
-        </div>
-        <div class="mutedSmall" style="margin-top:8px;">
-          <i class="fas fa-info-circle"></i> Link atualizado automaticamente pelo administrador
         </div>
       </div>
 
@@ -722,22 +651,8 @@
       localStorage.setItem('LINK_APK_CACHE', LINK_APK);
       localStorage.setItem('NOME_APP_CACHE', NOME_APP);
       
-      // Atualizar o link na tela
-      const linkElement = document.getElementById('downloadLink');
-      if (linkElement) {
-        linkElement.href = LINK_APK;
-        linkElement.innerText = NOME_APP;
-      }
-      
-      // Atualizar badge de sincronização
-      const syncTime = document.getElementById('syncTime');
-      if (syncTime) {
-        const agora = new Date();
-        syncTime.innerText = `atualizado ${agora.getHours()}:${String(agora.getMinutes()).padStart(2,'0')}`;
-      }
-      
-      // Mostrar versão do painel (opcional, só para debug)
-      console.log('Versão do painel:', config.version, config.changelog);
+      // O link agora só aparece no resultado após gerar, não mais acima do botão
+      console.log('Configuração carregada:', config.version, config.changelog);
       
       return true;
       
@@ -748,16 +663,6 @@
       LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
       NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
       
-      const linkElement = document.getElementById('downloadLink');
-      if (linkElement) {
-        linkElement.href = LINK_APK;
-        linkElement.innerText = NOME_APP;
-      }
-      
-      const syncTime = document.getElementById('syncTime');
-      if (syncTime) {
-        syncTime.innerText = 'offline (cache)';
-      }
       return false;
     }
   }
@@ -773,7 +678,7 @@
     // Buscar configuração do GitHub
     await buscarConfiguracao();
     
-    // Sincronizar a cada 2 minutos
+    // Sincronizar a cada 2 minutos (só para atualizar o link em background)
     setInterval(buscarConfiguracao, 120000); // 2 minutos
 
     document.addEventListener("keydown", (e) => {
