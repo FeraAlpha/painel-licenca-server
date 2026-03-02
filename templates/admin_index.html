@@ -416,7 +416,7 @@
             justify-content: space-between;
         }
 
-        /* Tabela Detalhada */
+        /* Tabela */
         .card-tabela {
             background: var(--card);
             border: 1px solid var(--border);
@@ -439,11 +439,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .acoes-tabela {
-            display: flex;
-            gap: 12px;
         }
 
         .tabela-responsiva {
@@ -512,7 +507,7 @@
             margin: 12px 0;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -522,7 +517,7 @@
             margin-bottom: 12px;
         }
 
-        input:focus {
+        input:focus, select:focus {
             outline: 2px solid var(--accent);
         }
 
@@ -558,6 +553,14 @@
             min-width: 220px;
             box-shadow: var(--shadow-lg);
             z-index: 100;
+        }
+
+        .acoes-menu form {
+            margin-bottom: 8px;
+        }
+
+        .acoes-menu form:last-child {
+            margin-bottom: 0;
         }
 
         /* Toast */
@@ -848,17 +851,17 @@
                     <td data-label="Senha">
                         <span class="senha-mascarada">••••••</span>
                         <span class="senha-valor" style="display: none;">{{ u.password }}</span>
-                        <button class="btn-toggle-senha" onclick="toggleSenha(this)">
+                        <button class="btn-toggle-senha" onclick="toggleSenha(this)" style="background: none; border: none; cursor: pointer; margin: 0 4px;">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <span class="copiar" onclick="copiarCredenciais('{{ u.username }}','{{ u.password }}')">
+                        <span class="copiar" onclick="copiarCredenciais('{{ u.username }}','{{ u.password }}')" style="cursor: pointer; margin-left: 4px;">
                             <i class="fas fa-copy"></i>
                         </span>
                     </td>
                     
                     <td data-label="Key">
                         {{ u.key }}
-                        <span class="copiar" onclick="copiarTexto('{{ u.key }}', this)">
+                        <span class="copiar" onclick="copiarTexto('{{ u.key }}', this)" style="cursor: pointer; margin-left: 4px;">
                             <i class="fas fa-copy"></i>
                         </span>
                     </td>
@@ -867,7 +870,7 @@
                     
                     <td data-label="Revendedor">{{ u.reseller if u.reseller else "Admin" }}</td>
                     
-                    <td data-label="Criado em">{{ formatarDataBR(u.created_at) }}</td>
+                    <td data-label="Criado em">{{ u.created_at|formatar_data_br if u.created_at else "—" }}</td>
                     
                     <td data-label="Expiração" class="celula-expiracao"></td>
                     
@@ -882,16 +885,16 @@
                     <td data-label="Ações" class="acoes-box">
                         <!-- Botões Desktop -->
                         <div class="acoes-wrap">
-                            <form method="post" action="/admin/renovar/{{ loop.index0 }}">
+                            <form method="post" action="/admin/renovar/{{ loop.index0 }}" style="display: inline;">
                                 <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
                             </form>
                             
-                            <form method="post" action="/admin/renovar-personalizado/{{ loop.index0 }}">
+                            <form method="post" action="/admin/renovar-personalizado/{{ loop.index0 }}" style="display: inline;">
                                 <input type="number" name="dias" min="1" value="7" style="width: 70px; display: inline;">
                                 <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
                             </form>
                             
-                            <form method="post" action="/admin/alternar-bloqueio/{{ loop.index0 }}"
+                            <form method="post" action="/admin/alternar-bloqueio/{{ loop.index0 }}" style="display: inline;"
                                   onsubmit="return confirm('Alterar status deste usuário?')">
                                 {% if u.status == "blocked" %}
                                     <button type="submit" class="btn btn-primary" onclick="setLoading(this)">
@@ -904,15 +907,15 @@
                                 {% endif %}
                             </form>
                             
-                            <form method="post" action="/admin/resetar-key/{{ loop.index0 }}">
+                            <form method="post" action="/admin/resetar-key/{{ loop.index0 }}" style="display: inline;">
                                 <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
                             </form>
                             
-                            <form method="post" action="/admin/resetar-dispositivo/{{ loop.index0 }}">
+                            <form method="post" action="/admin/resetar-dispositivo/{{ loop.index0 }}" style="display: inline;">
                                 <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
                             </form>
                             
-                            <form method="post" action="/admin/deletar/{{ loop.index0 }}"
+                            <form method="post" action="/admin/deletar/{{ loop.index0 }}" style="display: inline;"
                                   onsubmit="return confirm('Excluir usuário permanentemente?')">
                                 <button type="submit" class="btn btn-danger" onclick="setLoading(this)">
                                     <i class="fas fa-trash"></i>
@@ -968,11 +971,11 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    // ==================== CONFIGURAÇÃO INICIAL ====================
+    // ==================== FUNÇÕES DO FRONTEND ====================
     
-    // Função para formatar data no padrão brasileiro (CORRIGIDA)
-    function formatarDataBR(timestamp) {
-        if (!timestamp) return '—';
+    // Função para formatar data no frontend (usada apenas para expiração)
+    function formatarDataFrontend(timestamp) {
+        if (!timestamp || timestamp <= 0) return '—';
         
         try {
             // Timestamp em segundos, converter para milissegundos
@@ -987,20 +990,15 @@
             const dia = String(dataBR.getDate()).padStart(2, '0');
             const mes = String(dataBR.getMonth() + 1).padStart(2, '0');
             const ano = dataBR.getFullYear();
-            const hora = String(dataBR.getHours()).padStart(2, '0');
-            const minuto = String(dataBR.getMinutes()).padStart(2, '0');
             
-            return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+            return `${dia}/${mes}/${ano}`;
         } catch (e) {
             console.error('Erro ao formatar data:', e);
             return '—';
         }
     }
 
-    // Disponibilizar função globalmente
-    window.formatarDataBR = formatarDataBR;
-
-    // Dados simulados para o dashboard
+    // Dados simulados para o dashboard (substitua pelos dados reais do backend)
     const dadosRevendedores = [
         { nome: 'João Silva', keys: 45, receita: 6750, comissao: 675, ticket: 150, conversao: 92, meta: 100, progresso: 45, status: 'ativo' },
         { nome: 'Maria Oliveira', keys: 78, receita: 11700, comissao: 1404, ticket: 150, conversao: 88, meta: 100, progresso: 78, status: 'ativo' },
@@ -1075,6 +1073,8 @@
     const topRevendedores = document.getElementById('topRevendedores');
     const sorted = [...dadosRevendedores].sort((a, b) => b.keys - a.keys);
     
+    topRevendedores.innerHTML = ''; // Limpar conteúdo existente
+    
     sorted.slice(0, 5).forEach((rev, index) => {
         let classePosicao = '';
         if (index === 0) classePosicao = 'ouro';
@@ -1086,7 +1086,7 @@
                 <div class="posicao-ranking ${classePosicao}">${index + 1}</div>
                 <div class="info-ranking">
                     <div class="nome-ranking">${rev.nome}</div>
-                    <div class="stats-ranking">${rev.keys} keys · R$ ${rev.receita}</div>
+                    <div class="stats-ranking">${rev.keys} keys · R$ ${rev.receita.toLocaleString('pt-BR')}</div>
                 </div>
                 <div class="valor-ranking">${rev.conversao}%</div>
             </div>
@@ -1095,6 +1095,8 @@
 
     // Metas
     const metasRevendedores = document.getElementById('metasRevendedores');
+    metasRevendedores.innerHTML = ''; // Limpar conteúdo existente
+    
     dadosRevendedores.filter(r => r.status === 'ativo').forEach(rev => {
         const percentual = (rev.progresso / rev.meta) * 100;
         const restante = rev.meta - rev.progresso;
@@ -1240,7 +1242,7 @@
             
             if (!celula) return;
             
-            const dataFormatada = formatarDataBR(expiracao);
+            const dataFormatada = formatarDataFrontend(expiracao);
             
             if (expiracao <= 0) {
                 celula.innerHTML = `<span class="badge badge-expirado">Sem data</span>`;
