@@ -903,6 +903,15 @@
       "expires_at": 1775460105,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772436105
+    },
+    {
+      "username": "Bvhfgg",
+      "password": "Fera3071",
+      "key": "FERA-ACA30425",
+      "device_id": null,
+      "expires_at": 1775460205,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772436205
     }
   ]
 }
