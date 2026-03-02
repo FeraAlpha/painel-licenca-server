@@ -776,8 +776,8 @@
 
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
 
-        <!-- CORREÇÃO DO HORÁRIO: usando filtro personalizado -->
-        <td>{{ u.created_at|formatar_data_br if u.created_at else "—" }}</td>
+        <!-- CORREÇÃO: Agora usa o timestamp original e formata no frontend -->
+        <td class="created-at-cell" data-timestamp="{{ u.created_at }}">{{ u.created_at }}</td>
 
         <td class="expCell"></td>
 
@@ -884,7 +884,46 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Inicializar novo dashboard
   initDashboard();
+  
+  // CORREÇÃO: Formatar todas as datas de criação
+  formatAllCreatedDates();
 });
+
+// CORREÇÃO: Função para formatar data no frontend com fuso brasileiro
+function formatCreatedDate(timestamp) {
+  if (!timestamp || timestamp === '—' || timestamp === '') return '—';
+  
+  try {
+    // Converte para número se for string
+    const ts = parseInt(timestamp);
+    if (isNaN(ts)) return timestamp;
+    
+    // Timestamp em segundos, converter para milissegundos
+    const data = new Date(ts * 1000);
+    
+    // Ajustar para fuso brasileiro (UTC-3)
+    const dataBR = new Date(data.getTime() - (3 * 60 * 60 * 1000));
+    
+    const dia = String(dataBR.getDate()).padStart(2, '0');
+    const mes = String(dataBR.getMonth() + 1).padStart(2, '0');
+    const ano = dataBR.getFullYear();
+    const hora = String(dataBR.getHours()).padStart(2, '0');
+    const minuto = String(dataBR.getMinutes()).padStart(2, '0');
+    
+    return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+  } catch (e) {
+    console.error('Erro ao formatar data:', e);
+    return timestamp;
+  }
+}
+
+// CORREÇÃO: Aplicar formatação a todas as células de data
+function formatAllCreatedDates() {
+  document.querySelectorAll('.created-at-cell').forEach(cell => {
+    const timestamp = cell.getAttribute('data-timestamp');
+    cell.innerText = formatCreatedDate(timestamp);
+  });
+}
 
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
@@ -952,8 +991,8 @@ function sortTable(col){
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
     if (col === 6 || col === 7) {
-      const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
-      const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
+      const dateA = a.cells[col].getAttribute('data-timestamp') || a.cells[col].innerText;
+      const dateB = b.cells[col].getAttribute('data-timestamp') || b.cells[col].innerText;
       A = parseInt(dateA) || 0;
       B = parseInt(dateB) || 0;
       return asc ? A - B : B - A;
@@ -1070,6 +1109,8 @@ function highlightUserFromURL() {
 setInterval(() => {
   renderExp();
   updateDashboard();
+  // Reformatar datas periodicamente (segurança)
+  formatAllCreatedDates();
 }, 10000);
 
 // ================== NOVAS FUNÇÕES DO DASHBOARD ==================
@@ -1108,7 +1149,6 @@ function initDashboard() {
 
 function updateNewDashboard(total, ativos, expirados, bloqueados) {
   // Atualizar métricas com dados reais da tabela
-  // Assumindo ticket médio de R$150 (ajuste conforme sua realidade)
   const ticketMedio = 150;
   const faturamento = ativos * ticketMedio;
   
