@@ -894,6 +894,15 @@
       "expires_at": 1775492169,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772468169
+    },
+    {
+      "username": "Josue",
+      "password": "Fera3850",
+      "key": "FERA-B23A8B2C",
+      "device_id": null,
+      "expires_at": 1775497456,
+      "reseller": "JCGAMER",
+      "created_at": 1772473456
     }
   ]
 }
