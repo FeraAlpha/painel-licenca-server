@@ -60,7 +60,7 @@
   }
 
   label { font-weight:700; }
-  input {
+  input, textarea {
     width:100%;
     padding:11px;
     border-radius:10px;
@@ -68,9 +68,14 @@
     margin-bottom:12px;
     background:white;
     outline:none;
+    font-family:inherit;
+  }
+  textarea {
+    min-height:80px;
+    resize:vertical;
   }
 
-  input:focus{ border-color:var(--accent); }
+  input:focus, textarea:focus{ border-color:var(--accent); }
 
   .btn {
     padding:10px 14px;
@@ -88,6 +93,7 @@
   .btn-danger  { background:var(--danger); color:white; }
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
   .btn-warning { background:#f0ad4e; color:white; }
+  .btn-success { background:var(--ok); color:white; }
 
   .btn-loading {
     color: transparent !important;
@@ -282,6 +288,79 @@
     width: 100%;
     padding: 12px 8px;
   }
+  
+  /* Estilos para abas */
+  .tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+  
+  .tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-light);
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+  }
+  
+  .tab-btn:hover {
+    background: var(--card2);
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  /* Status do GitHub */
+  .github-status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--card2);
+    font-size: 13px;
+  }
+  
+  .github-status.success {
+    border-left: 4px solid var(--ok);
+  }
+  
+  .github-status.error {
+    border-left: 4px solid var(--danger);
+  }
+  
+  .github-status.warning {
+    border-left: 4px solid #f0ad4e;
+  }
+  
+  /* Link direto para edição */
+  .edit-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  
+  .edit-link:hover {
+    opacity: 0.9;
+  }
 
   @media (max-width: 820px){
     thead { display:none; }
@@ -337,6 +416,90 @@
   </form>
 
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
+</div>
+
+<!-- ===== SEÇÃO PARA VISUALIZAR CONFIGURAÇÕES DO GITHUB ===== -->
+<div class="card">
+  <h2 style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+    <i class="fas fa-github"></i> Configurações Atuais (update.json)
+  </h2>
+  
+  <!-- Abas de navegação -->
+  <div class="tab-buttons">
+    <button class="tab-btn active" onclick="mostrarAba('app')" id="tabAppBtn">
+      <i class="fas fa-download"></i> Link do App
+    </button>
+    <button class="tab-btn" onclick="mostrarAba('update')" id="tabUpdateBtn">
+      <i class="fas fa-code-branch"></i> Versão do Painel
+    </button>
+  </div>
+
+  <!-- ABA 1: Configurações do App -->
+  <div class="tab-content active" id="abaApp">
+    <div class="field">
+      <label><i class="fas fa-link"></i> Link de Download do APK</label>
+      <input type="url" id="appLinkInput" readonly class="bg-light" 
+             value="Carregando..." style="background:var(--card2); cursor:text;">
+    </div>
+
+    <div class="field">
+      <label><i class="fas fa-tag"></i> Nome do App</label>
+      <input type="text" id="appNameInput" readonly class="bg-light" 
+             value="Carregando..." style="background:var(--card2); cursor:text;">
+    </div>
+    
+    <div class="field">
+      <label><i class="fas fa-calendar"></i> Última Atualização</label>
+      <input type="text" id="appDateInput" readonly class="bg-light" 
+             value="Carregando..." style="background:var(--card2); cursor:text;">
+    </div>
+  </div>
+
+  <!-- ABA 2: Configurações de Update -->
+  <div class="tab-content" id="abaUpdate">
+    <div class="field">
+      <label><i class="fas fa-code-branch"></i> Versão</label>
+      <input type="text" id="updateVersionInput" readonly class="bg-light" 
+             value="Carregando..." style="background:var(--card2); cursor:text;">
+    </div>
+
+    <div class="field">
+      <label><i class="fas fa-hashtag"></i> Version Code</label>
+      <input type="text" id="updateVersionCodeInput" readonly class="bg-light" 
+             value="Carregando..." style="background:var(--card2); cursor:text;">
+    </div>
+
+    <div class="field">
+      <label><i class="fas fa-file-archive"></i> ZIP URL</label>
+      <input type="url" id="updateZipUrlInput" readonly class="bg-light" 
+             value="Carregando..." style="background:var(--card2); cursor:text;">
+    </div>
+
+    <div class="field">
+      <label><i class="fas fa-clipboard-list"></i> Changelog</label>
+      <textarea id="updateChangelogInput" rows="3" readonly class="bg-light" 
+                style="background:var(--card2); cursor:text;">Carregando...</textarea>
+    </div>
+  </div>
+
+  <!-- Botões de ação -->
+  <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+    <button class="btn btn-soft" onclick="carregarDoGitHub()">
+      <i class="fas fa-sync-alt"></i> Atualizar Visualização
+    </button>
+    <a href="https://github.com/FeraAlpha/painel-licenca-servidor/edit/main/update.json" 
+       target="_blank" class="btn btn-primary">
+      <i class="fas fa-pen"></i> Editar no GitHub
+    </a>
+    <button class="btn btn-ghost" onclick="testarLink()">
+      <i class="fas fa-play"></i> Testar Link
+    </button>
+  </div>
+
+  <!-- Status -->
+  <div class="github-status" id="githubStatus">
+    <i class="fas fa-circle-info"></i> Clique em "Atualizar Visualização" para ver as configurações atuais
+  </div>
 </div>
 
 <!-- GERAR KEY -->
@@ -518,14 +681,15 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== FUNÇÃO PARA GERAR SENHA ALEATÓRIA (simples) ==================
+// ================== CONFIGURAÇÕES DO GITHUB ==================
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
+
+// ================== FUNÇÕES DO PAINEL ORIGINAL ==================
 function generateRandomPassword() {
-  // Apenas números: Fera + 4 dígitos (ex: Fera4821)
-  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4 dígitos
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
   return `Fera${randomNum}`;
 }
 
-// ================== PREENCHER CAMPO DE SENHA AUTOMATICAMENTE ==================
 document.addEventListener("DOMContentLoaded", function() {
   const passField = document.getElementById('autoPassword');
   if (passField) {
@@ -539,25 +703,24 @@ document.addEventListener("DOMContentLoaded", function() {
   renderExp();
   updateDashboard();
   highlightUserFromURL();
+  
+  // Carregar configurações do GitHub
+  carregarDoGitHub();
 });
 
-// ================== TEMA ESCURO ==================
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
-// ================== TOAST ==================
 function toast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 1400);
+  setTimeout(()=>t.classList.remove("show"), 3000);
 }
 
-// ================== SET EXPIRAÇÃO ==================
 function setExpiration(days){
   document.querySelector('input[name="expire_days"]').value = days;
 }
 
-// ================== COPIAR ==================
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
@@ -570,7 +733,6 @@ function copiarCred(u,p){
   toast("Credenciais copiadas!");
 }
 
-// ================== TOGGLE SENHA ==================
 function togglePassword(btn) {
   const td = btn.closest('td');
   const mask = td.querySelector('.password-mask');
@@ -591,12 +753,10 @@ function togglePassword(btn) {
   }
 }
 
-// ================== LOADING NOS BOTÕES ==================
 function setLoading(btn) {
   btn.classList.add('btn-loading');
 }
 
-// ================== BUSCA ==================
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
   document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
@@ -605,7 +765,6 @@ document.getElementById("searchUser").addEventListener("input", function(){
   updateDashboard();
 });
 
-// ================== ORDENAR ==================
 function sortTable(col){
   const tbody = document.getElementById("usersTable").tBodies[0];
   const rows = Array.from(tbody.rows);
@@ -614,7 +773,6 @@ function sortTable(col){
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
-    // Se for coluna de data (Criado em ou Expiração), converter para número
     if (col === 6 || col === 7) {
       const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
       const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
@@ -629,7 +787,6 @@ function sortTable(col){
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
 }
 
-// ================== EXPIRAÇÕES ==================
 function formatDateBR(ts){
   const d = new Date(ts * 1000);
   const dd = String(d.getDate()).padStart(2,"0");
@@ -671,7 +828,6 @@ function renderExp(){
   });
 }
 
-// ================== DASHBOARD ==================
 function updateDashboard(){
   const now = Math.floor(Date.now()/1000);
   const rows = document.querySelectorAll("#usersTable tbody tr");
@@ -698,7 +854,6 @@ function updateDashboard(){
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
 
-// ================== MENU MOBILE ==================
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
@@ -714,7 +869,6 @@ document.addEventListener("click", (e)=>{
   }
 });
 
-// ================== DESTAQUE DA LINHA ==================
 function highlightUserFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
   const highlightId = urlParams.get('highlight');
@@ -729,6 +883,68 @@ function highlightUserFromURL() {
     }
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
+  }
+}
+
+setInterval(() => {
+  renderExp();
+  updateDashboard();
+}, 10000);
+
+// ================== FUNÇÕES DO GITHUB (APENAS VISUALIZAÇÃO) ==================
+
+function mostrarAba(aba) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(`aba${aba.charAt(0).toUpperCase() + aba.slice(1)}`).classList.add('active');
+  document.getElementById(`tab${aba.charAt(0).toUpperCase() + aba.slice(1)}Btn`).classList.add('active');
+}
+
+async function carregarDoGitHub() {
+  const status = document.getElementById('githubStatus');
+  status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando configurações...';
+  status.className = 'github-status';
+  
+  try {
+    // Buscar arquivo do GitHub (sem precisar de token)
+    const response = await fetch(GITHUB_RAW_URL + '?t=' + Date.now());
+    
+    if (!response.ok) {
+      throw new Error('Arquivo não encontrado');
+    }
+    
+    const config = await response.json();
+    
+    // Preencher campos do App
+    document.getElementById('appLinkInput').value = config.app?.link_download || 'Não configurado';
+    document.getElementById('appNameInput').value = config.app?.nome_app || 'Não configurado';
+    document.getElementById('appDateInput').value = config.app?.ultima_atualizacao || 'Não configurado';
+    
+    // Preencher campos de Update
+    document.getElementById('updateVersionInput').value = config.version || '1.0';
+    document.getElementById('updateVersionCodeInput').value = config.versionCode || 1;
+    document.getElementById('updateZipUrlInput').value = config.zipUrl || 'Não configurado';
+    document.getElementById('updateChangelogInput').value = config.changelog || 'Não configurado';
+    
+    status.innerHTML = '<i class="fas fa-check-circle"></i> Configurações carregadas com sucesso!';
+    status.classList.add('success');
+    
+    toast("Configurações atualizadas", "ok");
+    
+  } catch (error) {
+    console.error('Erro ao carregar:', error);
+    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao carregar. Verifique se o arquivo existe.';
+    status.classList.add('error');
+  }
+}
+
+function testarLink() {
+  const link = document.getElementById('appLinkInput').value;
+  if (link && link !== 'Não configurado') {
+    window.open(link, '_blank');
+  } else {
+    toast("Link não disponível", "warn");
   }
 }
 
