@@ -912,6 +912,15 @@
       "expires_at": 1775460305,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772436305
+    },
+    {
+      "username": "Gugguf",
+      "password": "Fera5337",
+      "key": "FERA-42C90F89",
+      "device_id": null,
+      "expires_at": 1775476971,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772452971
     }
   ]
 }
