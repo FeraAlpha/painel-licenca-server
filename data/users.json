@@ -184,10 +184,11 @@
     },
     {
       "username": "wesley-wcf",
-      "password": "123",
-      "key": "FERA-052F0A13",
+      "password": "Fera5168",
+      "key": "FERA-314E9613",
       "device_id": null,
-      "expires_at": 1772225384
+      "expires_at": 1775519911,
+      "reseller": "JCGAMER"
     },
     {
       "username": "ninja",
