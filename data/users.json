@@ -885,6 +885,15 @@
       "expires_at": 1775459832,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772435832
+    },
+    {
+      "username": "Ghhhh",
+      "password": "Fera8934",
+      "key": "FERA-F93FC982",
+      "device_id": null,
+      "expires_at": 1775459953,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772435953
     }
   ]
 }
