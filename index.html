@@ -7,19 +7,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* (seus estilos existentes - mantenha iguais) */
     :root{
       --bg:#f6f7ff;
       --card:#ffffff;
       --card2:#f0f3ff;
       --border:#d7ddff;
+
       --text:#0f172a;
       --muted:#64748b;
+
       --primary:#4f7cff;
       --primary2:#6a5cff;
       --glow: rgba(79,124,255,.22);
+
       --warning:#ffd166;
       --shadow: 0 16px 45px rgba(15, 23, 42, .10);
+
       --radius:18px;
     }
 
@@ -594,7 +597,7 @@
         </div>
       </div>
       
-      <!-- Link de Download do APK (AGORA CENTRALIZADO) -->
+      <!-- Link de Download do APK (AGORA CENTRALIZADO via update.json) -->
       <div class="download-section">
         <div class="download-header">
           <span><i class="fas fa-cloud"></i> Link oficial (gerenciado pelo admin)</span>
@@ -692,10 +695,9 @@
   const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
   
-  // ===== CONFIGURAÇÃO CENTRALIZADA =====
-  // Altere esta URL para o local do seu arquivo de configuração
-  const CONFIG_URL = "https://SEU-SERVIDOR.com/config.json"; // ou config.php
-  
+  // ===== CONFIGURAÇÃO CENTRALIZADA (lendo do update.json no GitHub) =====
+  const CONFIG_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
+
   // Variáveis que serão atualizadas dinamicamente
   let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/5584fq6wsix3ymh/PrecisipnBoosterV2.apk/file";
   let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PrecisionBoosterV2";
@@ -705,15 +707,16 @@
 
   let currentDays = 35;
 
-  // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO SERVIDOR =====
+  // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO GITHUB =====
   async function buscarConfiguracao() {
     try {
       // Adiciona timestamp para evitar cache
       const response = await fetch(CONFIG_URL + '?t=' + Date.now());
       const config = await response.json();
       
-      LINK_APK = config.link_download;
-      NOME_APP = config.nome_app || NOME_APP;
+      // Extrair dados do app (agora dentro de config.app)
+      LINK_APK = config.app?.link_download || LINK_APK;
+      NOME_APP = config.app?.nome_app || NOME_APP;
       
       // Salvar no localStorage como cache
       localStorage.setItem('LINK_APK_CACHE', LINK_APK);
@@ -721,15 +724,21 @@
       
       // Atualizar o link na tela
       const linkElement = document.getElementById('downloadLink');
-      linkElement.href = LINK_APK;
-      linkElement.innerText = NOME_APP;
+      if (linkElement) {
+        linkElement.href = LINK_APK;
+        linkElement.innerText = NOME_APP;
+      }
       
       // Atualizar badge de sincronização
       const syncTime = document.getElementById('syncTime');
-      const agora = new Date();
-      syncTime.innerText = `atualizado ${agora.getHours()}:${String(agora.getMinutes()).padStart(2,'0')}`;
+      if (syncTime) {
+        const agora = new Date();
+        syncTime.innerText = `atualizado ${agora.getHours()}:${String(agora.getMinutes()).padStart(2,'0')}`;
+      }
       
-      console.log('Configuração carregada:', config);
+      // Mostrar versão do painel (opcional, só para debug)
+      console.log('Versão do painel:', config.version, config.changelog);
+      
       return true;
       
     } catch (error) {
@@ -739,10 +748,16 @@
       LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
       NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
       
-      document.getElementById('downloadLink').href = LINK_APK;
-      document.getElementById('downloadLink').innerText = NOME_APP;
+      const linkElement = document.getElementById('downloadLink');
+      if (linkElement) {
+        linkElement.href = LINK_APK;
+        linkElement.innerText = NOME_APP;
+      }
       
-      document.getElementById('syncTime').innerText = 'offline (cache)';
+      const syncTime = document.getElementById('syncTime');
+      if (syncTime) {
+        syncTime.innerText = 'offline (cache)';
+      }
       return false;
     }
   }
@@ -755,7 +770,7 @@
     renderHistory();
     updateDashboardStats();
     
-    // Buscar configuração do servidor
+    // Buscar configuração do GitHub
     await buscarConfiguracao();
     
     // Sincronizar a cada 2 minutos
