@@ -471,6 +471,8 @@
       color:var(--muted);
       margin-top:4px;
     }
+    
+    /* Link de download - REMOVIDO conforme solicitado */
   </style>
 </head>
 
@@ -622,7 +624,7 @@
   const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
   
-  // ===== CONFIGURAÇÃO CENTRALIZADA =====
+  // ===== CONFIGURAÇÃO CENTRALIZADA (lendo do update.json no GitHub) =====
   const CONFIG_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
 
   // Variáveis que serão atualizadas dinamicamente
@@ -637,22 +639,30 @@
   // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO GITHUB =====
   async function buscarConfiguracao() {
     try {
+      // Adiciona timestamp para evitar cache
       const response = await fetch(CONFIG_URL + '?t=' + Date.now());
       const config = await response.json();
       
+      // Extrair dados do app (agora dentro de config.app)
       LINK_APK = config.app?.link_download || LINK_APK;
       NOME_APP = config.app?.nome_app || NOME_APP;
       
+      // Salvar no localStorage como cache
       localStorage.setItem('LINK_APK_CACHE', LINK_APK);
       localStorage.setItem('NOME_APP_CACHE', NOME_APP);
       
-      console.log('✅ Configuração carregada:', { app: NOME_APP, link: LINK_APK });
+      // O link agora só aparece no resultado após gerar, não mais acima do botão
+      console.log('Configuração carregada:', config.version, config.changelog);
+      
       return true;
       
     } catch (error) {
-      console.log('⚠️ Erro ao carregar config, usando cache');
+      console.log('Erro ao carregar config, usando cache:', error);
+      
+      // Usar valores do cache
       LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
       NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
+      
       return false;
     }
   }
@@ -665,14 +675,18 @@
     renderHistory();
     updateDashboardStats();
     
+    // Buscar configuração do GitHub
     await buscarConfiguracao();
-    setInterval(buscarConfiguracao, 120000);
+    
+    // Sincronizar a cada 2 minutos (só para atualizar o link em background)
+    setInterval(buscarConfiguracao, 120000); // 2 minutos
 
     document.addEventListener("keydown", (e) => {
       if(e.key === "Enter") generateLicense();
     });
   });
 
+  // Gera senha simples: Fera + 4 números
   function generateNewPassword() {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     document.getElementById("password").value = `Fera${randomNum}`;
@@ -859,7 +873,7 @@
     `;
   }
 
-  // ========== FUNÇÃO CORRIGIDA: COPIAR TUDO COM LINK ==========
+  // ========== FUNÇÃO PRINCIPAL: COPIAR TUDO COM LINK ==========
   function copyAllWithLink() {
     const box = document.getElementById("resultBox");
     if(!box || box.style.display === "none"){
@@ -867,50 +881,20 @@
       return;
     }
 
-    try {
-      // Pegar valores do metaGrid de forma mais precisa
-      const metaItems = box.querySelectorAll('.metaItem');
-      
-      let username = "", password = "", days = "";
-      
-      metaItems.forEach(item => {
-        const label = item.querySelector('.metaLabel')?.innerText || "";
-        const value = item.querySelector('.metaValue')?.innerText || "";
-        
-        if (label.includes('Usuário')) username = value;
-        if (label.includes('Senha')) password = value;
-        if (label.includes('Dias')) days = value;
-      });
-      
-      // Garantir que temos valores
-      username = username || "não informado";
-      password = password || "não informado";
-      days = days || "não informado";
-      
-      // Usar os valores atualizados
-      const link = LINK_APK;
-      const app = NOME_APP;
-      
-      // FORMATAR EXATAMENTE COMO VOCÊ QUER
-      const texto = `🎯 *ACESSO LIBERADO - ${app}* 🎯\n\n` +
-                    `👤 *Usuário:* ${username}\n` +
-                    `🔑 *Senha:* ${password}\n` +
-                    `⏱️ *Validade:* ${days}\n\n` +
-                    `📲 *Link do APK:*\n${link}\n\n` +
-                    `⚡ Faça o download e aproveite! ⚡`;
-      
-      // Copiar para área de transferência
-      copyToClipboard(texto);
-      
-      // Mostrar preview no console
-      console.log('✅ Texto copiado:', texto);
-      
-      toast("✅ Tudo copiado!", "ok", "Credenciais + Link prontos para enviar!");
-      
-    } catch (error) {
-      console.error('Erro ao copiar:', error);
-      toast("Erro ao copiar", "warn", "Tente novamente");
-    }
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+
+    const texto = `🎯 *ACESSO LIBERADO - ${NOME_APP}* 🎯\n\n` +
+                  `👤 *Usuário:* ${username}\n` +
+                  `🔑 *Senha:* ${password}\n` +
+                  `⏱️ *Validade:* ${days}\n\n` +
+                  `📲 *Link do APK:*\n${LINK_APK}\n\n` +
+                  `⚡ Faça o download e aproveite! ⚡`;
+
+    copyToClipboard(texto);
+    toast("✅ Tudo copiado!", "ok", "Credenciais + Link prontos para enviar!");
   }
 
   function copyUserPassDays(){
@@ -929,6 +913,10 @@
     copyToClipboard(texto);
 
     toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
+  }
+
+  function copyAllInfo(){
+    copyAllWithLink(); // Redireciona para a função principal
   }
 
   // ========== Estatísticas ==========
