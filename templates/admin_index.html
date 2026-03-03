@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   :root {
@@ -60,7 +61,7 @@
   }
 
   label { font-weight:700; }
-  input, textarea {
+  input {
     width:100%;
     padding:11px;
     border-radius:10px;
@@ -68,14 +69,9 @@
     margin-bottom:12px;
     background:white;
     outline:none;
-    font-family:inherit;
-  }
-  textarea {
-    min-height:80px;
-    resize:vertical;
   }
 
-  input:focus, textarea:focus{ border-color:var(--accent); }
+  input:focus{ border-color:var(--accent); }
 
   .btn {
     padding:10px 14px;
@@ -289,44 +285,33 @@
     padding: 12px 8px;
   }
   
-  /* Estilos para abas */
-  .tab-buttons {
-    display: flex;
-    gap: 10px;
+  /* Estilos para a seção de link */
+  .link-section {
+    background: rgba(47,111,237,0.05);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px;
     margin-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
   }
   
-  .tab-btn {
-    padding: 8px 16px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text-light);
-    border-radius: 8px 8px 0 0;
-  }
-  
-  .tab-btn.active {
+  .link-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
     color: var(--accent);
-    border-bottom: 2px solid var(--accent);
   }
   
-  .tab-btn:hover {
+  .current-link-box {
     background: var(--card2);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    word-break: break-all;
+    border: 1px solid var(--border);
   }
   
-  .tab-content {
-    display: none;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
-  /* Status do GitHub */
-  .github-status {
+  .server-status {
     margin-top: 15px;
     padding: 10px;
     border-radius: 8px;
@@ -334,32 +319,12 @@
     font-size: 13px;
   }
   
-  .github-status.success {
+  .server-status.success {
     border-left: 4px solid var(--ok);
   }
   
-  .github-status.error {
+  .server-status.error {
     border-left: 4px solid var(--danger);
-  }
-  
-  .github-status.warning {
-    border-left: 4px solid #f0ad4e;
-  }
-  
-  /* Link direto para edição */
-  .edit-link {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 12px;
-    background: var(--accent);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  
-  .edit-link:hover {
-    opacity: 0.9;
   }
 
   @media (max-width: 820px){
@@ -418,87 +383,42 @@
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ===== SEÇÃO PARA VISUALIZAR CONFIGURAÇÕES DO GITHUB ===== -->
-<div class="card">
-  <h2 style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-    <i class="fas fa-github"></i> Configurações Atuais (update.json)
+<!-- ===== NOVA SEÇÃO: GERENCIAR LINK DO APP ===== -->
+<div class="link-section">
+  <h2>
+    <i class="fas fa-download"></i>
+    Gerenciar Link do Aplicativo
   </h2>
   
-  <!-- Abas de navegação -->
-  <div class="tab-buttons">
-    <button class="tab-btn active" onclick="mostrarAba('app')" id="tabAppBtn">
-      <i class="fas fa-download"></i> Link do App
-    </button>
-    <button class="tab-btn" onclick="mostrarAba('update')" id="tabUpdateBtn">
-      <i class="fas fa-code-branch"></i> Versão do Painel
-    </button>
+  <div class="field">
+    <label><i class="fas fa-link"></i> Link de Download</label>
+    <input type="url" id="adminLinkInput" placeholder="https://..." value="Carregando...">
   </div>
 
-  <!-- ABA 1: Configurações do App -->
-  <div class="tab-content active" id="abaApp">
-    <div class="field">
-      <label><i class="fas fa-link"></i> Link de Download do APK</label>
-      <input type="url" id="appLinkInput" readonly class="bg-light" 
-             value="Carregando..." style="background:var(--card2); cursor:text;">
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-tag"></i> Nome do App</label>
-      <input type="text" id="appNameInput" readonly class="bg-light" 
-             value="Carregando..." style="background:var(--card2); cursor:text;">
-    </div>
-    
-    <div class="field">
-      <label><i class="fas fa-calendar"></i> Última Atualização</label>
-      <input type="text" id="appDateInput" readonly class="bg-light" 
-             value="Carregando..." style="background:var(--card2); cursor:text;">
-    </div>
+  <div class="field">
+    <label><i class="fas fa-tag"></i> Nome do App</label>
+    <input type="text" id="adminAppNameInput" value="PrecisionBoosterV2" placeholder="ex: PrecisionBoosterV2">
   </div>
 
-  <!-- ABA 2: Configurações de Update -->
-  <div class="tab-content" id="abaUpdate">
-    <div class="field">
-      <label><i class="fas fa-code-branch"></i> Versão</label>
-      <input type="text" id="updateVersionInput" readonly class="bg-light" 
-             value="Carregando..." style="background:var(--card2); cursor:text;">
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-hashtag"></i> Version Code</label>
-      <input type="text" id="updateVersionCodeInput" readonly class="bg-light" 
-             value="Carregando..." style="background:var(--card2); cursor:text;">
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-file-archive"></i> ZIP URL</label>
-      <input type="url" id="updateZipUrlInput" readonly class="bg-light" 
-             value="Carregando..." style="background:var(--card2); cursor:text;">
-    </div>
-
-    <div class="field">
-      <label><i class="fas fa-clipboard-list"></i> Changelog</label>
-      <textarea id="updateChangelogInput" rows="3" readonly class="bg-light" 
-                style="background:var(--card2); cursor:text;">Carregando...</textarea>
-    </div>
+  <div class="current-link-box">
+    <strong>Link atual:</strong><br>
+    <span id="currentLinkText">Carregando...</span>
   </div>
 
-  <!-- Botões de ação -->
-  <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
-    <button class="btn btn-soft" onclick="carregarDoGitHub()">
-      <i class="fas fa-sync-alt"></i> Atualizar Visualização
+  <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="salvarLink()">
+      <i class="fas fa-save"></i> Salvar Link
     </button>
-    <a href="https://github.com/FeraAlpha/painel-licenca-servidor/edit/main/update.json" 
-       target="_blank" class="btn btn-primary">
-      <i class="fas fa-pen"></i> Editar no GitHub
-    </a>
-    <button class="btn btn-ghost" onclick="testarLink()">
+    <button class="btn btn-soft" onclick="testarLink()">
       <i class="fas fa-play"></i> Testar Link
     </button>
+    <button class="btn btn-ghost" onclick="carregarLink()">
+      <i class="fas fa-sync-alt"></i> Recarregar
+    </button>
   </div>
 
-  <!-- Status -->
-  <div class="github-status" id="githubStatus">
-    <i class="fas fa-circle-info"></i> Clique em "Atualizar Visualização" para ver as configurações atuais
+  <div class="server-status" id="serverStatus">
+    <i class="fas fa-circle-info"></i> Pronto para editar
   </div>
 </div>
 
@@ -681,8 +601,9 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== CONFIGURAÇÕES DO GITHUB ==================
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
+// ================== CONFIGURAÇÕES DO SERVIDOR ==================
+// ALTERE PARA SUA URL REAL
+const API_CONFIG_URL = "https://SEU-SERVIDOR.com/config.php";
 
 // ================== FUNÇÕES DO PAINEL ORIGINAL ==================
 function generateRandomPassword() {
@@ -704,8 +625,8 @@ document.addEventListener("DOMContentLoaded", function() {
   updateDashboard();
   highlightUserFromURL();
   
-  // Carregar configurações do GitHub
-  carregarDoGitHub();
+  // Carregar link do servidor
+  carregarLink();
 });
 
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -891,60 +812,85 @@ setInterval(() => {
   updateDashboard();
 }, 10000);
 
-// ================== FUNÇÕES DO GITHUB (APENAS VISUALIZAÇÃO) ==================
+// ================== NOVAS FUNÇÕES PARA GERENCIAR LINK ==================
 
-function mostrarAba(aba) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  
-  document.getElementById(`aba${aba.charAt(0).toUpperCase() + aba.slice(1)}`).classList.add('active');
-  document.getElementById(`tab${aba.charAt(0).toUpperCase() + aba.slice(1)}Btn`).classList.add('active');
-}
-
-async function carregarDoGitHub() {
-  const status = document.getElementById('githubStatus');
-  status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando configurações...';
-  status.className = 'github-status';
+async function carregarLink() {
+  const status = document.getElementById('serverStatus');
+  status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
   
   try {
-    // Buscar arquivo do GitHub (sem precisar de token)
-    const response = await fetch(GITHUB_RAW_URL + '?t=' + Date.now());
-    
-    if (!response.ok) {
-      throw new Error('Arquivo não encontrado');
-    }
-    
+    const response = await fetch(API_CONFIG_URL + '?t=' + Date.now());
     const config = await response.json();
     
-    // Preencher campos do App
-    document.getElementById('appLinkInput').value = config.app?.link_download || 'Não configurado';
-    document.getElementById('appNameInput').value = config.app?.nome_app || 'Não configurado';
-    document.getElementById('appDateInput').value = config.app?.ultima_atualizacao || 'Não configurado';
+    document.getElementById('adminLinkInput').value = config.link_download;
+    document.getElementById('adminAppNameInput').value = config.nome_app || 'PrecisionBoosterV2';
+    document.getElementById('currentLinkText').innerText = config.link_download;
     
-    // Preencher campos de Update
-    document.getElementById('updateVersionInput').value = config.version || '1.0';
-    document.getElementById('updateVersionCodeInput').value = config.versionCode || 1;
-    document.getElementById('updateZipUrlInput').value = config.zipUrl || 'Não configurado';
-    document.getElementById('updateChangelogInput').value = config.changelog || 'Não configurado';
-    
-    status.innerHTML = '<i class="fas fa-check-circle"></i> Configurações carregadas com sucesso!';
+    status.innerHTML = '<i class="fas fa-check-circle"></i> Configurações carregadas!';
     status.classList.add('success');
     
-    toast("Configurações atualizadas", "ok");
-    
   } catch (error) {
-    console.error('Erro ao carregar:', error);
-    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao carregar. Verifique se o arquivo existe.';
+    console.error('Erro:', error);
+    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao carregar. Verifique a URL.';
     status.classList.add('error');
   }
 }
 
+async function salvarLink() {
+  const link = document.getElementById('adminLinkInput').value.trim();
+  const appName = document.getElementById('adminAppNameInput').value.trim();
+  
+  if (!link) {
+    toast("Digite um link válido", "warn");
+    return;
+  }
+  
+  // Validar URL
+  try {
+    new URL(link);
+  } catch (e) {
+    toast("Link inválido. Use uma URL completa (http://...)", "warn");
+    return;
+  }
+  
+  const status = document.getElementById('serverStatus');
+  status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+  
+  try {
+    const response = await fetch(API_CONFIG_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        link_download: link,
+        nome_app: appName || 'PrecisionBoosterV2'
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      document.getElementById('currentLinkText').innerText = link;
+      status.innerHTML = '<i class="fas fa-check-circle"></i> Link salvo com sucesso!';
+      status.classList.add('success');
+      toast("✅ Link atualizado! Revendedores verão em 1 minuto", "ok");
+    } else {
+      throw new Error(result.message || 'Erro ao salvar');
+    }
+    
+  } catch (error) {
+    console.error('Erro:', error);
+    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao salvar. Verifique o servidor.';
+    status.classList.add('error');
+    toast("Erro ao salvar", "warn");
+  }
+}
+
 function testarLink() {
-  const link = document.getElementById('appLinkInput').value;
-  if (link && link !== 'Não configurado') {
+  const link = document.getElementById('adminLinkInput').value;
+  if (link) {
     window.open(link, '_blank');
   } else {
-    toast("Link não disponível", "warn");
+    toast("Digite um link primeiro", "warn");
   }
 }
 
