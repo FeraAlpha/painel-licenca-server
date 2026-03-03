@@ -622,9 +622,8 @@
   const HISTORY_KEY = "feraalpha_history_v2";
   const PREFIX = "FERA";
   
-  // ===== CONFIGURAÇÃO CENTRALIZADA (lendo do servidor via config.php) =====
-  // ALTERE PARA A URL DO SEU config.php
-  const CONFIG_URL = "https://SEU-SERVIDOR.com/config.php";
+  // ===== CONFIGURAÇÃO VIA GITHUB (SEM PHP) =====
+  const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
 
   // Variáveis que serão atualizadas dinamicamente
   let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/5584fq6wsix3ymh/PrecisipnBoosterV2.apk/file";
@@ -635,27 +634,27 @@
 
   let currentDays = 35;
 
-  // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO SERVIDOR =====
+  // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO GITHUB =====
   async function buscarConfiguracao() {
     try {
       // Adiciona timestamp para evitar cache
-      const response = await fetch(CONFIG_URL + '?t=' + Date.now());
+      const response = await fetch(GITHUB_URL + '?t=' + Date.now());
       const config = await response.json();
       
       // Extrair dados do app
-      LINK_APK = config.link_download || LINK_APK;
-      NOME_APP = config.nome_app || NOME_APP;
+      LINK_APK = config.app?.link_download || LINK_APK;
+      NOME_APP = config.app?.nome_app || NOME_APP;
       
       // Salvar no localStorage como cache
       localStorage.setItem('LINK_APK_CACHE', LINK_APK);
       localStorage.setItem('NOME_APP_CACHE', NOME_APP);
       
-      console.log('✅ Configuração carregada:', { app: NOME_APP, link: LINK_APK });
+      console.log('✅ Configuração carregada do GitHub:', { app: NOME_APP });
       
       return true;
       
     } catch (error) {
-      console.log('⚠️ Erro ao carregar config, usando cache:', error);
+      console.log('⚠️ Erro ao carregar do GitHub, usando cache:', error);
       
       // Usar valores do cache
       LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
@@ -673,7 +672,7 @@
     renderHistory();
     updateDashboardStats();
     
-    // Buscar configuração do servidor
+    // Buscar configuração do GitHub
     await buscarConfiguracao();
     
     // Sincronizar a cada 2 minutos
@@ -880,7 +879,7 @@
     }
 
     try {
-      // Pegar valores do metaGrid de forma mais precisa
+      // Pegar valores do metaGrid
       const metaItems = box.querySelectorAll('.metaItem');
       
       let username = "", password = "", days = "";
@@ -899,7 +898,7 @@
       password = password || "não informado";
       days = days || "não informado";
       
-      // Usar os valores atualizados
+      // Usar os valores atualizados do GitHub
       const link = LINK_APK;
       const app = NOME_APP;
       
@@ -911,9 +910,7 @@
                     `📲 *Link do APK:*\n${link}\n\n` +
                     `⚡ Faça o download e aproveite! ⚡`;
       
-      // Copiar para área de transferência
       copyToClipboard(texto);
-      
       toast("✅ Tudo copiado!", "ok", "Credenciais + Link prontos para enviar!");
       
     } catch (error) {
@@ -938,10 +935,6 @@
     copyToClipboard(texto);
 
     toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
-  }
-
-  function copyAllInfo(){
-    copyAllWithLink(); // Redireciona para a função principal
   }
 
   // ========== Estatísticas ==========
