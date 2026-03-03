@@ -383,7 +383,7 @@
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ===== NOVA SEÇÃO: GERENCIAR LINK DO APP ===== -->
+<!-- ===== SEÇÃO PARA GERENCIAR LINK DO APP ===== -->
 <div class="link-section">
   <h2>
     <i class="fas fa-download"></i>
@@ -602,8 +602,9 @@
 
 <script>
 // ================== CONFIGURAÇÕES DO SERVIDOR ==================
-// ALTERE PARA SUA URL REAL
-const API_CONFIG_URL = "https://SEU-SERVIDOR.com/config.php";
+// ALTERE ESTA URL PARA A LOCALIZAÇÃO DO SEU config.php
+const API_CONFIG_URL = "config.php"; // Se estiver na mesma pasta
+// const API_CONFIG_URL = "https://seusite.com/config.php"; // Se for em outro local
 
 // ================== FUNÇÕES DO PAINEL ORIGINAL ==================
 function generateRandomPassword() {
@@ -812,27 +813,55 @@ setInterval(() => {
   updateDashboard();
 }, 10000);
 
-// ================== NOVAS FUNÇÕES PARA GERENCIAR LINK ==================
+// ================== FUNÇÕES PARA GERENCIAR LINK ==================
 
 async function carregarLink() {
   const status = document.getElementById('serverStatus');
   status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
   
   try {
-    const response = await fetch(API_CONFIG_URL + '?t=' + Date.now());
-    const config = await response.json();
+    console.log('Tentando carregar de:', API_CONFIG_URL);
     
-    document.getElementById('adminLinkInput').value = config.link_download;
+    const response = await fetch(API_CONFIG_URL + '?t=' + Date.now());
+    
+    console.log('Status da resposta:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const config = await response.json();
+    console.log('Config recebida:', config);
+    
+    document.getElementById('adminLinkInput').value = config.link_download || '';
     document.getElementById('adminAppNameInput').value = config.nome_app || 'PrecisionBoosterV2';
-    document.getElementById('currentLinkText').innerText = config.link_download;
+    document.getElementById('currentLinkText').innerText = config.link_download || 'Não configurado';
     
     status.innerHTML = '<i class="fas fa-check-circle"></i> Configurações carregadas!';
     status.classList.add('success');
     
   } catch (error) {
-    console.error('Erro:', error);
-    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao carregar. Verifique a URL.';
+    console.error('Erro detalhado:', error);
+    
+    // Mostrar erro mais amigável
+    let mensagem = 'Erro ao carregar. ';
+    if (error.message.includes('Failed to fetch')) {
+      mensagem += 'Servidor não encontrado. Verifique a URL.';
+    } else if (error.message.includes('HTTP 404')) {
+      mensagem += 'Arquivo config.php não encontrado.';
+    } else if (error.message.includes('HTTP 403')) {
+      mensagem += 'Acesso negado. Verifique permissões.';
+    } else {
+      mensagem += error.message;
+    }
+    
+    status.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${mensagem}`;
     status.classList.add('error');
+    
+    // Valores padrão para teste
+    document.getElementById('adminLinkInput').value = 'https://www.mediafire.com/file/5584fq6wsix3ymh/PrecisipnBoosterV2.apk/file';
+    document.getElementById('adminAppNameInput').value = 'PrecisionBoosterV2';
+    document.getElementById('currentLinkText').innerText = 'Usando valores padrão (offline)';
   }
 }
 
@@ -879,7 +908,7 @@ async function salvarLink() {
     
   } catch (error) {
     console.error('Erro:', error);
-    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao salvar. Verifique o servidor.';
+    status.innerHTML = `<i class="fas fa-exclamation-circle"></i> Erro ao salvar: ${error.message}`;
     status.classList.add('error');
     toast("Erro ao salvar", "warn");
   }
