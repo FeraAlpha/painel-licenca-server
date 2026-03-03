@@ -922,6 +922,15 @@
       "expires_at": 1775530629,
       "reseller": "NINJA",
       "created_at": 1772506629
+    },
+    {
+      "username": "Thiago",
+      "password": "Fera3258",
+      "key": "FERA-A0952D51",
+      "device_id": null,
+      "expires_at": 1775582553,
+      "reseller": "JCGAMER",
+      "created_at": 1772558553
     }
   ]
 }
