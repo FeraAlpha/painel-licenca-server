@@ -1,5 +1,7 @@
 <?php
 // config.php - API para gerenciar configurações centralizadas
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Permitir acesso de qualquer origem (CORS)
 header('Content-Type: application/json');
@@ -7,24 +9,21 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Lidar com requisições OPTIONS (pré-verificação CORS)
+// Lidar com requisições OPTIONS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Caminho para o arquivo config.json (na mesma pasta)
+// Caminho para o arquivo config.json
 $configFile = __DIR__ . '/config.json';
 
-// ===== SE FOR REQUISIÇÃO POST (salvar configuração) =====
+// ===== SE FOR REQUISIÇÃO POST =====
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Pegar dados enviados
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
     
-    // Validar dados
     if (!$data || !isset($data['link_download'])) {
-        http_response_code(400);
         echo json_encode([
             'success' => false, 
             'message' => 'Dados inválidos. Link é obrigatório.'
@@ -32,51 +31,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    // Preparar configuração para salvar
     $config = [
         'link_download' => $data['link_download'],
         'nome_app' => $data['nome_app'] ?? 'PrecisionBoosterV2',
         'ultima_atualizacao' => date('Y-m-d H:i:s')
     ];
     
-    // Salvar no arquivo config.json
+    // Tentar salvar
     $success = file_put_contents(
         $configFile, 
         json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
     );
     
     if ($success) {
-        echo json_encode([
-            'success' => true, 
-            'message' => 'Configuração salva com sucesso!'
-        ]);
+        echo json_encode(['success' => true, 'message' => 'Configuração salva!']);
     } else {
-        http_response_code(500);
         echo json_encode([
             'success' => false, 
-            'message' => 'Erro ao salvar arquivo. Verifique permissões.'
+            'message' => 'Erro ao salvar. Permissão de escrita?'
         ]);
     }
-    
     exit();
 }
 
-// ===== SE FOR REQUISIÇÃO GET (ler configuração) =====
+// ===== SE FOR REQUISIÇÃO GET =====
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Verificar se o arquivo existe
     if (file_exists($configFile)) {
-        // Ler e retornar o JSON
         $content = file_get_contents($configFile);
         echo $content;
     } else {
-        // Arquivo não existe, retornar configuração padrão
+        // Criar arquivo padrão
         $defaultConfig = [
             'link_download' => 'https://www.mediafire.com/file/5584fq6wsix3ymh/PrecisipnBoosterV2.apk/file',
             'nome_app' => 'PrecisionBoosterV2',
             'ultima_atualizacao' => date('Y-m-d H:i:s')
         ];
         
-        // Salvar configuração padrão
         file_put_contents(
             $configFile, 
             json_encode($defaultConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
@@ -84,14 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         
         echo json_encode($defaultConfig);
     }
-    
     exit();
 }
 
 // Se chegar aqui, método não permitido
 http_response_code(405);
-echo json_encode([
-    'success' => false, 
-    'message' => 'Método não permitido'
-]);
+echo json_encode(['success' => false, 'message' => 'Método não permitido']);
 ?>
