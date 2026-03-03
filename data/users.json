@@ -913,6 +913,15 @@
       "expires_at": 1775520336,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772496336
+    },
+    {
+      "username": "Diegosilva",
+      "password": "Fera3514",
+      "key": "FERA-3CD769E7",
+      "device_id": null,
+      "expires_at": 1775530629,
+      "reseller": "NINJA",
+      "created_at": 1772506629
     }
   ]
 }
