@@ -904,6 +904,15 @@
       "expires_at": 1775497456,
       "reseller": "JCGAMER",
       "created_at": 1772473456
+    },
+    {
+      "username": "Weslwyy",
+      "password": "Fera4233",
+      "key": "FERA-DD4C063C",
+      "device_id": null,
+      "expires_at": 1775520336,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772496336
     }
   ]
 }
