@@ -1,5 +1,4 @@
 <?php
-// config.php - API para gerenciar configurações
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -7,12 +6,10 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 $configFile = __DIR__ . '/config.json';
 
-// GET - ler configuração
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (file_exists($configFile)) {
         echo file_get_contents($configFile);
     } else {
-        // Criar arquivo padrão
         $default = [
             'link_download' => 'https://www.mediafire.com/file/5584fq6wsix3ymh/PrecisipnBoosterV2.apk/file',
             'nome_app' => 'PrecisionBoosterV2',
@@ -24,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     exit();
 }
 
-// POST - salvar configuração
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     
