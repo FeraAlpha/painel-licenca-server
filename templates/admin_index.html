@@ -279,7 +279,7 @@
     padding: 12px 8px;
   }
 
-  /* ===== NOVOS ESTILOS PARA CRIAÇÃO EM MASSA ===== */
+  /* ===== ESTILOS PARA CRIAÇÃO EM MASSA ===== */
   .batch-create {
     background: linear-gradient(145deg, #ffffff, #f0f3ff);
     border: 2px dashed var(--accent);
@@ -313,40 +313,6 @@
     color: white;
     width: 100%;
     margin-top: 10px;
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-
-  .modal.active {
-    display: flex;
-  }
-
-  .modal-content {
-    background: var(--card);
-    border-radius: var(--radius);
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 20px;
-  }
-
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
   }
 
   @media (max-width: 820px){
@@ -405,7 +371,7 @@
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ===== NOVA FUNÇÃO: CRIAR MÚLTIPLOS LOGINS ===== -->
+<!-- ===== NOVA FUNÇÃO: CRIAR MÚLTIPLOS LOGINS (COM DIAS PERSONALIZÁVEIS) ===== -->
 <div class="card batch-create">
   <div class="card-header">
     <h2><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
@@ -419,12 +385,7 @@
     </div>
     <div style="flex: 1; min-width: 150px;">
       <label><i class="fas fa-calendar"></i> Dias de validade</label>
-      <select id="diasLogins">
-        <option value="7">7 dias</option>
-        <option value="35" selected>35 dias</option>
-        <option value="65">65 dias</option>
-        <option value="110">110 dias</option>
-      </select>
+      <input type="number" id="diasLogins" min="1" max="999" value="35" placeholder="Digite os dias">
     </div>
     <div style="flex: 0 0 auto; margin-top: 22px;">
       <button class="btn btn-primary" onclick="gerarMultiplosLogins()">
@@ -432,6 +393,7 @@
       </button>
     </div>
   </div>
+  <small style="color: var(--text-light);">Digite qualquer número de dias (ex: 1, 7, 15, 30, 90, 365...)</small>
 
   <!-- Preview dos logins gerados -->
   <div id="previewLogins" class="batch-preview" style="display: none;">
@@ -445,7 +407,7 @@
   </div>
 </div>
 
-<!-- GERAR KEY (original - não modificado) -->
+<!-- GERAR KEY (original) -->
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
@@ -473,7 +435,7 @@
   </form>
 </div>
 
-<!-- TABELA (original - não modificada) -->
+<!-- TABELA (original) -->
 <div class="card">
 
   <!-- DASHBOARD -->
@@ -624,13 +586,18 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== VARIÁVEIS GLOBAIS (NOVAS) ==================
+// ================== VARIÁVEIS GLOBAIS ==================
 let loginsGerados = [];
 
 // ================== NOVAS FUNÇÕES PARA CRIAÇÃO EM MASSA ==================
 function gerarMultiplosLogins() {
   const quantidade = parseInt(document.getElementById('quantidadeLogins').value) || 5;
   const dias = parseInt(document.getElementById('diasLogins').value) || 35;
+  
+  if (dias < 1) {
+    toast('Digite um número válido de dias (mínimo 1)', 'warn');
+    return;
+  }
   
   loginsGerados = [];
   
@@ -648,7 +615,7 @@ function gerarMultiplosLogins() {
   }
   
   mostrarPreview();
-  toast(`${quantidade} logins gerados com sucesso!`);
+  toast(`${quantidade} logins gerados com sucesso! (${dias} dias)`);
 }
 
 function mostrarPreview() {
@@ -691,7 +658,7 @@ function copiarTodosLogins() {
   toast('✅ Todos os logins foram copiados!');
 }
 
-// ================== FUNÇÕES ORIGINAIS (100% MANTIDAS) ==================
+// ================== FUNÇÕES ORIGINAIS ==================
 function generateRandomPassword() {
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   return `Fera${randomNum}`;
