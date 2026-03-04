@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   :root {
@@ -104,6 +105,26 @@
     padding: 6px 10px;
     font-size: 12px;
   }
+
+  .btn-loading {
+    color: transparent !important;
+    pointer-events: none;
+  }
+  .btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 50%;
+    left: 50%;
+    margin-left: -9px;
+    margin-top: -9px;
+    border: 2px solid white;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   table {
     width:100%;
@@ -302,6 +323,7 @@
     align-items: center;
     padding: 8px;
     border-bottom: 1px solid var(--border);
+    font-size: 13px;
   }
 
   .batch-item:last-child {
@@ -313,6 +335,30 @@
     color: white;
     width: 100%;
     margin-top: 10px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .token-field {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--card2);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
   }
 
   @media (max-width: 820px){
@@ -371,34 +417,50 @@
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ===== FUNÇÃO: CRIAR MÚLTIPLOS LOGINS ===== -->
+<!-- ===== FUNÇÃO: CRIAR MÚLTIPLOS LOGINS (COM CRIAÇÃO REAL) ===== -->
 <div class="card batch-create">
   <div class="card-header">
     <h2><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
     <span class="badge badge-ok">Novo</span>
   </div>
 
-  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+  <!-- Campo de Token (se necessário) -->
+  <div class="token-field">
+    <label><i class="fas fa-key"></i> Token de Administrador</label>
+    <input type="password" id="adminToken" placeholder="Digite o token de admin" value="admin_token">
+    <small style="color: var(--text-light);">Token fornecido pelo sistema</small>
+  </div>
+
+  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
     <div style="flex: 1; min-width: 150px;">
       <label><i class="fas fa-hashtag"></i> Quantidade</label>
-      <input type="number" id="quantidadeLogins" min="1" max="100" value="5">
+      <input type="number" id="quantidadeLogins" min="1" max="50" value="5">
     </div>
     <div style="flex: 1; min-width: 150px;">
       <label><i class="fas fa-calendar"></i> Dias de validade</label>
       <input type="number" id="diasLogins" min="1" max="999" value="35" placeholder="Digite os dias">
     </div>
     <div style="flex: 0 0 auto; margin-top: 22px;">
-      <button class="btn btn-primary" onclick="gerarMultiplosLogins()">
-        <i class="fas fa-magic"></i> Gerar
+      <button class="btn btn-primary" onclick="gerarMultiplosLogins()" id="btnGerar">
+        <i class="fas fa-magic"></i> Gerar e Criar
       </button>
     </div>
   </div>
+  
+  <!-- Barra de progresso -->
+  <div id="progressContainer" style="display: none;">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div style="text-align: center; font-size: 13px; color: var(--text-light);" id="progressText"></div>
+  </div>
+
   <small style="color: var(--text-light);">Digite qualquer número de dias (ex: 1, 7, 15, 30, 90, 365...)</small>
 
   <!-- Preview dos logins gerados -->
   <div id="previewLogins" class="batch-preview" style="display: none;">
     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-      <h4><i class="fas fa-list"></i> Logins Gerados:</h4>
+      <h4><i class="fas fa-list"></i> Logins Criados:</h4>
       <button class="btn btn-sm btn-success" onclick="copiarTodosLogins()">
         <i class="fas fa-copy"></i> Copiar Todos
       </button>
@@ -586,24 +648,50 @@
 <div id="toast" class="toast">OK</div>
 
 <script>
+// ================== CONFIGURAÇÕES ==================
+const API_URL = "https://painel-licenca-server.onrender.com/admin/generate"; // URL da API
+
 // ================== VARIÁVEIS GLOBAIS ==================
 let loginsGerados = [];
+let loginsCriados = [];
 
-// ================== FUNÇÃO CORRIGIDA: GERAR MÚLTIPLOS LOGINS ==================
-function gerarMultiplosLogins() {
+// ================== FUNÇÃO PARA GERAR E CRIAR MÚLTIPLOS LOGINS ==================
+async function gerarMultiplosLogins() {
   const quantidade = parseInt(document.getElementById('quantidadeLogins').value) || 5;
   const dias = parseInt(document.getElementById('diasLogins').value) || 35;
+  const token = document.getElementById('adminToken').value.trim();
   
+  if (!token) {
+    toast('Digite o token de administrador', 'warn');
+    return;
+  }
+
   if (dias < 1) {
     toast('Digite um número válido de dias (mínimo 1)', 'warn');
     return;
   }
-  
+
+  if (quantidade > 50) {
+    toast('Máximo de 50 logins por vez', 'warn');
+    return;
+  }
+
+  // Desabilitar botão
+  const btn = document.getElementById('btnGerar');
+  btn.disabled = true;
+  btn.classList.add('btn-loading');
+
+  // Mostrar barra de progresso
+  document.getElementById('progressContainer').style.display = 'block';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressText').innerText = 'Preparando...';
+
   loginsGerados = [];
+  loginsCriados = [];
   
+  // Gerar os logins primeiro
   for (let i = 0; i < quantidade; i++) {
     const numero = String(i + 1).padStart(2, '0');
-    // Gerar nome APENAS com letras e números (sem underlines)
     const letras = 'abcdefghijklmnopqrstuvwxyz';
     const letra1 = letras[Math.floor(Math.random() * letras.length)];
     const letra2 = letras[Math.floor(Math.random() * letras.length)];
@@ -614,14 +702,94 @@ function gerarMultiplosLogins() {
     
     loginsGerados.push({
       numero: i + 1,
-      usuario: usuario,
-      senha: senha,
+      username: usuario,
+      password: senha,
       dias: dias
     });
   }
-  
+
+  // Criar cada login na API
+  let sucessos = 0;
+  let erros = 0;
+
+  for (let i = 0; i < loginsGerados.length; i++) {
+    const login = loginsGerados[i];
+    
+    // Atualizar progresso
+    const progresso = ((i) / loginsGerados.length) * 100;
+    document.getElementById('progressFill').style.width = progresso + '%';
+    document.getElementById('progressText').innerText = `Criando ${i+1} de ${loginsGerados.length}...`;
+
+    try {
+      // Chamar API para criar o login
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          username: login.username,
+          password: login.password,
+          expire_days: String(login.dias),
+          token: token,
+          prefix: 'FERA'
+        })
+      });
+
+      const raw = await response.text();
+      let key = null;
+
+      try {
+        const data = JSON.parse(raw);
+        if (data && data.ok && data.key) key = data.key;
+      } catch(e) {
+        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
+        if (match) key = match[0];
+      }
+
+      if (key) {
+        sucessos++;
+        loginsCriados.push({
+          ...login,
+          key: key,
+          status: 'sucesso'
+        });
+      } else {
+        erros++;
+        loginsCriados.push({
+          ...login,
+          key: 'ERRO',
+          status: 'erro'
+        });
+      }
+
+    } catch (error) {
+      console.error('Erro ao criar login:', error);
+      erros++;
+      loginsCriados.push({
+        ...login,
+        key: 'ERRO',
+        status: 'erro'
+      });
+    }
+
+    // Pequena pausa para não sobrecarregar a API
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  // Finalizar
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').innerText = `Concluído! ${sucessos} sucessos, ${erros} erros.`;
+
+  // Reabilitar botão
+  btn.disabled = false;
+  btn.classList.remove('btn-loading');
+
+  // Mostrar preview
   mostrarPreview();
-  toast(`${quantidade} logins gerados com sucesso! (${dias} dias)`);
+
+  // Atualizar dashboard
+  updateDashboard();
+
+  toast(`${sucessos} logins criados com sucesso! ${erros > 0 ? ` (${erros} erros)` : ''}`, sucessos > 0 ? 'ok' : 'warn');
 }
 
 function mostrarPreview() {
@@ -630,11 +798,20 @@ function mostrarPreview() {
   
   lista.innerHTML = '';
   
-  loginsGerados.forEach(login => {
+  loginsCriados.forEach(login => {
+    const statusClass = login.status === 'sucesso' ? 'badge-ok' : 'badge-exp';
+    const statusText = login.status === 'sucesso' ? '✓' : '❌';
+    
     lista.innerHTML += `
       <div class="batch-item">
-        <span><strong>#${login.numero}</strong> ${login.usuario}</span>
-        <span><code style="background:var(--card); padding:4px 8px; border-radius:6px;">${login.senha}</code></span>
+        <div style="flex: 2;">
+          <strong>#${login.numero}</strong> ${login.username}
+          ${login.key && login.key !== 'ERRO' ? `<br><small style="color: var(--text-light);">Key: ${login.key}</small>` : ''}
+        </div>
+        <div style="text-align: right;">
+          <span class="badge ${statusClass}" style="margin-right: 5px;">${statusText}</span>
+          <code style="background:var(--card); padding:4px 8px; border-radius:6px;">${login.password}</code>
+        </div>
       </div>
     `;
   });
@@ -643,20 +820,23 @@ function mostrarPreview() {
 }
 
 function copiarTodosLogins() {
-  if (loginsGerados.length === 0) {
-    toast('Nenhum login gerado ainda!', 'warn');
+  if (loginsCriados.length === 0) {
+    toast('Nenhum login criado ainda!', 'warn');
     return;
   }
   
-  let texto = `🔑 LOGINS GERADOS - FERA ALPHA 🔑\n`;
-  texto += `📅 Validade: ${loginsGerados[0].dias} dias\n`;
-  texto += `🕒 Gerado em: ${new Date().toLocaleString('pt-BR')}\n`;
+  let texto = `🔑 LOGINS CRIADOS - FERA ALPHA 🔑\n`;
+  texto += `📅 Validade: ${loginsCriados[0].dias} dias\n`;
+  texto += `🕒 Criado em: ${new Date().toLocaleString('pt-BR')}\n`;
   texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   
-  loginsGerados.forEach(login => {
+  loginsCriados.forEach(login => {
     texto += `📌 LOGIN #${login.numero}\n`;
-    texto += `👤 Usuário: ${login.usuario}\n`;
-    texto += `🔑 Senha: ${login.senha}\n`;
+    texto += `👤 Usuário: ${login.username}\n`;
+    texto += `🔑 Senha: ${login.password}\n`;
+    if (login.key && login.key !== 'ERRO') {
+      texto += `🔐 Key: ${login.key}\n`;
+    }
     texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   });
   
@@ -691,7 +871,7 @@ function toast(msg, type="ok"){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2000);
+  setTimeout(()=>t.classList.remove("show"), 3000);
 }
 
 function setExpiration(days){
