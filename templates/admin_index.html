@@ -371,7 +371,7 @@
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ===== NOVA FUNÇÃO: CRIAR MÚLTIPLOS LOGINS (COM DIAS PERSONALIZÁVEIS) ===== -->
+<!-- ===== FUNÇÃO: CRIAR MÚLTIPLOS LOGINS ===== -->
 <div class="card batch-create">
   <div class="card-header">
     <h2><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
@@ -589,7 +589,7 @@
 // ================== VARIÁVEIS GLOBAIS ==================
 let loginsGerados = [];
 
-// ================== NOVAS FUNÇÕES PARA CRIAÇÃO EM MASSA ==================
+// ================== FUNÇÃO CORRIGIDA: GERAR MÚLTIPLOS LOGINS ==================
 function gerarMultiplosLogins() {
   const quantidade = parseInt(document.getElementById('quantidadeLogins').value) || 5;
   const dias = parseInt(document.getElementById('diasLogins').value) || 35;
@@ -603,7 +603,13 @@ function gerarMultiplosLogins() {
   
   for (let i = 0; i < quantidade; i++) {
     const numero = String(i + 1).padStart(2, '0');
-    const usuario = `user_${numero}_${Math.floor(Math.random() * 1000)}`;
+    // Gerar nome APENAS com letras e números (sem underlines)
+    const letras = 'abcdefghijklmnopqrstuvwxyz';
+    const letra1 = letras[Math.floor(Math.random() * letras.length)];
+    const letra2 = letras[Math.floor(Math.random() * letras.length)];
+    const numeros = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    
+    const usuario = `user${numero}${letra1}${letra2}${numeros}`;
     const senha = generateRandomPassword();
     
     loginsGerados.push({
