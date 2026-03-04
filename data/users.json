@@ -165,7 +165,7 @@
       "username": "P4NC4K3",
       "password": "123",
       "key": "FERA-1378C82C",
-      "device_id": "9a50a14d9bfe5a43c39b90bc8dbddaed1b433cbac52d363addc1dc80a4e8779b",
+      "device_id": null,
       "expires_at": 1773242217
     },
     {
@@ -237,7 +237,7 @@
       "username": "Paulo",
       "password": "333",
       "key": "FERA-8C400F3A",
-      "device_id": "72f6900252ec38ef4f893ac8c36a26c031212a5c4a63b91016c2a6892942264c",
+      "device_id": null,
       "expires_at": 1781659458
     },
     {
