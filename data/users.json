@@ -1428,6 +1428,14 @@
       "device_id": null,
       "expires_at": 1773099274,
       "created_at": 1772667274
+    },
+    {
+      "username": "Rosenilson",
+      "password": "Fera3041",
+      "key": "FERA-1193B86B",
+      "device_id": null,
+      "expires_at": 1775691565,
+      "created_at": 1772667565
     }
   ]
 }
