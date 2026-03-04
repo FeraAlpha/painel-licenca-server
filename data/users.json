@@ -1403,6 +1403,15 @@
       "device_id": null,
       "expires_at": 1772824995,
       "created_at": 1772652195
+    },
+    {
+      "username": "Zaqueurosa",
+      "password": "Fera6922",
+      "key": "FERA-71BE6D7A",
+      "device_id": null,
+      "expires_at": 1775685871,
+      "reseller": "JCGAMER",
+      "created_at": 1772661871
     }
   ]
 }
