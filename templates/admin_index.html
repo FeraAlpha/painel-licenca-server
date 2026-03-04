@@ -640,6 +640,15 @@ const API_URL = "https://painel-licenca-server.onrender.com/admin/generate"; // 
 let loginsGerados = [];
 let loginsCriados = [];
 
+// ================== FUNÇÃO PARA GERAR NÚMEROS ALEATÓRIOS ==================
+function gerarNumeroAleatorio(tamanho) {
+  let numero = '';
+  for (let i = 0; i < tamanho; i++) {
+    numero += Math.floor(Math.random() * 10);
+  }
+  return numero;
+}
+
 // ================== FUNÇÃO PARA GERAR E CRIAR MÚLTIPLOS LOGINS ==================
 async function gerarMultiplosLogins() {
   const quantidade = parseInt(document.getElementById('quantidadeLogins').value) || 5;
@@ -668,14 +677,22 @@ async function gerarMultiplosLogins() {
   loginsGerados = [];
   loginsCriados = [];
   
-  // Gerar os logins primeiro - AGORA COM NOMES SIMPLES
+  // Gerar os logins - TODOS DIFERENTES
+  const usuariosUsados = new Set();
+  
   for (let i = 0; i < quantidade; i++) {
-    const numero = String(i + 1).padStart(2, '0');
+    // Gerar número aleatório de 1 a 4 dígitos
+    const tamanhoNumero = Math.floor(Math.random() * 4) + 1; // 1 a 4
+    let numeroAleatorio;
     
-    // Nome de usuário SIMPLES: user + número sequencial
-    const usuario = `user${numero}`;
+    // Garantir que não repita números
+    do {
+      numeroAleatorio = gerarNumeroAleatorio(tamanhoNumero);
+    } while (usuariosUsados.has(numeroAleatorio) && quantidade < 9000);
     
-    // Senha continua igual: Fera + 4 números
+    usuariosUsados.add(numeroAleatorio);
+    
+    const usuario = `user${numeroAleatorio}`;
     const senha = generateRandomPassword();
     
     loginsGerados.push({
