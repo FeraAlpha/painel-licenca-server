@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <title>Fera Alpha — Painel Administrativo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   :root {
@@ -16,7 +15,6 @@
     --accent:#2f6fed;
     --danger:#d93c3c;
     --ok:#177a30;
-    --warning:#f0ad4e;
     --radius:12px;
   }
 
@@ -69,7 +67,7 @@
   }
 
   label { font-weight:700; }
-  input, select, textarea {
+  input, select {
     width:100%;
     padding:11px;
     border-radius:10px;
@@ -99,7 +97,7 @@
   .btn-primary { background:var(--accent); color:white; }
   .btn-danger  { background:var(--danger); color:white; }
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
-  .btn-warning { background:var(--warning); color:white; }
+  .btn-warning { background:#f0ad4e; color:white; }
   .btn-success { background:var(--ok); color:white; }
 
   .btn-sm {
@@ -130,20 +128,162 @@
 
   tbody tr:hover { background:#eef2f5; }
 
+  .copy {
+    color:var(--accent);
+    cursor:pointer;
+    font-weight:800;
+    margin-left:8px;
+  }
+
+  .password-value { display: none; }
+  .password-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 4px;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .password-toggle:hover { background: rgba(0,0,0,0.05); }
+
+  .highlight {
+    animation: highlightFade 2s ease-out;
+  }
+  @keyframes highlightFade {
+    0% { background-color: #fff3b0; }
+    70% { background-color: #fff3b0; }
+    100% { background-color: transparent; }
+  }
+
   .badge {
-    padding:4px 8px;
-    border-radius:12px;
-    font-size:12px;
+    padding:6px 10px;
+    border-radius:18px;
+    font-size:13px;
     font-weight:800;
     display:inline-block;
   }
   .badge-ok { background:#d7f5dd; color:var(--ok); }
-  .badge-exp { background:#ffe1e1; color:var(--danger); }
+  .badge-warn { background:#fff3c9; color:#8a6c1e; }
+  .badge-exp { background:#ffe1e1; color:#b32828; }
 
-  /* NOVOS ESTILOS PARA CRIAÇÃO EM MASSA */
+  body.dark {
+    --bg:#0e1113;
+    --card:#1a1d21;
+    --border:#2a2e32;
+    --text:#e5ecef;
+    --text-light:#9aa4ab;
+  }
+
+  .admin-tools {
+    display:flex;
+    gap:12px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+  .admin-tools form { display:inline-block; }
+
+  .top-info{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+
+  .mini-box{
+    background:rgba(255,255,255,.55);
+    border:1px solid var(--border);
+    padding:10px 12px;
+    border-radius:12px;
+    display:flex;
+    flex-direction:column;
+    min-width:180px;
+  }
+
+  .mini-box b{ font-size:14px; }
+  .mini-box span{
+    font-size:13px;
+    color:var(--text-light);
+    margin-top:2px;
+    font-weight:800;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:18px;
+    right:18px;
+    background:#111;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(10px);
+    transition:.2s;
+    pointer-events:none;
+    z-index:999;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateY(0px);
+  }
+
+  .actionsBox{
+    position:relative;
+  }
+
+  .actionsWrap{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .menuBtn{
+    display:none;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:transparent;
+    font-weight:900;
+    cursor:pointer;
+  }
+
+  .actionsMenu{
+    display:none;
+    position:absolute;
+    right:10px;
+    top:46px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px;
+    min-width:220px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    z-index:50;
+  }
+
+  .actionsMenu form{ margin-bottom:8px; }
+  .actionsMenu form:last-child{ margin-bottom:0; }
+
+  .day-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .day-buttons .btn {
+    width: 100%;
+    padding: 12px 8px;
+  }
+
+  /* ===== NOVOS ESTILOS PARA CRIAÇÃO EM MASSA ===== */
   .batch-create {
     background: linear-gradient(145deg, #ffffff, #f0f3ff);
     border: 2px dashed var(--accent);
+    margin-top: 20px;
     margin-bottom: 20px;
   }
 
@@ -173,12 +313,6 @@
     color: white;
     width: 100%;
     margin-top: 10px;
-  }
-
-  .quantity-input {
-    width: 100px;
-    display: inline-block;
-    margin-left: 10px;
   }
 
   .modal {
@@ -217,6 +351,7 @@
 
   @media (max-width: 820px){
     thead { display:none; }
+
     table, tbody, tr, td { display:block; width:100%; }
     tr {
       border:1px solid var(--border);
@@ -227,6 +362,19 @@
     }
     td { border:0; border-bottom:1px solid var(--border); }
     td:last-child{ border-bottom:0; }
+
+    .actionsWrap{ display:none; }
+    .menuBtn{ display:inline-block; }
+
+    .day-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .day-buttons {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -238,6 +386,7 @@
     <h1>Fera Alpha — Painel Administrativo</h1>
     <div class="subtitle">Gerenciamento avançado</div>
   </div>
+
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
@@ -247,79 +396,86 @@
         onsubmit="return confirm('⚠️ Resetar TODOS os dispositivos? Esta ação não pode ser desfeita.')">
     <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Dispositivos</button>
   </form>
+
   <form method="post" action="/admin/clean_expired"
         onsubmit="return confirm('Remover TODOS os usuários expirados?')">
     <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
   </form>
+
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ===== NOVA SEÇÃO: CRIAR MÚLTIPLOS LOGINS PARA SORTEIO ===== -->
+<!-- ===== NOVA FUNÇÃO: CRIAR MÚLTIPLOS LOGINS ===== -->
 <div class="card batch-create">
   <div class="card-header">
-    <h2><i class="fas fa-gift"></i> Criar Logins para Sorteio</h2>
+    <h2><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
     <span class="badge badge-ok">Novo</span>
   </div>
 
-  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
-    <div style="flex: 1;">
-      <label><i class="fas fa-hashtag"></i> Quantidade de Logins</label>
-      <input type="number" id="quantidadeSorteio" min="1" max="100" value="5" class="quantity-input">
+  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 150px;">
+      <label><i class="fas fa-hashtag"></i> Quantidade</label>
+      <input type="number" id="quantidadeLogins" min="1" max="100" value="5">
     </div>
-    <div style="flex: 2;">
+    <div style="flex: 1; min-width: 150px;">
       <label><i class="fas fa-calendar"></i> Dias de validade</label>
-      <select id="diasSorteio">
-        <option value="7">7 dias (Sorteio)</option>
-        <option value="35" selected>35 dias (R$30)</option>
-        <option value="65">65 dias (R$50)</option>
-        <option value="110">110 dias (R$75)</option>
+      <select id="diasLogins">
+        <option value="7">7 dias</option>
+        <option value="35" selected>35 dias</option>
+        <option value="65">65 dias</option>
+        <option value="110">110 dias</option>
       </select>
     </div>
-  </div>
-
-  <div style="display: flex; gap: 10px;">
-    <button class="btn btn-primary" onclick="gerarLoginsSorteio()" style="flex: 2;">
-      <i class="fas fa-magic"></i> Gerar Logins
-    </button>
-    <button class="btn btn-success" onclick="copiarTodosLogins()" style="flex: 1;" id="copiarTodosBtn" disabled>
-      <i class="fas fa-copy"></i> Copiar Todos
-    </button>
+    <div style="flex: 0 0 auto; margin-top: 22px;">
+      <button class="btn btn-primary" onclick="gerarMultiplosLogins()">
+        <i class="fas fa-magic"></i> Gerar
+      </button>
+    </div>
   </div>
 
   <!-- Preview dos logins gerados -->
-  <div id="previewSorteio" class="batch-preview" style="display: none;">
-    <h4 style="margin-bottom: 10px;">📋 Logins Gerados:</h4>
+  <div id="previewLogins" class="batch-preview" style="display: none;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <h4><i class="fas fa-list"></i> Logins Gerados:</h4>
+      <button class="btn btn-sm btn-success" onclick="copiarTodosLogins()">
+        <i class="fas fa-copy"></i> Copiar Todos
+      </button>
+    </div>
     <div id="listaLogins"></div>
-    <button class="btn copy-all-btn" onclick="copiarTodosLogins()">
-      <i class="fas fa-copy"></i> Copiar Todos os Logins
-    </button>
   </div>
 </div>
 
-<!-- GERAR KEY (original) -->
+<!-- GERAR KEY (original - não modificado) -->
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
+
   <form method="post" action="/admin/generate" id="generateForm">
     <label>Usuário</label>
     <input name="username" required>
+
     <label>Senha <small>(gerada automaticamente, pode editar)</small></label>
     <input name="password" id="autoPassword" required>
+
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
+
     <label>Expiração (dias)</label>
     <input name="expire_days" type="number" value="35" min="1" id="expireDays">
+
     <div class="day-buttons">
       <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
     </div>
+
     <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
   </form>
 </div>
 
-<!-- TABELA (original) -->
+<!-- TABELA (original - não modificada) -->
 <div class="card">
+
   <!-- DASHBOARD -->
   <div class="top-info">
     <div class="mini-box">
@@ -358,52 +514,129 @@
         <th>Ações</th>
       </tr>
     </thead>
+
     <tbody>
       {% for u in users %}
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
-        <!-- Linhas existentes -->
+
+        <td>{{ loop.index0 }}</td>
+
+        <td><b>{{ u.username }}</b></td>
+
+        <td>
+          <span class="password-mask">••••••</span>
+          <span class="password-value">{{ u.password }}</span>
+          <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
+          <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
+        </td>
+
+        <td>
+          {{ u.key }}
+          <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
+        </td>
+
+        <td>{{ u.device_id if u.device_id else '-' }}</td>
+
+        <td>{{ u.reseller if u.reseller else "Admin" }}</td>
+
+        <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
+
+        <td class="expCell"></td>
+
+        <td class="statusCell" data-status="{{ u.status }}">
+          {% if u.status == "blocked" %}
+            <span class="badge badge-exp">Bloqueado</span>
+          {% else %}
+            <span class="badge badge-ok">Ativo</span>
+          {% endif %}
+        </td>
+
+        <!-- AÇÕES -->
+        <td class="actionsBox">
+
+          <!-- DESKTOP -->
+          <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
+            </form>
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <input type="number" name="days" min="1" value="7"
+                     style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
+              <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
+            </form>
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('Alterar status desse usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
+              {% endif %}
+            </form>
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
+            </form>
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Dispositivo</button>
+            </form>
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                  onsubmit="return confirm('Excluir usuário?')">
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
+            </form>
+          </div>
+
+          <!-- MOBILE -->
+          <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
+          <div class="actionsMenu">
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
+            </form>
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <input type="number" name="days" min="1" value="7"
+                     style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
+            </form>
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('Alterar status desse usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
+              {% endif %}
+            </form>
+            <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
+            </form>
+            <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Dispositivo</button>
+            </form>
+            <form method="post" action="/admin/delete/{{ loop.index0 }}"
+                  onsubmit="return confirm('Excluir usuário?')">
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
+            </form>
+          </div>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
-<!-- MODAL PARA VISUALIZAR LOGINS -->
-<div class="modal" id="loginsModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-gift"></i> Logins Gerados para Sorteio</h3>
-      <button class="btn btn-ghost btn-sm" onclick="fecharModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div id="modalLoginsList" style="max-height: 400px; overflow-y: auto;"></div>
-    <div style="display: flex; gap: 10px; margin-top: 20px;">
-      <button class="btn btn-success" onclick="copiarTodosLogins()" style="flex: 2;">
-        <i class="fas fa-copy"></i> Copiar Todos
-      </button>
-      <button class="btn btn-ghost" onclick="fecharModal()" style="flex: 1;">
-        Fechar
-      </button>
-    </div>
-  </div>
-</div>
-
 <div id="toast" class="toast">OK</div>
 
 <script>
-// ================== VARIÁVEIS GLOBAIS ==================
+// ================== VARIÁVEIS GLOBAIS (NOVAS) ==================
 let loginsGerados = [];
 
-// ================== NOVAS FUNÇÕES PARA SORTEIO ==================
-function gerarLoginsSorteio() {
-  const quantidade = parseInt(document.getElementById('quantidadeSorteio').value) || 5;
-  const dias = parseInt(document.getElementById('diasSorteio').value) || 35;
+// ================== NOVAS FUNÇÕES PARA CRIAÇÃO EM MASSA ==================
+function gerarMultiplosLogins() {
+  const quantidade = parseInt(document.getElementById('quantidadeLogins').value) || 5;
+  const dias = parseInt(document.getElementById('diasLogins').value) || 35;
   
   loginsGerados = [];
   
   for (let i = 0; i < quantidade; i++) {
-    const usuario = `sorteio_${String(i+1).padStart(2, '0')}_${Math.floor(Math.random() * 100)}`;
+    const numero = String(i + 1).padStart(2, '0');
+    const usuario = `user_${numero}_${Math.floor(Math.random() * 1000)}`;
     const senha = generateRandomPassword();
     
     loginsGerados.push({
@@ -414,17 +647,12 @@ function gerarLoginsSorteio() {
     });
   }
   
-  // Mostrar preview
   mostrarPreview();
-  
-  // Habilitar botão de copiar
-  document.getElementById('copiarTodosBtn').disabled = false;
-  
-  toast(`${quantidade} logins gerados com sucesso!`, 'ok');
+  toast(`${quantidade} logins gerados com sucesso!`);
 }
 
 function mostrarPreview() {
-  const preview = document.getElementById('previewSorteio');
+  const preview = document.getElementById('previewLogins');
   const lista = document.getElementById('listaLogins');
   
   lista.innerHTML = '';
@@ -433,7 +661,7 @@ function mostrarPreview() {
     lista.innerHTML += `
       <div class="batch-item">
         <span><strong>#${login.numero}</strong> ${login.usuario}</span>
-        <span><code>${login.senha}</code></span>
+        <span><code style="background:var(--card); padding:4px 8px; border-radius:6px;">${login.senha}</code></span>
       </div>
     `;
   });
@@ -447,59 +675,23 @@ function copiarTodosLogins() {
     return;
   }
   
-  // Formatar texto para copiar
-  let texto = `🎁 LOGINS PARA SORTEIO - FERA ALPHA 🎁\n`;
+  let texto = `🔑 LOGINS GERADOS - FERA ALPHA 🔑\n`;
   texto += `📅 Validade: ${loginsGerados[0].dias} dias\n`;
   texto += `🕒 Gerado em: ${new Date().toLocaleString('pt-BR')}\n`;
   texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   
   loginsGerados.forEach(login => {
-    texto += `🎫 LOGIN #${login.numero}\n`;
+    texto += `📌 LOGIN #${login.numero}\n`;
     texto += `👤 Usuário: ${login.usuario}\n`;
     texto += `🔑 Senha: ${login.senha}\n`;
     texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   });
   
-  texto += `🎯 Boa sorte no sorteio! 🎯`;
-  
-  // Copiar para área de transferência
   navigator.clipboard.writeText(texto);
-  
-  // Mostrar modal com os logins
-  mostrarModal();
-  
-  toast('✅ Todos os logins foram copiados!', 'ok');
+  toast('✅ Todos os logins foram copiados!');
 }
 
-function mostrarModal() {
-  const modal = document.getElementById('loginsModal');
-  const lista = document.getElementById('modalLoginsList');
-  
-  lista.innerHTML = '';
-  
-  loginsGerados.forEach(login => {
-    lista.innerHTML += `
-      <div style="background: var(--card2); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-weight: 800;">#${login.numero}</span>
-          <span class="badge badge-ok">${login.dias} dias</span>
-        </div>
-        <div style="margin-top: 8px;">
-          <div><strong>Usuário:</strong> ${login.usuario}</div>
-          <div><strong>Senha:</strong> <code>${login.senha}</code></div>
-        </div>
-      </div>
-    `;
-  });
-  
-  modal.classList.add('active');
-}
-
-function fecharModal() {
-  document.getElementById('loginsModal').classList.remove('active');
-}
-
-// ================== FUNÇÕES ORIGINAIS (MANTIDAS) ==================
+// ================== FUNÇÕES ORIGINAIS (100% MANTIDAS) ==================
 function generateRandomPassword() {
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   return `Fera${randomNum}`;
@@ -526,7 +718,7 @@ function toast(msg, type="ok"){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 3000);
+  setTimeout(()=>t.classList.remove("show"), 2000);
 }
 
 function setExpiration(days){
@@ -704,9 +896,8 @@ setInterval(() => {
 }, 10000);
 
 // ================== EXPOR FUNÇÕES GLOBAIS ==================
-window.gerarLoginsSorteio = gerarLoginsSorteio;
+window.gerarMultiplosLogins = gerarMultiplosLogins;
 window.copiarTodosLogins = copiarTodosLogins;
-window.fecharModal = fecharModal;
 </script>
 </body>
 </html>
