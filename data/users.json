@@ -116,7 +116,7 @@
       "username": "DORA7",
       "password": "1036",
       "key": "FERA-75ED8236",
-      "device_id": null,
+      "device_id": "11d777c6ea016ef554cd638b6e62584ce847783e39f0d8df706c5bbc21ad2c82",
       "expires_at": 1773632950
     },
     {
@@ -776,10 +776,10 @@
     },
     {
       "username": "Leandrrr",
-      "password": "Fera9738",
-      "key": "FERA-A3963E68",
+      "password": "Fera4533",
+      "key": "FERA-44A6E983",
       "device_id": "37f91dc6e846fdbd43f6a0d32a582adcd3c4b951c61fb9dcacf86a7e237ae742",
-      "expires_at": 1775425067,
+      "expires_at": 1775621771,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772400777
     },
