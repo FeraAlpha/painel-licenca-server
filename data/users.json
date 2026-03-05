@@ -1472,6 +1472,15 @@
       "expires_at": 1776631017,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772743017
+    },
+    {
+      "username": "FelipeL",
+      "password": "Fera9008",
+      "key": "FERA-54B28C78",
+      "device_id": null,
+      "expires_at": 1775771326,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772747326
     }
   ]
 }
