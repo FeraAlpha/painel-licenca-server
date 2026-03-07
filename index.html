@@ -44,6 +44,18 @@
 
     .wrap{max-width:720px;margin:0 auto}
 
+    /* Animação fadeInUp */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .topbar{
       display:flex;
       justify-content:space-between;
@@ -54,6 +66,7 @@
       background: var(--card);
       box-shadow: var(--shadow);
       margin-bottom:18px;
+      animation: fadeInUp 0.5s ease;
     }
 
     .brand{
@@ -99,6 +112,7 @@
       border-radius:var(--radius);
       padding:18px;
       box-shadow: var(--shadow);
+      animation: fadeInUp 0.5s ease;
     }
 
     .card + .card{margin-top:14px;}
@@ -444,7 +458,7 @@
     .toast.warn i{color:var(--warning)}
     .mutedSmall{font-size:12px;color:var(--muted)}
 
-    /* Dashboard stats - estilo original mas com ícones */
+    /* Dashboard stats com animação */
     .stats-grid{
       display:grid;
       grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
@@ -459,7 +473,16 @@
       text-align:center;
       position: relative;
       overflow: hidden;
+      animation: fadeInUp 0.5s ease;
+      animation-fill-mode: both;
     }
+    /* Delay em cascata para cada card */
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    .stat-card:nth-child(5) { animation-delay: 0.5s; }
+    
     .stat-card i.background-icon {
       position: absolute;
       right: 0px;
@@ -538,13 +561,13 @@
       </div>
 
       <div class="field">
-        <label><i class="fas fa-user"></i> Cliente</label>
-        <input id="username" placeholder="cliente_4271" autocomplete="off">
+        <label><i class="fas fa-user"></i> Usuário</label>
+        <input id="username" placeholder="Fera4271" autocomplete="off">
       </div>
 
       <div class="field">
         <label><i class="fas fa-lock"></i> Senha</label>
-        <input id="password" placeholder="Senha gerada automaticamente" autocomplete="off">
+        <input id="password" placeholder="Alpha8392" autocomplete="off">
       </div>
 
       <div class="field">
@@ -565,7 +588,7 @@
           <button class="btn btn-soft" type="button" onclick="saveToken()">
             <i class="fas fa-floppy-disk"></i> Salvar Token
           </button>
-          <button class="btn btn-danger" type="button" onclick="clearToken()">
+          <button class="btn btn-danger" type="button" onclick="confirmClearToken()">
             <i class="fas fa-trash"></i> Limpar
           </button>
         </div>
@@ -670,12 +693,16 @@
 
   let currentDays = 35;
 
-  // ===== FUNÇÃO PARA GERAR NOME DE CLIENTE COM NÚMEROS =====
-  function generateClientName() {
+  // ===== FUNÇÃO PARA GERAR USUÁRIO =====
+  function generateUsername() {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const names = ['joao', 'maria', 'pedro', 'ana', 'lucas', 'carla', 'tiago', 'julia', 'rafael', 'beatriz'];
-    const randomName = names[Math.floor(Math.random() * names.length)];
-    return `${randomName}_${randomNum}`;
+    return `Fera${randomNum}`;
+  }
+
+  // ===== FUNÇÃO PARA GERAR SENHA =====
+  function generatePassword() {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `Alpha${randomNum}`;
   }
 
   // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO GITHUB =====
@@ -702,10 +729,10 @@
     const saved = localStorage.getItem(TOKEN_KEY);
     if(saved) document.getElementById("token").value = saved;
 
-    // Gerar nome de cliente automático com números
-    document.getElementById("username").value = generateClientName();
+    // Gerar usuário e senha automáticos
+    document.getElementById("username").value = generateUsername();
+    document.getElementById("password").value = generatePassword();
     
-    generateNewPassword();
     renderHistory();
     updateDashboardStats();
     
@@ -716,12 +743,6 @@
       if(e.key === "Enter") generateLicense();
     });
   });
-
-  // Gera senha simples: Fera + 4 números
-  function generateNewPassword() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    document.getElementById("password").value = `Fera${randomNum}`;
-  }
 
   function setDays(days){
     currentDays = days;
@@ -739,10 +760,25 @@
     toast("Token salvo", "ok", "Pronto ✅");
   }
 
+  // ===== FUNÇÃO COM CONFIRMAÇÃO ANTES DE LIMPAR =====
+  function confirmClearToken(){
+    // Mostrar popup de confirmação
+    const confirmar = confirm("⚠️ Tem certeza que deseja limpar o token?\n\nEsta ação não pode ser desfeita.");
+    
+    if(confirmar) {
+      // Se confirmou, limpa o token
+      localStorage.removeItem(TOKEN_KEY);
+      document.getElementById("token").value = "";
+      toast("Token removido", "ok", "Token excluído com sucesso");
+    } else {
+      // Se cancelou, apenas mostra uma mensagem
+      toast("Operação cancelada", "ok", "Token mantido");
+    }
+  }
+
+  // Função original mantida para compatibilidade
   function clearToken(){
-    localStorage.removeItem(TOKEN_KEY);
-    document.getElementById("token").value = "";
-    toast("Token removido", "ok", "Você pode inserir outro");
+    confirmClearToken();
   }
 
   async function generateLicense(){
@@ -811,9 +847,9 @@
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
-      // Gerar novo cliente automático com números
-      document.getElementById("username").value = generateClientName();
-      generateNewPassword();
+      // Gerar novo usuário e senha automáticos
+      document.getElementById("username").value = generateUsername();
+      document.getElementById("password").value = generatePassword();
 
     }catch(err){
       document.getElementById("loader").style.display = "none";
@@ -841,8 +877,8 @@
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
-      document.getElementById("username").value = generateClientName();
-      generateNewPassword();
+      document.getElementById("username").value = generateUsername();
+      document.getElementById("password").value = generatePassword();
 
       console.error(err);
     }
