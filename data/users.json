@@ -747,11 +747,12 @@
     },
     {
       "username": "Fera",
-      "password": "Fera",
-      "key": "FERA-4EB76673",
+      "password": "Fera6032",
+      "key": "FERA-7540BA00",
       "device_id": "web-mmb989rg-o8yl3vcj",
-      "expires_at": 1775591882,
-      "created_at": 1772567882
+      "expires_at": 1773503819,
+      "created_at": 1772567882,
+      "reseller": "revendedor_super_fera_2025"
     },
     {
       "username": "user01gi781",
