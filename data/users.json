@@ -1079,6 +1079,15 @@
       "device_id": null,
       "expires_at": 1775921515,
       "created_at": 1772897515
+    },
+    {
+      "username": "Fera4753",
+      "password": "Alpha7202",
+      "key": "FERA-B29A5DA7",
+      "device_id": null,
+      "expires_at": 1775932161,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1772908161
     }
   ]
 }
