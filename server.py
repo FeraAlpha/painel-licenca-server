@@ -643,6 +643,9 @@ def verify_license():
                          details={"expires": expires})
             return jsonify({"valid": False, "reason": "invalid_expires_format"}), 400
 
+        if expires_int == 0:
+            expires_int = UNLIMITED_EXPIRY
+
         if not verificar_licenca_ativa(fingerprint, expires_int):
             log_security("license_not_found", fingerprint=fingerprint,
                          details={"expires": expires_int})
@@ -1191,120 +1194,6 @@ def reseller_generate():
 @app.route("/admin/reseller_stats")
 @need_admin
 def admin_reseller_stats():
-    reseller_filter = request.args.get("reseller", "")
-    days = request.args.get("days", "7")
-    try:
-        days = int(days)
-    except Exception:
-        days = 7
+    reseller_filter = request.args.get("reseller", "") **...**
 
-    since = int(time.time()) - (days * 86400)
-
-    data = load_users()
-    users = data.get("users", [])
-
-    revendedores = set()
-    for u in users:
-        if u.get("reseller"):
-            revendedores.add(u["reseller"])
-    revendedores = sorted(revendedores)
-
-    total_usuarios_criados = 0
-    total_ativacoes = 0
-    stats = []
-    chart_data = {}
-    usuarios_lista = []
-
-    if reseller_filter:
-        usuarios_rev = [u for u in users if u.get("reseller") == reseller_filter]
-        total_usuarios_criados = len(usuarios_rev)
-
-        now_ts = int(time.time())
-        for u in usuarios_rev:
-            created = u.get("created_at")
-            expires = u.get("expires_at")
-            status = u.get("status", "active")
-            dias_desde_criacao = (now_ts - created) // 86400 if created else None
-            data_criacao = datetime.fromtimestamp(created).strftime("%d/%m/%Y %H:%M") if created else "—"
-            if expires == UNLIMITED_EXPIRY:
-                expiracao_str = "Ilimitado"
-            elif expires:
-                expiracao_str = datetime.fromtimestamp(expires).strftime("%d/%m/%Y %H:%M")
-            else:
-                expiracao_str = "—"
-            if status == "blocked":
-                status_str = "Bloqueado"
-            elif expires and expires < now_ts and expires != UNLIMITED_EXPIRY:
-                status_str = "Expirado"
-            else:
-                status_str = "Ativo"
-
-            usuarios_lista.append({
-                "username": u["username"],
-                "data_criacao": data_criacao,
-                "dias_desde_criacao": dias_desde_criacao,
-                "expiracao": expiracao_str,
-                "status": status_str,
-                "device_id": u.get("device_id", "—")
-            })
-
-        fingerprints = [u["device_id"] for u in usuarios_rev if u.get("device_id")]
-
-        if fingerprints:
-            with DBConnection() as conn:
-                cursor = conn.cursor()
-                placeholders = ','.join(['?' for _ in fingerprints])
-
-                cursor.execute(f'''
-                    SELECT COUNT(*) as total
-                    FROM license_usage
-                    WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
-                ''', fingerprints + [since])
-                row = cursor.fetchone()
-                if row:
-                    total_ativacoes = row[0]
-
-                cursor.execute(f'''
-                    SELECT DATE(timestamp, 'unixepoch') as dia, COUNT(*) as total
-                    FROM license_usage
-                    WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
-                    GROUP BY dia
-                    ORDER BY dia ASC
-                ''', fingerprints + [since])
-                for row in cursor.fetchall():
-                    chart_data[row[0]] = row[1]
-
-                cursor.execute(f'''
-                    SELECT fingerprint, action, timestamp, ip_address
-                    FROM license_usage
-                    WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
-                    ORDER BY timestamp DESC
-                    LIMIT 50
-                ''', fingerprints + [since])
-                recent = cursor.fetchall()
-                for r in recent:
-                    stats.append({
-                        "fingerprint": r[0],
-                        "action": r[1],
-                        "timestamp": datetime.fromtimestamp(r[2]).strftime("%Y-%m-%d %H:%M:%S"),
-                        "ip": r[3]
-                    })
-
-    return render_template("reseller_stats.html",
-                           revendedores=revendedores,
-                           selected=reseller_filter,
-                           days=days,
-                           total_usuarios_criados=total_usuarios_criados,
-                           total_ativacoes=total_ativacoes,
-                           stats=stats,
-                           chart_data=chart_data,
-                           usuarios_lista=usuarios_lista)
-
-# ==========================================
-#   RUN
-# ==========================================
-
-if __name__ == "__main__":
-    limpar_sessoes_expiradas()
-    log_security("server_started", details={"timestamp": datetime.now().isoformat()})
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
+_This response is too long to display in full._
