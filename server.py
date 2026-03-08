@@ -335,7 +335,7 @@ def load_users():
     return {"users": []}
 
 # ------------------------------
-#   SAVE USERS
+#   SAVE USERS (CORRIGIDA)
 # ------------------------------
 def save_users_github(data, retries=3):
     if not GITHUB_TOKEN:
@@ -377,18 +377,25 @@ def save_users_github(data, retries=3):
     return False
 
 def save_users(data):
-    # backup
-    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-    atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
-
-    # local
-    atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
-
-    # sync cloud (não bloqueante)
     try:
-        save_users_github(data)
+        # backup
+        ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
+
+        # local
+        atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
+
+        # sync cloud (não bloqueante)
+        try:
+            save_users_github(data)
+        except Exception as e:
+            log_security("save_users_error", details=str(e))
+            
+        return True
     except Exception as e:
-        log_security("save_users_error", details=str(e))
+        log_security("save_users_critical_error", details=str(e))
+        print(f"ERRO CRÍTICO AO SALVAR USERS: {str(e)}")
+        return False
 
 # ------------------------------
 #   ASSINATURA
@@ -576,7 +583,7 @@ def validate_token():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   CLIENTE - ATIVAÇÃO (ATUALIZADA)
+#   CLIENTE - ATIVAÇÃO (CORRIGIDA)
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -608,12 +615,20 @@ def activate():
             log_security("activate_expired", fingerprint=fingerprint, details={"username": username, "expires": expires})
             return jsonify({"status": "error", "reason": "expired"}), 403
 
-        if user.get("device_id") is None:
+        # ✅ CORREÇÃO: Tratar device_id nulo corretamente
+        device_id = user.get("device_id")
+        
+        # Se device_id é None (nunca ativado), atribuir o fingerprint
+        if device_id is None:
             user["device_id"] = fingerprint
             save_users({"users": users})
-        elif user.get("device_id") != fingerprint:
-            log_security("activate_device_mismatch", fingerprint=fingerprint, details={"username": username, "stored_device": user.get("device_id")})
+            log_security("device_activated", fingerprint=fingerprint, details={"username": username})
+        # Se device_id existe e é diferente, recusar
+        elif device_id != fingerprint:
+            log_security("activate_device_mismatch", fingerprint=fingerprint, 
+                        details={"username": username, "stored_device": device_id})
             return jsonify({"status": "error", "reason": "device_mismatch"}), 403
+        # Se device_id é igual, permitir (já ativado neste dispositivo)
 
         # ✅ SALVAR LICENÇA NO BANCO DE DADOS
         conn = get_db()
@@ -671,11 +686,15 @@ def activate():
             "expires_at": client_expires,
             "session_token": token,
             "assinatura": assinatura_hmac,
-            "jwt_token": jwt_token  # <-- NOVO token JWT
+            "jwt_token": jwt_token
         })
 
     except Exception as e:
         log_security("activate_error", details=str(e))
+        # ✅ IMPORTANTE: Log mais detalhado do erro
+        print(f"ERRO NA ATIVAÇÃO: {str(e)}")  # Vai aparecer nos logs do Render
+        import traceback
+        traceback.print_exc()  # Mostra o stack trace completo
         return jsonify({"status": "error", "reason": "internal_error"}), 500
 
 # ------------------------------
