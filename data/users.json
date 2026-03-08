@@ -1149,6 +1149,14 @@
       "expires_at": 1773585504,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772942579
+    },
+    {
+      "username": "Feaxds",
+      "password": "Fera8553",
+      "key": "FERA-6F4B04C1",
+      "device_id": null,
+      "expires_at": 1773162187,
+      "created_at": 1772989387
     }
   ]
 }
