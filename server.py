@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 import json, os, time, base64, sqlite3, requests, hashlib, hmac
+import jwt
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 
 DB = "data/licenses.db"
@@ -17,6 +18,11 @@ UNLIMITED_EXPIRY = 9999999999999
 
 # Chave secreta para HMAC (DEVE SER IGUAL À DO CLIENTE)
 CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
+
+# Configuração JWT
+JWT_SECRET = os.getenv("JWT_SECRET", "fer4_jwt_s3cr3t_k3y_ch4ng3_m3")
+JWT_ALGORITHM = "RS256"  # Vamos usar RSA para compatibilidade com seus .pem
+JWT_EXPIRY_HOURS = 24  # Token válido por 24 horas
 
 # ------------------------------
 #   CONFIG GITHUB
@@ -64,6 +70,50 @@ def gerar_assinatura_hmac(expires, fingerprint):
     return assinatura
 
 # ------------------------------
+#   FUNÇÕES JWT
+# ------------------------------
+def gerar_token_jwt(fingerprint, username, expires_at):
+    """Gera um token JWT para o cliente"""
+    now = datetime.now(timezone.utc)
+    
+    # Carrega a chave privada
+    with open(KEY_PRIV, "rb") as f:
+        private_key = RSA.import_key(f.read())
+    
+    payload = {
+        "fp": fingerprint,           # fingerprint do dispositivo
+        "user": username,             # nome do usuário
+        "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),  # expiração
+        "iat": now,                    # emitido em
+        "lic_exp": expires_at           # expiração da licença (para referência)
+    }
+    
+    token = jwt.encode(payload, private_key, algorithm="RS256")
+    return token
+
+def validar_token_jwt(token):
+    """Valida um token JWT e retorna o payload se válido"""
+    try:
+        # Carrega a chave pública
+        with open(KEY_PUB, "rb") as f:
+            public_key = RSA.import_key(f.read())
+        
+        # Decodifica e valida o token
+        payload = jwt.decode(
+            token, 
+            public_key, 
+            algorithms=["RS256"],
+            options={"require": ["exp", "iat", "fp", "user"]}
+        )
+        return {"valid": True, "payload": payload}
+    except jwt.ExpiredSignatureError:
+        return {"valid": False, "reason": "token_expired"}
+    except jwt.InvalidTokenError as e:
+        return {"valid": False, "reason": f"invalid_token: {str(e)}"}
+    except Exception as e:
+        return {"valid": False, "reason": f"validation_error: {str(e)}"}
+
+# ------------------------------
 #   BANCO SQL MELHORADO
 # ------------------------------
 def init_db():
@@ -100,10 +150,19 @@ def init_db():
                   ip_address TEXT,
                   user_agent TEXT)''')
     
+    # ✅ NOVA: Tabela para revogação de tokens JWT
+    c.execute('''CREATE TABLE IF NOT EXISTS revoked_tokens
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  token TEXT UNIQUE,
+                  fingerprint TEXT,
+                  revoked_at INTEGER,
+                  reason TEXT)''')
+    
     # Criar índices para melhor performance
     c.execute('CREATE INDEX IF NOT EXISTS idx_fingerprint ON licenses(fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_sessions ON sessions(token, fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_license_status ON licenses(status, expires_at)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_revoked_tokens ON revoked_tokens(token)')
     
     conn.commit()
     conn.close()
@@ -199,6 +258,30 @@ def verificar_sessao(token, fingerprint):
     
     conn.close()
     return sessao is not None
+
+def revogar_token(token, fingerprint=None, reason="admin_revoked"):
+    """Revoga um token JWT"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+        VALUES (?, ?, ?, ?)
+    ''', (token, fingerprint, int(time.time()), reason))
+    
+    conn.commit()
+    conn.close()
+
+def token_esta_revogado(token):
+    """Verifica se um token foi revogado"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM revoked_tokens WHERE token = ?', (token,))
+    result = cursor.fetchone()
+    conn.close()
+    
+    return result is not None
 
 # ------------------------------
 #   WRITE ATÔMICO
@@ -357,7 +440,7 @@ def ping():
     }), 200
 
 # ------------------------------
-#   VERIFICAÇÃO DE LICENÇA (NOVO)
+#   VERIFICAÇÃO DE LICENÇA
 # ------------------------------
 @app.route("/verify_license", methods=["POST"])
 def verify_license():
@@ -406,7 +489,7 @@ def verify_license():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   VERIFICAÇÃO DE SESSÃO (NOVO)
+#   VERIFICAÇÃO DE SESSÃO
 # ------------------------------
 @app.route("/verify_session", methods=["GET"])
 def verify_session():
@@ -428,6 +511,68 @@ def verify_session():
             
     except Exception as e:
         log_security("session_error", details=str(e))
+        return jsonify({"valid": False, "reason": "internal_error"}), 500
+
+# ------------------------------
+#   VALIDAÇÃO DE TOKEN JWT (NOVO)
+# ------------------------------
+@app.route("/token/validate", methods=["POST"])
+def validate_token():
+    """Valida um token JWT enviado pelo cliente"""
+    try:
+        data = request.json or {}
+        token = data.get("token")
+        fingerprint = data.get("fingerprint")
+        
+        if not token:
+            log_security("token_missing", ip=request.remote_addr)
+            return jsonify({"valid": False, "reason": "token_required"}), 400
+        
+        # Verificar se o token foi revogado
+        if token_esta_revogado(token):
+            log_security("token_revoked", ip=request.remote_addr)
+            return jsonify({"valid": False, "reason": "token_revoked"}), 403
+        
+        # Validar o token JWT
+        result = validar_token_jwt(token)
+        
+        if not result["valid"]:
+            log_security("token_invalid", 
+                        ip=request.remote_addr, 
+                        details={"reason": result["reason"]})
+            return jsonify({"valid": False, "reason": result["reason"]}), 401
+        
+        payload = result["payload"]
+        
+        # Se forneceu fingerprint, verificar se corresponde
+        if fingerprint and payload.get("fp") != fingerprint:
+            log_security("token_fingerprint_mismatch",
+                        fingerprint=fingerprint,
+                        details={"token_fp": payload.get("fp")})
+            return jsonify({"valid": False, "reason": "fingerprint_mismatch"}), 403
+        
+        # Verificar se a licença ainda está ativa no banco
+        fp = payload.get("fp")
+        if fp:
+            licenca_valida = verificar_licenca_ativa(fp, payload.get("lic_exp", 0))
+            if not licenca_valida:
+                log_security("token_license_inactive", fingerprint=fp)
+                return jsonify({"valid": False, "reason": "license_inactive"}), 403
+        
+        # Token válido!
+        log_security("token_validated", fingerprint=payload.get("fp"))
+        
+        return jsonify({
+            "valid": True,
+            "payload": {
+                "fingerprint": payload.get("fp"),
+                "username": payload.get("user"),
+                "license_expires": payload.get("lic_exp")
+            }
+        })
+        
+    except Exception as e:
+        log_security("token_validation_error", details=str(e))
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
@@ -513,6 +658,9 @@ def activate():
         # ✅ GERAR ASSINATURA HMAC (para validação local do cliente)
         assinatura_hmac = gerar_assinatura_hmac(client_expires, fingerprint)
         
+        # ✅ GERAR TOKEN JWT
+        jwt_token = gerar_token_jwt(fingerprint, username, expires)
+        
         log_security("activate_success", fingerprint=fingerprint, details={"username": username, "expires": client_expires})
         registrar_uso(fingerprint, "activate")
 
@@ -522,7 +670,8 @@ def activate():
             "sig": base64.b64encode(sig).decode(),
             "expires_at": client_expires,
             "session_token": token,
-            "assinatura": assinatura_hmac  # Nova assinatura HMAC
+            "assinatura": assinatura_hmac,
+            "jwt_token": jwt_token  # <-- NOVO token JWT
         })
 
     except Exception as e:
@@ -610,7 +759,57 @@ def admin_usage_report():
     return render_template("usage_report.html", usage_data=usage_data)
 
 # ------------------------------
-#   GERAR KEY (ADMIN) - ATUALIZADA (COM CREATED_AT)
+#   ADMIN - REVOGAR TOKENS (NOVO)
+# ------------------------------
+@app.route("/admin/revoke_tokens", methods=["POST"])
+@need_admin
+def admin_revoke_tokens():
+    """Revoga todos os tokens de um usuário/fingerprint"""
+    try:
+        data = request.json or {}
+        fingerprint = data.get("fingerprint")
+        username = data.get("username")
+        reason = data.get("reason", "admin_revoked")
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        if fingerprint:
+            # Revogar tokens específicos do fingerprint
+            cursor.execute('''
+                INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+                SELECT token, fingerprint, ?, ? FROM sessions WHERE fingerprint = ?
+            ''', (int(time.time()), reason, fingerprint))
+            
+            # Limpar sessões
+            cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fingerprint,))
+            
+        elif username:
+            # Buscar fingerprints do usuário
+            cursor.execute('SELECT fingerprint FROM licenses WHERE username = ?', (username,))
+            fingerprints = [row[0] for row in cursor.fetchall()]
+            
+            for fp in fingerprints:
+                cursor.execute('''
+                    INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+                    SELECT token, fingerprint, ?, ? FROM sessions WHERE fingerprint = ?
+                ''', (int(time.time()), reason, fp))
+                cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fp,))
+        
+        conn.commit()
+        conn.close()
+        
+        log_security("admin_revoked_tokens", 
+                    details={"fingerprint": fingerprint, "username": username, "reason": reason})
+        
+        return jsonify({"success": True, "message": "Tokens revogados com sucesso"})
+        
+    except Exception as e:
+        log_security("admin_revoke_error", details=str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ------------------------------
+#   GERAR KEY (ADMIN) - ATUALIZADA
 # ------------------------------
 @app.route("/admin/generate", methods=["POST"])
 @need_admin
@@ -654,8 +853,7 @@ def admin_generate():
         "key": key,
         "device_id": None,
         "expires_at": expires_at,
-        "created_at": int(time.time())   # <-- NOVO
-        # sem campo "reseller" (será None)
+        "created_at": int(time.time())
     })
 
     save_users(data)
@@ -693,7 +891,7 @@ def admin_database():
     return render_template("database_view.html", licenses=licenses_db)
 
 # ------------------------------
-#   RENOVAR +30 DIAS (ACEITA POST e GET) - ATUALIZADA
+#   RENOVAR +30 DIAS
 # ------------------------------
 @app.route("/admin/renew/<int:index>", methods=["POST", "GET"])
 @need_admin
@@ -736,7 +934,7 @@ def admin_renew(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   RENOVAR CUSTOM DIAS (ACEITA POST e GET) - ATUALIZADA
+#   RENOVAR CUSTOM DIAS
 # ------------------------------
 @app.route("/admin/renew_custom/<int:index>", methods=["POST", "GET"])
 @need_admin
@@ -792,7 +990,7 @@ def admin_renew_custom(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   RESETAR KEY - ATUALIZADA
+#   RESETAR KEY
 # ------------------------------
 @app.route("/admin/reset/<int:index>", methods=["POST", "GET"])
 @need_admin
@@ -812,7 +1010,7 @@ def admin_reset(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   RESETAR DEVICE - ATUALIZADA
+#   RESETAR DEVICE
 # ------------------------------
 @app.route("/admin/reset_device/<int:index>", methods=["POST", "GET"])
 @need_admin
@@ -829,7 +1027,7 @@ def admin_reset_device(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   RESETAR TODOS OS DEVICES - ATUALIZADA
+#   RESETAR TODOS OS DEVICES
 # ------------------------------
 @app.route("/admin/reset_all_devices", methods=["POST"])
 @need_admin
@@ -846,7 +1044,7 @@ def admin_reset_all_devices():
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   LIMPAR USUÁRIOS EXPIRADOS - ATUALIZADA
+#   LIMPAR USUÁRIOS EXPIRADOS
 # ------------------------------
 @app.route("/admin/clean_expired", methods=["POST"])
 @need_admin
@@ -889,7 +1087,7 @@ def admin_clean_expired():
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   TORNAR LICENÇA ILIMITADA - ATUALIZADA
+#   TORNAR LICENÇA ILIMITADA
 # ------------------------------
 @app.route("/admin/make_unlimited/<int:index>", methods=["POST"])
 @need_admin
@@ -918,7 +1116,7 @@ def admin_make_unlimited(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   DELETAR USUÁRIO - ATUALIZADA
+#   DELETAR USUÁRIO
 # ------------------------------
 @app.route("/admin/delete/<int:index>", methods=["POST", "GET"])
 @need_admin
@@ -944,7 +1142,7 @@ def admin_delete(index):
     return ("", 302, {"Location": "/admin"})
 
 # ------------------------------
-#   CONFIGURAÇÃO DE MÚLTIPLOS REVENDEDORES (MELHORIA)
+#   CONFIGURAÇÃO DE MÚLTIPLOS REVENDEDORES
 # ------------------------------
 def carregar_revendedores():
     """
@@ -980,7 +1178,7 @@ def carregar_revendedores():
 RESELLER_MAP = carregar_revendedores()
 
 # ------------------------------
-#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN) - ATUALIZADA (COM CREATED_AT)
+#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN)
 # ------------------------------
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
@@ -1041,7 +1239,7 @@ def reseller_generate():
         "device_id": None,
         "expires_at": expires_at,
         "reseller": reseller_nome,                  # <-- salva revendedor
-        "created_at": int(time.time())               # <-- NOVO
+        "created_at": int(time.time())
     })
 
     save_users(data)
@@ -1055,7 +1253,7 @@ def reseller_generate():
     })
 
 # ------------------------------
-#   ESTATÍSTICAS POR REVENDEDOR (ATUALIZADA COM LISTA DE USUÁRIOS)
+#   ESTATÍSTICAS POR REVENDEDOR
 # ------------------------------
 @app.route("/admin/reseller_stats")
 @need_admin
@@ -1183,7 +1381,7 @@ def admin_reseller_stats():
                            total_ativacoes=total_ativacoes,
                            stats=stats,
                            chart_data=chart_data,
-                           usuarios_lista=usuarios_lista)  # <-- NOVO
+                           usuarios_lista=usuarios_lista)
 
 # ------------------------------
 #   RUN
