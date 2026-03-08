@@ -70,42 +70,91 @@ def gerar_assinatura_hmac(expires, fingerprint):
     return assinatura
 
 # ------------------------------
-#   FUNÇÕES JWT
+#   FUNÇÕES JWT CORRIGIDAS
 # ------------------------------
 def gerar_token_jwt(fingerprint, username, expires_at):
-    """Gera um token JWT para o cliente"""
+    """Gera um token JWT para o cliente com fallback para HS256"""
     now = datetime.now(timezone.utc)
     
-    # Carrega a chave privada
-    with open(KEY_PRIV, "rb") as f:
-        private_key = RSA.import_key(f.read())
+    # ✅ VERIFICAÇÃO: Checar se o arquivo private.pem existe
+    if not os.path.exists(KEY_PRIV):
+        log_security("jwt_private_key_missing", 
+                    details={"error": f"Arquivo {KEY_PRIV} não encontrado"})
+        # Fallback: usar JWT_SECRET com HS256
+        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
+    
+    try:
+        # Tenta carregar a chave privada RSA
+        with open(KEY_PRIV, "rb") as f:
+            private_key = RSA.import_key(f.read())
+        
+        payload = {
+            "fp": fingerprint,
+            "user": username,
+            "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),
+            "iat": now,
+            "lic_exp": expires_at
+        }
+        
+        token = jwt.encode(payload, private_key, algorithm="RS256")
+        return token
+        
+    except (ValueError, TypeError) as e:
+        # Erro no formato da chave
+        log_security("jwt_private_key_invalid", 
+                    details={"error": str(e)})
+        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
+        
+    except Exception as e:
+        log_security("jwt_generation_error", 
+                    details={"error": str(e)})
+        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
+
+def gerar_token_jwt_fallback(fingerprint, username, expires_at):
+    """Fallback para gerar token JWT com HS256 quando RSA falha"""
+    now = datetime.now(timezone.utc)
     
     payload = {
-        "fp": fingerprint,           # fingerprint do dispositivo
-        "user": username,             # nome do usuário
-        "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),  # expiração
-        "iat": now,                    # emitido em
-        "lic_exp": expires_at           # expiração da licença (para referência)
+        "fp": fingerprint,
+        "user": username,
+        "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),
+        "iat": now,
+        "lic_exp": expires_at,
+        "alg_fallback": "HS256"  # Indicador que usou fallback
     }
     
-    token = jwt.encode(payload, private_key, algorithm="RS256")
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
     return token
 
 def validar_token_jwt(token):
-    """Valida um token JWT e retorna o payload se válido"""
+    """Valida um token JWT e retorna o payload se válido (com suporte a fallback)"""
     try:
-        # Carrega a chave pública
-        with open(KEY_PUB, "rb") as f:
-            public_key = RSA.import_key(f.read())
+        # Primeiro tenta validar com chave pública RSA
+        if os.path.exists(KEY_PUB):
+            try:
+                with open(KEY_PUB, "rb") as f:
+                    public_key = RSA.import_key(f.read())
+                
+                payload = jwt.decode(
+                    token, 
+                    public_key, 
+                    algorithms=["RS256"],
+                    options={"require": ["exp", "iat", "fp", "user"]}
+                )
+                return {"valid": True, "payload": payload}
+            except:
+                # Se falhar com RSA, tenta com HS256
+                pass
         
-        # Decodifica e valida o token
+        # Tenta validar com HS256 (fallback)
         payload = jwt.decode(
-            token, 
-            public_key, 
-            algorithms=["RS256"],
+            token,
+            JWT_SECRET,
+            algorithms=["HS256"],
             options={"require": ["exp", "iat", "fp", "user"]}
         )
         return {"valid": True, "payload": payload}
+        
     except jwt.ExpiredSignatureError:
         return {"valid": False, "reason": "token_expired"}
     except jwt.InvalidTokenError as e:
@@ -401,11 +450,16 @@ def save_users(data):
 #   ASSINATURA
 # ------------------------------
 def sign_payload(payload_bytes):
-    with open(KEY_PRIV, "rb") as f:
-        priv = RSA.import_key(f.read())
-    h = SHA256.new(payload_bytes)
-    sig = pkcs1_15.new(priv).sign(h)
-    return sig
+    try:
+        with open(KEY_PRIV, "rb") as f:
+            priv = RSA.import_key(f.read())
+        h = SHA256.new(payload_bytes)
+        sig = pkcs1_15.new(priv).sign(h)
+        return sig
+    except Exception as e:
+        log_security("sign_payload_error", details=str(e))
+        # Fallback: retorna None
+        return None
 
 # ------------------------------
 #   FLASK APP
@@ -588,6 +642,11 @@ def validate_token():
 @app.route("/activate", methods=["POST"])
 def activate():
     try:
+        # ✅ VERIFICAÇÃO INICIAL: Checar se as chaves RSA existem
+        if not os.path.exists(KEY_PRIV):
+            log_security("activate_warning", 
+                        details={"warning": f"Arquivo {KEY_PRIV} não encontrado, usando fallback"})
+        
         data = request.json or {}
         username = data.get("username")
         password = data.get("password")
@@ -673,16 +732,20 @@ def activate():
         # ✅ GERAR ASSINATURA HMAC (para validação local do cliente)
         assinatura_hmac = gerar_assinatura_hmac(client_expires, fingerprint)
         
-        # ✅ GERAR TOKEN JWT
-        jwt_token = gerar_token_jwt(fingerprint, username, expires)
+        # ✅ GERAR TOKEN JWT (agora com fallback)
+        try:
+            jwt_token = gerar_token_jwt(fingerprint, username, expires)
+        except Exception as jwt_error:
+            log_security("jwt_generation_critical", details={"error": str(jwt_error)})
+            jwt_token = None  # Continua mesmo sem JWT
         
         log_security("activate_success", fingerprint=fingerprint, details={"username": username, "expires": client_expires})
         registrar_uso(fingerprint, "activate")
 
         return jsonify({
             "status": "success",
-            "payload": base64.b64encode(payload_bytes).decode(),
-            "sig": base64.b64encode(sig).decode(),
+            "payload": base64.b64encode(payload_bytes).decode() if payload_bytes else None,
+            "sig": base64.b64encode(sig).decode() if sig else None,
             "expires_at": client_expires,
             "session_token": token,
             "assinatura": assinatura_hmac,
