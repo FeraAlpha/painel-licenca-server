@@ -74,7 +74,7 @@
       "username": "bdxdenis",
       "password": "5070341",
       "key": "FERA-2DFFA229",
-      "device_id": "d541f3c0069577094e173fad4bb44e736b12e2d0e710b9971982124809a85293",
+      "device_id": null,
       "expires_at": 1777179645
     },
     {
@@ -1154,7 +1154,7 @@
       "username": "Feaxds",
       "password": "Fera8553",
       "key": "FERA-6F4B04C1",
-      "device_id": "b33792e991a0cd55dc13a906727a07ee3f51b3f57efb2053830e9a52620ece3b",
+      "device_id": null,
       "expires_at": 1773162187,
       "created_at": 1772989387
     }
