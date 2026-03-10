@@ -1275,6 +1275,15 @@
       "expires_at": 1782674033,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773170033
+    },
+    {
+      "username": "SANTOS",
+      "password": "Alpha7639",
+      "key": "FERA-1246F2D8",
+      "device_id": null,
+      "expires_at": 1776200430,
+      "reseller": "JCGAMER",
+      "created_at": 1773176430
     }
   ]
 }
