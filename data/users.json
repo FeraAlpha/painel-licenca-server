@@ -1311,6 +1311,15 @@
       "expires_at": 1776277311,
       "reseller": "NINJA",
       "created_at": 1773253311
+    },
+    {
+      "username": "Gonelli",
+      "password": "Alpha2376",
+      "key": "FERA-C0E07F1C",
+      "device_id": null,
+      "expires_at": 1776283000,
+      "reseller": "JCGAMER",
+      "created_at": 1773259000
     }
   ]
 }
