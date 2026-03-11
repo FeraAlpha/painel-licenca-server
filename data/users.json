@@ -1293,6 +1293,15 @@
       "expires_at": 1773781380,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773176580
+    },
+    {
+      "username": "Fera4651",
+      "password": "Alpha9897",
+      "key": "FERA-EF8E32CE",
+      "device_id": null,
+      "expires_at": 1773851486,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1773246686
     }
   ]
 }
