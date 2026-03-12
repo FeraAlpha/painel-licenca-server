@@ -984,7 +984,7 @@
       "username": "Claudio",
       "password": "Fera8720",
       "key": "FERA-FD859017",
-      "device_id": "d05b095d744dc3de9c1660276e250d4266f80f9c62c17f75ad137314a4d94e31",
+      "device_id": null,
       "expires_at": 1778353295,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772737295
