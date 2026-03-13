@@ -1355,6 +1355,15 @@
       "expires_at": 1776391141,
       "reseller": "JCGAMER",
       "created_at": 1773367141
+    },
+    {
+      "username": "Fera7316",
+      "password": "Alpha7826",
+      "key": "FERA-12C8191D",
+      "device_id": null,
+      "expires_at": 1774019200,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1773414400
     }
   ]
 }
