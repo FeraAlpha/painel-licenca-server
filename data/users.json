@@ -1382,6 +1382,15 @@
       "expires_at": 1776478332,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773454332
+    },
+    {
+      "username": "Guardinhasax",
+      "password": "Alpha9300",
+      "key": "FERA-39BB3E73",
+      "device_id": null,
+      "expires_at": 1776536801,
+      "reseller": "JCGAMER",
+      "created_at": 1773512801
     }
   ]
 }
