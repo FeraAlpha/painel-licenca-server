@@ -16,6 +16,7 @@
     --accent:#2f6fed;
     --danger:#d93c3c;
     --ok:#177a30;
+    --warning:#f0ad4e;
     --radius:12px;
   }
 
@@ -98,7 +99,7 @@
   .btn-primary { background:var(--accent); color:white; }
   .btn-danger  { background:var(--danger); color:white; }
   .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
-  .btn-warning { background:#f0ad4e; color:white; }
+  .btn-warning { background:var(--warning); color:white; }
   .btn-success { background:var(--ok); color:white; }
 
   .btn-sm {
@@ -300,7 +301,7 @@
     padding: 12px 8px;
   }
 
-  /* ===== ESTILOS PARA CRIAÇÃO EM MASSA ===== */
+  /* Estilos para criação em massa */
   .batch-create {
     background: linear-gradient(145deg, #ffffff, #f0f3ff);
     border: 2px dashed var(--accent);
@@ -394,6 +395,9 @@
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
+<!-- Toast para mensagens -->
+<div id="toast" class="toast"></div>
+
 <!-- ADMIN TOOLS -->
 <div class="admin-tools">
   <form method="post" action="/admin/reset_all_devices"
@@ -407,9 +411,11 @@
   </form>
 
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
+  <a href="/admin/database" class="btn btn-ghost">💾 Banco de Dados</a>
+  <a href="/admin/usage_report" class="btn btn-ghost">📋 Relatório de Uso</a>
 </div>
 
-<!-- ===== FUNÇÃO: CRIAR MÚLTIPLOS LOGINS (COM CRIAÇÃO REAL) ===== -->
+<!-- Criação em massa -->
 <div class="card batch-create">
   <div class="card-header">
     <h2><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
@@ -454,7 +460,7 @@
   </div>
 </div>
 
-<!-- GERAR KEY (original) -->
+<!-- GERAR KEY (individual) -->
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
@@ -468,21 +474,22 @@
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
 
-    <label>Expiração (dias)</label>
-    <input name="expire_days" type="number" value="35" min="1" id="expireDays">
+    <label>Expiração (dias) - 0 = Ilimitado</label>
+    <input name="expire_days" type="number" value="35" min="0" id="expireDays">
 
     <div class="day-buttons">
       <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setExpiration('0')">Ilimitado</button>
     </div>
 
     <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
   </form>
 </div>
 
-<!-- TABELA (original) -->
+<!-- TABELA DE USUÁRIOS -->
 <div class="card">
 
   <!-- DASHBOARD -->
@@ -526,37 +533,30 @@
 
     <tbody>
       {% for u in users %}
-      <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
-
+      <tr data-expires="{{ u.expires_at }}" data-index="{{ loop.index0 }}" data-status="{{ u.status }}">
         <td>{{ loop.index0 }}</td>
-
         <td><b>{{ u.username }}</b></td>
-
         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
           <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
           <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
         </td>
-
         <td>
           {{ u.key }}
           <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
         </td>
-
         <td>{{ u.device_id if u.device_id else '-' }}</td>
-
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
-
         <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
-
         <td class="expCell"></td>
-
-        <td class="statusCell" data-status="{{ u.status }}">
+        <td class="statusCell">
           {% if u.status == "blocked" %}
-            <span class="badge badge-exp">Bloqueado</span>
+            <span class="badge badge-exp"><i class="fas fa-ban"></i> Bloqueado</span>
+          {% elif u.expires_at < now_timestamp and u.expires_at != 9999999999999 %}
+            <span class="badge badge-exp"><i class="fas fa-clock"></i> Expirado</span>
           {% else %}
-            <span class="badge badge-ok">Ativo</span>
+            <span class="badge badge-ok"><i class="fas fa-check-circle"></i> Ativo</span>
           {% endif %}
         </td>
 
@@ -564,31 +564,46 @@
         <td class="actionsBox">
 
           <!-- DESKTOP -->
-          <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
+          <div class="actionsWrap">
+            <!-- Botão Bloquear/Desbloquear CORRIGIDO -->
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('{% if u.status == "blocked" %}Desbloquear{% else %}Bloquear{% endif %} este usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-success" onclick="setLoading(this)">
+                  <i class="fas fa-check-circle"></i> Desbloquear
+                </button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">
+                  <i class="fas fa-ban"></i> Bloquear
+                </button>
+              {% endif %}
+            </form>
+
             <form method="post" action="/admin/renew/{{ loop.index0 }}">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+30</button>
             </form>
-            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+
+            <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" style="display: flex; gap: 4px;">
               <input type="number" name="days" min="1" value="7"
-                     style="width:70px;padding:8px;border-radius:10px;border:1px solid var(--border)">
+                     style="width:60px;padding:8px;border-radius:10px;border:1px solid var(--border)">
               <button type="submit" class="btn btn-primary" onclick="setLoading(this)">+Dias</button>
             </form>
-            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
-                  onsubmit="return confirm('Alterar status desse usuário?')">
-              {% if u.status == "blocked" %}
-                <button type="submit" class="btn btn-primary" onclick="setLoading(this)">✅ Desbloquear</button>
-              {% else %}
-                <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🚫 Bloquear</button>
-              {% endif %}
+
+            <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}"
+                  onsubmit="return confirm('Tornar esta licença ILIMITADA?')">
+              <button type="submit" class="btn btn-warning" onclick="setLoading(this)">♾️ Ilimitado</button>
             </form>
+
             <form method="post" action="/admin/reset/{{ loop.index0 }}">
               <button type="submit" class="btn btn-ghost" onclick="setLoading(this)">Reset Key</button>
             </form>
+
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Dispositivo</button>
+              <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Reset Device</button>
             </form>
+
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                  onsubmit="return confirm('Excluir usuário?')">
+                  onsubmit="return confirm('Excluir usuário permanentemente?')">
               <button type="submit" class="btn btn-danger" onclick="setLoading(this)">Del</button>
             </form>
           </div>
@@ -596,31 +611,44 @@
           <!-- MOBILE -->
           <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
           <div class="actionsMenu">
-            <form method="post" action="/admin/renew/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
+            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
+                  onsubmit="return confirm('{% if u.status == "blocked" %}Desbloquear{% else %}Bloquear{% endif %} este usuário?')">
+              {% if u.status == "blocked" %}
+                <button type="submit" class="btn btn-success" style="width:100%" onclick="setLoading(this)">
+                  <i class="fas fa-check-circle"></i> Desbloquear
+                </button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">
+                  <i class="fas fa-ban"></i> Bloquear
+                </button>
+              {% endif %}
             </form>
+
+            <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30 Dias</button>
+            </form>
+
             <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
               <input type="number" name="days" min="1" value="7"
                      style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
               <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
             </form>
-            <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
-                  onsubmit="return confirm('Alterar status desse usuário?')">
-              {% if u.status == "blocked" %}
-                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
-              {% else %}
-                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
-              {% endif %}
+
+            <form method="post" action="/admin/make_unlimited/{{ loop.index0 }}">
+              <button type="submit" class="btn btn-warning" style="width:100%" onclick="setLoading(this)">♾️ Ilimitado</button>
             </form>
+
             <form method="post" action="/admin/reset/{{ loop.index0 }}">
               <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
             </form>
+
             <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Dispositivo</button>
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Device</button>
             </form>
+
             <form method="post" action="/admin/delete/{{ loop.index0 }}"
-                  onsubmit="return confirm('Excluir usuário?')">
-              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
+                  onsubmit="return confirm('Excluir usuário permanentemente?')">
+              <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Deletar</button>
             </form>
           </div>
         </td>
@@ -630,239 +658,33 @@
   </table>
 </div>
 
-<div id="toast" class="toast">OK</div>
-
 <script>
 // ================== CONFIGURAÇÕES ==================
-const API_URL = "https://painel-licenca-server.onrender.com/admin/generate"; // URL da API
+const API_URL = window.location.origin + "/admin/generate";
 
 // ================== VARIÁVEIS GLOBAIS ==================
 let loginsGerados = [];
 let loginsCriados = [];
 
-// ================== FUNÇÃO PARA GERAR NÚMEROS ALEATÓRIOS ==================
-function gerarNumeroAleatorio(tamanho) {
-  let numero = '';
-  for (let i = 0; i < tamanho; i++) {
-    numero += Math.floor(Math.random() * 10);
-  }
-  return numero;
+// ================== FUNÇÕES DE UTILIDADE ==================
+function toggleDark() { 
+  document.body.classList.toggle("dark"); 
 }
-
-// ================== FUNÇÃO PARA GERAR E CRIAR MÚLTIPLOS LOGINS ==================
-async function gerarMultiplosLogins() {
-  const quantidade = parseInt(document.getElementById('quantidadeLogins').value) || 5;
-  const dias = parseInt(document.getElementById('diasLogins').value) || 35;
-
-  if (dias < 1) {
-    toast('Digite um número válido de dias (mínimo 1)', 'warn');
-    return;
-  }
-
-  if (quantidade > 50) {
-    toast('Máximo de 50 logins por vez', 'warn');
-    return;
-  }
-
-  // Desabilitar botão
-  const btn = document.getElementById('btnGerar');
-  btn.disabled = true;
-  btn.classList.add('btn-loading');
-
-  // Mostrar barra de progresso
-  document.getElementById('progressContainer').style.display = 'block';
-  document.getElementById('progressFill').style.width = '0%';
-  document.getElementById('progressText').innerText = 'Preparando...';
-
-  loginsGerados = [];
-  loginsCriados = [];
-  
-  // Gerar os logins - TODOS DIFERENTES
-  const usuariosUsados = new Set();
-  
-  for (let i = 0; i < quantidade; i++) {
-    // Gerar número aleatório de 1 a 4 dígitos
-    const tamanhoNumero = Math.floor(Math.random() * 4) + 1; // 1 a 4
-    let numeroAleatorio;
-    
-    // Garantir que não repita números
-    do {
-      numeroAleatorio = gerarNumeroAleatorio(tamanhoNumero);
-    } while (usuariosUsados.has(numeroAleatorio) && quantidade < 9000);
-    
-    usuariosUsados.add(numeroAleatorio);
-    
-    const usuario = `user${numeroAleatorio}`;
-    const senha = generateRandomPassword();
-    
-    loginsGerados.push({
-      numero: i + 1,
-      username: usuario,
-      password: senha,
-      dias: dias
-    });
-  }
-
-  // Criar cada login na API
-  let sucessos = 0;
-  let erros = 0;
-
-  for (let i = 0; i < loginsGerados.length; i++) {
-    const login = loginsGerados[i];
-    
-    // Atualizar progresso
-    const progresso = (i / loginsGerados.length) * 100;
-    document.getElementById('progressFill').style.width = progresso + '%';
-    document.getElementById('progressText').innerText = `Criando ${i+1} de ${loginsGerados.length}...`;
-
-    try {
-      // Chamar API para criar o login
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          username: login.username,
-          password: login.password,
-          expire_days: String(login.dias),
-          token: 'admin_token',
-          prefix: 'FERA'
-        })
-      });
-
-      const raw = await response.text();
-      let key = null;
-
-      try {
-        const data = JSON.parse(raw);
-        if (data && data.ok && data.key) key = data.key;
-      } catch(e) {
-        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
-        if (match) key = match[0];
-      }
-
-      if (key) {
-        sucessos++;
-        loginsCriados.push({
-          ...login,
-          key: key,
-          status: 'sucesso'
-        });
-      } else {
-        erros++;
-        loginsCriados.push({
-          ...login,
-          status: 'erro'
-        });
-      }
-
-    } catch (error) {
-      console.error('Erro ao criar login:', error);
-      erros++;
-      loginsCriados.push({
-        ...login,
-        status: 'erro'
-      });
-    }
-
-    // Pequena pausa para não sobrecarregar a API
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
-
-  // Finalizar
-  document.getElementById('progressFill').style.width = '100%';
-  document.getElementById('progressText').innerText = `Concluído! ${sucessos} sucessos, ${erros} erros.`;
-
-  // Reabilitar botão
-  btn.disabled = false;
-  btn.classList.remove('btn-loading');
-
-  // Mostrar preview
-  mostrarPreview();
-
-  // Atualizar dashboard
-  updateDashboard();
-
-  toast(`${sucessos} logins criados com sucesso! ${erros > 0 ? ` (${erros} erros)` : ''}`, sucessos > 0 ? 'ok' : 'warn');
-}
-
-function mostrarPreview() {
-  const preview = document.getElementById('previewLogins');
-  const lista = document.getElementById('listaLogins');
-  
-  lista.innerHTML = '';
-  
-  loginsCriados.forEach(login => {
-    const statusClass = login.status === 'sucesso' ? 'badge-ok' : 'badge-exp';
-    const statusText = login.status === 'sucesso' ? '✓' : '❌';
-    
-    lista.innerHTML += `
-      <div class="batch-item">
-        <div style="flex: 2;">
-          <strong>#${login.numero}</strong> ${login.username}
-        </div>
-        <div style="text-align: right;">
-          <span class="badge ${statusClass}" style="margin-right: 5px;">${statusText}</span>
-          <code style="background:var(--card); padding:4px 8px; border-radius:6px;">${login.password}</code>
-        </div>
-      </div>
-    `;
-  });
-  
-  preview.style.display = 'block';
-}
-
-function copiarTodosLogins() {
-  if (loginsCriados.length === 0) {
-    toast('Nenhum login criado ainda!', 'warn');
-    return;
-  }
-  
-  let texto = `🔑 LOGINS CRIADOS - FERA ALPHA 🔑\n`;
-  texto += `📅 Validade: ${loginsCriados[0].dias} dias\n`;
-  texto += `🕒 Criado em: ${new Date().toLocaleString('pt-BR')}\n`;
-  texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-  
-  loginsCriados.forEach(login => {
-    if (login.status === 'sucesso') {
-      texto += `📌 LOGIN #${login.numero}\n`;
-      texto += `👤 Usuário: ${login.username}\n`;
-      texto += `🔑 Senha: ${login.password}\n`;
-      texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    }
-  });
-  
-  navigator.clipboard.writeText(texto);
-  toast('✅ Todos os logins foram copiados!');
-}
-
-// ================== FUNÇÕES ORIGINAIS ==================
-function generateRandomPassword() {
-  const randomNum = Math.floor(1000 + Math.random() * 9000);
-  return `Fera${randomNum}`;
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  const passField = document.getElementById('autoPassword');
-  if (passField) {
-    passField.value = generateRandomPassword();
-  }
-
-  const url = new URL(window.location.href);
-  const msg = url.searchParams.get("msg");
-  if(msg) toast(msg);
-
-  renderExp();
-  updateDashboard();
-  highlightUserFromURL();
-});
-
-function toggleDark(){ document.body.classList.toggle("dark"); }
 
 function toast(msg, type="ok"){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 3000);
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+function setLoading(btn) {
+  btn.classList.add('btn-loading');
+}
+
+function generateRandomPassword() {
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
+  return `Fera${randomNum}`;
 }
 
 function setExpiration(days){
@@ -873,7 +695,7 @@ function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
   toast("Key copiada!");
-  setTimeout(()=> el.innerText = "copiar",1000);
+  setTimeout(() => el.innerText = "copiar", 1000);
 }
 
 function copiarCred(u,p){
@@ -901,9 +723,36 @@ function togglePassword(btn) {
   }
 }
 
-function setLoading(btn) {
-  btn.classList.add('btn-loading');
+function toggleMenu(btn){
+  const box = btn.closest(".actionsBox");
+  const menu = box.querySelector(".actionsMenu");
+  document.querySelectorAll(".actionsMenu").forEach(m => {
+    if(m !== menu) m.style.display = "none";
+  });
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
+
+document.addEventListener("click", (e)=>{
+  if(!e.target.closest(".actionsBox")){
+    document.querySelectorAll(".actionsMenu").forEach(m => m.style.display = "none");
+  }
+});
+
+// ================== FUNÇÕES DA TABELA ==================
+document.addEventListener("DOMContentLoaded", function() {
+  const passField = document.getElementById('autoPassword');
+  if (passField) {
+    passField.value = generateRandomPassword();
+  }
+
+  const url = new URL(window.location.href);
+  const msg = url.searchParams.get("msg");
+  if(msg) toast(msg);
+
+  renderExp();
+  updateDashboard();
+  highlightUserFromURL();
+});
 
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
@@ -922,8 +771,12 @@ function sortTable(col){
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
     if (col === 6 || col === 7) {
-      const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
-      const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
+      const dateA = a.cells[col].querySelector('.expCell') ? 
+                    a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : 
+                    a.cells[col].innerText;
+      const dateB = b.cells[col].querySelector('.expCell') ? 
+                    b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : 
+                    b.cells[col].innerText;
       A = parseInt(dateA) || 0;
       B = parseInt(dateB) || 0;
       return asc ? A - B : B - A;
@@ -949,6 +802,11 @@ function renderExp(){
     let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
     cell.setAttribute('data-timestamp', exp);
+    
+    if(exp == 9999999999999){
+      cell.innerHTML = `<span class='badge badge-ok'>Ilimitado</span>`;
+      return;
+    }
     if(exp <= 0){
       cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
       return;
@@ -968,6 +826,7 @@ function renderExp(){
     else if(diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
     else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
     else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
+    
     cell.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:4px">
         ${badge}
@@ -980,54 +839,40 @@ function updateDashboard(){
   const now = Math.floor(Date.now()/1000);
   const rows = document.querySelectorAll("#usersTable tbody tr");
   let total = 0, ativos = 0, expirados = 0, bloqueados = 0;
-  rows.forEach(tr=>{
+  
+  rows.forEach(tr => {
     if (tr.style.display === 'none') return;
     total++;
+    
+    const status = tr.getAttribute("data-status") || "active";
     const exp = parseInt(tr.getAttribute("data-expires")) || 0;
-    const statusCell = tr.querySelector(".statusCell");
-    const status = statusCell ? statusCell.getAttribute("data-status") : "active";
+    
     if(status === "blocked"){
       bloqueados++;
-      return;
-    }
-    if(exp > 0 && exp < now){
+    } else if(exp > 0 && exp < now && exp != 9999999999999){
       expirados++;
     } else {
       ativos++;
     }
   });
+  
   document.getElementById("dashTotal").innerText = total;
   document.getElementById("dashAtivos").innerText = ativos;
   document.getElementById("dashExpirados").innerText = expirados;
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
 
-function toggleMenu(btn){
-  const box = btn.closest(".actionsBox");
-  const menu = box.querySelector(".actionsMenu");
-  document.querySelectorAll(".actionsMenu").forEach(m=>{
-    if(m !== menu) m.style.display = "none";
-  });
-  menu.style.display = (menu.style.display === "block") ? "none" : "block";
-}
-
-document.addEventListener("click", (e)=>{
-  if(!e.target.closest(".actionsBox")){
-    document.querySelectorAll(".actionsMenu").forEach(m=> m.style.display="none");
-  }
-});
-
 function highlightUserFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
-  const highlightId = urlParams.get('highlight');
-  if (highlightId) {
-    const row = document.querySelector(`tr[data-id="${highlightId}"]`);
-    if (row) {
-      row.classList.add('highlight');
+  const highlightIndex = urlParams.get('highlight');
+  if (highlightIndex !== null) {
+    const rows = document.querySelectorAll("#usersTable tbody tr");
+    if (rows[highlightIndex]) {
+      rows[highlightIndex].classList.add('highlight');
       setTimeout(() => {
-        row.classList.remove('highlight');
+        rows[highlightIndex].classList.remove('highlight');
       }, 2000);
-      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      rows[highlightIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
@@ -1039,9 +884,214 @@ setInterval(() => {
   updateDashboard();
 }, 10000);
 
+// ================== CRIAÇÃO EM MASSA ==================
+function gerarNumeroAleatorio(tamanho) {
+  let numero = '';
+  for (let i = 0; i < tamanho; i++) {
+    numero += Math.floor(Math.random() * 10);
+  }
+  return numero;
+}
+
+function validarInputs() {
+  const quantidadeInput = document.getElementById('quantidadeLogins');
+  const diasInput = document.getElementById('diasLogins');
+  
+  let quantidade = parseInt(quantidadeInput.value);
+  let dias = parseInt(diasInput.value);
+  
+  if (isNaN(quantidade) || quantidade < 1) {
+    toast('Quantidade deve ser no mínimo 1', 'warn');
+    return false;
+  }
+  if (quantidade > 50) {
+    if (!confirm(`Criar ${quantidade} usuários pode demorar um pouco. Continuar?`)) {
+      return false;
+    }
+  }
+  
+  if (isNaN(dias) || dias < 0) {
+    toast('Dias deve ser 0 (ilimitado) ou positivo', 'warn');
+    return false;
+  }
+  if (dias > 3650) {
+    toast('Dias não pode ser maior que 3650 (10 anos)', 'warn');
+    return false;
+  }
+  
+  return { quantidade, dias };
+}
+
+async function gerarMultiplosLogins() {
+  const validado = validarInputs();
+  if (!validado) return;
+  
+  const { quantidade, dias } = validado;
+
+  const btn = document.getElementById('btnGerar');
+  btn.disabled = true;
+  btn.classList.add('btn-loading');
+
+  document.getElementById('progressContainer').style.display = 'block';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressText').innerText = 'Preparando...';
+
+  loginsGerados = [];
+  loginsCriados = [];
+  
+  const usuariosUsados = new Set();
+  
+  for (let i = 0; i < quantidade; i++) {
+    const tamanhoNumero = Math.floor(Math.random() * 4) + 1;
+    let numeroAleatorio;
+    
+    do {
+      numeroAleatorio = gerarNumeroAleatorio(tamanhoNumero);
+    } while (usuariosUsados.has(numeroAleatorio) && quantidade < 9000);
+    
+    usuariosUsados.add(numeroAleatorio);
+    
+    const usuario = `user${numeroAleatorio}`;
+    const senha = generateRandomPassword();
+    
+    loginsGerados.push({
+      numero: i + 1,
+      username: usuario,
+      password: senha,
+      dias: dias
+    });
+  }
+
+  let sucessos = 0;
+  let erros = 0;
+
+  for (let i = 0; i < loginsGerados.length; i++) {
+    const login = loginsGerados[i];
+    
+    const progresso = (i / loginsGerados.length) * 100;
+    document.getElementById('progressFill').style.width = progresso + '%';
+    document.getElementById('progressText').innerText = `Criando ${i+1} de ${loginsGerados.length}...`;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          username: login.username,
+          password: login.password,
+          expire_days: String(login.dias),
+          prefix: 'FERA'
+        })
+      });
+
+      if (response.ok) {
+        sucessos++;
+        loginsCriados.push({
+          ...login,
+          status: 'sucesso'
+        });
+      } else {
+        erros++;
+        loginsCriados.push({
+          ...login,
+          status: 'erro'
+        });
+      }
+
+    } catch (error) {
+      console.error('Erro:', error);
+      erros++;
+      loginsCriados.push({
+        ...login,
+        status: 'erro',
+        erro: error.message
+      });
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').innerText = `Concluído! ${sucessos} sucessos, ${erros} erros.`;
+
+  btn.disabled = false;
+  btn.classList.remove('btn-loading');
+
+  mostrarPreview();
+  toast(`${sucessos} logins criados! ${erros > 0 ? `(${erros} erros)` : ''}`, sucessos > 0 ? 'ok' : 'warn');
+  
+  // Recarregar a página após 2 segundos para mostrar os novos usuários
+  setTimeout(() => {
+    window.location.reload();
+  }, 2000);
+}
+
+function mostrarPreview() {
+  const preview = document.getElementById('previewLogins');
+  const lista = document.getElementById('listaLogins');
+  
+  lista.innerHTML = '';
+  
+  loginsCriados.forEach(login => {
+    const statusClass = login.status === 'sucesso' ? 'badge-ok' : 'badge-exp';
+    const statusText = login.status === 'sucesso' ? '✓' : '❌';
+    const erroMsg = login.erro ? `<small style="color: red; display: block;">${login.erro}</small>` : '';
+    
+    lista.innerHTML += `
+      <div class="batch-item">
+        <div style="flex: 2;">
+          <strong>#${login.numero}</strong> ${login.username}
+        </div>
+        <div style="text-align: right;">
+          <span class="badge ${statusClass}" style="margin-right: 5px;">${statusText}</span>
+          <code style="background:var(--card); padding:4px 8px; border-radius:6px;">${login.password}</code>
+          ${erroMsg}
+        </div>
+      </div>
+    `;
+  });
+  
+  preview.style.display = 'block';
+}
+
+function copiarTodosLogins() {
+  if (loginsCriados.length === 0) {
+    toast('Nenhum login criado ainda!', 'warn');
+    return;
+  }
+  
+  const sucessos = loginsCriados.filter(l => l.status === 'sucesso');
+  
+  let texto = `🔑 LOGINS CRIADOS - FERA ALPHA 🔑\n`;
+  texto += `📅 Validade: ${loginsCriados[0].dias} dias\n`;
+  texto += `✅ Sucessos: ${sucessos.length}\n`;
+  texto += `🕒 Criado em: ${new Date().toLocaleString('pt-BR')}\n`;
+  texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+  
+  sucessos.forEach(login => {
+    texto += `📌 LOGIN #${login.numero}\n`;
+    texto += `👤 Usuário: ${login.username}\n`;
+    texto += `🔑 Senha: ${login.password}\n`;
+    texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+  });
+  
+  navigator.clipboard.writeText(texto).then(() => {
+    toast(`✅ ${sucessos.length} logins copiados!`);
+  }).catch(() => {
+    toast('❌ Erro ao copiar', 'error');
+  });
+}
+
 // ================== EXPOR FUNÇÕES GLOBAIS ==================
 window.gerarMultiplosLogins = gerarMultiplosLogins;
 window.copiarTodosLogins = copiarTodosLogins;
+window.toggleDark = toggleDark;
+window.setLoading = setLoading;
+window.setExpiration = setExpiration;
+window.copiar = copiar;
+window.copiarCred = copiarCred;
+window.togglePassword = togglePassword;
+window.toggleMenu = toggleMenu;
 </script>
 </body>
 </html>
