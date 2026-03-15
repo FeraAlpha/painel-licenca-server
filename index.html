@@ -968,15 +968,21 @@
       const link = LINK_APK;
       const app = NOME_APP;
       
+      // Mensagem da política de reset adicionada aqui
       const texto = `🎯 *ACESSO LIBERADO - ${app}* 🎯\n\n` +
                     `👤 *Usuário:* ${username}\n` +
                     `🔑 *Senha:* ${password}\n` +
                     `⏱️ *Validade:* ${days}\n\n` +
                     `📲 *Link do APK:*\n${link}\n\n` +
-                    `⚡ Faça o download e aproveite! ⚡`;
+                    `⚡ Faça o download e aproveite! ⚡\n\n` +
+                    `⚠️ *Política de Reset de Login*\n\n` +
+                    `Cada licença do aplicativo possui direito a 1 reset de login gratuito.\n\n` +
+                    `Após utilizar esse reset gratuito, caso seja necessário realizar novos resets (por troca de aparelho, formatação ou qualquer outro motivo), será cobrada uma taxa de R$3,00 por reset.\n\n` +
+                    `Essa medida existe para evitar abusos e manter o funcionamento correto do sistema.\n\n` +
+                    `Agradecemos a compreensão. ✅`;
       
       copyToClipboard(texto);
-      toast("✅ Tudo copiado!", "ok", "Credenciais + Link prontos!");
+      toast("✅ Tudo copiado!", "ok", "Credenciais + Link + Política prontos!");
       
     } catch (error) {
       toast("Erro ao copiar", "warn", "Tente novamente");
