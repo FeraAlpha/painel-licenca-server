@@ -1400,6 +1400,15 @@
       "device_id": "1bc7bfa8197d3873362dd44884a84f51daff0e62a2565492a7453ac0abeba748",
       "expires_at": 1776696075,
       "created_at": 1773672075
+    },
+    {
+      "username": "Fera6267",
+      "password": "Alpha1417",
+      "key": "FERA-F5DB38A1",
+      "device_id": null,
+      "expires_at": 1776701648,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1773677648
     }
   ]
 }
