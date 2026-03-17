@@ -778,7 +778,7 @@
       "username": "FeraAlpha",
       "password": "Fera",
       "key": "FERA-F2A75FBB",
-      "device_id": "b31fd9cf3db46e51a903f97d6bf8d8661562fa32a570e52fe9cb6ecc73eb4e08",
+      "device_id": null,
       "expires_at": 1782175263,
       "created_at": 1772671263
     },
