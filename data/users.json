@@ -1048,7 +1048,7 @@
       "username": "Fera1033",
       "password": "Alpha5831",
       "key": "FERA-67034ADC",
-      "device_id": "2c4c8d5ee2e16614abe97b1deabe1d166bd3f4ff3fd825caf42e36eaf3b75c17",
+      "device_id": null,
       "expires_at": 1776478332,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773454332
