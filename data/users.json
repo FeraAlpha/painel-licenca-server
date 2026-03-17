@@ -1391,7 +1391,7 @@
       "username": "02",
       "password": "02",
       "key": "FERA-D4336E7F",
-      "device_id": "396cbd6acc9dc942e24d5b32b013fd01ff13f76c16dc9411b2aebc825b8135be",
+      "device_id": null,
       "expires_at": 1776753324,
       "created_at": 1773729324
     }
