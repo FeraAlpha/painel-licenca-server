@@ -1485,6 +1485,15 @@
       "device_id": "f01fd4a66d13a5bb91cbfde1fa78d51b89648929e4bf6fae06fca38483589ce7",
       "expires_at": 1779459174,
       "created_at": 1773843174
+    },
+    {
+      "username": "0000",
+      "password": "0000",
+      "key": "FERA-D9DCB436",
+      "device_id": null,
+      "expires_at": 1774448357,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1773843557
     }
   ]
 }
