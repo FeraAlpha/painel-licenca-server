@@ -1494,6 +1494,14 @@
       "expires_at": 1774448357,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773843557
+    },
+    {
+      "username": "Fera2032",
+      "password": "Alpha3005",
+      "key": "FERA-AC56016B",
+      "device_id": null,
+      "expires_at": 1774461087,
+      "created_at": 1773856287
     }
   ]
 }
