@@ -1465,7 +1465,7 @@
       "username": "03",
       "password": "03",
       "key": "FERA-23F000AB",
-      "device_id": "396cbd6acc9dc942e24d5b32b013fd01ff13f76c16dc9411b2aebc825b8135be",
+      "device_id": null,
       "expires_at": 1776809824,
       "created_at": 1773785824
     }
