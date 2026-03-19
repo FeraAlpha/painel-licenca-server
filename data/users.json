@@ -1572,6 +1572,15 @@
       "expires_at": 1776984917,
       "reseller": "NINJA",
       "created_at": 1773960917
+    },
+    {
+      "username": "ThiagoTv",
+      "password": "Alpha2892",
+      "key": "FERA-302ED49E",
+      "device_id": null,
+      "expires_at": 1776986901,
+      "reseller": "JCGAMER",
+      "created_at": 1773962901
     }
   ]
 }
