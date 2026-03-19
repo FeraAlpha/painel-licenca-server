@@ -1520,6 +1520,14 @@
       "expires_at": 1774478438,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773873638
+    },
+    {
+      "username": "Fera8550",
+      "password": "Alpha1996",
+      "key": "FERA-9468F78D",
+      "device_id": null,
+      "expires_at": 1774532032,
+      "created_at": 1773927232
     }
   ]
 }
