@@ -734,22 +734,6 @@
       "created_at": 1772644847
     },
     {
-      "username": "user6",
-      "password": "Fera7845",
-      "key": "FERA-004B0CCB",
-      "device_id": "f3cf221da4bdc48221ab807caade8b46dc966243ad25b3aae306548ca4712197",
-      "expires_at": 1773763390,
-      "created_at": 1772644900
-    },
-    {
-      "username": "user9",
-      "password": "Fera9357",
-      "key": "FERA-34DDD033",
-      "device_id": "6f60958b03be231a88f6bd52fa3989847bd7ee7b70e220526d6e7a7294825398",
-      "expires_at": 1773763382,
-      "created_at": 1772652189
-    },
-    {
       "username": "Zaqueurosa",
       "password": "Fera6922",
       "key": "FERA-71BE6D7A",
@@ -904,14 +888,6 @@
       "created_at": 1773005790
     },
     {
-      "username": "user3291",
-      "password": "Fera6086",
-      "key": "FERA-2828B2B4",
-      "device_id": "ad5aef8e3906ac812dd09307e9501f0812934dfe8269c4ca1a717180a9b4bd87",
-      "expires_at": 1773710886,
-      "created_at": 1773020810
-    },
-    {
       "username": "Fera3845",
       "password": "Alpha2806",
       "key": "FERA-2FB1B848",
@@ -919,15 +895,6 @@
       "expires_at": 1776091922,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773067922
-    },
-    {
-      "username": "Fera9418",
-      "password": "Alpha1924",
-      "key": "FERA-7D935F8B",
-      "device_id": "0a3c2adbc9a3d247e82f9e2cbe2c6abd92567fd15ea7481ccd0af42f14810b1f",
-      "expires_at": 1773711177,
-      "reseller": "revendedor_super_fera_2025",
-      "created_at": 1773106377
     },
     {
       "username": "Fera9333",
@@ -957,15 +924,6 @@
       "created_at": 1773176580
     },
     {
-      "username": "Fera4651",
-      "password": "Alpha9897",
-      "key": "FERA-EF8E32CE",
-      "device_id": "f172d107d2f9e6c28bcfe22126106413f0b33542b03fdc2ea088b0e9538991f3",
-      "expires_at": 1773851486,
-      "reseller": "revendedor_super_fera_2025",
-      "created_at": 1773246686
-    },
-    {
       "username": "Fera3015",
       "password": "Alpha6772",
       "key": "FERA-6F8BEB36",
@@ -982,15 +940,6 @@
       "expires_at": 1776283000,
       "reseller": "JCGAMER",
       "created_at": 1773259000
-    },
-    {
-      "username": "Fera7497",
-      "password": "Alpha8714",
-      "key": "FERA-7B787D5B",
-      "device_id": "b1696441ca72160457473d5b14d0db67ce07572410e025e76f1fe279519e24f0",
-      "expires_at": 1773948737,
-      "reseller": "NINJA",
-      "created_at": 1773343937
     },
     {
       "username": "Dionatagao",
@@ -1081,38 +1030,6 @@
       "created_at": 1773537401
     },
     {
-      "username": "user955",
-      "password": "Fera3798",
-      "key": "FERA-FFA5C29F",
-      "device_id": "430b40a3d1db1a7e869cbb13b4ccf0312c31f71ed88379e8567361136155b067",
-      "expires_at": 1773796841,
-      "created_at": 1773537641
-    },
-    {
-      "username": "user25",
-      "password": "Fera3292",
-      "key": "FERA-6F98AF53",
-      "device_id": "e379a584ef97f660214a46bcfed3c880b9d4e5a0527c4a04675e29d7a757524a",
-      "expires_at": 1773796843,
-      "created_at": 1773537643
-    },
-    {
-      "username": "user45",
-      "password": "Fera6972",
-      "key": "FERA-EF00CF79",
-      "device_id": "b8eaf6bd6442a7e1cb760ddc052a482c607d7bf244f02bad28c5f4d6f1955216",
-      "expires_at": 1773796845,
-      "created_at": 1773537645
-    },
-    {
-      "username": "user4212",
-      "password": "Fera9492",
-      "key": "FERA-4BDB52E3",
-      "device_id": "b33792e991a0cd55dc13a906727a07ee3f51b3f57efb2053830e9a52620ece3b",
-      "expires_at": 1773796847,
-      "created_at": 1773537647
-    },
-    {
       "username": "FFL",
       "password": "FFL",
       "key": "FERA-3E7A7227",
@@ -1121,164 +1038,12 @@
       "created_at": 1773550547
     },
     {
-      "username": "user46",
-      "password": "Fera9355",
-      "key": "FERA-0D1BC3C2",
-      "device_id": null,
-      "expires_at": 1773763380,
-      "created_at": 1773590580
-    },
-    {
-      "username": "user147",
-      "password": "Fera3721",
-      "key": "FERA-C791F76B",
-      "device_id": null,
-      "expires_at": 1773763383,
-      "created_at": 1773590583
-    },
-    {
-      "username": "user0",
-      "password": "Fera2155",
-      "key": "FERA-94EAE283",
-      "device_id": null,
-      "expires_at": 1773763385,
-      "created_at": 1773590585
-    },
-    {
-      "username": "user416",
-      "password": "Fera5448",
-      "key": "FERA-33786C88",
-      "device_id": null,
-      "expires_at": 1773763387,
-      "created_at": 1773590587
-    },
-    {
-      "username": "user709",
-      "password": "Fera3398",
-      "key": "FERA-1EAA401B",
-      "device_id": null,
-      "expires_at": 1773763389,
-      "created_at": 1773590589
-    },
-    {
-      "username": "user179",
-      "password": "Fera9483",
-      "key": "FERA-2B90C26A",
-      "device_id": null,
-      "expires_at": 1773763392,
-      "created_at": 1773590592
-    },
-    {
-      "username": "user7946",
-      "password": "Fera1816",
-      "key": "FERA-1CBCC227",
-      "device_id": null,
-      "expires_at": 1773763394,
-      "created_at": 1773590594
-    },
-    {
-      "username": "user33",
-      "password": "Fera8099",
-      "key": "FERA-D731C804",
-      "device_id": null,
-      "expires_at": 1773763396,
-      "created_at": 1773590596
-    },
-    {
-      "username": "user9409",
-      "password": "Fera4981",
-      "key": "FERA-43238EAF",
-      "device_id": null,
-      "expires_at": 1773763398,
-      "created_at": 1773590598
-    },
-    {
-      "username": "user03",
-      "password": "Fera7824",
-      "key": "FERA-245B82D9",
-      "device_id": null,
-      "expires_at": 1773763400,
-      "created_at": 1773590600
-    },
-    {
-      "username": "user24",
-      "password": "Fera9371",
-      "key": "FERA-9B0E82C2",
-      "device_id": null,
-      "expires_at": 1773763401,
-      "created_at": 1773590601
-    },
-    {
-      "username": "user811",
-      "password": "Fera1172",
-      "key": "FERA-C8ADC907",
-      "device_id": null,
-      "expires_at": 1773763403,
-      "created_at": 1773590603
-    },
-    {
       "username": "user5",
       "password": "Fera3325",
       "key": "FERA-0912E7CE",
       "device_id": "324c8498dfe753f348c77040b8e048188dc7fd7777a360bd0651bd9f8e409dcc",
       "expires_at": 1776809813,
       "created_at": 1773590641
-    },
-    {
-      "username": "user8479",
-      "password": "Fera5411",
-      "key": "FERA-CA3447AD",
-      "device_id": "b8eaf6bd6442a7e1cb760ddc052a482c607d7bf244f02bad28c5f4d6f1955216",
-      "expires_at": 1773849843,
-      "created_at": 1773590643
-    },
-    {
-      "username": "user1",
-      "password": "Fera2269",
-      "key": "FERA-820B45A8",
-      "device_id": "647fabb9a3efa0c6de0c8c37c03dcaeb56039fc4b4249ecb8d1e1d22a79a0f99",
-      "expires_at": 1773763445,
-      "created_at": 1773590645
-    },
-    {
-      "username": "user399",
-      "password": "Fera3686",
-      "key": "FERA-D2EC6D47",
-      "device_id": "94a2840698fc63fb9490f5b9caad2874affe1ccbc5d18f640a3856d886046894",
-      "expires_at": 1773763448,
-      "created_at": 1773590648
-    },
-    {
-      "username": "user9216",
-      "password": "Fera8241",
-      "key": "FERA-1F7B5D8D",
-      "device_id": "f392755888afa5cb2d89818f9e4b47d2fd701c82f479b021773adbd21f44f0ef",
-      "expires_at": 1773763450,
-      "created_at": 1773590650
-    },
-    {
-      "username": "user854",
-      "password": "Fera5431",
-      "key": "FERA-53BF6C1E",
-      "device_id": "b8eaf6bd6442a7e1cb760ddc052a482c607d7bf244f02bad28c5f4d6f1955216",
-      "expires_at": 1773763452,
-      "created_at": 1773590652
-    },
-    {
-      "username": "user4578",
-      "password": "Fera5942",
-      "key": "FERA-67D7CE0C",
-      "device_id": "b8eaf6bd6442a7e1cb760ddc052a482c607d7bf244f02bad28c5f4d6f1955216",
-      "expires_at": 1773763454,
-      "created_at": 1773590654
-    },
-    {
-      "username": "user98",
-      "password": "Fera8935",
-      "key": "FERA-41C6FE85",
-      "device_id": "0521dcc3b387853fc10abb020c933f5d196a0b599362d2f88242d3a184054b28",
-      "expires_at": 1773763457,
-      "created_at": 1773590657
     },
     {
       "username": "Fera2949",
