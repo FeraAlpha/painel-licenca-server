@@ -1615,6 +1615,15 @@
       "expires_at": 1779658170,
       "reseller": "JCGAMER",
       "created_at": 1774042170
+    },
+    {
+      "username": "Fera5122",
+      "password": "Alpha5128",
+      "key": "FERA-DE03EF5D",
+      "device_id": null,
+      "expires_at": 1777068254,
+      "reseller": "JCGAMER",
+      "created_at": 1774044254
     }
   ]
 }
