@@ -1380,6 +1380,15 @@
       "device_id": null,
       "expires_at": 1777070458,
       "created_at": 1774046458
+    },
+    {
+      "username": "Mattheus",
+      "password": "Alpha9370",
+      "key": "FERA-74ABF034",
+      "device_id": null,
+      "expires_at": 1777072934,
+      "reseller": "JCGAMER",
+      "created_at": 1774048934
     }
   ]
 }
