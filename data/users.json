@@ -262,10 +262,11 @@
     },
     {
       "username": "jacson",
-      "password": "123",
-      "key": "FERA-F4F664DC",
+      "password": "1234",
+      "key": "FERA-38710480",
       "device_id": null,
-      "expires_at": 1774301243
+      "expires_at": 1777154267,
+      "reseller": "JCGAMER"
     },
     {
       "username": "lleo",
