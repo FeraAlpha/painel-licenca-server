@@ -1398,6 +1398,15 @@
       "expires_at": 1774654806,
       "reseller": "NINJA",
       "created_at": 1774050006
+    },
+    {
+      "username": "Fera6067",
+      "password": "Alpha7036",
+      "key": "FERA-40EFCF56",
+      "device_id": null,
+      "expires_at": 1779669656,
+      "reseller": "NINJA",
+      "created_at": 1774053656
     }
   ]
 }
