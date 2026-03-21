@@ -1415,6 +1415,15 @@
       "device_id": "02d80a91c7dc60e7bd9dc8c5b64a2405ff957a4d90d0755bf6cc442b1c80b9ec",
       "expires_at": 1774661445,
       "created_at": 1774056645
+    },
+    {
+      "username": "Danimar",
+      "password": "Alpha2304",
+      "key": "FERA-FA56D021",
+      "device_id": null,
+      "expires_at": 1777118666,
+      "reseller": "JCGAMER",
+      "created_at": 1774094666
     }
   ]
 }
