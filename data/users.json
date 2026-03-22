@@ -1468,6 +1468,15 @@
       "expires_at": 1774825488,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1774220688
+    },
+    {
+      "username": "Fera7412",
+      "password": "Alpha4925",
+      "key": "FERA-1BD4C30C",
+      "device_id": null,
+      "expires_at": 1777247448,
+      "reseller": "NINJA",
+      "created_at": 1774223448
     }
   ]
 }
