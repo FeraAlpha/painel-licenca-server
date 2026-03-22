@@ -1459,6 +1459,15 @@
       "device_id": "315273016dc4b058eb9076792ef19a38b6946a92fbf1d82550a3fd2f26c92bb1",
       "expires_at": 1777238025,
       "created_at": 1774214025
+    },
+    {
+      "username": "Fera8802",
+      "password": "Alpha8389",
+      "key": "FERA-124C6DD6",
+      "device_id": null,
+      "expires_at": 1774825488,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1774220688
     }
   ]
 }
