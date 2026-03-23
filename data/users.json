@@ -1486,6 +1486,15 @@
       "expires_at": 1777294655,
       "reseller": "JCGAMER",
       "created_at": 1774270655
+    },
+    {
+      "username": "Fera2423",
+      "password": "Alpha4444",
+      "key": "FERA-E9B1A6EA",
+      "device_id": null,
+      "expires_at": 1777307059,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1774283059
     }
   ]
 }
