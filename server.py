@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-import json, os, time, base64, sqlite3, requests, hashlib, hmac
+import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading
 import jwt
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -7,6 +7,9 @@ from Crypto.Hash import SHA256
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from collections import defaultdict
+from logging.handlers import RotatingFileHandler
+import logging
+import atexit
 
 # Configurações de banco e arquivos
 DB = "data/licenses.db"
@@ -14,6 +17,7 @@ USERS_FILE = "data/users.json"
 KEY_PRIV = "private.pem"
 KEY_PUB = "public.pem"
 SECURITY_LOG_FILE = "data/security.log"
+JWT_SECRET_FILE = "data/jwt_secret.key"
 
 # Constante para licença ilimitada
 UNLIMITED_EXPIRY = 9999999999999
@@ -22,69 +26,46 @@ UNLIMITED_EXPIRY = 9999999999999
 CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
 
 # Configuração JWT
-JWT_SECRET = os.getenv("JWT_SECRET")
-if not JWT_SECRET:
-    import secrets
-    JWT_SECRET = secrets.token_urlsafe(32)
-    print("⚠️ AVISO: JWT_SECRET não definida. Usando chave aleatória. Isso pode causar problemas em reinicializações!")
-
+JWT_SECRET = None
 JWT_ALGORITHM = "RS256"
 JWT_EXPIRY_HOURS = 24
 
 # ------------------------------
-#   RATE LIMITING
+#   CONFIGURAÇÃO DE LOG COM ROTAÇÃO
 # ------------------------------
-RATE_LIMIT = {
-    'attempts': 5,      # Tentativas permitidas
-    'window': 300,       # Janela de 5 minutos
-    'ban_time': 1800     # Ban de 30 minutos
-}
-rate_limit_data = defaultdict(list)
-banned_ips = {}
+def setup_logging():
+    """Configura logging com rotação de arquivos"""
+    os.makedirs("data", exist_ok=True)
+    
+    # Criar logger para segurança
+    security_logger = logging.getLogger('security')
+    security_logger.setLevel(logging.INFO)
+    
+    # Handler com rotação (max 5MB, 3 backups)
+    handler = RotatingFileHandler(
+        SECURITY_LOG_FILE, 
+        maxBytes=5 * 1024 * 1024,  # 5MB
+        backupCount=3,
+        encoding='utf-8'
+    )
+    
+    formatter = logging.Formatter('%(message)s')
+    handler.setFormatter(formatter)
+    security_logger.addHandler(handler)
+    
+    return security_logger
 
-def check_rate_limit(ip, endpoint):
-    """Verifica rate limit por IP"""
-    now = time.time()
-    
-    # Verificar se IP está banido
-    if ip in banned_ips:
-        if now - banned_ips[ip] < RATE_LIMIT['ban_time']:
-            return False, f"IP banido por {RATE_LIMIT['ban_time'] - (now - banned_ips[ip]):.0f} segundos"
-        else:
-            del banned_ips[ip]
-    
-    # Limpar entradas antigas
-    rate_limit_data[ip] = [t for t in rate_limit_data[ip] if now - t < RATE_LIMIT['window']]
-    
-    # Verificar tentativas
-    if len(rate_limit_data[ip]) >= RATE_LIMIT['attempts']:
-        banned_ips[ip] = now
-        rate_limit_data[ip] = []
-        log_security("rate_limit_ban", ip=ip, details={"endpoint": endpoint}, severity="WARNING")
-        return False, "Muitas tentativas. IP banido por 30 minutos."
-    
-    return True, "OK"
+security_logger = setup_logging()
 
 # ------------------------------
-#   CONFIG GITHUB
-# ------------------------------
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = "FeraAlpha/painel-licenca-server"
-GITHUB_FILE_PATH = "data/users.json"
-GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE_PATH}"
-
-os.makedirs("data", exist_ok=True)
-os.makedirs("data/backups", exist_ok=True)
-
-# ------------------------------
-#   FUNÇÕES DE SEGURANÇA
+#   FUNÇÃO DE LOG DE SEGURANÇA
 # ------------------------------
 def log_security(event_type, fingerprint=None, ip=None, details=None, severity="INFO"):
     """Registra eventos de segurança com níveis de severidade"""
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ip = ip or request.remote_addr if 'request' in globals() else "N/A"
-        user_agent = request.user_agent.string if 'request' in globals() and request.user_agent else "N/A"
+        ip = ip or (request.remote_addr if hasattr(request, 'remote_addr') else "N/A")
+        user_agent = request.user_agent.string if hasattr(request, 'user_agent') and request.user_agent else "N/A"
         
         log_entry = {
             "timestamp": timestamp,
@@ -96,8 +77,7 @@ def log_security(event_type, fingerprint=None, ip=None, details=None, severity="
             "details": details or {}
         }
         
-        with open(SECURITY_LOG_FILE, "a", encoding="utf-8") as f:
-            f.write(json.dumps(log_entry) + "\n")
+        security_logger.info(json.dumps(log_entry, ensure_ascii=False))
         
         # Se for severidade alta, também log no console
         if severity in ["CRITICAL", "ERROR", "WARNING"]:
@@ -106,40 +86,79 @@ def log_security(event_type, fingerprint=None, ip=None, details=None, severity="
     except Exception as e:
         print(f"Erro ao logar segurança: {e}")
 
-def gerar_assinatura_hmac(expires, fingerprint):
-    """Gera assinatura HMAC igual ao cliente"""
-    dados = f"{expires}:{fingerprint}"
-    assinatura = hmac.new(
-        CHAVE_SECRETA.encode(),
-        dados.encode(),
-        hashlib.sha256
-    ).hexdigest()
-    return assinatura
+# ------------------------------
+#   GERENCIAMENTO DE CHAVES RSA
+# ------------------------------
+def ensure_rsa_keys():
+    """Garante que as chaves RSA existam, gerando se necessário"""
+    if not os.path.exists(KEY_PRIV) or not os.path.exists(KEY_PUB):
+        log_security("rsa_keys_generating", details={"reason": "keys_not_found"})
+        try:
+            key = RSA.generate(2048)
+            private_key = key.export_key()
+            public_key = key.publickey().export_key()
+            
+            with open(KEY_PRIV, "wb") as f:
+                f.write(private_key)
+            with open(KEY_PUB, "wb") as f:
+                f.write(public_key)
+            
+            log_security("rsa_keys_generated", severity="INFO")
+            print("✅ Chaves RSA geradas automaticamente")
+        except Exception as e:
+            log_security("rsa_keys_generation_error", details=str(e), severity="ERROR")
+            raise
 
-def sanitize_input(value, max_length=50, allowed_chars=None):
-    """Sanitiza input do usuário"""
-    if value is None:
-        return ""
-    if not isinstance(value, str):
-        value = str(value)
+def get_jwt_secret():
+    """Obtém JWT_SECRET de forma persistente"""
+    global JWT_SECRET
     
-    # Remover caracteres potencialmente perigosos
-    value = value.strip()[:max_length]
-    if allowed_chars:
-        value = ''.join(c for c in value if c in allowed_chars)
-    return value
+    # Tentar carregar do ambiente primeiro
+    env_secret = os.getenv("JWT_SECRET")
+    if env_secret:
+        JWT_SECRET = env_secret
+        log_security("jwt_secret_from_env", severity="INFO")
+        return JWT_SECRET
+    
+    # Tentar carregar do arquivo
+    if os.path.exists(JWT_SECRET_FILE):
+        try:
+            with open(JWT_SECRET_FILE, "r") as f:
+                JWT_SECRET = f.read().strip()
+                if JWT_SECRET:
+                    log_security("jwt_secret_from_file", severity="INFO")
+                    return JWT_SECRET
+        except Exception as e:
+            log_security("jwt_secret_load_error", details=str(e), severity="WARNING")
+    
+    # Gerar nova chave
+    import secrets
+    JWT_SECRET = secrets.token_urlsafe(32)
+    
+    # Salvar em arquivo
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open(JWT_SECRET_FILE, "w") as f:
+            f.write(JWT_SECRET)
+        log_security("jwt_secret_generated_and_saved", severity="INFO")
+        print("✅ JWT_SECRET gerado e salvo em arquivo")
+    except Exception as e:
+        log_security("jwt_secret_save_error", details=str(e), severity="ERROR")
+    
+    return JWT_SECRET
+
+# Inicializar JWT_SECRET
+JWT_SECRET = get_jwt_secret()
+
+# Garantir que as chaves RSA existam
+ensure_rsa_keys()
 
 # ------------------------------
-#   FUNÇÕES JWT
+#   FUNÇÕES JWT CORRIGIDAS
 # ------------------------------
 def gerar_token_jwt(fingerprint, username, expires_at):
-    """Gera um token JWT para o cliente com fallback para HS256"""
+    """Gera um token JWT para o cliente usando RS256"""
     now = datetime.now(timezone.utc)
-    
-    if not os.path.exists(KEY_PRIV):
-        log_security("jwt_private_key_missing", 
-                    details={"error": f"Arquivo {KEY_PRIV} não encontrado"})
-        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
     
     try:
         with open(KEY_PRIV, "rb") as f:
@@ -158,36 +177,44 @@ def gerar_token_jwt(fingerprint, username, expires_at):
         
     except Exception as e:
         log_security("jwt_generation_error", 
-                    details={"error": str(e)})
-        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
-
-def gerar_token_jwt_fallback(fingerprint, username, expires_at):
-    """Fallback para gerar token JWT com HS256 quando RSA falha"""
-    now = datetime.now(timezone.utc)
-    
-    payload = {
-        "fp": fingerprint,
-        "user": username,
-        "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),
-        "iat": now,
-        "lic_exp": expires_at,
-        "alg_fallback": "HS256"
-    }
-    
-    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
-    return token
+                    details={"error": str(e)},
+                    severity="ERROR")
+        return None
 
 def validar_token_jwt(token):
-    """Valida um token JWT e retorna o payload se válido"""
+    """Valida um token JWT - Tenta RS256 primeiro, depois HS256 como fallback"""
+    
+    # Primeiro tentar com RS256 (chave pública)
     try:
-        # Tenta validar com HS256 (fallback)
+        if os.path.exists(KEY_PUB):
+            with open(KEY_PUB, "rb") as f:
+                public_key = RSA.import_key(f.read())
+            
+            payload = jwt.decode(
+                token,
+                public_key,
+                algorithms=["RS256"],
+                options={"require": ["exp", "iat", "fp", "user"]}
+            )
+            return {"valid": True, "payload": payload, "algorithm": "RS256"}
+    except jwt.ExpiredSignatureError:
+        return {"valid": False, "reason": "token_expired"}
+    except jwt.InvalidTokenError:
+        # Falhou RS256, tentar HS256 como fallback
+        pass
+    except Exception as e:
+        log_security("jwt_rs256_validation_error", details=str(e), severity="WARNING")
+    
+    # Fallback: tentar HS256
+    try:
         payload = jwt.decode(
             token,
             JWT_SECRET,
             algorithms=["HS256"],
             options={"require": ["exp", "iat", "fp", "user"]}
         )
-        return {"valid": True, "payload": payload}
+        log_security("jwt_hs256_fallback_used", details={"token_preview": token[:20]}, severity="WARNING")
+        return {"valid": True, "payload": payload, "algorithm": "HS256", "fallback": True}
         
     except jwt.ExpiredSignatureError:
         return {"valid": False, "reason": "token_expired"}
@@ -197,7 +224,267 @@ def validar_token_jwt(token):
         return {"valid": False, "reason": f"validation_error: {str(e)}"}
 
 # ------------------------------
-#   BANCO SQL
+#   RATE LIMITING PERSISTENTE
+# ------------------------------
+def init_rate_limit_table():
+    """Inicializa tabela de rate limiting"""
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS rate_limit_events
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT NOT NULL,
+                  endpoint TEXT,
+                  timestamp INTEGER NOT NULL,
+                  attempt_count INTEGER DEFAULT 1,
+                  UNIQUE(ip, endpoint, timestamp))''')
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS banned_ips
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT UNIQUE NOT NULL,
+                  banned_at INTEGER NOT NULL,
+                  expires_at INTEGER NOT NULL,
+                  reason TEXT)''')
+    
+    c.execute('CREATE INDEX IF NOT EXISTS idx_rate_limit_ip ON rate_limit_events(ip, timestamp)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)')
+    
+    conn.commit()
+    conn.close()
+
+RATE_LIMIT = {
+    'attempts': 5,      # Tentativas permitidas
+    'window': 300,       # Janela de 5 minutos
+    'ban_time': 1800     # Ban de 30 minutos
+}
+
+def check_rate_limit(ip, endpoint):
+    """Verifica rate limit por IP usando banco de dados"""
+    conn = get_db()
+    cursor = conn.cursor()
+    now = int(time.time())
+    
+    # Verificar se IP está banido
+    cursor.execute('''
+        SELECT * FROM banned_ips 
+        WHERE ip = ? AND expires_at > ?
+    ''', (ip, now))
+    
+    banned = cursor.fetchone()
+    if banned:
+        conn.close()
+        remaining = banned['expires_at'] - now
+        return False, f"IP banido por {remaining} segundos"
+    
+    # Limpar entradas antigas
+    cursor.execute('''
+        DELETE FROM rate_limit_events 
+        WHERE timestamp < ?
+    ''', (now - RATE_LIMIT['window'],))
+    
+    # Contar tentativas recentes
+    cursor.execute('''
+        SELECT SUM(attempt_count) as total_attempts 
+        FROM rate_limit_events 
+        WHERE ip = ? AND timestamp > ?
+    ''', (ip, now - RATE_LIMIT['window']))
+    
+    result = cursor.fetchone()
+    attempts = result['total_attempts'] if result and result['total_attempts'] else 0
+    
+    # Verificar tentativas
+    if attempts >= RATE_LIMIT['attempts']:
+        # Banir IP
+        expires_at = now + RATE_LIMIT['ban_time']
+        cursor.execute('''
+            INSERT OR REPLACE INTO banned_ips (ip, banned_at, expires_at, reason)
+            VALUES (?, ?, ?, ?)
+        ''', (ip, now, expires_at, f"rate_limit_exceeded at {endpoint}"))
+        conn.commit()
+        conn.close()
+        
+        log_security("rate_limit_ban", ip=ip, details={"endpoint": endpoint}, severity="WARNING")
+        return False, "Muitas tentativas. IP banido por 30 minutos."
+    
+    # Registrar tentativa
+    cursor.execute('''
+        INSERT INTO rate_limit_events (ip, endpoint, timestamp, attempt_count)
+        VALUES (?, ?, ?, 1)
+        ON CONFLICT(ip, endpoint, timestamp) 
+        DO UPDATE SET attempt_count = attempt_count + 1
+    ''', (ip, endpoint, now))
+    
+    conn.commit()
+    conn.close()
+    
+    return True, "OK"
+
+# ------------------------------
+#   LIMPEZA AUTOMÁTICA DO BANCO
+# ------------------------------
+class DatabaseCleaner:
+    """Classe para limpeza automática do banco de dados"""
+    
+    def __init__(self, interval_seconds=3600):
+        self.interval = interval_seconds
+        self.timer = None
+        self.running = False
+        
+    def start(self):
+        """Inicia o processo de limpeza automática"""
+        self.running = True
+        self._schedule()
+        log_security("db_cleaner_started", details={"interval": self.interval}, severity="INFO")
+        
+    def stop(self):
+        """Para o processo de limpeza automática"""
+        self.running = False
+        if self.timer:
+            self.timer.cancel()
+        log_security("db_cleaner_stopped", severity="INFO")
+        
+    def _schedule(self):
+        """Agenda a próxima limpeza"""
+        if self.running:
+            self.timer = threading.Timer(self.interval, self.clean)
+            self.timer.daemon = True
+            self.timer.start()
+            
+    def clean(self):
+        """Executa limpeza do banco de dados"""
+        try:
+            conn = get_db()
+            cursor = conn.cursor()
+            now = int(time.time())
+            
+            # Limpar sessões expiradas
+            cursor.execute('DELETE FROM sessions WHERE expires_at < ?', (now,))
+            deleted_sessions = cursor.rowcount
+            
+            # Limpar tokens revogados antigos (mais de 30 dias)
+            thirty_days_ago = now - (30 * 24 * 3600)
+            cursor.execute('DELETE FROM revoked_tokens WHERE revoked_at < ?', (thirty_days_ago,))
+            deleted_revoked = cursor.rowcount
+            
+            # Limpar rate limit events antigos (mais de 1 dia)
+            one_day_ago = now - (24 * 3600)
+            cursor.execute('DELETE FROM rate_limit_events WHERE timestamp < ?', (one_day_ago,))
+            deleted_rate_limits = cursor.rowcount
+            
+            # Limpar bans expirados
+            cursor.execute('DELETE FROM banned_ips WHERE expires_at < ?', (now,))
+            deleted_bans = cursor.rowcount
+            
+            # Limpar logs de uso antigos (mais de 90 dias)
+            ninety_days_ago = now - (90 * 24 * 3600)
+            cursor.execute('DELETE FROM license_usage WHERE timestamp < ?', (ninety_days_ago,))
+            deleted_usage = cursor.rowcount
+            
+            conn.commit()
+            conn.close()
+            
+            log_security("db_cleanup_executed", details={
+                "deleted_sessions": deleted_sessions,
+                "deleted_revoked_tokens": deleted_revoked,
+                "deleted_rate_limits": deleted_rate_limits,
+                "deleted_bans": deleted_bans,
+                "deleted_usage_logs": deleted_usage
+            }, severity="INFO")
+            
+            print(f"🧹 Limpeza DB: {deleted_sessions} sessões, {deleted_revoked} tokens, "
+                  f"{deleted_rate_limits} rate limits, {deleted_bans} bans, {deleted_usage} logs removidos")
+            
+        except Exception as e:
+            log_security("db_cleanup_error", details=str(e), severity="ERROR")
+            
+        finally:
+            # Agendar próxima limpeza
+            self._schedule()
+            
+    def clean_once(self):
+        """Executa limpeza uma vez (para testes ou chamada manual)"""
+        self.clean()
+
+# Inicializar tabelas de rate limit
+init_rate_limit_table()
+
+# ------------------------------
+#   HEALTH CHECK COM ESTATÍSTICAS
+# ------------------------------
+HEALTH_CHECK_KEY = os.getenv("HEALTH_CHECK_KEY", "admin_health_2024")
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    """Endpoint de health check com estatísticas"""
+    # Verificar chave de admin no header
+    api_key = request.headers.get("X-Health-Key")
+    
+    if api_key != HEALTH_CHECK_KEY:
+        return jsonify({
+            "status": "unauthorized",
+            "message": "Invalid or missing health check key"
+        }), 401
+    
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Total de licenças ativas
+        cursor.execute("SELECT COUNT(*) FROM licenses WHERE status = 'active'")
+        active_licenses = cursor.fetchone()[0]
+        
+        # Total de sessões ativas
+        now = int(time.time())
+        cursor.execute("SELECT COUNT(*) FROM sessions WHERE expires_at > ?", (now,))
+        active_sessions = cursor.fetchone()[0]
+        
+        # Total de licenças expiradas
+        cursor.execute("SELECT COUNT(*) FROM licenses WHERE status = 'expired'")
+        expired_licenses = cursor.fetchone()[0]
+        
+        # Total de usuários no sistema
+        users_data = load_users()
+        total_users = len(users_data.get("users", []))
+        
+        # IPs banidos ativos
+        cursor.execute("SELECT COUNT(*) FROM banned_ips WHERE expires_at > ?", (now,))
+        active_bans = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        # Uptime do servidor
+        if not hasattr(app, 'start_time'):
+            app.start_time = time.time()
+        uptime_seconds = time.time() - app.start_time
+        uptime_str = str(timedelta(seconds=int(uptime_seconds)))
+        
+        return jsonify({
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "uptime": uptime_str,
+            "uptime_seconds": int(uptime_seconds),
+            "statistics": {
+                "active_licenses": active_licenses,
+                "active_sessions": active_sessions,
+                "expired_licenses": expired_licenses,
+                "total_users": total_users,
+                "active_bans": active_bans
+            },
+            "database": {
+                "size_bytes": os.path.getsize(DB) if os.path.exists(DB) else 0,
+                "last_cleanup": getattr(app, 'last_cleanup', None)
+            }
+        }), 200
+        
+    except Exception as e:
+        log_security("health_check_error", details=str(e), severity="ERROR")
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e)
+        }), 500
+
+# ------------------------------
+#   BANCO SQL (COM TABELAS ATUALIZADAS)
 # ------------------------------
 def init_db():
     conn = sqlite3.connect(DB)
@@ -241,12 +528,31 @@ def init_db():
                   revoked_at INTEGER,
                   reason TEXT)''')
     
+    # Tabela para rate limiting persistente
+    c.execute('''CREATE TABLE IF NOT EXISTS rate_limit_events
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT NOT NULL,
+                  endpoint TEXT,
+                  timestamp INTEGER NOT NULL,
+                  attempt_count INTEGER DEFAULT 1,
+                  UNIQUE(ip, endpoint, timestamp))''')
+    
+    # Tabela para IPs banidos
+    c.execute('''CREATE TABLE IF NOT EXISTS banned_ips
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT UNIQUE NOT NULL,
+                  banned_at INTEGER NOT NULL,
+                  expires_at INTEGER NOT NULL,
+                  reason TEXT)''')
+    
     # Criar índices
     c.execute('CREATE INDEX IF NOT EXISTS idx_fingerprint ON licenses(fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_sessions ON sessions(token, fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_license_status ON licenses(status, expires_at)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_revoked_tokens ON revoked_tokens(token)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_license_usage ON license_usage(fingerprint, timestamp)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_rate_limit_ip ON rate_limit_events(ip, timestamp)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)')
     
     conn.commit()
     conn.close()
@@ -296,8 +602,8 @@ def registrar_uso(fingerprint, action, ip=None, user_agent=None):
     conn = get_db()
     cursor = conn.cursor()
     
-    ip = ip or (request.remote_addr if 'request' in globals() else "N/A")
-    user_agent = user_agent or (request.user_agent.string if 'request' in globals() and request.user_agent else "N/A")
+    ip = ip or (request.remote_addr if hasattr(request, 'remote_addr') else "N/A")
+    user_agent = user_agent or (request.user_agent.string if hasattr(request, 'user_agent') and request.user_agent else "N/A")
     
     cursor.execute('''
         INSERT INTO license_usage (fingerprint, action, timestamp, ip_address, user_agent)
@@ -432,10 +738,41 @@ def sign_payload(payload_bytes):
         log_security("sign_payload_error", details=str(e), severity="ERROR")
         return None
 
+def gerar_assinatura_hmac(expires, fingerprint):
+    """Gera assinatura HMAC igual ao cliente"""
+    dados = f"{expires}:{fingerprint}"
+    assinatura = hmac.new(
+        CHAVE_SECRETA.encode(),
+        dados.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return assinatura
+
+def sanitize_input(value, max_length=50, allowed_chars=None):
+    """Sanitiza input do usuário"""
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        value = str(value)
+    
+    # Remover caracteres potencialmente perigosos
+    value = value.strip()[:max_length]
+    if allowed_chars:
+        value = ''.join(c for c in value if c in allowed_chars)
+    return value
+
 # ------------------------------
 #   FLASK APP
 # ------------------------------
 app = Flask(__name__, template_folder='templates')
+app.start_time = time.time()
+
+# Iniciar cleaner automático
+db_cleaner = DatabaseCleaner(interval_seconds=3600)  # Limpeza a cada 1 hora
+db_cleaner.start()
+
+# Registrar parada limpa ao encerrar
+atexit.register(lambda: db_cleaner.stop())
 
 # ------------------------------
 #   MIDDLEWARE DE SEGURANÇA
@@ -470,7 +807,7 @@ def ping():
     return jsonify({
         "status": "online",
         "timestamp": datetime.now().isoformat(),
-        "version": "2.0"
+        "version": "3.0"
     }), 200
 
 # ------------------------------
@@ -559,6 +896,13 @@ def validate_token():
         if fingerprint and payload.get("fp") != fingerprint:
             return jsonify({"valid": False, "reason": "fingerprint_mismatch"}), 403
         
+        # Alertar se foi usado fallback HS256
+        if result.get("fallback"):
+            log_security("jwt_hs256_fallback_used", 
+                        fingerprint=fingerprint,
+                        details={"token_preview": token[:20]},
+                        severity="WARNING")
+        
         return jsonify({
             "valid": True,
             "payload": {
@@ -573,7 +917,7 @@ def validate_token():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   CLIENTE - ATIVAÇÃO
+#   CLIENTE - ATIVAÇÃO COM USER-AGENT
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -608,30 +952,67 @@ def activate():
 
         device_id = user.get("device_id")
         
+        # Salvar User-Agent do dispositivo
+        user_agent = request.user_agent.string if request.user_agent else "Unknown"
+        
         if device_id is None:
             user["device_id"] = fingerprint
+            user["device_user_agent"] = user_agent  # Salvar User-Agent inicial
             save_users({"users": users})
         elif device_id != fingerprint:
+            # Verificar mudança de User-Agent
+            previous_ua = user.get("device_user_agent", "")
+            if previous_ua and previous_ua != user_agent:
+                log_security("user_agent_changed",
+                            fingerprint=fingerprint,
+                            details={
+                                "previous_ua": previous_ua,
+                                "new_ua": user_agent,
+                                "username": username
+                            },
+                            severity="WARNING")
             return jsonify({"status": "error", "reason": "device_mismatch"}), 403
+        else:
+            # Atualizar User-Agent se mudou (apenas para registro)
+            if user.get("device_user_agent") != user_agent:
+                user["device_user_agent"] = user_agent
+                save_users({"users": users})
+                log_security("user_agent_updated",
+                            fingerprint=fingerprint,
+                            details={
+                                "old_ua": user.get("device_user_agent"),
+                                "new_ua": user_agent
+                            },
+                            severity="INFO")
 
-        # Salvar no banco SQLite
+        # Salvar no banco SQLite com device_info
         conn = get_db()
         cursor = conn.cursor()
         
         cursor.execute('SELECT * FROM licenses WHERE fingerprint = ?', (fingerprint,))
         existing = cursor.fetchone()
         
+        device_info = json.dumps({
+            "user_agent": user_agent,
+            "first_seen": now,
+            "last_seen": now
+        })
+        
         if not existing:
             cursor.execute('''
-                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (fingerprint, username, now, expires, 'active', now))
+                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used, device_info)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (fingerprint, username, now, expires, 'active', now, device_info))
         else:
+            # Atualizar device_info preservando histórico
+            old_info = json.loads(existing['device_info']) if existing['device_info'] else {}
+            old_info['last_seen'] = now
+            old_info['user_agent'] = user_agent
             cursor.execute('''
                 UPDATE licenses 
-                SET expires_at = ?, status = 'active', last_used = ?
+                SET expires_at = ?, status = 'active', last_used = ?, device_info = ?
                 WHERE fingerprint = ?
-            ''', (expires, now, fingerprint))
+            ''', (expires, now, json.dumps(old_info), fingerprint))
         
         conn.commit()
         conn.close()
@@ -659,7 +1040,7 @@ def activate():
         except:
             jwt_token = None
         
-        registrar_uso(fingerprint, "activate")
+        registrar_uso(fingerprint, "activate", user_agent=user_agent)
 
         return jsonify({
             "status": "success",
@@ -728,7 +1109,7 @@ def admin():
                          recent_usage=recent_usage)
 
 # ------------------------------
-#   ADMIN - BLOQUEAR/DESBLOQUEAR USUÁRIO (CORRIGIDO)
+#   ADMIN - BLOQUEAR/DESBLOQUEAR USUÁRIO
 # ------------------------------
 @app.route("/admin/toggle_block/<int:index>", methods=["POST"])
 @need_admin
@@ -953,6 +1334,7 @@ def admin_reset_device(index):
 
     if 0 <= index < len(users):
         users[index]["device_id"] = None
+        users[index].pop("device_user_agent", None)  # Remover User-Agent salvo
         save_users(data)
 
     return redirect(url_for('admin', msg="Dispositivo resetado", highlight=index))
@@ -968,6 +1350,7 @@ def admin_reset_all_devices():
     
     for user in users:
         user["device_id"] = None
+        user.pop("device_user_agent", None)
     
     save_users(data)
     
@@ -1114,12 +1497,27 @@ def admin_database():
             "issued_at": datetime.fromtimestamp(row[3]).strftime("%Y-%m-%d %H:%M:%S") if row[3] else "N/A",
             "expires_at": "ILIMITADO" if row[4] == UNLIMITED_EXPIRY else datetime.fromtimestamp(row[4]).strftime("%Y-%m-%d %H:%M:%S"),
             "status": row[5],
-            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA"
+            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA",
+            "device_info": row[7] if row[7] else "N/A"
         })
     
     conn.close()
     
     return render_template("database_view.html", licenses=licenses_db)
+
+# ------------------------------
+#   ADMIN - LIMPEZA MANUAL DO BANCO
+# ------------------------------
+@app.route("/admin/cleanup_db", methods=["POST"])
+@need_admin
+def admin_cleanup_db():
+    """Endpoint para limpeza manual do banco de dados"""
+    try:
+        db_cleaner.clean_once()
+        return redirect(url_for('admin', msg="Limpeza manual do banco executada com sucesso"))
+    except Exception as e:
+        log_security("manual_cleanup_error", details=str(e), severity="ERROR")
+        return redirect(url_for('admin', msg=f"Erro na limpeza: {str(e)}"))
 
 # ------------------------------
 #   REVENDEDORES
@@ -1345,5 +1743,17 @@ if __name__ == "__main__":
     
     port = int(os.getenv("PORT", 10000))
     debug = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    
+    print("\n" + "="*60)
+    print("🚀 SERVIDOR DE LICENÇAS INICIADO")
+    print("="*60)
+    print(f"📁 Banco de dados: {DB}")
+    print(f"🔐 JWT Algorithm: RS256 (HS256 como fallback apenas para validação)")
+    print(f"🛡️ Rate limiting: Persistente em SQLite")
+    print(f"🧹 Limpeza automática: Ativada (a cada 1 hora)")
+    print(f"📝 Log com rotação: Ativado (5MB, 3 backups)")
+    print(f"🏥 Health check: Disponível em /health")
+    print(f"🌐 Porta: {port}")
+    print("="*60 + "\n")
     
     app.run(host="0.0.0.0", port=port, debug=debug)
