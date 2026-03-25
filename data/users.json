@@ -1562,6 +1562,15 @@
       "expires_at": 1774989628,
       "reseller": "NINJA",
       "created_at": 1774384828
+    },
+    {
+      "username": "Denilson",
+      "password": "Alpha1047",
+      "key": "FERA-BA0500B3",
+      "device_id": null,
+      "expires_at": 1783913408,
+      "reseller": "JCGAMER",
+      "created_at": 1774409408
     }
   ]
 }
