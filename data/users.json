@@ -1629,6 +1629,14 @@
       "device_id": "f1a271daa8b67d19f1f50cbbe6d97530e473ff16d5b42dd750152bf6caf627e0",
       "expires_at": 1774806752,
       "created_at": 1774633952
+    },
+    {
+      "username": "free",
+      "password": "free",
+      "key": "FERA-8B3C06EC",
+      "device_id": null,
+      "expires_at": 1774721626,
+      "created_at": 1774635226
     }
   ]
 }
