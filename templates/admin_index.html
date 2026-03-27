@@ -150,6 +150,23 @@
 
   tbody tr:hover { background:#eef2f5; }
 
+  /* Estilos para as classes de status */
+  tr.active td {
+    background-color: rgba(40, 167, 69, 0.05);
+  }
+
+  tr.warning td {
+    background-color: rgba(255, 193, 7, 0.05);
+  }
+
+  tr.expired td {
+    background-color: rgba(220, 53, 69, 0.05);
+  }
+
+  tr.unlimited td {
+    background-color: rgba(23, 162, 184, 0.05);
+  }
+
   .copy {
     color:var(--accent);
     cursor:pointer;
@@ -188,6 +205,7 @@
   .badge-ok { background:#d7f5dd; color:var(--ok); }
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
+  .badge-info { background:#d1ecf1; color:#0c5460; }
 
   body.dark {
     --bg:#0e1113;
@@ -533,7 +551,7 @@
 
     <tbody>
       {% for u in users %}
-      <tr data-expires="{{ u.expires_at }}" data-index="{{ loop.index0 }}" data-status="{{ u.status }}">
+      <tr data-expires="{{ u.expires_at }}" data-index="{{ loop.index0 }}" data-status="{{ u.status }}" class="{{ u.status_class }}">
         <td>{{ loop.index0 }}</td>
         <td><b>{{ u.username }}</b></td>
         <td>
@@ -549,14 +567,40 @@
         <td>{{ u.device_id if u.device_id else '-' }}</td>
         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
         <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
-        <td class="expCell"></td>
+        
+        <!-- Coluna de Expiração CORRIGIDA usando os campos do backend -->
+        <td class="expCell" data-timestamp="{{ u.expires_at }}">
+          {% if u.expires_at == 9999999999999 %}
+            <span class="badge badge-info">Ilimitado</span>
+          {% elif u.expires_at < now_timestamp %}
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span class="badge badge-exp">Expirado</span>
+              <span style="font-size:12px;color:var(--text-light)">📅 {{ u.expires_display }}</span>
+            </div>
+          {% else %}
+            <div style="display:flex;flex-direction:column;gap:4px">
+              {% if u.days_left == 0 %}
+                <span class="badge badge-exp">Vence hoje</span>
+              {% elif u.days_left == 1 %}
+                <span class="badge badge-warn">Vence amanhã</span>
+              {% elif u.days_left <= 7 %}
+                <span class="badge badge-warn">Vence em {{ u.days_left }} dias</span>
+              {% else %}
+                <span class="badge badge-ok">{{ u.days_left }} dias restantes</span>
+              {% endif %}
+              <span style="font-size:12px;color:var(--text-light)">📅 {{ u.expires_display }}</span>
+            </div>
+          {% endif %}
+        </td>
+        
+        <!-- Coluna de Status CORRIGIDA -->
         <td class="statusCell">
           {% if u.status == "blocked" %}
             <span class="badge badge-exp"><i class="fas fa-ban"></i> Bloqueado</span>
           {% elif u.expires_at < now_timestamp and u.expires_at != 9999999999999 %}
             <span class="badge badge-exp"><i class="fas fa-clock"></i> Expirado</span>
           {% else %}
-            <span class="badge badge-ok"><i class="fas fa-check-circle"></i> Ativo</span>
+            <span class="badge badge-ok"><i class="fas fa-check-circle"></i> {{ u.status_display }}</span>
           {% endif %}
         </td>
 
@@ -565,7 +609,7 @@
 
           <!-- DESKTOP -->
           <div class="actionsWrap">
-            <!-- Botão Bloquear/Desbloquear CORRIGIDO -->
+            <!-- Botão Bloquear/Desbloquear -->
             <form method="post" action="/admin/toggle_block/{{ loop.index0 }}"
                   onsubmit="return confirm('{% if u.status == "blocked" %}Desbloquear{% else %}Bloquear{% endif %} este usuário?')">
               {% if u.status == "blocked" %}
@@ -749,7 +793,6 @@ document.addEventListener("DOMContentLoaded", function() {
   const msg = url.searchParams.get("msg");
   if(msg) toast(msg);
 
-  renderExp();
   updateDashboard();
   highlightUserFromURL();
 });
@@ -771,14 +814,10 @@ function sortTable(col){
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
     if (col === 6 || col === 7) {
-      const dateA = a.cells[col].querySelector('.expCell') ? 
-                    a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : 
-                    a.cells[col].innerText;
-      const dateB = b.cells[col].querySelector('.expCell') ? 
-                    b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : 
-                    b.cells[col].innerText;
-      A = parseInt(dateA) || 0;
-      B = parseInt(dateB) || 0;
+      const timestampA = a.cells[col].querySelector('.expCell')?.getAttribute('data-timestamp') || a.cells[col].innerText;
+      const timestampB = b.cells[col].querySelector('.expCell')?.getAttribute('data-timestamp') || b.cells[col].innerText;
+      A = parseInt(timestampA) || 0;
+      B = parseInt(timestampB) || 0;
       return asc ? A - B : B - A;
     }
     return asc ? A.localeCompare(B) : B.localeCompare(A);
@@ -786,53 +825,6 @@ function sortTable(col){
 
   rows.forEach(r => tbody.appendChild(r));
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
-}
-
-function formatDateBR(ts){
-  const d = new Date(ts * 1000);
-  const dd = String(d.getDate()).padStart(2,"0");
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const yy = d.getFullYear();
-  return `${dd}/${mm}/${yy}`;
-}
-
-function renderExp(){
-  const now = Math.floor(Date.now()/1000);
-  document.querySelectorAll("tr[data-expires]").forEach(tr=>{
-    let exp = parseInt(tr.getAttribute("data-expires")) || 0;
-    let cell = tr.querySelector(".expCell");
-    cell.setAttribute('data-timestamp', exp);
-    
-    if(exp == 9999999999999){
-      cell.innerHTML = `<span class='badge badge-ok'>Ilimitado</span>`;
-      return;
-    }
-    if(exp <= 0){
-      cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
-      return;
-    }
-    if(exp < now){
-      cell.innerHTML = `
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <span class='badge badge-exp'>Expirado</span>
-          <span style="font-size:12px;color:var(--text-light)">📅 ${formatDateBR(exp)}</span>
-        </div>`;
-      return;
-    }
-    const diffDays = Math.floor((exp-now)/86400);
-    const dateText = formatDateBR(exp);
-    let badge = "";
-    if(diffDays === 0) badge = "<span class='badge badge-exp'>Vence hoje</span>";
-    else if(diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
-    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
-    else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
-    
-    cell.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:4px">
-        ${badge}
-        <span style="font-size:12px;color:var(--text-light)">📅 ${dateText}</span>
-      </div>`;
-  });
 }
 
 function updateDashboard(){
@@ -879,8 +871,8 @@ function highlightUserFromURL() {
   }
 }
 
+// Atualizar dashboard a cada 10 segundos
 setInterval(() => {
-  renderExp();
   updateDashboard();
 }, 10000);
 
