@@ -1074,7 +1074,7 @@ def need_admin(f):
     return wrapper
 
 # ------------------------------
-#   ADMIN - PAINEL PRINCIPAL
+#   ADMIN - PAINEL PRINCIPAL (CORRIGIDO)
 # ------------------------------
 @app.route("/admin")
 @need_admin
@@ -1101,8 +1101,44 @@ def admin():
     
     now_timestamp = int(time.time())
     
+    # Processar cada usuário para calcular status correto
+    users = data.get("users", [])
+    for user in users:
+        expires_at = user.get("expires_at", 0)
+        
+        # Calcular status baseado na data atual
+        if expires_at == UNLIMITED_EXPIRY:
+            user["status_display"] = "Ilimitado"
+            user["status_class"] = "unlimited"
+            user["expires_display"] = "Nunca expira"
+            user["days_left"] = None
+        elif expires_at < now_timestamp:
+            user["status_display"] = "Expirado"
+            user["status_class"] = "expired"
+            user["expires_display"] = datetime.fromtimestamp(expires_at).strftime("%d/%m/%Y")
+            user["days_left"] = 0
+        else:
+            # Calcular diferença em dias
+            days_left = (expires_at - now_timestamp) // 86400
+            
+            if days_left == 0:
+                user["status_display"] = "Vence hoje"
+                user["status_class"] = "warning"
+            elif days_left == 1:
+                user["status_display"] = "Vence amanhã"
+                user["status_class"] = "warning"
+            elif days_left <= 7:
+                user["status_display"] = f"Vence em {days_left} dias"
+                user["status_class"] = "warning"
+            else:
+                user["status_display"] = "Ativo"
+                user["status_class"] = "active"
+            
+            user["expires_display"] = datetime.fromtimestamp(expires_at).strftime("%d/%m/%Y")
+            user["days_left"] = days_left
+    
     return render_template("admin_index.html", 
-                         users=data.get("users", []), 
+                         users=users, 
                          datetime=datetime,
                          now_timestamp=now_timestamp,
                          total_licenses=total_licenses,
