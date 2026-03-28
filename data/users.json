@@ -1681,6 +1681,14 @@
       "expires_at": 1777690093,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1774666093
+    },
+    {
+      "username": "Willian",
+      "password": "Fera5537",
+      "key": "FERA-D1DCEBA6",
+      "device_id": null,
+      "expires_at": 1777778226,
+      "created_at": 1774667826
     }
   ]
 }
