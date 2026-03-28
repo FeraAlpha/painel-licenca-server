@@ -1655,6 +1655,14 @@
       "expires_at": 1777682017,
       "reseller": "NINJA",
       "created_at": 1774658017
+    },
+    {
+      "username": "Alexandre",
+      "password": "Fera3284",
+      "key": "FERA-DB8F62A1",
+      "device_id": null,
+      "expires_at": 1777768581,
+      "created_at": 1774658181
     }
   ]
 }
