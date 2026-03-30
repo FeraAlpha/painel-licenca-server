@@ -1655,6 +1655,108 @@ def reseller_generate():
     })
 
 # ------------------------------
+#   REVENDEDOR - LISTAR USUÁRIOS
+# ------------------------------
+@app.route("/reseller/users", methods=["GET"])
+def reseller_users():
+    token = request.args.get("token")
+    if not token:
+        return jsonify({"error": "token_required"}), 400
+    
+    if token not in RESELLER_MAP:
+        log_security("reseller_invalid_token", details={"token": token})
+        return jsonify({"error": "invalid_token"}), 403
+    
+    reseller_nome = RESELLER_MAP[token]
+    data = load_users()
+    users = data.get("users", [])
+    
+    # Filtrar usuários criados por este revendedor
+    reseller_users = [u for u in users if u.get("reseller") == reseller_nome]
+    
+    # Preparar dados para envio
+    user_list = []
+    for u in reseller_users:
+        expires_at = u.get("expires_at", 0)
+        now = int(time.time())
+        status = u.get("status", "active")
+        
+        if status == "blocked":
+            status_display = "Bloqueado"
+        elif expires_at == UNLIMITED_EXPIRY:
+            status_display = "Ilimitado"
+        elif expires_at < now:
+            status_display = "Expirado"
+        else:
+            status_display = "Ativo"
+        
+        user_list.append({
+            "username": u.get("username"),
+            "password": u.get("password"),
+            "device_id": u.get("device_id"),
+            "expires_at": expires_at,
+            "status": status,
+            "status_display": status_display,
+            "key": u.get("key")
+        })
+    
+    return jsonify({"users": user_list})
+
+# ------------------------------
+#   REVENDEDOR - RESETAR DISPOSITIVO
+# ------------------------------
+@app.route("/reseller/reset_device", methods=["POST"])
+def reseller_reset_device():
+    token = sanitize_input(request.form.get("token", ""))
+    username = sanitize_input(request.form.get("username", ""))
+    
+    if not token or not username:
+        return jsonify({"error": "missing_fields"}), 400
+    
+    if token not in RESELLER_MAP:
+        log_security("reseller_invalid_token", details={"token": token})
+        return jsonify({"error": "invalid_token"}), 403
+    
+    reseller_nome = RESELLER_MAP[token]
+    data = load_users()
+    users = data.get("users", [])
+    
+    user_index = None
+    user = None
+    for i, u in enumerate(users):
+        if u.get("username") == username:
+            user_index = i
+            user = u
+            break
+    
+    if not user:
+        return jsonify({"error": "user_not_found"}), 404
+    
+    if user.get("reseller") != reseller_nome:
+        return jsonify({"error": "not_authorized"}), 403
+    
+    # Resetar dispositivo
+    user["device_id"] = None
+    user.pop("device_user_agent", None)
+    
+    if not save_users(data):
+        return jsonify({"error": "save_failed"}), 500
+    
+    # Limpar sessões no SQLite
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM sessions WHERE fingerprint IN (SELECT fingerprint FROM licenses WHERE username = ?)", (username,))
+    cursor.execute("UPDATE licenses SET device_info = NULL, last_used = NULL WHERE username = ?", (username,))
+    conn.commit()
+    conn.close()
+    
+    log_security("reseller_reset_device",
+                details={"reseller": reseller_nome, "username": username},
+                severity="INFO")
+    
+    return jsonify({"ok": True, "message": f"Dispositivo do usuário {username} resetado com sucesso."}), 200
+
+# ------------------------------
 #   ADMIN - ESTATÍSTICAS REVENDEDORES
 # ------------------------------
 @app.route("/admin/reseller_stats")
