@@ -1513,6 +1513,14 @@
       "device_id": "6fab867ccd4151d5c32543250a2e7a7ec62754954392eb8d515a5f45354bb9d9",
       "expires_at": 1776782060,
       "created_at": 1775054060
+    },
+    {
+      "username": "Fabricio",
+      "password": "Fera2029",
+      "key": "FERA-E217F66A",
+      "device_id": null,
+      "expires_at": 1784558286,
+      "created_at": 1775054286
     }
   ]
 }
