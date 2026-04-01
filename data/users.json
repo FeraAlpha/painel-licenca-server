@@ -1571,6 +1571,14 @@
       "expires_at": 1778084468,
       "reseller": "DANTE",
       "created_at": 1775060468
+    },
+    {
+      "username": "ThiagoTv",
+      "password": "Alpha2892",
+      "key": "FERA-D7D2A2EE",
+      "device_id": null,
+      "expires_at": 1777221924,
+      "created_at": 1775061924
     }
   ]
 }
