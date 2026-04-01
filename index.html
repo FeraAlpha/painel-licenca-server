@@ -1,1255 +1,1475 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Fera Alpha - Revendedor</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <style>
-    :root{
-      --bg:#f6f7ff;
-      --card:#ffffff;
-      --card2:#f0f3ff;
-      --border:#d7ddff;
-
-      --text:#0f172a;
-      --muted:#64748b;
-
-      --primary:#4f7cff;
-      --primary2:#6a5cff;
-      --glow: rgba(79,124,255,.22);
-
-      --warning:#ffd166;
-      --shadow: 0 16px 45px rgba(15, 23, 42, .10);
-
-      --radius:18px;
-    }
-
-    *{
-      margin:0;padding:0;
-      box-sizing:border-box;
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-    }
-
-    body{
-      min-height:100vh;
-      color:var(--text);
-      padding:18px;
-      background:
-        radial-gradient(900px 550px at 20% 0%, rgba(79,124,255,.14), transparent 60%),
-        radial-gradient(900px 550px at 85% 15%, rgba(106,92,255,.12), transparent 60%),
-        linear-gradient(180deg, rgba(255,255,255,1), rgba(246,247,255,1));
-    }
-
-    .wrap{max-width:720px;margin:0 auto}
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:16px 18px;
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      margin-bottom:18px;
-      animation: fadeInUp 0.5s ease;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px
-    }
-    .logo{
-      width:42px;height:42px;border-radius:14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      display:flex;align-items:center;justify-content:center;
-      color:white;
-      font-weight:900;
-      box-shadow: 0 12px 26px var(--glow);
-    }
-    .brand h1{
-      font-size:18px;
-      font-weight:900;
-      letter-spacing:.3px
-    }
-    .brand p{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px
-    }
-
-    .chip{
-      padding:8px 12px;
-      border:1px solid var(--border);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background: var(--card2);
-    }
-    .chip i{color:var(--primary)}
-
-    .card{
-      background: var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow: var(--shadow);
-      animation: fadeInUp 0.5s ease;
-    }
-
-    .card + .card{margin-top:14px;}
-
-    .cardhead{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px
-    }
-
-    .title{
-      display:flex;
-      align-items:center;
-      gap:10px
-    }
-    .title i{color:var(--primary)}
-    .title h2{
-      font-size:16px;
-      font-weight:900
-    }
-    .title .sub{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px
-    }
-
-    .field{margin-bottom:12px}
-
-    label{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-      font-weight:700;
-    }
-    label i{color:var(--primary)}
-
-    input{
-      width:100%;
-      padding:13px 14px;
-      background: var(--card2);
-      border:1px solid var(--border);
-      border-radius:14px;
-      color:var(--text);
-      outline:none;
-      font-size:14px;
-      transition:.2s;
-    }
-    input:focus{
-      border-color: rgba(79,124,255,.9);
-      box-shadow: 0 0 0 3px rgba(79,124,255,.15);
-    }
-    input::placeholder{color:#93a1b3}
-
-    .days{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:8px;
-    }
-    .daybtn{
-      flex:1 1 150px;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: var(--card2);
-      color:var(--muted);
-      cursor:pointer;
-      font-weight:900;
-      text-align:center;
-      transition:.2s;
-      user-select:none;
-    }
-    .daybtn:hover{transform:translateY(-1px)}
-    .daybtn.active{
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color:white;
-      border-color: transparent;
-      box-shadow: 0 14px 30px rgba(79,124,255,.18);
-    }
-
-    .daybtn[data-days="7"] {
-      background: linear-gradient(145deg, #fef7e0, #fee9b6);
-      border-color: #ffb347;
-      color: #b45f06;
-    }
-    .daybtn[data-days="7"].active {
-      background: linear-gradient(135deg, #ffb347, #ff8c00);
-      color: white;
-      border-color: transparent;
-    }
-
-    .btn{
-      width:100%;
-      padding:14px 16px;
-      border:none;
-      border-radius:14px;
-      font-weight:900;
-      font-size:15px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      transition:.2s;
-      user-select:none;
-      white-space:nowrap;
-    }
-
-    .btn-primary{
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color:white;
-      box-shadow: 0 18px 40px rgba(79,124,255,.20);
-    }
-    .btn-primary:hover{transform:translateY(-2px)}
-
-    .btn-soft{
-      background: var(--card2);
-      border:1px solid var(--border);
-      color:var(--text);
-    }
-    .btn-soft:hover{
-      background: rgba(240,243,255,.7);
-    }
-
-    .btn-danger{
-      background: rgba(255,78,78,.10);
-      border:1px solid rgba(255,78,78,.25);
-      color:#d32f2f;
-    }
-
-    .btn-loading {
-      color: transparent !important;
-      pointer-events: none;
-      position: relative;
-    }
-    .btn-loading::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 50%;
-      left: 50%;
-      margin-left: -10px;
-      margin-top: -10px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .rowbtns{
-      display:flex;
-      gap:10px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-    .rowbtns .btn{
-      width:100%;
-      padding:12px
-    }
-
-    .rowbtns.two .btn{
-      flex:1;
-      min-width: 160px;
-    }
-
-    .loader{
-      display:none;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
-      margin-top:12px;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .spin{
-      width:18px;height:18px;
-      border-radius:999px;
-      border:3px solid rgba(15, 23, 42, .15);
-      border-top-color: var(--primary);
-      animation:spin 1s linear infinite;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    .resultBox{
-      display:none;
-      margin-top:14px;
-      border-radius:var(--radius);
-      padding:16px;
-      border:1px solid rgba(79,124,255,.28);
-      background: rgba(79,124,255,.08);
-    }
-    .resultTitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-      font-size:14px;
-    }
-    .resultTitle i{color:var(--primary)}
-
-    .metaGrid{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .metaItem{
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(79,124,255,.20);
-      background: rgba(255,255,255,.65);
-    }
-    .metaLabel{
-      font-size:11px;
-      color:var(--muted);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      font-weight:800;
-    }
-    .metaLabel i{color:var(--primary)}
-    .metaValue{
-      margin-top:6px;
-      font-weight:900;
-      color:var(--text);
-      word-break:break-word;
-    }
-
-    .keybox{
-      margin-top:12px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid rgba(79,124,255,.35);
-      background: rgba(255,255,255,.85);
-      font-weight:900;
-      color: var(--primary2);
-      word-break:break-all;
-    }
-
-    .history{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .hItem{
-      border:1px solid var(--border);
-      background: var(--card2);
-      border-radius:16px;
-      padding:12px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-    }
-
-    .hLeft{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-
-    .hUser{
-      font-weight:900;
-      color:var(--text);
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 340px;
-    }
-
-    .hMeta{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-    }
-
-    .hBadge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.75);
-      border:1px solid rgba(79,124,255,.20);
-      font-size:12px;
-      font-weight:800;
-      color:var(--text);
-    }
-
-    .hBadge i{color:var(--primary);}
-
-    .hRight{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .btn-mini{
-      padding:10px 12px;
-      font-size:13px;
-      border-radius:14px;
-      border:1px solid rgba(79,124,255,.18);
-      background: rgba(255,255,255,.8);
-      cursor:pointer;
-      font-weight:900;
-      color:var(--text);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      transition:.18s;
-      user-select:none;
-    }
-    .btn-mini:hover{transform:translateY(-1px)}
-    .btn-mini i{color:var(--primary)}
-
-    .empty{
-      padding:12px;
-      border-radius:16px;
-      border:1px dashed rgba(79,124,255,.35);
-      background: rgba(79,124,255,.06);
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:18px;
-      width:min(520px, 92vw);
-      background: rgba(255,255,255,.85);
-      border:1px solid var(--border);
-      backdrop-filter: blur(10px);
-      border-radius:16px;
-      padding:14px 16px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:flex-start;
-      color: var(--text);
-      box-shadow: var(--shadow);
-      opacity:0;
-      pointer-events:none;
-      transition:.22s;
-    }
-    .toast.show{opacity:1;pointer-events:auto}
-    .toast i{color:var(--primary)}
-    .toast.warn i{color:var(--warning)}
-    .mutedSmall{font-size:12px;color:var(--muted)}
-
-    /* Tabela de usuários */
-    .users-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    .users-table th,
-    .users-table td {
-      padding: 12px 8px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    .users-table th {
-      background: var(--card2);
-      font-weight: 800;
-    }
-    .users-table tr:last-child td {
-      border-bottom: none;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-    .status-ativo { background: #d7f5dd; color: #177a30; }
-    .status-expirado { background: #ffe1e1; color: #b32828; }
-    .status-bloqueado { background: #fff3c9; color: #8a6c1e; }
-    .status-ilimitado { background: #d1ecf1; color: #0c5460; }
-    .reset-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--primary);
-      font-size: 14px;
-      padding: 4px;
-      border-radius: 6px;
-    }
-    .reset-btn:hover {
-      background: rgba(79,124,255,0.1);
-    }
-    @media (max-width: 680px) {
-      .users-table, .users-table thead, .users-table tbody, .users-table tr, .users-table td, .users-table th {
-        display: block;
-      }
-      .users-table thead {
-        display: none;
-      }
-      .users-table tr {
-        margin-bottom: 12px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 8px;
-      }
-      .users-table td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px;
-        border: none;
-      }
-      .users-table td::before {
-        content: attr(data-label);
-        font-weight: 800;
-        width: 40%;
-        color: var(--muted);
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo"><i class="fas fa-dragon"></i></div>
-        <div>
-          <h1>Fera Alpha</h1>
-          <p>Painel do Revendedor</p>
-        </div>
-      </div>
-
-      <div class="chip">
-        <i class="fas fa-shield-halved"></i>
-        <span>Revendedor</span>
-      </div>
-    </div>
-
-    <!-- GERAR LICENÇA -->
-    <div class="card">
-      <div class="cardhead">
-        <div class="title">
-          <i class="fas fa-bolt"></i>
-          <div>
-            <h2>Gerar Licença</h2>
-            <div class="sub">35d (R$30) • 65d (R$50) • 110d (R$75) • 7d (R$10)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label><i class="fas fa-user"></i> Usuário</label>
-        <input id="username" placeholder="Fera4271" autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label><i class="fas fa-lock"></i> Senha</label>
-        <input id="password" placeholder="Alpha8392" autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label><i class="fas fa-calendar-days"></i> Período</label>
-        <div class="days">
-          <div class="daybtn active" data-days="35" onclick="setDays(35)">35 dias - R$30,00</div>
-          <div class="daybtn" data-days="65" onclick="setDays(65)">65 dias - R$50,00</div>
-          <div class="daybtn" data-days="110" onclick="setDays(110)">110 dias - R$75,00</div>
-          <div class="daybtn" data-days="7" onclick="setDays(7)">7 dias - R$10,00</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
-        <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
-
-        <div class="rowbtns two">
-          <button class="btn btn-soft" type="button" onclick="saveToken()">
-            <i class="fas fa-floppy-disk"></i> Salvar Token
-          </button>
-          <button class="btn btn-danger" type="button" onclick="confirmClearToken()">
-            <i class="fas fa-trash"></i> Limpar
-          </button>
-        </div>
-
-        <div class="mutedSmall" style="margin-top:8px">
-          <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
-        </div>
-      </div>
-
-      <button class="btn btn-primary" id="generateBtn" onclick="generateLicense()">
-        <i class="fas fa-bolt"></i> Gerar Licença
-      </button>
-
-      <div class="loader" id="loader">
-        <div class="spin"></div>
-        <span>Gerando licença...</span>
-      </div>
-
-      <div class="resultBox" id="resultBox"></div>
-    </div>
-
-    <!-- LISTA DE USUÁRIOS DO REVENDEDOR -->
-    <div class="card">
-      <div class="cardhead">
-        <div class="title">
-          <i class="fas fa-users"></i>
-          <div>
-            <h2>Meus Usuários</h2>
-            <div class="sub">Gerencie dispositivos e status</div>
-          </div>
-        </div>
-        <button class="btn btn-soft" onclick="carregarUsuarios()" style="width:auto; padding: 8px 16px;">
-          <i class="fas fa-sync-alt"></i> Atualizar
-        </button>
-      </div>
-      <div id="listaUsuariosContainer">
-        <div class="empty" id="loadingUsuarios">Carregando usuários...</div>
-      </div>
-    </div>
-
-    <!-- HISTÓRICO -->
-    <div class="card">
-      <div class="cardhead">
-        <div class="title">
-          <i class="fas fa-clock-rotate-left"></i>
-          <div>
-            <h2>Últimos Gerados</h2>
-            <div class="sub">Histórico local (até 10)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="history" id="historyList"></div>
-    </div>
-
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-      <i class="fas fa-circle-check"></i>
-      <div>
-        <div id="toastMsg" style="font-weight:900"></div>
-        <div class="mutedSmall" id="toastSub"></div>
-      </div>
-    </div>
-  </div>
-
-<script>
-  const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
-  const USERS_API_URL = "https://painel-licenca-server.onrender.com/reseller/users";
-  const RESET_API_URL = "https://painel-licenca-server.onrender.com/reseller/reset_device";
-  const TOKEN_KEY = "feraalpha_revendedor_token";
-  const HISTORY_KEY = "feraalpha_history_v3";
-  const PREFIX = "FERA";
-  
-  const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
-
-  let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/9s4yo04k0v1jbcn/PrecisionBoosterV2.apk/file";
-  let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PrecisionBoosterV2";
-
-  let currentDays = 35;
-
-  function generateUsername() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    return `Fera${randomNum}`;
-  }
-
-  function generatePassword() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    return `Alpha${randomNum}`;
-  }
-
-  async function buscarConfiguracao() {
-    try {
-      const response = await fetch(GITHUB_URL + '?t=' + Date.now());
-      const config = await response.json();
-      
-      LINK_APK = config.app?.link_download || LINK_APK;
-      NOME_APP = config.app?.nome_app || NOME_APP;
-      
-      localStorage.setItem('LINK_APK_CACHE', LINK_APK);
-      localStorage.setItem('NOME_APP_CACHE', NOME_APP);
-      
-      return true;
-    } catch (error) {
-      LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
-      NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
-      return false;
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    const saved = localStorage.getItem(TOKEN_KEY);
-    if(saved) {
-      document.getElementById("token").value = saved;
-    }
-
-    document.getElementById("username").value = generateUsername();
-    document.getElementById("password").value = generatePassword();
-    
-    renderHistory();
-    
-    await buscarConfiguracao();
-    setInterval(buscarConfiguracao, 120000);
-
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") generateLicense();
-    });
-
-    // Carregar lista de usuários ao iniciar
-    carregarUsuarios();
-  });
-
-  function setDays(days){
-    currentDays = days;
-    document.querySelectorAll('.daybtn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.daybtn[data-days="${days}"]`).classList.add('active');
-  }
-
-  function saveToken(){
-    const token = document.getElementById("token").value.trim();
-    if(!token){
-      toast("Digite um token antes de salvar", "warn", "Campo vazio");
-      return;
-    }
-    localStorage.setItem(TOKEN_KEY, token);
-    toast("Token salvo", "ok", "Pronto ✅");
-  }
-
-  function confirmClearToken(){
-    if(confirm("⚠️ Tem certeza que deseja limpar o token?\n\nEsta ação não pode ser desfeita.")) {
-      localStorage.removeItem(TOKEN_KEY);
-      document.getElementById("token").value = "";
-      toast("Token removido", "ok", "Token excluído com sucesso");
-    } else {
-      toast("Operação cancelada", "ok", "Token mantido");
-    }
-  }
-
-  async function generateLicense(){
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    let token = document.getElementById("token").value.trim();
-
-    if(!username || !password || !token){
-      toast("Preencha todos os campos", "warn", "Usuário, senha e token");
-      return;
-    }
-
-    document.getElementById("loader").style.display = "flex";
-    document.getElementById("generateBtn").disabled = true;
-
-    try{
-      const resp = await fetch(API_URL, {
-        method:"POST",
-        headers:{"Content-Type":"application/x-www-form-urlencoded"},
-        body: new URLSearchParams({
-          username,
-          password,
-          expire_days: String(currentDays),
-          token,
-          prefix: PREFIX
-        })
-      });
-
-      const raw = await resp.text();
-
-      let key = null;
-      try{
-        const data = JSON.parse(raw);
-        if(data && data.ok && data.key) key = data.key;
-      }catch(e){
-        key = null;
-      }
-
-      if(!key){
-        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
-        if(match) key = match[0];
-      }
-
-      document.getElementById("loader").style.display = "none";
-      document.getElementById("generateBtn").disabled = false;
-
-      const now = new Date();
-      const timeStr = formatDateTime(now);
-
-      const payload = {
-        title: "Login criado com sucesso!",
-        username,
-        password,
-        days: currentDays,
-        key,
-        prefix: PREFIX,
-        status: "OK",
-        createdAt: now.toISOString(),
-        createdAtLabel: timeStr
-      };
-
-      showMiniResult(payload);
-      pushHistory(payload);
-      renderHistory();
-
-      toast("Login criado com sucesso!", "ok", "Pronto ✅");
-
-      document.getElementById("username").value = generateUsername();
-      document.getElementById("password").value = generatePassword();
-
-      // Recarregar lista de usuários
-      carregarUsuarios();
-
-    }catch(err){
-      document.getElementById("loader").style.display = "none";
-      document.getElementById("generateBtn").disabled = false;
-
-      const now = new Date();
-      const timeStr = formatDateTime(now);
-
-      const payload = {
-        title: "Login criado com sucesso!",
-        username,
-        password,
-        days: currentDays,
-        key: null,
-        prefix: PREFIX,
-        status: "OK",
-        createdAt: now.toISOString(),
-        createdAtLabel: timeStr
-      };
-
-      showMiniResult(payload);
-      pushHistory(payload);
-      renderHistory();
-
-      toast("Login criado com sucesso!", "ok", "Pronto ✅");
-
-      document.getElementById("username").value = generateUsername();
-      document.getElementById("password").value = generatePassword();
-
-      carregarUsuarios();
-
-      console.error(err);
-    }
-  }
-
-  function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
-    const box = document.getElementById("resultBox");
-    box.style.display = "block";
-
-    box.innerHTML = `
-      <div class="resultTitle">
-        <i class="fas fa-circle-check"></i>
-        <span>${escapeHtml(title)}</span>
-      </div>
-
-      <div class="metaGrid">
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-user"></i> Usuário</div>
-          <div class="metaValue">${escapeHtml(username || "-")}</div>
-        </div>
-
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-lock"></i> Senha</div>
-          <div class="metaValue">${escapeHtml(password || "-")}</div>
-        </div>
-
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div>
-          <div class="metaValue">${escapeHtml(days)} dias</div>
-        </div>
-
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-tag"></i> Prefixo</div>
-          <div class="metaValue">${escapeHtml(prefix)}</div>
-        </div>
-
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-shield-check"></i> Status</div>
-          <div class="metaValue">${escapeHtml(status)}</div>
-        </div>
-
-        <div class="metaItem" style="grid-column: 1 / -1;">
-          <div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div>
-          <div class="metaValue">${escapeHtml(createdAtLabel)}</div>
-        </div>
-      </div>
-
-      ${key ? `<div class="keybox" id="licenseKeyBox">${escapeHtml(key)}</div>` : ""}
-
-      <div class="rowbtns two" style="margin-top:12px;">
-        <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
-          <i class="fas fa-copy"></i> Copiar Credenciais
-        </button>
-        <button class="btn btn-primary" type="button" onclick="copyAllWithLink()">
-          <i class="fas fa-bolt"></i> Copiar Tudo + Link
-        </button>
-      </div>
-    `;
-  }
-
-  function copyAllWithLink() {
-    const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
-
-    try {
-      const metaItems = box.querySelectorAll('.metaItem');
-      
-      let username = "", password = "", days = "";
-      
-      metaItems.forEach(item => {
-        const label = item.querySelector('.metaLabel')?.innerText || "";
-        const value = item.querySelector('.metaValue')?.innerText || "";
+from flask import Flask, request, jsonify, render_template, redirect, url_for
+import json, os, time, base64, sqlite3, requests, hashlib, hmac
+import jwt
+from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
+from Crypto.Hash import SHA256
+from datetime import datetime, timedelta, timezone
+from functools import wraps
+
+DB = "data/licenses.db"
+USERS_FILE = "data/users.json"
+KEY_PRIV = "private.pem"
+KEY_PUB = "public.pem"
+SECURITY_LOG_FILE = "data/security.log"
+
+# Constante para licença ilimitada
+UNLIMITED_EXPIRY = 9999999999999
+
+# Chave secreta para HMAC (DEVE SER IGUAL À DO CLIENTE)
+CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
+
+# Configuração JWT
+JWT_SECRET = os.getenv("JWT_SECRET", "fer4_jwt_s3cr3t_k3y_ch4ng3_m3")
+JWT_ALGORITHM = "RS256"  # Vamos usar RSA para compatibilidade com seus .pem
+JWT_EXPIRY_HOURS = 24  # Token válido por 24 horas
+
+# ------------------------------
+#   CONFIG GITHUB
+# ------------------------------
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_REPO = "FeraAlpha/painel-licenca-server"
+GITHUB_FILE_PATH = "data/users.json"
+GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE_PATH}"
+
+os.makedirs("data", exist_ok=True)
+os.makedirs("data/backups", exist_ok=True)
+
+# ------------------------------
+#   FUNÇÕES DE SEGURANÇA
+# ------------------------------
+def log_security(event_type, fingerprint=None, ip=None, details=None):
+    """Registra eventos de segurança"""
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ip = ip or request.remote_addr if 'request' in globals() else "N/A"
+        user_agent = request.user_agent.string if 'request' in globals() and request.user_agent else "N/A"
         
-        if (label.includes('Usuário')) username = value;
-        if (label.includes('Senha')) password = value;
-        if (label.includes('Dias')) days = value;
-      });
-      
-      username = username || "não informado";
-      password = password || "não informado";
-      days = days || "não informado";
-      
-      const link = LINK_APK;
-      const app = NOME_APP;
-      
-      const texto = `🎯 *ACESSO LIBERADO - ${app}* 🎯\n\n` +
-                    `👤 *Usuário:* ${username}\n` +
-                    `🔑 *Senha:* ${password}\n` +
-                    `⏱️ *Validade:* ${days}\n\n` +
-                    `📲 *Link do APK:*\n${link}\n\n` +
-                    `⚡ Faça o download e aproveite! ⚡\n\n` +
-                    `⚠️ *Política de Reset de Login*\n\n` +
-                    `Cada licença do aplicativo possui direito a 1 reset de login gratuito.\n\n` +
-                    `Após utilizar esse reset gratuito, caso seja necessário realizar novos resets (por troca de aparelho, formatação ou qualquer outro motivo), será cobrada uma taxa de R$3,00 por reset.\n\n` +
-                    `Essa medida existe para evitar abusos e manter o funcionamento correto do sistema.\n\n` +
-                    `Agradecemos a compreensão. ✅`;
-      
-      copyToClipboard(texto);
-      toast("✅ Tudo copiado!", "ok", "Credenciais + Link + Política prontos!");
-      
-    } catch (error) {
-      toast("Erro ao copiar", "warn", "Tente novamente");
-    }
-  }
-
-  function copyUserPassDays(){
-    const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
-
-    const values = box.querySelectorAll(".metaGrid .metaValue");
-    const username = values[0]?.innerText || "";
-    const password = values[1]?.innerText || "";
-    const days = values[2]?.innerText || "";
-
-    const texto = `👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Link: ${LINK_APK}`;
-    copyToClipboard(texto);
-
-    toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
-  }
-
-  // ========== Histórico ==========
-  function getHistory(){
-    try{
-      const raw = localStorage.getItem(HISTORY_KEY);
-      if(!raw) return [];
-      const arr = JSON.parse(raw);
-      if(!Array.isArray(arr)) return [];
-      return arr;
-    }catch(e){
-      return [];
-    }
-  }
-
-  function pushHistory(item){
-    const history = getHistory();
-    history.unshift(item);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
-  }
-
-  function renderHistory(){
-    const list = document.getElementById("historyList");
-    if(!list) return;
-
-    const history = getHistory();
-
-    if(history.length === 0){
-      list.innerHTML = `<div class="empty">Nenhum login gerado ainda. Assim que você gerar, ele aparece aqui ✅</div>`;
-      return;
-    }
-
-    list.innerHTML = history.map((h, idx) => `
-      <div class="hItem">
-        <div class="hLeft">
-          <div class="hUser">${escapeHtml(h.username || "cliente")}</div>
-          <div class="hMeta">
-            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(h.days)} dias</span>
-            <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
-          </div>
-        </div>
-
-        <div class="hRight">
-          <button class="btn-mini" onclick="copyHistoryData(${idx})">
-            <i class="fas fa-copy"></i>
-          </button>
-          <button class="btn-mini" onclick="useHistory(${idx})">
-            <i class="fas fa-eye"></i>
-          </button>
-        </div>
-      </div>
-    `).join("");
-  }
-
-  function copyHistoryData(index){
-    const history = getHistory();
-    const item = history[index];
-    if(!item){
-      toast("Erro ao copiar", "warn", "Registro não encontrado");
-      return;
-    }
-
-    const texto = `👤 Usuário: ${item.username || ""}\n🔑 Senha: ${item.password || ""}\n⏱️ Dias: ${item.days || ""}\n\n📲 Link: ${LINK_APK}`;
-    copyToClipboard(texto);
-
-    toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
-  }
-
-  function useHistory(index){
-    const history = getHistory();
-    const item = history[index];
-    if(!item) return;
-
-    showMiniResult(item);
-    toast("Resultado carregado", "ok", "Histórico aberto ✅");
-  }
-
-  // ========== Listagem e Reset de Usuários ==========
-  async function carregarUsuarios() {
-    const container = document.getElementById("listaUsuariosContainer");
-    const token = document.getElementById("token").value.trim();
-    
-    if (!token) {
-      container.innerHTML = `<div class="empty">Token não informado. Salve seu token primeiro.</div>`;
-      return;
-    }
-
-    container.innerHTML = `<div class="empty" id="loadingUsuarios">Carregando usuários...</div>`;
-    
-    try {
-      const response = await fetch(`${USERS_API_URL}?token=${encodeURIComponent(token)}`);
-      const data = await response.json();
-      
-      if (!response.ok || data.error) {
-        throw new Error(data.error || "Erro ao carregar usuários");
-      }
-      
-      const users = data.users || [];
-      
-      if (users.length === 0) {
-        container.innerHTML = `<div class="empty">Nenhum usuário criado por você ainda.</div>`;
-        return;
-      }
-      
-      // Montar tabela
-      let html = `<table class="users-table">
-        <thead>
-          <tr>
-            <th>Usuário</th>
-            <th>Senha</th>
-            <th>Status</th>
-            <th>Expira em</th>
-            <th>Dispositivo</th>
-            <th>Ações</th>
-           </tr>
-        </thead>
-        <tbody>`;
-      
-      users.forEach(user => {
-        const expiresAt = user.expires_at;
-        const now = Math.floor(Date.now() / 1000);
-        let statusClass = "";
-        let statusText = "";
-        
-        if (user.status === "blocked") {
-          statusClass = "status-bloqueado";
-          statusText = "Bloqueado";
-        } else if (expiresAt === 9999999999999) {
-          statusClass = "status-ilimitado";
-          statusText = "Ilimitado";
-        } else if (expiresAt < now) {
-          statusClass = "status-expirado";
-          statusText = "Expirado";
-        } else {
-          statusClass = "status-ativo";
-          statusText = "Ativo";
+        log_entry = {
+            "timestamp": timestamp,
+            "event": event_type,
+            "fingerprint": fingerprint,
+            "ip": ip,
+            "user_agent": user_agent,
+            "details": details
         }
         
-        const expiresDisplay = expiresAt === 9999999999999 ? "Nunca" : new Date(expiresAt * 1000).toLocaleDateString("pt-BR");
-        const deviceId = user.device_id ? (user.device_id.substring(0, 20) + "...") : "Não ativado";
+        with open(SECURITY_LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(log_entry) + "\n")
+    except Exception:
+        pass
+
+def gerar_assinatura_hmac(expires, fingerprint):
+    """Gera assinatura HMAC igual ao cliente"""
+    dados = f"{expires}:{fingerprint}"
+    assinatura = hmac.new(
+        CHAVE_SECRETA.encode(),
+        dados.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return assinatura
+
+# ------------------------------
+#   FUNÇÕES JWT CORRIGIDAS
+# ------------------------------
+def gerar_token_jwt(fingerprint, username, expires_at):
+    """Gera um token JWT para o cliente com fallback para HS256"""
+    now = datetime.now(timezone.utc)
+    
+    # ✅ VERIFICAÇÃO: Checar se o arquivo private.pem existe
+    if not os.path.exists(KEY_PRIV):
+        log_security("jwt_private_key_missing", 
+                    details={"error": f"Arquivo {KEY_PRIV} não encontrado"})
+        # Fallback: usar JWT_SECRET com HS256
+        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
+    
+    try:
+        # Tenta carregar a chave privada RSA
+        with open(KEY_PRIV, "rb") as f:
+            private_key = RSA.import_key(f.read())
         
-        html += `<tr>
-          <td data-label="Usuário">${escapeHtml(user.username)}</td>
-          <td data-label="Senha">${escapeHtml(user.password)}</td>
-          <td data-label="Status"><span class="status-badge ${statusClass}">${statusText}</span></td>
-          <td data-label="Expira em">${escapeHtml(expiresDisplay)}</td>
-          <td data-label="Dispositivo">${escapeHtml(deviceId)}</td>
-          <td data-label="Ações">
-            <button class="reset-btn" onclick="resetarUsuario('${escapeHtml(user.username)}')" title="Resetar dispositivo">
-              <i class="fas fa-sync-alt"></i> Reset
-            </button>
-          </td>
-        </tr>`;
-      });
-      
-      html += `</tbody>
-      </table>`;
-      container.innerHTML = html;
-      
-    } catch (error) {
-      console.error(error);
-      container.innerHTML = `<div class="empty">Erro ao carregar usuários: ${error.message}</div>`;
-    }
-  }
-  
-  async function resetarUsuario(username) {
-    if (!confirm(`Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele ative em um novo aparelho.`)) {
-      return;
+        payload = {
+            "fp": fingerprint,
+            "user": username,
+            "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),
+            "iat": now,
+            "lic_exp": expires_at
+        }
+        
+        token = jwt.encode(payload, private_key, algorithm="RS256")
+        return token
+        
+    except (ValueError, TypeError) as e:
+        # Erro no formato da chave
+        log_security("jwt_private_key_invalid", 
+                    details={"error": str(e)})
+        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
+        
+    except Exception as e:
+        log_security("jwt_generation_error", 
+                    details={"error": str(e)})
+        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
+
+def gerar_token_jwt_fallback(fingerprint, username, expires_at):
+    """Fallback para gerar token JWT com HS256 quando RSA falha"""
+    now = datetime.now(timezone.utc)
+    
+    payload = {
+        "fp": fingerprint,
+        "user": username,
+        "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),
+        "iat": now,
+        "lic_exp": expires_at,
+        "alg_fallback": "HS256"  # Indicador que usou fallback
     }
     
-    const token = document.getElementById("token").value.trim();
-    if (!token) {
-      toast("Token não salvo", "warn", "Salve seu token primeiro");
-      return;
-    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+    return token
+
+def validar_token_jwt(token):
+    """Valida um token JWT e retorna o payload se válido (com suporte a fallback)"""
+    try:
+        # Primeiro tenta validar com chave pública RSA
+        if os.path.exists(KEY_PUB):
+            try:
+                with open(KEY_PUB, "rb") as f:
+                    public_key = RSA.import_key(f.read())
+                
+                payload = jwt.decode(
+                    token, 
+                    public_key, 
+                    algorithms=["RS256"],
+                    options={"require": ["exp", "iat", "fp", "user"]}
+                )
+                return {"valid": True, "payload": payload}
+            except:
+                # Se falhar com RSA, tenta com HS256
+                pass
+        
+        # Tenta validar com HS256 (fallback)
+        payload = jwt.decode(
+            token,
+            JWT_SECRET,
+            algorithms=["HS256"],
+            options={"require": ["exp", "iat", "fp", "user"]}
+        )
+        return {"valid": True, "payload": payload}
+        
+    except jwt.ExpiredSignatureError:
+        return {"valid": False, "reason": "token_expired"}
+    except jwt.InvalidTokenError as e:
+        return {"valid": False, "reason": f"invalid_token: {str(e)}"}
+    except Exception as e:
+        return {"valid": False, "reason": f"validation_error: {str(e)}"}
+
+# ------------------------------
+#   BANCO SQL MELHORADO
+# ------------------------------
+def init_db():
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
     
-    // Encontrar o botão para mostrar loading
-    const btns = document.querySelectorAll('.reset-btn');
-    let btnAlvo = null;
-    for (let btn of btns) {
-      if (btn.innerText.includes(username) || btn.closest('tr')?.innerText.includes(username)) {
-        btnAlvo = btn;
-        break;
-      }
-    }
+    # Tabela de licenças existente
+    c.execute('''CREATE TABLE IF NOT EXISTS licenses
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  fingerprint TEXT UNIQUE, 
+                  username TEXT,
+                  issued_at INTEGER, 
+                  expires_at INTEGER, 
+                  status TEXT DEFAULT 'active',
+                  last_used INTEGER,
+                  device_info TEXT)''')
     
-    if (btnAlvo) {
-      btnAlvo.disabled = true;
-      btnAlvo.classList.add('btn-loading');
-    }
+    # ✅ NOVA: Tabela de sessões
+    c.execute('''CREATE TABLE IF NOT EXISTS sessions
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  token TEXT NOT NULL,
+                  fingerprint TEXT NOT NULL,
+                  expires_at INTEGER NOT NULL,
+                  created_at INTEGER,
+                  last_used INTEGER,
+                  UNIQUE(token, fingerprint))''')
     
-    try {
-      const response = await fetch(RESET_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          username: username,
-          token: token
+    # ✅ NOVA: Tabela de uso de licenças (log)
+    c.execute('''CREATE TABLE IF NOT EXISTS license_usage
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  fingerprint TEXT,
+                  action TEXT,
+                  timestamp INTEGER,
+                  ip_address TEXT,
+                  user_agent TEXT)''')
+    
+    # ✅ NOVA: Tabela para revogação de tokens JWT
+    c.execute('''CREATE TABLE IF NOT EXISTS revoked_tokens
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  token TEXT UNIQUE,
+                  fingerprint TEXT,
+                  revoked_at INTEGER,
+                  reason TEXT)''')
+    
+    # Criar índices para melhor performance
+    c.execute('CREATE INDEX IF NOT EXISTS idx_fingerprint ON licenses(fingerprint)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_sessions ON sessions(token, fingerprint)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_license_status ON licenses(status, expires_at)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_revoked_tokens ON revoked_tokens(token)')
+    
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# ------------------------------
+#   FUNÇÕES DO BANCO
+# ------------------------------
+def get_db():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def verificar_licenca_ativa(fingerprint, expires):
+    """Verifica se a licença está ativa no banco"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT * FROM licenses 
+        WHERE fingerprint = ? AND expires_at = ? AND status = 'active'
+    ''', (fingerprint, expires))
+    
+    licenca = cursor.fetchone()
+    conn.close()
+    
+    return licenca is not None
+
+def atualizar_uso_licenca(fingerprint, expires):
+    """Atualiza o último uso da licença"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        UPDATE licenses SET last_used = ?
+        WHERE fingerprint = ? AND expires_at = ?
+    ''', (int(time.time()), fingerprint, expires))
+    
+    conn.commit()
+    conn.close()
+
+def registrar_uso(fingerprint, action, ip=None, user_agent=None):
+    """Registra uso da licença para auditoria"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    ip = ip or (request.remote_addr if 'request' in globals() else "N/A")
+    user_agent = user_agent or (request.user_agent.string if 'request' in globals() and request.user_agent else "N/A")
+    
+    cursor.execute('''
+        INSERT INTO license_usage (fingerprint, action, timestamp, ip_address, user_agent)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (fingerprint, action, int(time.time()), ip, user_agent))
+    
+    conn.commit()
+    conn.close()
+
+def criar_sessao(token, fingerprint):
+    """Cria uma nova sessão"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    expires_at = int(time.time()) + (24 * 60 * 60)  # 24 horas
+    
+    cursor.execute('''
+        INSERT OR REPLACE INTO sessions (token, fingerprint, expires_at, created_at, last_used)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (token, fingerprint, expires_at, int(time.time()), int(time.time())))
+    
+    conn.commit()
+    conn.close()
+
+def verificar_sessao(token, fingerprint):
+    """Verifica se a sessão é válida"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT * FROM sessions 
+        WHERE token = ? AND fingerprint = ? AND expires_at > ?
+    ''', (token, fingerprint, int(time.time())))
+    
+    sessao = cursor.fetchone()
+    
+    if sessao:
+        # Atualizar último uso
+        cursor.execute('''
+            UPDATE sessions SET last_used = ? 
+            WHERE token = ? AND fingerprint = ?
+        ''', (int(time.time()), token, fingerprint))
+        conn.commit()
+    
+    conn.close()
+    return sessao is not None
+
+def revogar_token(token, fingerprint=None, reason="admin_revoked"):
+    """Revoga um token JWT"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+        VALUES (?, ?, ?, ?)
+    ''', (token, fingerprint, int(time.time()), reason))
+    
+    conn.commit()
+    conn.close()
+
+def token_esta_revogado(token):
+    """Verifica se um token foi revogado"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM revoked_tokens WHERE token = ?', (token,))
+    result = cursor.fetchone()
+    conn.close()
+    
+    return result is not None
+
+# ------------------------------
+#   WRITE ATÔMICO
+# ------------------------------
+def atomic_write(path, data_bytes):
+    tmp = path + ".tmp"
+    with open(tmp, "wb") as f:
+        f.write(data_bytes)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+
+# ------------------------------
+#   LOAD USERS
+# ------------------------------
+def load_users():
+    try:
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                # Corrige valores antigos: se for 0, converte para UNLIMITED_EXPIRY
+                users = data.get("users", [])
+                for user in users:
+                    if user.get("expires_at") == 0:
+                        user["expires_at"] = UNLIMITED_EXPIRY
+                return data
+    except Exception as e:
+        log_security("load_users_error", details=str(e))
+
+    # tenta recuperar do GitHub
+    if GITHUB_TOKEN:
+        try:
+            r = requests.get(GITHUB_API_URL, headers={
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github+json"
+            }, timeout=10)
+            if r.ok:
+                info = r.json()
+                content = base64.b64decode(info.get("content", "")).decode()
+                data = json.loads(content)
+                # Corrige valores
+                users = data.get("users", [])
+                for user in users:
+                    if user.get("expires_at") == 0:
+                        user["expires_at"] = UNLIMITED_EXPIRY
+                atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
+                return data
+        except Exception as e:
+            log_security("github_sync_error", details=str(e))
+
+    return {"users": []}
+
+# ------------------------------
+#   SAVE USERS (CORRIGIDA)
+# ------------------------------
+def save_users_github(data, retries=3):
+    if not GITHUB_TOKEN:
+        return False
+
+    sha = None
+    try:
+        r = requests.get(GITHUB_API_URL, headers={
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github+json"
         })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.ok) {
-        toast(`Dispositivo de ${username} resetado com sucesso!`, "ok", "O usuário pode ativar em outro aparelho.");
-        // Recarregar lista para atualizar o campo device_id
-        carregarUsuarios();
-      } else {
-        toast("Erro: " + (data.error || data.message || "Falha desconhecida"), "warn");
-      }
-    } catch (error) {
-      toast("Erro de conexão", "warn", "Tente novamente mais tarde");
-      console.error(error);
-    } finally {
-      if (btnAlvo) {
-        btnAlvo.disabled = false;
-        btnAlvo.classList.remove('btn-loading');
-      }
-    }
-  }
+        if r.ok:
+            sha = r.json().get("sha")
+    except Exception:
+        pass
 
-  // Utilitários
-  function copyToClipboard(text){
-    if(navigator.clipboard && window.isSecureContext){
-      navigator.clipboard.writeText(text).catch(()=> fallbackCopy(text));
-    }else{
-      fallbackCopy(text);
-    }
-  }
+    content_b64 = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
 
-  function fallbackCopy(text){
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try{ document.execCommand("copy"); }catch(e){}
-    document.body.removeChild(ta);
-  }
+    payload = {"message": "update users.json", "content": content_b64}
+    if sha:
+        payload["sha"] = sha
 
-  function toast(msg, type="ok", sub=""){
-    const t = document.getElementById("toast");
-    const m = document.getElementById("toastMsg");
-    const s = document.getElementById("toastSub");
+    for _ in range(retries):
+        try:
+            res = requests.put(
+                GITHUB_API_URL,
+                headers={
+                    "Authorization": f"Bearer {GITHUB_TOKEN}",
+                    "Accept": "application/vnd.github+json"
+                },
+                json=payload
+            )
+            if res.status_code in (200, 201):
+                return True
+        except Exception as e:
+            log_security("github_upload_error", details=str(e))
+            time.sleep(1)
 
-    m.textContent = msg;
-    s.textContent = sub;
+    return False
 
-    t.classList.remove("warn");
-    if(type === "warn") t.classList.add("warn");
+def save_users(data):
+    try:
+        # backup
+        ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
 
-    t.classList.add("show");
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
-  }
+        # local
+        atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
 
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
+        # sync cloud (não bloqueante)
+        try:
+            save_users_github(data)
+        except Exception as e:
+            log_security("save_users_error", details=str(e))
+            
+        return True
+    except Exception as e:
+        log_security("save_users_critical_error", details=str(e))
+        print(f"ERRO CRÍTICO AO SALVAR USERS: {str(e)}")
+        return False
 
-  function formatDateTime(d){
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-</script>
-</body>
-</html>
+# ------------------------------
+#   ASSINATURA
+# ------------------------------
+def sign_payload(payload_bytes):
+    try:
+        with open(KEY_PRIV, "rb") as f:
+            priv = RSA.import_key(f.read())
+        h = SHA256.new(payload_bytes)
+        sig = pkcs1_15.new(priv).sign(h)
+        return sig
+    except Exception as e:
+        log_security("sign_payload_error", details=str(e))
+        # Fallback: retorna None
+        return None
+
+# ------------------------------
+#   FLASK APP
+# ------------------------------
+app = Flask(__name__, template_folder='templates')
+
+# ------------------------------
+#   MIDDLEWARE DE SEGURANÇA
+# ------------------------------
+@app.before_request
+def before_request():
+    # Log de requisições suspeitas
+    if request.endpoint not in ['home', 'ping']:
+        log_security(
+            "api_request",
+            ip=request.remote_addr,
+            details={
+                "endpoint": request.endpoint,
+                "method": request.method,
+                "path": request.path,
+                "user_agent": request.user_agent.string if request.user_agent else None
+            }
+        )
+
+# ------------------------------
+#   ROTAS PÚBLICAS
+# ------------------------------
+@app.route("/")
+def home():
+    return "Painel Licença OK", 200
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    """Endpoint para teste de conexão"""
+    return jsonify({
+        "status": "online",
+        "timestamp": datetime.now().isoformat(),
+        "version": "2.0"
+    }), 200
+
+# ------------------------------
+#   VERIFICAÇÃO DE LICENÇA
+# ------------------------------
+@app.route("/verify_license", methods=["POST"])
+def verify_license():
+    """Verifica se uma licença é válida"""
+    try:
+        data = request.json or {}
+        fingerprint = data.get("fingerprint")
+        expires = data.get("expires")
+        
+        if not fingerprint or not expires:
+            log_security("verify_missing_fields", fingerprint=fingerprint)
+            return jsonify({"valid": False, "reason": "missing_fields"}), 400
+        
+        # Converter expires para int
+        try:
+            expires_int = int(expires)
+        except ValueError:
+            log_security("verify_invalid_expires", fingerprint=fingerprint, details={"expires": expires})
+            return jsonify({"valid": False, "reason": "invalid_expires_format"}), 400
+        
+        # ✅ 1. Verificar se a licença existe no banco
+        if not verificar_licenca_ativa(fingerprint, expires_int):
+            log_security("license_not_found", fingerprint=fingerprint, details={"expires": expires_int})
+            return jsonify({"valid": False, "reason": "license_not_found"}), 404
+        
+        # ✅ 2. Verificar se não expirou (exceto se for ilimitada)
+        now = int(time.time())
+        if expires_int != UNLIMITED_EXPIRY and expires_int < now:
+            log_security("license_expired", fingerprint=fingerprint, details={"expires": expires_int, "now": now})
+            return jsonify({"valid": False, "reason": "license_expired"}), 403
+        
+        # ✅ 3. Atualizar uso e registrar
+        atualizar_uso_licenca(fingerprint, expires_int)
+        registrar_uso(fingerprint, "license_verified")
+        
+        log_security("license_verified", fingerprint=fingerprint)
+        
+        return jsonify({
+            "valid": True,
+            "expires_at": expires_int,
+            "is_unlimited": expires_int == UNLIMITED_EXPIRY
+        })
+        
+    except Exception as e:
+        log_security("verify_error", details=str(e))
+        return jsonify({"valid": False, "reason": "internal_error"}), 500
+
+# ------------------------------
+#   VERIFICAÇÃO DE SESSÃO
+# ------------------------------
+@app.route("/verify_session", methods=["GET"])
+def verify_session():
+    """Verifica se uma sessão é válida"""
+    try:
+        token = request.args.get("token")
+        fp = request.args.get("fp")  # fingerprint
+        
+        if not token or not fp:
+            return jsonify({"valid": False, "reason": "missing_params"}), 400
+        
+        # Verificar sessão
+        if verificar_sessao(token, fp):
+            log_security("session_valid", fingerprint=fp)
+            return jsonify({"valid": True})
+        else:
+            log_security("session_invalid", fingerprint=fp)
+            return jsonify({"valid": False, "reason": "session_invalid_or_expired"})
+            
+    except Exception as e:
+        log_security("session_error", details=str(e))
+        return jsonify({"valid": False, "reason": "internal_error"}), 500
+
+# ------------------------------
+#   VALIDAÇÃO DE TOKEN JWT (NOVO)
+# ------------------------------
+@app.route("/token/validate", methods=["POST"])
+def validate_token():
+    """Valida um token JWT enviado pelo cliente"""
+    try:
+        data = request.json or {}
+        token = data.get("token")
+        fingerprint = data.get("fingerprint")
+        
+        if not token:
+            log_security("token_missing", ip=request.remote_addr)
+            return jsonify({"valid": False, "reason": "token_required"}), 400
+        
+        # Verificar se o token foi revogado
+        if token_esta_revogado(token):
+            log_security("token_revoked", ip=request.remote_addr)
+            return jsonify({"valid": False, "reason": "token_revoked"}), 403
+        
+        # Validar o token JWT
+        result = validar_token_jwt(token)
+        
+        if not result["valid"]:
+            log_security("token_invalid", 
+                        ip=request.remote_addr, 
+                        details={"reason": result["reason"]})
+            return jsonify({"valid": False, "reason": result["reason"]}), 401
+        
+        payload = result["payload"]
+        
+        # Se forneceu fingerprint, verificar se corresponde
+        if fingerprint and payload.get("fp") != fingerprint:
+            log_security("token_fingerprint_mismatch",
+                        fingerprint=fingerprint,
+                        details={"token_fp": payload.get("fp")})
+            return jsonify({"valid": False, "reason": "fingerprint_mismatch"}), 403
+        
+        # Verificar se a licença ainda está ativa no banco
+        fp = payload.get("fp")
+        if fp:
+            licenca_valida = verificar_licenca_ativa(fp, payload.get("lic_exp", 0))
+            if not licenca_valida:
+                log_security("token_license_inactive", fingerprint=fp)
+                return jsonify({"valid": False, "reason": "license_inactive"}), 403
+        
+        # Token válido!
+        log_security("token_validated", fingerprint=payload.get("fp"))
+        
+        return jsonify({
+            "valid": True,
+            "payload": {
+                "fingerprint": payload.get("fp"),
+                "username": payload.get("user"),
+                "license_expires": payload.get("lic_exp")
+            }
+        })
+        
+    except Exception as e:
+        log_security("token_validation_error", details=str(e))
+        return jsonify({"valid": False, "reason": "internal_error"}), 500
+
+# ------------------------------
+#   CLIENTE - ATIVAÇÃO (CORRIGIDA)
+# ------------------------------
+@app.route("/activate", methods=["POST"])
+def activate():
+    try:
+        # ✅ VERIFICAÇÃO INICIAL: Checar se as chaves RSA existem
+        if not os.path.exists(KEY_PRIV):
+            log_security("activate_warning", 
+                        details={"warning": f"Arquivo {KEY_PRIV} não encontrado, usando fallback"})
+        
+        data = request.json or {}
+        username = data.get("username")
+        password = data.get("password")
+        fingerprint = data.get("fingerprint")
+        
+        if not username or not password or not fingerprint:
+            log_security("activate_missing_fields", details={"username": username})
+            return jsonify({"error": "missing_fields"}), 400
+
+        users = load_users().get("users", [])
+        user = next((u for u in users if u["username"] == username and u["password"] == password), None)
+
+        if not user:
+            log_security("activate_invalid_credentials", fingerprint=fingerprint, details={"username": username})
+            return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
+
+        now = int(time.time())
+        expires = user.get("expires_at", 0)
+        
+        # Para licença ilimitada
+        if expires == UNLIMITED_EXPIRY:
+            # Licença ilimitada - sempre válida
+            pass
+        elif expires < now:
+            log_security("activate_expired", fingerprint=fingerprint, details={"username": username, "expires": expires})
+            return jsonify({"status": "error", "reason": "expired"}), 403
+
+        # ✅ CORREÇÃO: Tratar device_id nulo corretamente
+        device_id = user.get("device_id")
+        
+        # Se device_id é None (nunca ativado), atribuir o fingerprint
+        if device_id is None:
+            user["device_id"] = fingerprint
+            save_users({"users": users})
+            log_security("device_activated", fingerprint=fingerprint, details={"username": username})
+        # Se device_id existe e é diferente, recusar
+        elif device_id != fingerprint:
+            log_security("activate_device_mismatch", fingerprint=fingerprint, 
+                        details={"username": username, "stored_device": device_id})
+            return jsonify({"status": "error", "reason": "device_mismatch"}), 403
+        # Se device_id é igual, permitir (já ativado neste dispositivo)
+
+        # ✅ SALVAR LICENÇA NO BANCO DE DADOS
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Verificar se já existe
+        cursor.execute('SELECT * FROM licenses WHERE fingerprint = ?', (fingerprint,))
+        existing = cursor.fetchone()
+        
+        if not existing:
+            cursor.execute('''
+                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (fingerprint, username, now, expires, 'active', now))
+        else:
+            cursor.execute('''
+                UPDATE licenses 
+                SET expires_at = ?, status = 'active', last_used = ?
+                WHERE fingerprint = ?
+            ''', (expires, now, fingerprint))
+        
+        conn.commit()
+        conn.close()
+        
+        # ✅ CRIAR SESSÃO
+        token = hashlib.sha256(f"{fingerprint}:{now}:{os.urandom(16).hex()}".encode()).hexdigest()
+        criar_sessao(token, fingerprint)
+        
+        # Para resposta, se for ilimitado, envia 0 para o cliente
+        client_expires = 0 if expires == UNLIMITED_EXPIRY else expires
+        
+        payload = {
+            "username": username,
+            "fingerprint": fingerprint,
+            "issued_at": now,
+            "expires_at": client_expires
+        }
+
+        payload_bytes = json.dumps(payload, separators=(',', ':')).encode()
+        sig = sign_payload(payload_bytes)
+        
+        # ✅ GERAR ASSINATURA HMAC (para validação local do cliente)
+        assinatura_hmac = gerar_assinatura_hmac(client_expires, fingerprint)
+        
+        # ✅ GERAR TOKEN JWT (agora com fallback)
+        try:
+            jwt_token = gerar_token_jwt(fingerprint, username, expires)
+        except Exception as jwt_error:
+            log_security("jwt_generation_critical", details={"error": str(jwt_error)})
+            jwt_token = None  # Continua mesmo sem JWT
+        
+        log_security("activate_success", fingerprint=fingerprint, details={"username": username, "expires": client_expires})
+        registrar_uso(fingerprint, "activate")
+
+        return jsonify({
+            "status": "success",
+            "payload": base64.b64encode(payload_bytes).decode() if payload_bytes else None,
+            "sig": base64.b64encode(sig).decode() if sig else None,
+            "expires_at": client_expires,
+            "session_token": token,
+            "assinatura": assinatura_hmac,
+            "jwt_token": jwt_token
+        })
+
+    except Exception as e:
+        log_security("activate_error", details=str(e))
+        # ✅ IMPORTANTE: Log mais detalhado do erro
+        print(f"ERRO NA ATIVAÇÃO: {str(e)}")  # Vai aparecer nos logs do Render
+        import traceback
+        traceback.print_exc()  # Mostra o stack trace completo
+        return jsonify({"status": "error", "reason": "internal_error"}), 500
+
+# ------------------------------
+#   ADMIN
+# ------------------------------
+def check_admin(a):
+    ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+    ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
+    return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
+
+def need_admin(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        auth = request.authorization
+        if not check_admin(auth):
+            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Login Required\"'})
+        return f(*args, **kwargs)
+    return wrapper
+
+@app.route("/admin")
+@need_admin
+def admin():
+    data = load_users()
+    
+    # Buscar estatísticas do banco
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Contar licenças ativas
+    cursor.execute("SELECT COUNT(*) FROM licenses WHERE status = 'active'")
+    total_licenses = cursor.fetchone()[0]
+    
+    # Últimos usos
+    cursor.execute('''
+        SELECT fingerprint, username, MAX(last_used) as last_used 
+        FROM licenses 
+        WHERE status = 'active' 
+        GROUP BY fingerprint 
+        ORDER BY last_used DESC 
+        LIMIT 10
+    ''')
+    recent_usage = cursor.fetchall()
+    
+    conn.close()
+    
+    return render_template("admin_index.html", 
+                         users=data.get("users", []), 
+                         datetime=datetime,
+                         total_licenses=total_licenses,
+                         recent_usage=recent_usage)
+
+# ------------------------------
+#   ROTA ADMIN - RELATÓRIO DE USO
+# ------------------------------
+@app.route("/admin/usage_report")
+@need_admin
+def admin_usage_report():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Últimos 100 usos
+    cursor.execute('''
+        SELECT fingerprint, action, timestamp, ip_address, user_agent 
+        FROM license_usage 
+        ORDER BY timestamp DESC 
+        LIMIT 100
+    ''')
+    
+    usage_data = []
+    for row in cursor.fetchall():
+        usage_data.append({
+            "fingerprint": row[0],
+            "action": row[1],
+            "timestamp": datetime.fromtimestamp(row[2]).strftime("%Y-%m-%d %H:%M:%S"),
+            "ip": row[3],
+            "user_agent": row[4]
+        })
+    
+    conn.close()
+    
+    return render_template("usage_report.html", usage_data=usage_data)
+
+# ------------------------------
+#   ADMIN - REVOGAR TOKENS (NOVO)
+# ------------------------------
+@app.route("/admin/revoke_tokens", methods=["POST"])
+@need_admin
+def admin_revoke_tokens():
+    """Revoga todos os tokens de um usuário/fingerprint"""
+    try:
+        data = request.json or {}
+        fingerprint = data.get("fingerprint")
+        username = data.get("username")
+        reason = data.get("reason", "admin_revoked")
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        if fingerprint:
+            # Revogar tokens específicos do fingerprint
+            cursor.execute('''
+                INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+                SELECT token, fingerprint, ?, ? FROM sessions WHERE fingerprint = ?
+            ''', (int(time.time()), reason, fingerprint))
+            
+            # Limpar sessões
+            cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fingerprint,))
+            
+        elif username:
+            # Buscar fingerprints do usuário
+            cursor.execute('SELECT fingerprint FROM licenses WHERE username = ?', (username,))
+            fingerprints = [row[0] for row in cursor.fetchall()]
+            
+            for fp in fingerprints:
+                cursor.execute('''
+                    INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+                    SELECT token, fingerprint, ?, ? FROM sessions WHERE fingerprint = ?
+                ''', (int(time.time()), reason, fp))
+                cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fp,))
+        
+        conn.commit()
+        conn.close()
+        
+        log_security("admin_revoked_tokens", 
+                    details={"fingerprint": fingerprint, "username": username, "reason": reason})
+        
+        return jsonify({"success": True, "message": "Tokens revogados com sucesso"})
+        
+    except Exception as e:
+        log_security("admin_revoke_error", details=str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ------------------------------
+#   GERAR KEY (ADMIN) - ATUALIZADA
+# ------------------------------
+@app.route("/admin/generate", methods=["POST"])
+@need_admin
+def admin_generate():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    prefix = request.form.get("prefix") or "FERA"
+    expire_days_raw = request.form.get("expire_days", "30")
+    
+    try:
+        expire_days = int(expire_days_raw)
+    except Exception:
+        expire_days = 30
+
+    # Se expire_days == 0 => ilimitado
+    if expire_days == 0:
+        expires_at = UNLIMITED_EXPIRY
+    else:
+        expires_at = int(time.time()) + expire_days * 86400
+
+    key = prefix + "-" + os.urandom(4).hex().upper()
+
+    data = load_users()
+    users = data.get("users", [])
+
+    # evita duplicados
+    for u in users:
+        if u.get("username") == username:
+            u["password"] = password
+            u["key"] = key
+            u["expires_at"] = expires_at
+            # admin não altera revendedor
+            save_users(data)
+            
+            log_security("admin_user_updated", details={"username": username, "expires_at": expires_at})
+            return ("", 302, {"Location": "/admin"})
+
+    users.append({
+        "username": username,
+        "password": password,
+        "key": key,
+        "device_id": None,
+        "expires_at": expires_at,
+        "created_at": int(time.time())
+    })
+
+    save_users(data)
+    log_security("admin_user_created", details={"username": username, "expires_at": expires_at})
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   ROTA ADMIN - LICENÇAS DO BANCO
+# ------------------------------
+@app.route("/admin/database")
+@need_admin
+def admin_database():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT * FROM licenses 
+        ORDER BY last_used DESC
+    ''')
+    
+    licenses_db = []
+    for row in cursor.fetchall():
+        licenses_db.append({
+            "id": row[0],
+            "fingerprint": row[1],
+            "username": row[2],
+            "issued_at": datetime.fromtimestamp(row[3]).strftime("%Y-%m-%d %H:%M:%S") if row[3] else "N/A",
+            "expires_at": "ILIMITADO" if row[4] == UNLIMITED_EXPIRY else datetime.fromtimestamp(row[4]).strftime("%Y-%m-%d %H:%M:%S"),
+            "status": row[5],
+            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA"
+        })
+    
+    conn.close()
+    
+    return render_template("database_view.html", licenses=licenses_db)
+
+# ------------------------------
+#   RENOVAR +30 DIAS
+# ------------------------------
+@app.route("/admin/renew/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_renew(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        add_days = 30
+
+        # se já é ilimitado, mantém ilimitado
+        if current == UNLIMITED_EXPIRY:
+            users[index]["expires_at"] = UNLIMITED_EXPIRY
+        else:
+            if current < now:
+                new_exp = now + add_days * 86400
+            else:
+                new_exp = current + add_days * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+        
+        # ✅ ATUALIZAR BANCO DE DADOS TAMBÉM
+        fingerprint = users[index].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET expires_at = ?, status = 'active'
+                WHERE fingerprint = ?
+            ''', (users[index]["expires_at"], fingerprint))
+            conn.commit()
+            conn.close()
+        
+        log_security("admin_renewed", details={"username": users[index]["username"], "new_expires": users[index]["expires_at"]})
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   RENOVAR CUSTOM DIAS
+# ------------------------------
+@app.route("/admin/renew_custom/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_renew_custom(index):
+    days_raw = None
+    if request.method == "POST":
+        days_raw = request.form.get("days", "30")
+    else:
+        days_raw = request.args.get("days", "30")
+
+    try:
+        days = int(days_raw)
+    except Exception:
+        days = 30
+
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        # days == 0 => ilimitado
+        if days == 0:
+            users[index]["expires_at"] = UNLIMITED_EXPIRY
+        else:
+            # se já é ilimitado, converte para dias a partir de agora
+            if current == UNLIMITED_EXPIRY:
+                new_exp = now + days * 86400
+            else:
+                if current < now:
+                    new_exp = now + days * 86400
+                else:
+                    new_exp = current + days * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+        
+        # ✅ ATUALIZAR BANCO DE DADOS TAMBÉM
+        fingerprint = users[index].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET expires_at = ?, status = 'active'
+                WHERE fingerprint = ?
+            ''', (users[index]["expires_at"], fingerprint))
+            conn.commit()
+            conn.close()
+        
+        log_security("admin_renewed_custom", details={"username": users[index]["username"], "days": days, "new_expires": users[index]["expires_at"]})
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   RESETAR KEY
+# ------------------------------
+@app.route("/admin/reset/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_reset(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        old_key = users[index].get("key", "FERA-XXXX")
+        prefix = old_key.split("-")[0]
+        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
+        users[index]["key"] = new_key
+        save_users(data)
+        
+        log_security("admin_key_reset", details={"username": users[index]["username"], "new_key": new_key})
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   RESETAR DEVICE
+# ------------------------------
+@app.route("/admin/reset_device/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_reset_device(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users[index]["device_id"] = None
+        save_users(data)
+        
+        log_security("admin_device_reset", details={"username": users[index]["username"]})
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   RESETAR TODOS OS DEVICES
+# ------------------------------
+@app.route("/admin/reset_all_devices", methods=["POST"])
+@need_admin
+def admin_reset_all_devices():
+    data = load_users()
+    users = data.get("users", [])
+    
+    for user in users:
+        user["device_id"] = None
+    
+    save_users(data)
+    
+    log_security("admin_reset_all_devices", details={"count": len(users)})
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   LIMPAR USUÁRIOS EXPIRADOS
+# ------------------------------
+@app.route("/admin/clean_expired", methods=["POST"])
+@need_admin
+def admin_clean_expired():
+    data = load_users()
+    users = data.get("users", [])
+    now = int(time.time())
+    
+    # Filtrar apenas usuários não expirados ou ilimitados
+    filtered_users = []
+    expired_fingerprints = []
+    
+    for user in users:
+        expires_at = user.get("expires_at", 0)
+        
+        # Se for ilimitado, mantém
+        if expires_at == UNLIMITED_EXPIRY:
+            filtered_users.append(user)
+        # Se não expirou, mantém
+        elif expires_at > now:
+            filtered_users.append(user)
+        # Se expirou, remove
+        else:
+            if user.get("device_id"):
+                expired_fingerprints.append(user["device_id"])
+    
+    data["users"] = filtered_users
+    save_users(data)
+    
+    # ✅ REMOVER DO BANCO DE DADOS TAMBÉM
+    if expired_fingerprints:
+        conn = get_db()
+        cursor = conn.cursor()
+        placeholders = ','.join(['?' for _ in expired_fingerprints])
+        cursor.execute(f'UPDATE licenses SET status = "expired" WHERE fingerprint IN ({placeholders})', expired_fingerprints)
+        conn.commit()
+        conn.close()
+    
+    log_security("admin_clean_expired", details={"removed_count": len(users) - len(filtered_users)})
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   TORNAR LICENÇA ILIMITADA
+# ------------------------------
+@app.route("/admin/make_unlimited/<int:index>", methods=["POST"])
+@need_admin
+def admin_make_unlimited(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users[index]["expires_at"] = UNLIMITED_EXPIRY
+        save_users(data)
+        
+        # ✅ ATUALIZAR BANCO DE DADOS TAMBÉM
+        fingerprint = users[index].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET expires_at = ?
+                WHERE fingerprint = ?
+            ''', (UNLIMITED_EXPIRY, fingerprint))
+            conn.commit()
+            conn.close()
+        
+        log_security("admin_make_unlimited", details={"username": users[index]["username"]})
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   DELETAR USUÁRIO
+# ------------------------------
+@app.route("/admin/delete/<int:index>", methods=["POST", "GET"])
+@need_admin
+def admin_delete(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        deleted_user = users.pop(index)
+        save_users(data)
+        
+        # ✅ REMOVER DO BANCO DE DADOS TAMBÉM
+        fingerprint = deleted_user.get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM licenses WHERE fingerprint = ?', (fingerprint,))
+            conn.commit()
+            conn.close()
+        
+        log_security("admin_delete_user", details={"username": deleted_user.get("username")})
+
+    return ("", 302, {"Location": "/admin"})
+
+# ------------------------------
+#   CONFIGURAÇÃO DE MÚLTIPLOS REVENDEDORES
+# ------------------------------
+def carregar_revendedores():
+    """
+    Lê todas as variáveis de ambiente que começam com 'RESELLER_' 
+    e também a variável legada RESELLER_TOKEN (se existir).
+    Retorna um dicionário {token: nome_do_revendedor}
+    """
+    revendedores = {}
+    
+    # 1. Variáveis individuais: RESELLER_NOME=token
+    for chave, valor in os.environ.items():
+        if chave.startswith('RESELLER_') and chave != 'RESELLER_TOKEN':
+            nome = chave[9:]  # remove 'RESELLER_'
+            token = valor.strip()
+            if token:  # ignora valores vazios
+                revendedores[token] = nome
+    
+    # 2. Variável legada RESELLER_TOKEN (formato "nome|token,nome|token" ou "token,token")
+    token_legado = os.getenv('RESELLER_TOKEN')
+    if token_legado:
+        for parte in token_legado.split(','):
+            parte = parte.strip()
+            if '|' in parte:
+                nome, token = parte.split('|', 1)
+                revendedores[token.strip()] = nome.strip()
+            else:
+                # apenas token, usa o próprio token como nome (compatibilidade)
+                revendedores[parte] = parte
+    
+    return revendedores
+
+# Mapeamento global: token -> nome do revendedor
+RESELLER_MAP = carregar_revendedores()
+
+# ------------------------------
+#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN)
+# ------------------------------
+@app.route("/reseller/generate", methods=["POST"])
+def reseller_generate():
+    token = request.form.get("token")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    prefix = request.form.get("prefix") or "FERA"
+    expire_days_raw = request.form.get("expire_days", "30")
+    
+    try:
+        expire_days = int(expire_days_raw)
+    except Exception:
+        expire_days = 30
+
+    # Verifica se o token está no mapeamento
+    if token not in RESELLER_MAP:
+        log_security("reseller_invalid_token", details={"token": token})
+        return jsonify({"error": "invalid_token"}), 403
+
+    # Obtém o nome do revendedor
+    reseller_nome = RESELLER_MAP[token]
+
+    if not username or not password:
+        return jsonify({"error": "missing_fields"}), 400
+
+    # expire_days == 0 => ilimitado
+    if expire_days == 0:
+        expires_at = UNLIMITED_EXPIRY
+    else:
+        expires_at = int(time.time()) + expire_days * 86400
+
+    key = prefix + "-" + os.urandom(4).hex().upper()
+
+    data = load_users()
+    users = data.get("users", [])
+
+    for u in users:
+        if u.get("username") == username:
+            u["password"] = password
+            u["key"] = key
+            u["expires_at"] = expires_at
+            u["reseller"] = reseller_nome          # <-- salva revendedor
+            save_users(data)
+            
+            log_security("reseller_updated", details={"username": username, "reseller": reseller_nome})
+            return jsonify({
+                "ok": True,
+                "key": key,
+                "username": username,
+                "expires_at": expires_at
+            })
+
+    # Novo usuário
+    users.append({
+        "username": username,
+        "password": password,
+        "key": key,
+        "device_id": None,
+        "expires_at": expires_at,
+        "reseller": reseller_nome,                  # <-- salva revendedor
+        "created_at": int(time.time())
+    })
+
+    save_users(data)
+    
+    log_security("reseller_created", details={"username": username, "expires_at": expires_at, "reseller": reseller_nome})
+    return jsonify({
+        "ok": True,
+        "key": key,
+        "username": username,
+        "expires_at": expires_at
+    })
+
+# ------------------------------
+#   ESTATÍSTICAS POR REVENDEDOR
+# ------------------------------
+@app.route("/admin/reseller_stats")
+@need_admin
+def admin_reseller_stats():
+    # Parâmetros
+    reseller_filter = request.args.get("reseller", "")
+    days = request.args.get("days", "7")
+    try:
+        days = int(days)
+    except:
+        days = 7
+
+    # Calcular timestamp de início
+    since = int(time.time()) - (days * 86400)
+
+    # Carregar usuários
+    data = load_users()
+    users = data.get("users", [])
+
+    # Mapear revendedores disponíveis (nomes únicos)
+    revendedores = set()
+    for u in users:
+        if u.get("reseller"):
+            revendedores.add(u["reseller"])
+    revendedores = sorted(revendedores)
+
+    # Inicializar variáveis
+    total_usuarios_criados = 0
+    total_ativacoes = 0
+    stats = []  # últimos 50 registros de ativação
+    chart_data = {}  # para o gráfico: data -> contagem
+    usuarios_lista = []  # lista de usuários do revendedor (detalhes)
+
+    if reseller_filter:
+        # Filtrar usuários do revendedor
+        usuarios_rev = [u for u in users if u.get("reseller") == reseller_filter]
+        total_usuarios_criados = len(usuarios_rev)
+
+        # Preparar lista de usuários com detalhes
+        now_ts = int(time.time())
+        for u in usuarios_rev:
+            created = u.get("created_at")
+            expires = u.get("expires_at")
+            status = u.get("status", "active")
+            # Calcular dias desde a criação
+            dias_desde_criacao = (now_ts - created) // 86400 if created else None
+            # Formatar data de criação
+            data_criacao = datetime.fromtimestamp(created).strftime("%d/%m/%Y %H:%M") if created else "—"
+            # Formatar expiração
+            if expires == UNLIMITED_EXPIRY:
+                expiracao_str = "Ilimitado"
+            elif expires:
+                expiracao_str = datetime.fromtimestamp(expires).strftime("%d/%m/%Y %H:%M")
+            else:
+                expiracao_str = "—"
+            # Status amigável
+            if status == "blocked":
+                status_str = "Bloqueado"
+            elif expires and expires < now_ts and expires != UNLIMITED_EXPIRY:
+                status_str = "Expirado"
+            else:
+                status_str = "Ativo"
+
+            usuarios_lista.append({
+                "username": u["username"],
+                "data_criacao": data_criacao,
+                "dias_desde_criacao": dias_desde_criacao,
+                "expiracao": expiracao_str,
+                "status": status_str,
+                "device_id": u.get("device_id", "—")
+            })
+
+        # Obter fingerprints dos usuários que já ativaram
+        fingerprints = [u["device_id"] for u in usuarios_rev if u.get("device_id")]
+
+        if fingerprints:
+            conn = get_db()
+            cursor = conn.cursor()
+            placeholders = ','.join(['?' for _ in fingerprints])
+
+            # Contar ativações totais no período
+            cursor.execute(f'''
+                SELECT COUNT(*) as total
+                FROM license_usage
+                WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
+            ''', fingerprints + [since])
+            row = cursor.fetchone()
+            if row:
+                total_ativacoes = row[0]
+
+            # Dados para o gráfico: ativações por dia
+            cursor.execute(f'''
+                SELECT DATE(timestamp, 'unixepoch') as dia, COUNT(*) as total
+                FROM license_usage
+                WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
+                GROUP BY dia
+                ORDER BY dia ASC
+            ''', fingerprints + [since])
+            for row in cursor.fetchall():
+                chart_data[row[0]] = row[1]
+
+            # Listar últimos 50 registros de ativação
+            cursor.execute(f'''
+                SELECT fingerprint, action, timestamp, ip_address
+                FROM license_usage
+                WHERE fingerprint IN ({placeholders}) AND timestamp >= ? AND action = 'activate'
+                ORDER BY timestamp DESC
+                LIMIT 50
+            ''', fingerprints + [since])
+            recent = cursor.fetchall()
+            for r in recent:
+                stats.append({
+                    "fingerprint": r[0],
+                    "action": r[1],
+                    "timestamp": datetime.fromtimestamp(r[2]).strftime("%Y-%m-%d %H:%M:%S"),
+                    "ip": r[3]
+                })
+            conn.close()
+
+    return render_template("reseller_stats.html",
+                           revendedores=revendedores,
+                           selected=reseller_filter,
+                           days=days,
+                           total_usuarios_criados=total_usuarios_criados,
+                           total_ativacoes=total_ativacoes,
+                           stats=stats,
+                           chart_data=chart_data,
+                           usuarios_lista=usuarios_lista)
+
+# ------------------------------
+#   RUN
+# ------------------------------
+if __name__ == "__main__":
+    # Log inicial
+    log_security("server_started", details={"timestamp": datetime.now().isoformat()})
+    
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
