@@ -1523,18 +1523,10 @@
       "created_at": 1775054286
     },
     {
-      "username": "Jeovane",
-      "password": "Alpha7847",
-      "key": "FERA-646D2A01",
-      "device_id": "860fa1a554e84680a5093be481883a2505e63d799dc4f0809cf3860b983002df",
-      "expires_at": 1780673734,
-      "created_at": 1775057734
-    },
-    {
       "username": "Aaaaaa",
       "password": "Fera6075",
       "key": "FERA-B2E2BE74",
-      "device_id": null,
+      "device_id": "45c0e16e27911e67c5fec0cee4d96dd3de005e461946e411e920bfdbdfe6059a",
       "expires_at": 1775144451,
       "created_at": 1775058051
     },
@@ -1573,20 +1565,12 @@
       "created_at": 1775060468
     },
     {
-      "username": "ThiagoTv",
-      "password": "Alpha2892",
-      "key": "FERA-D7D2A2EE",
+      "username": "Jeovane",
+      "password": "Alpha7847",
+      "key": "FERA-084CAEFC",
       "device_id": null,
-      "expires_at": 1777221924,
-      "created_at": 1775061924
-    },
-    {
-      "username": "Fera9315",
-      "password": "Alpha4648",
-      "key": "FERA-5E5342C5",
-      "device_id": null,
-      "expires_at": 1776444508,
-      "created_at": 1775062108
+      "expires_at": 1779641237,
+      "created_at": 1775062037
     }
   ]
 }
