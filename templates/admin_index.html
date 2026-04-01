@@ -528,27 +528,27 @@
       {% for u in users %}
       <tr data-expires="{{ u.expires_at }}" data-id="{{ u.id }}">
 
-        <td>{{ loop.index0 }}</td>
+         <td>{{ loop.index0 }}</td>
 
-        <td><b>{{ u.username }}</b></td>
+         <td><b>{{ u.username }}</b></td>
 
-        <td>
+         <td>
           <span class="password-mask">••••••</span>
           <span class="password-value">{{ u.password }}</span>
           <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
           <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
-        </td>
+         </td>
 
-        <td>
+         <td>
           {{ u.key }}
           <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
-        </td>
+         </td>
 
-        <td>{{ u.device_id if u.device_id else '-' }}</td>
+         <td>{{ u.device_id if u.device_id else '-' }}</td>
 
-        <td>{{ u.reseller if u.reseller else "Admin" }}</td>
+         <td>{{ u.reseller if u.reseller else "Admin" }}</td>
 
-        <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
+         <td>{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
 
         <td class="expCell"></td>
 
@@ -558,7 +558,7 @@
           {% else %}
             <span class="badge badge-ok">Ativo</span>
           {% endif %}
-        </td>
+         </td>
 
         <!-- AÇÕES -->
         <td class="actionsBox">
@@ -623,8 +623,8 @@
               <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
             </form>
           </div>
-        </td>
-      </tr>
+         </td>
+       </tr>
       {% endfor %}
     </tbody>
   </table>
@@ -943,17 +943,25 @@ function formatDateBR(ts){
   return `${dd}/${mm}/${yy}`;
 }
 
-function renderExp(){
-  const now = Math.floor(Date.now()/1000);
-  document.querySelectorAll("tr[data-expires]").forEach(tr=>{
+// ================== FUNÇÕES CORRIGIDAS ==================
+function renderExp() {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const nowTimestamp = Math.floor(now.getTime() / 1000);
+
+  document.querySelectorAll("tr[data-expires]").forEach(tr => {
     let exp = parseInt(tr.getAttribute("data-expires")) || 0;
     let cell = tr.querySelector(".expCell");
     cell.setAttribute('data-timestamp', exp);
-    if(exp <= 0){
+    if (exp <= 0) {
       cell.innerHTML = `<span class='badge badge-exp'>Sem data</span>`;
       return;
     }
-    if(exp < now){
+    const expDate = new Date(exp * 1000);
+    expDate.setHours(0, 0, 0, 0);
+    const expTimestamp = Math.floor(expDate.getTime() / 1000);
+
+    if (expTimestamp < nowTimestamp) {
       cell.innerHTML = `
         <div style="display:flex;flex-direction:column;gap:4px">
           <span class='badge badge-exp'>Expirado</span>
@@ -961,12 +969,12 @@ function renderExp(){
         </div>`;
       return;
     }
-    const diffDays = Math.floor((exp-now)/86400);
+    const diffDays = Math.floor((expTimestamp - nowTimestamp) / 86400);
     const dateText = formatDateBR(exp);
     let badge = "";
-    if(diffDays === 0) badge = "<span class='badge badge-exp'>Vence hoje</span>";
-    else if(diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
-    else if(diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
+    if (diffDays === 0) badge = "<span class='badge badge-exp'>Vence hoje</span>";
+    else if (diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
+    else if (diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
     else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
     cell.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:4px">
@@ -976,21 +984,29 @@ function renderExp(){
   });
 }
 
-function updateDashboard(){
-  const now = Math.floor(Date.now()/1000);
+function updateDashboard() {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const nowTimestamp = Math.floor(now.getTime() / 1000);
+
   const rows = document.querySelectorAll("#usersTable tbody tr");
   let total = 0, ativos = 0, expirados = 0, bloqueados = 0;
-  rows.forEach(tr=>{
+  rows.forEach(tr => {
     if (tr.style.display === 'none') return;
     total++;
     const exp = parseInt(tr.getAttribute("data-expires")) || 0;
     const statusCell = tr.querySelector(".statusCell");
     const status = statusCell ? statusCell.getAttribute("data-status") : "active";
-    if(status === "blocked"){
+    if (status === "blocked") {
       bloqueados++;
       return;
     }
-    if(exp > 0 && exp < now){
+    // Comparação por data (ignora horas)
+    const expDate = new Date(exp * 1000);
+    expDate.setHours(0, 0, 0, 0);
+    const expTimestamp = Math.floor(expDate.getTime() / 1000);
+
+    if (exp > 0 && expTimestamp < nowTimestamp) {
       expirados++;
     } else {
       ativos++;
