@@ -353,6 +353,29 @@
     transition: width 0.3s;
   }
 
+  .expiry-unit-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .expiry-unit-row select {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
+    margin-bottom: 0;
+  }
+  .expiry-unit-row input {
+    flex: 2;
+    margin-bottom: 0;
+  }
+  .expiry-unit-row .unit-hint {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-left: 8px;
+  }
+
   @media (max-width: 820px){
     thead { display:none; }
 
@@ -372,6 +395,15 @@
 
     .day-buttons {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .expiry-unit-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .expiry-unit-row select,
+    .expiry-unit-row input {
+      width: 100%;
+      margin-bottom: 8px;
     }
   }
 
@@ -454,7 +486,7 @@
   </div>
 </div>
 
-<!-- GERAR KEY (original) -->
+<!-- GERAR KEY (original com suporte a horas/minutos/segundos) -->
 <div class="card">
   <h2 style="margin-bottom:12px">Gerar Nova Key</h2>
 
@@ -468,17 +500,31 @@
     <label>Prefixo</label>
     <input name="prefix" value="FERA">
 
-    <label>Expiração (dias)</label>
-    <input name="expire_days" type="number" value="35" min="1" id="expireDays">
-
-    <div class="day-buttons">
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('7')">7 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('35')">35 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('65')">65 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setExpiration('110')">110 Dias</button>
+    <!-- Seção de expiração flexível -->
+    <label>Expiração</label>
+    <div class="expiry-unit-row">
+      <input type="number" id="expiryValue" step="any" value="35" style="flex:2">
+      <select id="expiryUnit" style="flex:1">
+        <option value="days">Dias (com decimal)</option>
+        <option value="hours">Horas</option>
+        <option value="minutes">Minutos</option>
+        <option value="seconds">Segundos</option>
+      </select>
+      <span class="unit-hint" id="unitHint">Ex: 1.5 = 1 dia e 12h</span>
     </div>
 
-    <button type="submit" class="btn btn-primary" onclick="setLoading(this)">Gerar</button>
+    <!-- Botões rápidos (sempre em dias) -->
+    <div class="day-buttons">
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(7)">7 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(35)">35 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(65)">65 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(110)">110 Dias</button>
+    </div>
+
+    <!-- Campo oculto que receberá o valor em segundos (enviado ao servidor) -->
+    <input type="hidden" name="expire_seconds" id="expireSeconds">
+
+    <button type="submit" class="btn btn-primary" onclick="prepareSubmit(event)">Gerar</button>
   </form>
 </div>
 
@@ -624,7 +670,7 @@
             </form>
           </div>
          </td>
-       </tr>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
@@ -854,6 +900,17 @@ document.addEventListener("DOMContentLoaded", function() {
   renderExp();
   updateDashboard();
   highlightUserFromURL();
+
+  // Atualizar dica quando a unidade mudar
+  const unitSelect = document.getElementById('expiryUnit');
+  const hintSpan = document.getElementById('unitHint');
+  unitSelect.addEventListener('change', function() {
+    const unit = this.value;
+    if (unit === 'days') hintSpan.innerText = 'Ex: 1.5 = 1 dia e 12h';
+    else if (unit === 'hours') hintSpan.innerText = 'Ex: 24 = 1 dia';
+    else if (unit === 'minutes') hintSpan.innerText = 'Ex: 1440 = 1 dia';
+    else hintSpan.innerText = 'Ex: 86400 = 1 dia';
+  });
 });
 
 function toggleDark(){ document.body.classList.toggle("dark"); }
@@ -865,8 +922,58 @@ function toast(msg, type="ok"){
   setTimeout(()=>t.classList.remove("show"), 3000);
 }
 
-function setExpiration(days){
-  document.querySelector('input[name="expire_days"]').value = days;
+// Função para usar os botões rápidos (em dias)
+function setQuickExpiration(days) {
+  document.getElementById('expiryValue').value = days;
+  document.getElementById('expiryUnit').value = 'days';
+  document.getElementById('unitHint').innerText = 'Ex: 1.5 = 1 dia e 12h';
+}
+
+// Preparar o envio do formulário: converter para segundos e colocar no campo expire_seconds
+function prepareSubmit(event) {
+  // Impedir o envio imediato para fazer a conversão
+  event.preventDefault();
+  
+  const form = document.getElementById('generateForm');
+  const value = parseFloat(document.getElementById('expiryValue').value);
+  const unit = document.getElementById('expiryUnit').value;
+  
+  if (isNaN(value) || value <= 0) {
+    toast('Digite um valor positivo para a expiração', 'warn');
+    return;
+  }
+  
+  let seconds = 0;
+  switch (unit) {
+    case 'days':
+      seconds = value * 86400;
+      break;
+    case 'hours':
+      seconds = value * 3600;
+      break;
+    case 'minutes':
+      seconds = value * 60;
+      break;
+    case 'seconds':
+      seconds = value;
+      break;
+  }
+  
+  // Arredonda para inteiro (segundos)
+  seconds = Math.round(seconds);
+  if (seconds === 0) {
+    toast('A expiração não pode ser zero', 'warn');
+    return;
+  }
+  
+  // Preencher o campo oculto
+  document.getElementById('expireSeconds').value = seconds;
+  
+  // Remover qualquer campo antigo que pudesse causar conflito (ex: expire_days)
+  // O formulário não tem mais input com nome expire_days (removemos), então está seguro.
+  
+  // Enviar o formulário
+  form.submit();
 }
 
 function copiar(t, el){
