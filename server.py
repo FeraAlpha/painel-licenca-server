@@ -114,6 +114,42 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
     return value
 
 # ------------------------------
+#   FUNÇÃO AUXILIAR: converter tempo de expiração
+# ------------------------------
+def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_seconds=None, agora=None):
+    """
+    Calcula o timestamp de expiração baseado nos parâmetros.
+    Prioridade: expire_seconds > expire_hours > expire_days.
+    Se expire_days for float, multiplica por 86400.
+    Retorna int (timestamp) ou UNLIMITED_EXPIRY se for 0.
+    """
+    if agora is None:
+        agora = int(time.time())
+    
+    total_seconds = 0
+    
+    if expire_seconds is not None:
+        try:
+            total_seconds = int(expire_seconds)
+        except:
+            total_seconds = 0
+    elif expire_hours is not None:
+        try:
+            total_seconds = int(float(expire_hours) * 3600)
+        except:
+            total_seconds = 0
+    elif expire_days is not None:
+        try:
+            total_seconds = int(float(expire_days) * 86400)
+        except:
+            total_seconds = 0
+    
+    if total_seconds == 0:
+        return UNLIMITED_EXPIRY
+    else:
+        return agora + total_seconds
+
+# ------------------------------
 #   RATE LIMITING EM MEMÓRIA
 # ------------------------------
 RATE_LIMIT = {
@@ -944,17 +980,18 @@ def admin_generate():
     username = sanitize_input(request.form.get("username"))
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
-    expire_days_raw = request.form.get("expire_days", "30")
     
-    try:
-        expire_days = int(expire_days_raw)
-    except Exception:
-        expire_days = 30
-
-    if expire_days == 0:
-        expires_at = UNLIMITED_EXPIRY
-    else:
-        expires_at = int(time.time()) + expire_days * 86400
+    # Tentar obter expire_seconds, expire_hours ou expire_days
+    expire_seconds_raw = request.form.get("expire_seconds")
+    expire_hours_raw = request.form.get("expire_hours")
+    expire_days_raw = request.form.get("expire_days")
+    
+    # Calcular timestamp de expiração
+    expires_at = calcular_timestamp_expira(
+        expire_days=expire_days_raw,
+        expire_hours=expire_hours_raw,
+        expire_seconds=expire_seconds_raw
+    )
 
     key = prefix + "-" + os.urandom(4).hex().upper()
 
@@ -1258,12 +1295,18 @@ def reseller_generate():
     username = sanitize_input(request.form.get("username"))
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
-    expire_days_raw = request.form.get("expire_days", "30")
     
-    try:
-        expire_days = int(expire_days_raw)
-    except Exception:
-        expire_days = 30
+    # Tentar obter expire_seconds, expire_hours ou expire_days
+    expire_seconds_raw = request.form.get("expire_seconds")
+    expire_hours_raw = request.form.get("expire_hours")
+    expire_days_raw = request.form.get("expire_days")
+    
+    # Calcular timestamp de expiração
+    expires_at = calcular_timestamp_expira(
+        expire_days=expire_days_raw,
+        expire_hours=expire_hours_raw,
+        expire_seconds=expire_seconds_raw
+    )
 
     if token not in RESELLER_MAP:
         log_security("reseller_invalid_token", details={"token": token})
@@ -1273,11 +1316,6 @@ def reseller_generate():
 
     if not username or not password:
         return jsonify({"error": "missing_fields"}), 400
-
-    if expire_days == 0:
-        expires_at = UNLIMITED_EXPIRY
-    else:
-        expires_at = int(time.time()) + expire_days * 86400
 
     key = prefix + "-" + os.urandom(4).hex().upper()
 
