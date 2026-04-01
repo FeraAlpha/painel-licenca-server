@@ -1563,6 +1563,14 @@
       "expires_at": 1778084468,
       "reseller": "DANTE",
       "created_at": 1775060468
+    },
+    {
+      "username": "Jeovane",
+      "password": "Alpha7847",
+      "key": "FERA-084CAEFC",
+      "device_id": null,
+      "expires_at": 1779641237,
+      "created_at": 1775062037
     }
   ]
 }
