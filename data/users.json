@@ -1553,6 +1553,15 @@
       "device_id": "4e548dcb84fe4ae3a91a3aa6970a2aec7c7f0105ae739fb79b2691d801f17e89",
       "expires_at": 1777824276,
       "created_at": 1775059476
+    },
+    {
+      "username": "Fera8784",
+      "password": "Alpha7119",
+      "key": "FERA-FF090B2D",
+      "device_id": null,
+      "expires_at": 1778084318,
+      "reseller": "DANTE",
+      "created_at": 1775060318
     }
   ]
 }
