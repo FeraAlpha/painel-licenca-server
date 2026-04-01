@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>Fera Alpha - Revendedor</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -44,6 +44,11 @@
 
     .wrap{max-width:720px;margin:0 auto}
 
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .topbar{
       display:flex;
       justify-content:space-between;
@@ -54,6 +59,7 @@
       background: var(--card);
       box-shadow: var(--shadow);
       margin-bottom:18px;
+      animation: fadeInUp 0.5s ease;
     }
 
     .brand{
@@ -99,6 +105,7 @@
       border-radius:var(--radius);
       padding:18px;
       box-shadow: var(--shadow);
+      animation: fadeInUp 0.5s ease;
     }
 
     .card + .card{margin-top:14px;}
@@ -184,6 +191,17 @@
       box-shadow: 0 14px 30px rgba(79,124,255,.18);
     }
 
+    .daybtn[data-days="7"] {
+      background: linear-gradient(145deg, #fef7e0, #fee9b6);
+      border-color: #ffb347;
+      color: #b45f06;
+    }
+    .daybtn[data-days="7"].active {
+      background: linear-gradient(135deg, #ffb347, #ff8c00);
+      color: white;
+      border-color: transparent;
+    }
+
     .btn{
       width:100%;
       padding:14px 16px;
@@ -223,13 +241,26 @@
       color:#d32f2f;
     }
 
-    .btn-success{
-      background: #25D366;
-      color:white;
+    .btn-loading {
+      color: transparent !important;
+      pointer-events: none;
+      position: relative;
     }
-    .btn-success:hover{
-      background: #20b859;
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .rowbtns{
       display:flex;
@@ -404,12 +435,6 @@
     }
     .btn-mini:hover{transform:translateY(-1px)}
     .btn-mini i{color:var(--primary)}
-    .btn-mini.success{
-      background: #25D366;
-      color:white;
-      border-color: #20b859;
-    }
-    .btn-mini.success i{color:white;}
 
     .empty{
       padding:12px;
@@ -446,30 +471,74 @@
     .toast.warn i{color:var(--warning)}
     .mutedSmall{font-size:12px;color:var(--muted)}
 
-    /* Dashboard stats */
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
-      gap:12px;
-      margin-top:10px;
+    /* Tabela de usuários */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
     }
-    .stat-card{
+    .users-table th,
+    .users-table td {
+      padding: 12px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .users-table th {
       background: var(--card2);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:14px;
-      text-align:center;
+      font-weight: 800;
     }
-    .stat-value{
-      font-size:24px;
-      font-weight:900;
-      color:var(--primary);
-      line-height:1.2;
+    .users-table tr:last-child td {
+      border-bottom: none;
     }
-    .stat-label{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:4px;
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .status-ativo { background: #d7f5dd; color: #177a30; }
+    .status-expirado { background: #ffe1e1; color: #b32828; }
+    .status-bloqueado { background: #fff3c9; color: #8a6c1e; }
+    .status-ilimitado { background: #d1ecf1; color: #0c5460; }
+    .reset-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 14px;
+      padding: 4px;
+      border-radius: 6px;
+    }
+    .reset-btn:hover {
+      background: rgba(79,124,255,0.1);
+    }
+    @media (max-width: 680px) {
+      .users-table, .users-table thead, .users-table tbody, .users-table tr, .users-table td, .users-table th {
+        display: block;
+      }
+      .users-table thead {
+        display: none;
+      }
+      .users-table tr {
+        margin-bottom: 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 8px;
+      }
+      .users-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        border: none;
+      }
+      .users-table td::before {
+        content: attr(data-label);
+        font-weight: 800;
+        width: 40%;
+        color: var(--muted);
+      }
     }
   </style>
 </head>
@@ -498,28 +567,28 @@
           <i class="fas fa-bolt"></i>
           <div>
             <h2>Gerar Licença</h2>
-            <div class="sub">35d (R$30) • 65d (R$50) • 110d (R$75) • 7d (Sorteio)</div>
+            <div class="sub">35d (R$30) • 65d (R$50) • 110d (R$75) • 7d (R$10)</div>
           </div>
         </div>
       </div>
 
       <div class="field">
-        <label><i class="fas fa-user"></i> Nome do Cliente</label>
-        <input id="username" placeholder="ex: cliente_joao" autocomplete="off">
+        <label><i class="fas fa-user"></i> Usuário</label>
+        <input id="username" placeholder="Fera4271" autocomplete="off">
       </div>
 
       <div class="field">
         <label><i class="fas fa-lock"></i> Senha</label>
-        <input id="password" placeholder="Senha gerada automaticamente" autocomplete="off">
+        <input id="password" placeholder="Alpha8392" autocomplete="off">
       </div>
 
       <div class="field">
         <label><i class="fas fa-calendar-days"></i> Período</label>
         <div class="days">
-          <div class="daybtn active" id="btn35" onclick="setDays(35)">35 dias - R$30,00</div>
-          <div class="daybtn" id="btn65" onclick="setDays(65)">65 dias - R$50,00</div>
-          <div class="daybtn" id="btn110" onclick="setDays(110)">110 dias - R$75,00</div>
-          <div class="daybtn" id="btn7" onclick="setDays(7)">7 dias - Sorteio</div>
+          <div class="daybtn active" data-days="35" onclick="setDays(35)">35 dias - R$30,00</div>
+          <div class="daybtn" data-days="65" onclick="setDays(65)">65 dias - R$50,00</div>
+          <div class="daybtn" data-days="110" onclick="setDays(110)">110 dias - R$75,00</div>
+          <div class="daybtn" data-days="7" onclick="setDays(7)">7 dias - R$10,00</div>
         </div>
       </div>
 
@@ -531,7 +600,7 @@
           <button class="btn btn-soft" type="button" onclick="saveToken()">
             <i class="fas fa-floppy-disk"></i> Salvar Token
           </button>
-          <button class="btn btn-danger" type="button" onclick="clearToken()">
+          <button class="btn btn-danger" type="button" onclick="confirmClearToken()">
             <i class="fas fa-trash"></i> Limpar
           </button>
         </div>
@@ -553,41 +622,22 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
-    <!-- DASHBOARD DE VENDAS -->
+    <!-- LISTA DE USUÁRIOS DO REVENDEDOR -->
     <div class="card">
       <div class="cardhead">
         <div class="title">
-          <i class="fas fa-chart-line"></i>
+          <i class="fas fa-users"></i>
           <div>
-            <h2>Minhas Estatísticas</h2>
-            <div class="sub">Resumo das licenças geradas</div>
+            <h2>Meus Usuários</h2>
+            <div class="sub">Gerencie dispositivos e status</div>
           </div>
         </div>
+        <button class="btn btn-soft" onclick="carregarUsuarios()" style="width:auto; padding: 8px 16px;">
+          <i class="fas fa-sync-alt"></i> Atualizar
+        </button>
       </div>
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-value" id="statHoje">0</div>
-          <div class="stat-label">Hoje</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statMes">0</div>
-          <div class="stat-label">Este mês</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statTotal">0</div>
-          <div class="stat-label">Total licenças</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statDias">0</div>
-          <div class="stat-label">Total de dias</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statValor">R$ 0</div>
-          <div class="stat-label">Valor estimado*</div>
-        </div>
-      </div>
-      <div class="mutedSmall" style="margin-top:8px; text-align:center;">
-        *Valor baseado nos preços: 7d (sorteio) não incluso; 35d=R$30; 65d=R$50; 110d=R$75
+      <div id="listaUsuariosContainer">
+        <div class="empty" id="loadingUsuarios">Carregando usuários...</div>
       </div>
     </div>
 
@@ -618,83 +668,74 @@
 
 <script>
   const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
+  const USERS_API_URL = "https://painel-licenca-server.onrender.com/reseller/users";
+  const RESET_API_URL = "https://painel-licenca-server.onrender.com/reseller/reset_device";
   const TOKEN_KEY = "feraalpha_revendedor_token";
-  const HISTORY_KEY = "feraalpha_history_v2";
+  const HISTORY_KEY = "feraalpha_history_v3";
   const PREFIX = "FERA";
   
-  // ===== CONFIGURAÇÃO VIA GITHUB (SEM PHP) =====
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
 
-  // Variáveis que serão atualizadas dinamicamente
-  let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/1jia2uuc7ndlpn8/PrecisionBoosterV2.apk/file";
+  let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/9s4yo04k0v1jbcn/PrecisionBoosterV2.apk/file";
   let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PrecisionBoosterV2";
-
-  // Preços para cálculo do valor estimado
-  const PRECO_DIAS = { 7: 0, 35: 30, 65: 50, 110: 75 };
 
   let currentDays = 35;
 
-  // ===== FUNÇÃO PARA BUSCAR CONFIGURAÇÃO DO GITHUB =====
+  function generateUsername() {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `Fera${randomNum}`;
+  }
+
+  function generatePassword() {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `Alpha${randomNum}`;
+  }
+
   async function buscarConfiguracao() {
     try {
-      // Adiciona timestamp para evitar cache
       const response = await fetch(GITHUB_URL + '?t=' + Date.now());
       const config = await response.json();
       
-      // Extrair dados do app
       LINK_APK = config.app?.link_download || LINK_APK;
       NOME_APP = config.app?.nome_app || NOME_APP;
       
-      // Salvar no localStorage como cache
       localStorage.setItem('LINK_APK_CACHE', LINK_APK);
       localStorage.setItem('NOME_APP_CACHE', NOME_APP);
       
-      console.log('✅ Configuração carregada do GitHub:', { app: NOME_APP });
-      
       return true;
-      
     } catch (error) {
-      console.log('⚠️ Erro ao carregar do GitHub, usando cache:', error);
-      
-      // Usar valores do cache
       LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
       NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
-      
       return false;
     }
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
     const saved = localStorage.getItem(TOKEN_KEY);
-    if(saved) document.getElementById("token").value = saved;
+    if(saved) {
+      document.getElementById("token").value = saved;
+    }
 
-    generateNewPassword();
+    document.getElementById("username").value = generateUsername();
+    document.getElementById("password").value = generatePassword();
+    
     renderHistory();
-    updateDashboardStats();
     
-    // Buscar configuração do GitHub
     await buscarConfiguracao();
-    
-    // Sincronizar a cada 2 minutos
-    setInterval(buscarConfiguracao, 120000); // 2 minutos
+    setInterval(buscarConfiguracao, 120000);
 
     document.addEventListener("keydown", (e) => {
       if(e.key === "Enter") generateLicense();
     });
-  });
 
-  // Gera senha simples: Fera + 4 números
-  function generateNewPassword() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    document.getElementById("password").value = `Fera${randomNum}`;
-  }
+    // Carregar lista de usuários ao iniciar
+    carregarUsuarios();
+  });
 
   function setDays(days){
     currentDays = days;
-    document.getElementById("btn35").classList.toggle("active", days === 35);
-    document.getElementById("btn65").classList.toggle("active", days === 65);
-    document.getElementById("btn110").classList.toggle("active", days === 110);
-    document.getElementById("btn7").classList.toggle("active", days === 7);
+    document.querySelectorAll('.daybtn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.daybtn[data-days="${days}"]`).classList.add('active');
   }
 
   function saveToken(){
@@ -707,16 +748,20 @@
     toast("Token salvo", "ok", "Pronto ✅");
   }
 
-  function clearToken(){
-    localStorage.removeItem(TOKEN_KEY);
-    document.getElementById("token").value = "";
-    toast("Token removido", "ok", "Você pode inserir outro");
+  function confirmClearToken(){
+    if(confirm("⚠️ Tem certeza que deseja limpar o token?\n\nEsta ação não pode ser desfeita.")) {
+      localStorage.removeItem(TOKEN_KEY);
+      document.getElementById("token").value = "";
+      toast("Token removido", "ok", "Token excluído com sucesso");
+    } else {
+      toast("Operação cancelada", "ok", "Token mantido");
+    }
   }
 
   async function generateLicense(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
-    const token = document.getElementById("token").value.trim();
+    let token = document.getElementById("token").value.trim();
 
     if(!username || !password || !token){
       toast("Preencha todos os campos", "warn", "Usuário, senha e token");
@@ -775,12 +820,14 @@
       showMiniResult(payload);
       pushHistory(payload);
       renderHistory();
-      updateDashboardStats();
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
-      document.getElementById("username").value = "";
-      generateNewPassword();
+      document.getElementById("username").value = generateUsername();
+      document.getElementById("password").value = generatePassword();
+
+      // Recarregar lista de usuários
+      carregarUsuarios();
 
     }catch(err){
       document.getElementById("loader").style.display = "none";
@@ -804,12 +851,13 @@
       showMiniResult(payload);
       pushHistory(payload);
       renderHistory();
-      updateDashboardStats();
 
       toast("Login criado com sucesso!", "ok", "Pronto ✅");
 
-      document.getElementById("username").value = "";
-      generateNewPassword();
+      document.getElementById("username").value = generateUsername();
+      document.getElementById("password").value = generatePassword();
+
+      carregarUsuarios();
 
       console.error(err);
     }
@@ -870,7 +918,6 @@
     `;
   }
 
-  // ========== FUNÇÃO PRINCIPAL: COPIAR TUDO COM LINK ==========
   function copyAllWithLink() {
     const box = document.getElementById("resultBox");
     if(!box || box.style.display === "none"){
@@ -879,7 +926,6 @@
     }
 
     try {
-      // Pegar valores do metaGrid
       const metaItems = box.querySelectorAll('.metaItem');
       
       let username = "", password = "", days = "";
@@ -893,28 +939,29 @@
         if (label.includes('Dias')) days = value;
       });
       
-      // Garantir que temos valores
       username = username || "não informado";
       password = password || "não informado";
       days = days || "não informado";
       
-      // Usar os valores atualizados do GitHub
       const link = LINK_APK;
       const app = NOME_APP;
       
-      // FORMATAR EXATAMENTE COMO VOCÊ QUER
       const texto = `🎯 *ACESSO LIBERADO - ${app}* 🎯\n\n` +
                     `👤 *Usuário:* ${username}\n` +
                     `🔑 *Senha:* ${password}\n` +
                     `⏱️ *Validade:* ${days}\n\n` +
                     `📲 *Link do APK:*\n${link}\n\n` +
-                    `⚡ Faça o download e aproveite! ⚡`;
+                    `⚡ Faça o download e aproveite! ⚡\n\n` +
+                    `⚠️ *Política de Reset de Login*\n\n` +
+                    `Cada licença do aplicativo possui direito a 1 reset de login gratuito.\n\n` +
+                    `Após utilizar esse reset gratuito, caso seja necessário realizar novos resets (por troca de aparelho, formatação ou qualquer outro motivo), será cobrada uma taxa de R$3,00 por reset.\n\n` +
+                    `Essa medida existe para evitar abusos e manter o funcionamento correto do sistema.\n\n` +
+                    `Agradecemos a compreensão. ✅`;
       
       copyToClipboard(texto);
-      toast("✅ Tudo copiado!", "ok", "Credenciais + Link prontos para enviar!");
+      toast("✅ Tudo copiado!", "ok", "Credenciais + Link + Política prontos!");
       
     } catch (error) {
-      console.error('Erro ao copiar:', error);
       toast("Erro ao copiar", "warn", "Tente novamente");
     }
   }
@@ -935,33 +982,6 @@
     copyToClipboard(texto);
 
     toast("Copiado", "ok", "Usuário + senha + dias + link ✅");
-  }
-
-  // ========== Estatísticas ==========
-  function updateDashboardStats() {
-    const history = getHistory();
-    const hoje = new Date();
-    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()).getTime();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1).getTime();
-
-    let totalHoje = 0, totalMes = 0, totalLicencas = history.length;
-    let totalDias = 0, valorTotal = 0;
-
-    history.forEach(item => {
-      const createdAt = new Date(item.createdAt).getTime();
-      if (createdAt >= inicioHoje) totalHoje++;
-      if (createdAt >= inicioMes) totalMes++;
-
-      const dias = item.days || 0;
-      totalDias += dias;
-      valorTotal += PRECO_DIAS[dias] || 0;
-    });
-
-    document.getElementById('statHoje').innerText = totalHoje;
-    document.getElementById('statMes').innerText = totalMes;
-    document.getElementById('statTotal').innerText = totalLicencas;
-    document.getElementById('statDias').innerText = totalDias;
-    document.getElementById('statValor').innerText = `R$ ${valorTotal.toFixed(2)}`;
   }
 
   // ========== Histórico ==========
@@ -1006,13 +1026,10 @@
 
         <div class="hRight">
           <button class="btn-mini" onclick="copyHistoryData(${idx})">
-            <i class="fas fa-copy"></i> Copiar
+            <i class="fas fa-copy"></i>
           </button>
           <button class="btn-mini" onclick="useHistory(${idx})">
-            <i class="fas fa-arrow-up-right-from-square"></i> Abrir
-          </button>
-          <button class="btn-mini" onclick="resetHistory(${idx})">
-            <i class="fas fa-rotate-right"></i> Resetar
+            <i class="fas fa-eye"></i>
           </button>
         </div>
       </div>
@@ -1042,24 +1059,148 @@
     toast("Resultado carregado", "ok", "Histórico aberto ✅");
   }
 
-  function resetHistory(index) {
-    const history = getHistory();
-    const item = history[index];
-    if (!item) {
-      toast("Erro ao resetar", "warn", "Registro não encontrado");
+  // ========== Listagem e Reset de Usuários ==========
+  async function carregarUsuarios() {
+    const container = document.getElementById("listaUsuariosContainer");
+    const token = document.getElementById("token").value.trim();
+    
+    if (!token) {
+      container.innerHTML = `<div class="empty">Token não informado. Salve seu token primeiro.</div>`;
       return;
     }
 
-    document.getElementById("username").value = item.username || "";
-    if (item.days && [7, 35, 65, 110].includes(item.days)) {
-      setDays(item.days);
-    } else {
-      setDays(35);
+    container.innerHTML = `<div class="empty" id="loadingUsuarios">Carregando usuários...</div>`;
+    
+    try {
+      const response = await fetch(`${USERS_API_URL}?token=${encodeURIComponent(token)}`);
+      const data = await response.json();
+      
+      if (!response.ok || data.error) {
+        throw new Error(data.error || "Erro ao carregar usuários");
+      }
+      
+      const users = data.users || [];
+      
+      if (users.length === 0) {
+        container.innerHTML = `<div class="empty">Nenhum usuário criado por você ainda.</div>`;
+        return;
+      }
+      
+      // Montar tabela
+      let html = `<table class="users-table">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Senha</th>
+            <th>Status</th>
+            <th>Expira em</th>
+            <th>Dispositivo</th>
+            <th>Ações</th>
+           </tr>
+        </thead>
+        <tbody>`;
+      
+      users.forEach(user => {
+        const expiresAt = user.expires_at;
+        const now = Math.floor(Date.now() / 1000);
+        let statusClass = "";
+        let statusText = "";
+        
+        if (user.status === "blocked") {
+          statusClass = "status-bloqueado";
+          statusText = "Bloqueado";
+        } else if (expiresAt === 9999999999999) {
+          statusClass = "status-ilimitado";
+          statusText = "Ilimitado";
+        } else if (expiresAt < now) {
+          statusClass = "status-expirado";
+          statusText = "Expirado";
+        } else {
+          statusClass = "status-ativo";
+          statusText = "Ativo";
+        }
+        
+        const expiresDisplay = expiresAt === 9999999999999 ? "Nunca" : new Date(expiresAt * 1000).toLocaleDateString("pt-BR");
+        const deviceId = user.device_id ? (user.device_id.substring(0, 20) + "...") : "Não ativado";
+        
+        html += `<tr>
+          <td data-label="Usuário">${escapeHtml(user.username)}</td>
+          <td data-label="Senha">${escapeHtml(user.password)}</td>
+          <td data-label="Status"><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td data-label="Expira em">${escapeHtml(expiresDisplay)}</td>
+          <td data-label="Dispositivo">${escapeHtml(deviceId)}</td>
+          <td data-label="Ações">
+            <button class="reset-btn" onclick="resetarUsuario('${escapeHtml(user.username)}')" title="Resetar dispositivo">
+              <i class="fas fa-sync-alt"></i> Reset
+            </button>
+          </td>
+        </tr>`;
+      });
+      
+      html += `</tbody>
+      </table>`;
+      container.innerHTML = html;
+      
+    } catch (error) {
+      console.error(error);
+      container.innerHTML = `<div class="empty">Erro ao carregar usuários: ${error.message}</div>`;
     }
-    generateNewPassword();
-    document.getElementById("username").scrollIntoView({ behavior: "smooth", block: "center" });
-
-    toast("Pronto! Agora clique em Gerar Licença para recriar.", "ok", "Revise os dados e confirme");
+  }
+  
+  async function resetarUsuario(username) {
+    if (!confirm(`Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele ative em um novo aparelho.`)) {
+      return;
+    }
+    
+    const token = document.getElementById("token").value.trim();
+    if (!token) {
+      toast("Token não salvo", "warn", "Salve seu token primeiro");
+      return;
+    }
+    
+    // Encontrar o botão para mostrar loading
+    const btns = document.querySelectorAll('.reset-btn');
+    let btnAlvo = null;
+    for (let btn of btns) {
+      if (btn.innerText.includes(username) || btn.closest('tr')?.innerText.includes(username)) {
+        btnAlvo = btn;
+        break;
+      }
+    }
+    
+    if (btnAlvo) {
+      btnAlvo.disabled = true;
+      btnAlvo.classList.add('btn-loading');
+    }
+    
+    try {
+      const response = await fetch(RESET_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          username: username,
+          token: token
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.ok) {
+        toast(`Dispositivo de ${username} resetado com sucesso!`, "ok", "O usuário pode ativar em outro aparelho.");
+        // Recarregar lista para atualizar o campo device_id
+        carregarUsuarios();
+      } else {
+        toast("Erro: " + (data.error || data.message || "Falha desconhecida"), "warn");
+      }
+    } catch (error) {
+      toast("Erro de conexão", "warn", "Tente novamente mais tarde");
+      console.error(error);
+    } finally {
+      if (btnAlvo) {
+        btnAlvo.disabled = false;
+        btnAlvo.classList.remove('btn-loading');
+      }
+    }
   }
 
   // Utilitários
