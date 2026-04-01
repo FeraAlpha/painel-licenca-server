@@ -408,7 +408,7 @@
       "username": "Saulo",
       "password": "Fera@8471",
       "key": "FERA-5F064977",
-      "device_id": "454d157ebe244b03d5aaf80b02f66c5c7bdff1576fafff4c8c9091081a7e35c5",
+      "device_id": null,
       "expires_at": 1776129955,
       "reseller": "JCGAMER",
       "created_at": 1772241955
@@ -1416,14 +1416,6 @@
       "device_id": "e2b0790a8651d4030dee5c730ac14ddcf248176855650fa3cd4fc720ee6c00ca",
       "expires_at": 1773697084,
       "created_at": 1773524284
-    },
-    {
-      "username": "Fera8819",
-      "password": "Fera1918",
-      "key": "FERA-DF5DD7FF",
-      "device_id": "f1a271daa8b67d19f1f50cbbe6d97530e473ff16d5b42dd750152bf6caf627e0",
-      "expires_at": 1778470017,
-      "created_at": 1775014017
     }
   ]
 }
