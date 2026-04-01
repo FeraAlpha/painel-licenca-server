@@ -1562,6 +1562,15 @@
       "expires_at": 1778084318,
       "reseller": "DANTE",
       "created_at": 1775060318
+    },
+    {
+      "username": "Fera7784",
+      "password": "Alpha3049",
+      "key": "FERA-F415FFAA",
+      "device_id": null,
+      "expires_at": 1778084468,
+      "reseller": "DANTE",
+      "created_at": 1775060468
     }
   ]
 }
