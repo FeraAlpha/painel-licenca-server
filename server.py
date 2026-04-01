@@ -114,7 +114,7 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
     return value
 
 # ------------------------------
-#   FUNÇÃO AUXILIAR: converter tempo de expiração
+#   FUNÇÃO AUXILIAR: converter tempo de expiração (CORRIGIDA)
 # ------------------------------
 def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_seconds=None, agora=None):
     """
@@ -128,17 +128,18 @@ def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_second
     
     total_seconds = 0
     
-    if expire_seconds is not None:
+    # Trata valores vazios ou None
+    if expire_seconds is not None and expire_seconds != "":
         try:
             total_seconds = int(expire_seconds)
         except:
             total_seconds = 0
-    elif expire_hours is not None:
+    elif expire_hours is not None and expire_hours != "":
         try:
             total_seconds = int(float(expire_hours) * 3600)
         except:
             total_seconds = 0
-    elif expire_days is not None:
+    elif expire_days is not None and expire_days != "":
         try:
             total_seconds = int(float(expire_days) * 86400)
         except:
@@ -981,10 +982,15 @@ def admin_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
-    # Tentar obter expire_seconds, expire_hours ou expire_days
-    expire_seconds_raw = request.form.get("expire_seconds")
-    expire_hours_raw = request.form.get("expire_hours")
-    expire_days_raw = request.form.get("expire_days")
+    # Obter valores, tratando campos vazios como None
+    expire_seconds_raw = request.form.get("expire_seconds", "").strip()
+    expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
+    
+    expire_hours_raw = request.form.get("expire_hours", "").strip()
+    expire_hours_raw = expire_hours_raw if expire_hours_raw else None
+    
+    expire_days_raw = request.form.get("expire_days", "").strip()
+    expire_days_raw = expire_days_raw if expire_days_raw else None
     
     # Calcular timestamp de expiração
     expires_at = calcular_timestamp_expira(
@@ -1296,10 +1302,15 @@ def reseller_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
-    # Tentar obter expire_seconds, expire_hours ou expire_days
-    expire_seconds_raw = request.form.get("expire_seconds")
-    expire_hours_raw = request.form.get("expire_hours")
-    expire_days_raw = request.form.get("expire_days")
+    # Obter valores, tratando campos vazios como None
+    expire_seconds_raw = request.form.get("expire_seconds", "").strip()
+    expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
+    
+    expire_hours_raw = request.form.get("expire_hours", "").strip()
+    expire_hours_raw = expire_hours_raw if expire_hours_raw else None
+    
+    expire_days_raw = request.form.get("expire_days", "").strip()
+    expire_days_raw = expire_days_raw if expire_days_raw else None
     
     # Calcular timestamp de expiração
     expires_at = calcular_timestamp_expira(
