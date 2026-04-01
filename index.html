@@ -622,7 +622,7 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
-    <!-- LISTA DE USUÁRIOS DO REVENDEDOR -->
+    <!-- LISTA DE USUÁRIOS DO REVENDEDOR (SEM BOTÃO ATUALIZAR) -->
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -632,9 +632,7 @@
             <div class="sub">Gerencie dispositivos e status</div>
           </div>
         </div>
-        <button class="btn btn-soft" onclick="carregarUsuarios()" style="width:auto; padding: 8px 16px;">
-          <i class="fas fa-sync-alt"></i> Atualizar
-        </button>
+        <!-- Botão "Atualizar" removido conforme solicitado -->
       </div>
       <div id="listaUsuariosContainer">
         <div class="empty" id="loadingUsuarios">Carregando usuários...</div>
@@ -728,7 +726,7 @@
       if(e.key === "Enter") generateLicense();
     });
 
-    // Carregar lista de usuários ao iniciar
+    // Carregar lista de usuários ao iniciar (se houver token)
     carregarUsuarios();
   });
 
@@ -746,6 +744,8 @@
     }
     localStorage.setItem(TOKEN_KEY, token);
     toast("Token salvo", "ok", "Pronto ✅");
+    // Atualizar lista de usuários com o novo token
+    carregarUsuarios();
   }
 
   function confirmClearToken(){
@@ -753,6 +753,8 @@
       localStorage.removeItem(TOKEN_KEY);
       document.getElementById("token").value = "";
       toast("Token removido", "ok", "Token excluído com sucesso");
+      // Limpar lista de usuários
+      document.getElementById("listaUsuariosContainer").innerHTML = `<div class="empty">Token não informado. Salve seu token primeiro.</div>`;
     } else {
       toast("Operação cancelada", "ok", "Token mantido");
     }
@@ -826,7 +828,7 @@
       document.getElementById("username").value = generateUsername();
       document.getElementById("password").value = generatePassword();
 
-      // Recarregar lista de usuários
+      // Recarregar lista de usuários (inclui o novo)
       carregarUsuarios();
 
     }catch(err){
@@ -1096,7 +1098,7 @@
             <th>Expira em</th>
             <th>Dispositivo</th>
             <th>Ações</th>
-           </tr>
+          </tr>
         </thead>
         <tbody>`;
       
