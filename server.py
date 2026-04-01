@@ -1,17 +1,23 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-import json, os, time, base64, sqlite3, requests, hashlib, hmac
+import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading
 import jwt
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
 from datetime import datetime, timedelta, timezone
 from functools import wraps
+from collections import defaultdict
+from logging.handlers import RotatingFileHandler
+import logging
+import atexit
 
+# Configurações de banco e arquivos
 DB = "data/licenses.db"
 USERS_FILE = "data/users.json"
 KEY_PRIV = "private.pem"
 KEY_PUB = "public.pem"
 SECURITY_LOG_FILE = "data/security.log"
+JWT_SECRET_FILE = "data/jwt_secret.key"
 
 # Constante para licença ilimitada
 UNLIMITED_EXPIRY = 9999999999999
@@ -20,71 +26,141 @@ UNLIMITED_EXPIRY = 9999999999999
 CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
 
 # Configuração JWT
-JWT_SECRET = os.getenv("JWT_SECRET", "fer4_jwt_s3cr3t_k3y_ch4ng3_m3")
-JWT_ALGORITHM = "RS256"  # Vamos usar RSA para compatibilidade com seus .pem
-JWT_EXPIRY_HOURS = 24  # Token válido por 24 horas
+JWT_SECRET = None
+JWT_ALGORITHM = "RS256"
+JWT_EXPIRY_HOURS = 24
 
 # ------------------------------
-#   CONFIG GITHUB
+#   CONFIGURAÇÃO DE LOG COM ROTAÇÃO
 # ------------------------------
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = "FeraAlpha/painel-licenca-server"
-GITHUB_FILE_PATH = "data/users.json"
-GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE_PATH}"
+def setup_logging():
+    """Configura logging com rotação de arquivos"""
+    os.makedirs("data", exist_ok=True)
+    
+    # Criar logger para segurança
+    security_logger = logging.getLogger('security')
+    security_logger.setLevel(logging.INFO)
+    
+    # Handler com rotação (max 5MB, 3 backups)
+    handler = RotatingFileHandler(
+        SECURITY_LOG_FILE, 
+        maxBytes=5 * 1024 * 1024,  # 5MB
+        backupCount=3,
+        encoding='utf-8'
+    )
+    
+    formatter = logging.Formatter('%(message)s')
+    handler.setFormatter(formatter)
+    security_logger.addHandler(handler)
+    
+    return security_logger
 
-os.makedirs("data", exist_ok=True)
-os.makedirs("data/backups", exist_ok=True)
+security_logger = setup_logging()
 
 # ------------------------------
-#   FUNÇÕES DE SEGURANÇA
+#   FUNÇÃO DE LOG DE SEGURANÇA
 # ------------------------------
-def log_security(event_type, fingerprint=None, ip=None, details=None):
-    """Registra eventos de segurança"""
+def log_security(event_type, fingerprint=None, ip=None, details=None, severity="INFO"):
+    """Registra eventos de segurança com níveis de severidade"""
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ip = ip or request.remote_addr if 'request' in globals() else "N/A"
-        user_agent = request.user_agent.string if 'request' in globals() and request.user_agent else "N/A"
+        ip = ip or (request.remote_addr if hasattr(request, 'remote_addr') else "N/A")
+        user_agent = request.user_agent.string if hasattr(request, 'user_agent') and request.user_agent else "N/A"
         
         log_entry = {
             "timestamp": timestamp,
+            "severity": severity,
             "event": event_type,
             "fingerprint": fingerprint,
             "ip": ip,
             "user_agent": user_agent,
-            "details": details
+            "details": details or {}
         }
         
-        with open(SECURITY_LOG_FILE, "a", encoding="utf-8") as f:
-            f.write(json.dumps(log_entry) + "\n")
-    except Exception:
-        pass
+        security_logger.info(json.dumps(log_entry, ensure_ascii=False))
+        
+        # Se for severidade alta, também log no console
+        if severity in ["CRITICAL", "ERROR", "WARNING"]:
+            print(f"[{severity}] {event_type}: {details}")
+            
+    except Exception as e:
+        print(f"Erro ao logar segurança: {e}")
 
-def gerar_assinatura_hmac(expires, fingerprint):
-    """Gera assinatura HMAC igual ao cliente"""
-    dados = f"{expires}:{fingerprint}"
-    assinatura = hmac.new(
-        CHAVE_SECRETA.encode(),
-        dados.encode(),
-        hashlib.sha256
-    ).hexdigest()
-    return assinatura
+# ------------------------------
+#   GERENCIAMENTO DE CHAVES RSA
+# ------------------------------
+def ensure_rsa_keys():
+    """Garante que as chaves RSA existam, gerando se necessário"""
+    if not os.path.exists(KEY_PRIV) or not os.path.exists(KEY_PUB):
+        log_security("rsa_keys_generating", details={"reason": "keys_not_found"})
+        try:
+            key = RSA.generate(2048)
+            private_key = key.export_key()
+            public_key = key.publickey().export_key()
+            
+            with open(KEY_PRIV, "wb") as f:
+                f.write(private_key)
+            with open(KEY_PUB, "wb") as f:
+                f.write(public_key)
+            
+            log_security("rsa_keys_generated", severity="INFO")
+            print("✅ Chaves RSA geradas automaticamente")
+        except Exception as e:
+            log_security("rsa_keys_generation_error", details=str(e), severity="ERROR")
+            raise
+
+def get_jwt_secret():
+    """Obtém JWT_SECRET de forma persistente"""
+    global JWT_SECRET
+    
+    # Tentar carregar do ambiente primeiro
+    env_secret = os.getenv("JWT_SECRET")
+    if env_secret:
+        JWT_SECRET = env_secret
+        log_security("jwt_secret_from_env", severity="INFO")
+        return JWT_SECRET
+    
+    # Tentar carregar do arquivo
+    if os.path.exists(JWT_SECRET_FILE):
+        try:
+            with open(JWT_SECRET_FILE, "r") as f:
+                JWT_SECRET = f.read().strip()
+                if JWT_SECRET:
+                    log_security("jwt_secret_from_file", severity="INFO")
+                    return JWT_SECRET
+        except Exception as e:
+            log_security("jwt_secret_load_error", details=str(e), severity="WARNING")
+    
+    # Gerar nova chave
+    import secrets
+    JWT_SECRET = secrets.token_urlsafe(32)
+    
+    # Salvar em arquivo
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open(JWT_SECRET_FILE, "w") as f:
+            f.write(JWT_SECRET)
+        log_security("jwt_secret_generated_and_saved", severity="INFO")
+        print("✅ JWT_SECRET gerado e salvo em arquivo")
+    except Exception as e:
+        log_security("jwt_secret_save_error", details=str(e), severity="ERROR")
+    
+    return JWT_SECRET
+
+# Inicializar JWT_SECRET
+JWT_SECRET = get_jwt_secret()
+
+# Garantir que as chaves RSA existam
+ensure_rsa_keys()
 
 # ------------------------------
 #   FUNÇÕES JWT CORRIGIDAS
 # ------------------------------
 def gerar_token_jwt(fingerprint, username, expires_at):
-    """Gera um token JWT para o cliente com fallback para HS256"""
+    """Gera um token JWT para o cliente usando RS256"""
     now = datetime.now(timezone.utc)
     
-    # ✅ VERIFICAÇÃO: Checar se o arquivo private.pem existe
-    if not os.path.exists(KEY_PRIV):
-        log_security("jwt_private_key_missing", 
-                    details={"error": f"Arquivo {KEY_PRIV} não encontrado"})
-        # Fallback: usar JWT_SECRET com HS256
-        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
-    
     try:
-        # Tenta carregar a chave privada RSA
         with open(KEY_PRIV, "rb") as f:
             private_key = RSA.import_key(f.read())
         
@@ -99,61 +175,46 @@ def gerar_token_jwt(fingerprint, username, expires_at):
         token = jwt.encode(payload, private_key, algorithm="RS256")
         return token
         
-    except (ValueError, TypeError) as e:
-        # Erro no formato da chave
-        log_security("jwt_private_key_invalid", 
-                    details={"error": str(e)})
-        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
-        
     except Exception as e:
         log_security("jwt_generation_error", 
-                    details={"error": str(e)})
-        return gerar_token_jwt_fallback(fingerprint, username, expires_at)
-
-def gerar_token_jwt_fallback(fingerprint, username, expires_at):
-    """Fallback para gerar token JWT com HS256 quando RSA falha"""
-    now = datetime.now(timezone.utc)
-    
-    payload = {
-        "fp": fingerprint,
-        "user": username,
-        "exp": now + timedelta(hours=JWT_EXPIRY_HOURS),
-        "iat": now,
-        "lic_exp": expires_at,
-        "alg_fallback": "HS256"  # Indicador que usou fallback
-    }
-    
-    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
-    return token
+                    details={"error": str(e)},
+                    severity="ERROR")
+        return None
 
 def validar_token_jwt(token):
-    """Valida um token JWT e retorna o payload se válido (com suporte a fallback)"""
+    """Valida um token JWT - Tenta RS256 primeiro, depois HS256 como fallback"""
+    
+    # Primeiro tentar com RS256 (chave pública)
     try:
-        # Primeiro tenta validar com chave pública RSA
         if os.path.exists(KEY_PUB):
-            try:
-                with open(KEY_PUB, "rb") as f:
-                    public_key = RSA.import_key(f.read())
-                
-                payload = jwt.decode(
-                    token, 
-                    public_key, 
-                    algorithms=["RS256"],
-                    options={"require": ["exp", "iat", "fp", "user"]}
-                )
-                return {"valid": True, "payload": payload}
-            except:
-                # Se falhar com RSA, tenta com HS256
-                pass
-        
-        # Tenta validar com HS256 (fallback)
+            with open(KEY_PUB, "rb") as f:
+                public_key = RSA.import_key(f.read())
+            
+            payload = jwt.decode(
+                token,
+                public_key,
+                algorithms=["RS256"],
+                options={"require": ["exp", "iat", "fp", "user"]}
+            )
+            return {"valid": True, "payload": payload, "algorithm": "RS256"}
+    except jwt.ExpiredSignatureError:
+        return {"valid": False, "reason": "token_expired"}
+    except jwt.InvalidTokenError:
+        # Falhou RS256, tentar HS256 como fallback
+        pass
+    except Exception as e:
+        log_security("jwt_rs256_validation_error", details=str(e), severity="WARNING")
+    
+    # Fallback: tentar HS256
+    try:
         payload = jwt.decode(
             token,
             JWT_SECRET,
             algorithms=["HS256"],
             options={"require": ["exp", "iat", "fp", "user"]}
         )
-        return {"valid": True, "payload": payload}
+        log_security("jwt_hs256_fallback_used", details={"token_preview": token[:20]}, severity="WARNING")
+        return {"valid": True, "payload": payload, "algorithm": "HS256", "fallback": True}
         
     except jwt.ExpiredSignatureError:
         return {"valid": False, "reason": "token_expired"}
@@ -163,13 +224,198 @@ def validar_token_jwt(token):
         return {"valid": False, "reason": f"validation_error: {str(e)}"}
 
 # ------------------------------
-#   BANCO SQL MELHORADO
+#   RATE LIMITING PERSISTENTE
+# ------------------------------
+def init_rate_limit_table():
+    """Inicializa tabela de rate limiting"""
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS rate_limit_events
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT NOT NULL,
+                  endpoint TEXT,
+                  timestamp INTEGER NOT NULL,
+                  attempt_count INTEGER DEFAULT 1,
+                  UNIQUE(ip, endpoint, timestamp))''')
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS banned_ips
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT UNIQUE NOT NULL,
+                  banned_at INTEGER NOT NULL,
+                  expires_at INTEGER NOT NULL,
+                  reason TEXT)''')
+    
+    c.execute('CREATE INDEX IF NOT EXISTS idx_rate_limit_ip ON rate_limit_events(ip, timestamp)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)')
+    
+    conn.commit()
+    conn.close()
+
+RATE_LIMIT = {
+    'attempts': 5,      # Tentativas permitidas
+    'window': 300,       # Janela de 5 minutos
+    'ban_time': 1800     # Ban de 30 minutos
+}
+
+def check_rate_limit(ip, endpoint):
+    """Verifica rate limit por IP usando banco de dados"""
+    conn = get_db()
+    cursor = conn.cursor()
+    now = int(time.time())
+    
+    # Verificar se IP está banido
+    cursor.execute('''
+        SELECT * FROM banned_ips 
+        WHERE ip = ? AND expires_at > ?
+    ''', (ip, now))
+    
+    banned = cursor.fetchone()
+    if banned:
+        conn.close()
+        remaining = banned['expires_at'] - now
+        return False, f"IP banido por {remaining} segundos"
+    
+    # Limpar entradas antigas
+    cursor.execute('''
+        DELETE FROM rate_limit_events 
+        WHERE timestamp < ?
+    ''', (now - RATE_LIMIT['window'],))
+    
+    # Contar tentativas recentes
+    cursor.execute('''
+        SELECT SUM(attempt_count) as total_attempts 
+        FROM rate_limit_events 
+        WHERE ip = ? AND timestamp > ?
+    ''', (ip, now - RATE_LIMIT['window']))
+    
+    result = cursor.fetchone()
+    attempts = result['total_attempts'] if result and result['total_attempts'] else 0
+    
+    # Verificar tentativas
+    if attempts >= RATE_LIMIT['attempts']:
+        # Banir IP
+        expires_at = now + RATE_LIMIT['ban_time']
+        cursor.execute('''
+            INSERT OR REPLACE INTO banned_ips (ip, banned_at, expires_at, reason)
+            VALUES (?, ?, ?, ?)
+        ''', (ip, now, expires_at, f"rate_limit_exceeded at {endpoint}"))
+        conn.commit()
+        conn.close()
+        
+        log_security("rate_limit_ban", ip=ip, details={"endpoint": endpoint}, severity="WARNING")
+        return False, "Muitas tentativas. IP banido por 30 minutos."
+    
+    # Registrar tentativa
+    cursor.execute('''
+        INSERT INTO rate_limit_events (ip, endpoint, timestamp, attempt_count)
+        VALUES (?, ?, ?, 1)
+        ON CONFLICT(ip, endpoint, timestamp) 
+        DO UPDATE SET attempt_count = attempt_count + 1
+    ''', (ip, endpoint, now))
+    
+    conn.commit()
+    conn.close()
+    
+    return True, "OK"
+
+# ------------------------------
+#   LIMPEZA AUTOMÁTICA DO BANCO
+# ------------------------------
+class DatabaseCleaner:
+    """Classe para limpeza automática do banco de dados"""
+    
+    def __init__(self, interval_seconds=3600):
+        self.interval = interval_seconds
+        self.timer = None
+        self.running = False
+        
+    def start(self):
+        """Inicia o processo de limpeza automática"""
+        self.running = True
+        self._schedule()
+        log_security("db_cleaner_started", details={"interval": self.interval}, severity="INFO")
+        
+    def stop(self):
+        """Para o processo de limpeza automática"""
+        self.running = False
+        if self.timer:
+            self.timer.cancel()
+        log_security("db_cleaner_stopped", severity="INFO")
+        
+    def _schedule(self):
+        """Agenda a próxima limpeza"""
+        if self.running:
+            self.timer = threading.Timer(self.interval, self.clean)
+            self.timer.daemon = True
+            self.timer.start()
+            
+    def clean(self):
+        """Executa limpeza do banco de dados"""
+        try:
+            conn = get_db()
+            cursor = conn.cursor()
+            now = int(time.time())
+            
+            # Limpar sessões expiradas
+            cursor.execute('DELETE FROM sessions WHERE expires_at < ?', (now,))
+            deleted_sessions = cursor.rowcount
+            
+            # Limpar tokens revogados antigos (mais de 30 dias)
+            thirty_days_ago = now - (30 * 24 * 3600)
+            cursor.execute('DELETE FROM revoked_tokens WHERE revoked_at < ?', (thirty_days_ago,))
+            deleted_revoked = cursor.rowcount
+            
+            # Limpar rate limit events antigos (mais de 1 dia)
+            one_day_ago = now - (24 * 3600)
+            cursor.execute('DELETE FROM rate_limit_events WHERE timestamp < ?', (one_day_ago,))
+            deleted_rate_limits = cursor.rowcount
+            
+            # Limpar bans expirados
+            cursor.execute('DELETE FROM banned_ips WHERE expires_at < ?', (now,))
+            deleted_bans = cursor.rowcount
+            
+            # Limpar logs de uso antigos (mais de 90 dias)
+            ninety_days_ago = now - (90 * 24 * 3600)
+            cursor.execute('DELETE FROM license_usage WHERE timestamp < ?', (ninety_days_ago,))
+            deleted_usage = cursor.rowcount
+            
+            conn.commit()
+            conn.close()
+            
+            log_security("db_cleanup_executed", details={
+                "deleted_sessions": deleted_sessions,
+                "deleted_revoked_tokens": deleted_revoked,
+                "deleted_rate_limits": deleted_rate_limits,
+                "deleted_bans": deleted_bans,
+                "deleted_usage_logs": deleted_usage
+            }, severity="INFO")
+            
+            print(f"🧹 Limpeza DB: {deleted_sessions} sessões, {deleted_revoked} tokens, "
+                  f"{deleted_rate_limits} rate limits, {deleted_bans} bans, {deleted_usage} logs removidos")
+            
+        except Exception as e:
+            log_security("db_cleanup_error", details=str(e), severity="ERROR")
+            
+        finally:
+            # Agendar próxima limpeza
+            self._schedule()
+            
+    def clean_once(self):
+        """Executa limpeza uma vez (para testes ou chamada manual)"""
+        self.clean()
+
+# Inicializar tabelas de rate limit
+init_rate_limit_table()
+
+# ------------------------------
+#   BANCO SQL (COM TABELAS ATUALIZADAS)
 # ------------------------------
 def init_db():
     conn = sqlite3.connect(DB)
     c = conn.cursor()
     
-    # Tabela de licenças existente
+    # Tabela de licenças
     c.execute('''CREATE TABLE IF NOT EXISTS licenses
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   fingerprint TEXT UNIQUE, 
@@ -180,7 +426,7 @@ def init_db():
                   last_used INTEGER,
                   device_info TEXT)''')
     
-    # ✅ NOVA: Tabela de sessões
+    # Tabela de sessões
     c.execute('''CREATE TABLE IF NOT EXISTS sessions
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   token TEXT NOT NULL,
@@ -190,7 +436,7 @@ def init_db():
                   last_used INTEGER,
                   UNIQUE(token, fingerprint))''')
     
-    # ✅ NOVA: Tabela de uso de licenças (log)
+    # Tabela de uso de licenças
     c.execute('''CREATE TABLE IF NOT EXISTS license_usage
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   fingerprint TEXT,
@@ -199,7 +445,7 @@ def init_db():
                   ip_address TEXT,
                   user_agent TEXT)''')
     
-    # ✅ NOVA: Tabela para revogação de tokens JWT
+    # Tabela para revogação de tokens
     c.execute('''CREATE TABLE IF NOT EXISTS revoked_tokens
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   token TEXT UNIQUE,
@@ -207,11 +453,31 @@ def init_db():
                   revoked_at INTEGER,
                   reason TEXT)''')
     
-    # Criar índices para melhor performance
+    # Tabela para rate limiting persistente
+    c.execute('''CREATE TABLE IF NOT EXISTS rate_limit_events
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT NOT NULL,
+                  endpoint TEXT,
+                  timestamp INTEGER NOT NULL,
+                  attempt_count INTEGER DEFAULT 1,
+                  UNIQUE(ip, endpoint, timestamp))''')
+    
+    # Tabela para IPs banidos
+    c.execute('''CREATE TABLE IF NOT EXISTS banned_ips
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  ip TEXT UNIQUE NOT NULL,
+                  banned_at INTEGER NOT NULL,
+                  expires_at INTEGER NOT NULL,
+                  reason TEXT)''')
+    
+    # Criar índices
     c.execute('CREATE INDEX IF NOT EXISTS idx_fingerprint ON licenses(fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_sessions ON sessions(token, fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_license_status ON licenses(status, expires_at)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_revoked_tokens ON revoked_tokens(token)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_license_usage ON license_usage(fingerprint, timestamp)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_rate_limit_ip ON rate_limit_events(ip, timestamp)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)')
     
     conn.commit()
     conn.close()
@@ -226,16 +492,18 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-def verificar_licenca_ativa(fingerprint, expires):
+def verificar_licenca_ativa(fingerprint, expires, username=None):
     """Verifica se a licença está ativa no banco"""
     conn = get_db()
     cursor = conn.cursor()
     
-    cursor.execute('''
+    query = '''
         SELECT * FROM licenses 
         WHERE fingerprint = ? AND expires_at = ? AND status = 'active'
-    ''', (fingerprint, expires))
+    '''
+    params = [fingerprint, expires]
     
+    cursor.execute(query, params)
     licenca = cursor.fetchone()
     conn.close()
     
@@ -259,8 +527,8 @@ def registrar_uso(fingerprint, action, ip=None, user_agent=None):
     conn = get_db()
     cursor = conn.cursor()
     
-    ip = ip or (request.remote_addr if 'request' in globals() else "N/A")
-    user_agent = user_agent or (request.user_agent.string if 'request' in globals() and request.user_agent else "N/A")
+    ip = ip or (request.remote_addr if hasattr(request, 'remote_addr') else "N/A")
+    user_agent = user_agent or (request.user_agent.string if hasattr(request, 'user_agent') and request.user_agent else "N/A")
     
     cursor.execute('''
         INSERT INTO license_usage (fingerprint, action, timestamp, ip_address, user_agent)
@@ -298,7 +566,6 @@ def verificar_sessao(token, fingerprint):
     sessao = cursor.fetchone()
     
     if sessao:
-        # Atualizar último uso
         cursor.execute('''
             UPDATE sessions SET last_used = ? 
             WHERE token = ? AND fingerprint = ?
@@ -351,98 +618,34 @@ def load_users():
         if os.path.exists(USERS_FILE):
             with open(USERS_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                # Corrige valores antigos: se for 0, converte para UNLIMITED_EXPIRY
                 users = data.get("users", [])
                 for user in users:
                     if user.get("expires_at") == 0:
                         user["expires_at"] = UNLIMITED_EXPIRY
+                    # Garantir campo status
+                    if "status" not in user:
+                        user["status"] = "active"
                 return data
     except Exception as e:
-        log_security("load_users_error", details=str(e))
+        log_security("load_users_error", details=str(e), severity="ERROR")
 
-    # tenta recuperar do GitHub
-    if GITHUB_TOKEN:
-        try:
-            r = requests.get(GITHUB_API_URL, headers={
-                "Authorization": f"Bearer {GITHUB_TOKEN}",
-                "Accept": "application/vnd.github+json"
-            }, timeout=10)
-            if r.ok:
-                info = r.json()
-                content = base64.b64decode(info.get("content", "")).decode()
-                data = json.loads(content)
-                # Corrige valores
-                users = data.get("users", [])
-                for user in users:
-                    if user.get("expires_at") == 0:
-                        user["expires_at"] = UNLIMITED_EXPIRY
-                atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
-                return data
-        except Exception as e:
-            log_security("github_sync_error", details=str(e))
-
+    # Se falhar, retorna estrutura vazia
     return {"users": []}
 
 # ------------------------------
-#   SAVE USERS (CORRIGIDA)
+#   SAVE USERS
 # ------------------------------
-def save_users_github(data, retries=3):
-    if not GITHUB_TOKEN:
-        return False
-
-    sha = None
-    try:
-        r = requests.get(GITHUB_API_URL, headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json"
-        })
-        if r.ok:
-            sha = r.json().get("sha")
-    except Exception:
-        pass
-
-    content_b64 = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
-
-    payload = {"message": "update users.json", "content": content_b64}
-    if sha:
-        payload["sha"] = sha
-
-    for _ in range(retries):
-        try:
-            res = requests.put(
-                GITHUB_API_URL,
-                headers={
-                    "Authorization": f"Bearer {GITHUB_TOKEN}",
-                    "Accept": "application/vnd.github+json"
-                },
-                json=payload
-            )
-            if res.status_code in (200, 201):
-                return True
-        except Exception as e:
-            log_security("github_upload_error", details=str(e))
-            time.sleep(1)
-
-    return False
-
 def save_users(data):
     try:
-        # backup
+        # Backup
         ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         atomic_write(f"data/backups/users.{ts}.json", json.dumps(data, indent=2).encode())
 
-        # local
+        # Local
         atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
-
-        # sync cloud (não bloqueante)
-        try:
-            save_users_github(data)
-        except Exception as e:
-            log_security("save_users_error", details=str(e))
-            
         return True
     except Exception as e:
-        log_security("save_users_critical_error", details=str(e))
+        log_security("save_users_critical_error", details=str(e), severity="CRITICAL")
         print(f"ERRO CRÍTICO AO SALVAR USERS: {str(e)}")
         return False
 
@@ -457,32 +660,140 @@ def sign_payload(payload_bytes):
         sig = pkcs1_15.new(priv).sign(h)
         return sig
     except Exception as e:
-        log_security("sign_payload_error", details=str(e))
-        # Fallback: retorna None
+        log_security("sign_payload_error", details=str(e), severity="ERROR")
         return None
+
+def gerar_assinatura_hmac(expires, fingerprint):
+    """Gera assinatura HMAC igual ao cliente"""
+    dados = f"{expires}:{fingerprint}"
+    assinatura = hmac.new(
+        CHAVE_SECRETA.encode(),
+        dados.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return assinatura
+
+def sanitize_input(value, max_length=50, allowed_chars=None):
+    """Sanitiza input do usuário"""
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        value = str(value)
+    
+    # Remover caracteres potencialmente perigosos
+    value = value.strip()[:max_length]
+    if allowed_chars:
+        value = ''.join(c for c in value if c in allowed_chars)
+    return value
 
 # ------------------------------
 #   FLASK APP
 # ------------------------------
 app = Flask(__name__, template_folder='templates')
+app.start_time = time.time()
+
+# Iniciar cleaner automático
+db_cleaner = DatabaseCleaner(interval_seconds=3600)  # Limpeza a cada 1 hora
+db_cleaner.start()
+
+# Registrar parada limpa ao encerrar
+atexit.register(lambda: db_cleaner.stop())
+
+# ------------------------------
+#   HEALTH CHECK COM ESTATÍSTICAS
+# ------------------------------
+HEALTH_CHECK_KEY = os.getenv("HEALTH_CHECK_KEY", "admin_health_2024")
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    """Endpoint de health check com estatísticas"""
+    # Verificar chave de admin no header
+    api_key = request.headers.get("X-Health-Key")
+    
+    if api_key != HEALTH_CHECK_KEY:
+        return jsonify({
+            "status": "unauthorized",
+            "message": "Invalid or missing health check key"
+        }), 401
+    
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Total de licenças ativas
+        cursor.execute("SELECT COUNT(*) FROM licenses WHERE status = 'active'")
+        active_licenses = cursor.fetchone()[0]
+        
+        # Total de sessões ativas
+        now = int(time.time())
+        cursor.execute("SELECT COUNT(*) FROM sessions WHERE expires_at > ?", (now,))
+        active_sessions = cursor.fetchone()[0]
+        
+        # Total de licenças expiradas
+        cursor.execute("SELECT COUNT(*) FROM licenses WHERE status = 'expired'")
+        expired_licenses = cursor.fetchone()[0]
+        
+        # Total de usuários no sistema
+        users_data = load_users()
+        total_users = len(users_data.get("users", []))
+        
+        # IPs banidos ativos
+        cursor.execute("SELECT COUNT(*) FROM banned_ips WHERE expires_at > ?", (now,))
+        active_bans = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        # Uptime do servidor
+        if not hasattr(app, 'start_time'):
+            app.start_time = time.time()
+        uptime_seconds = time.time() - app.start_time
+        uptime_str = str(timedelta(seconds=int(uptime_seconds)))
+        
+        return jsonify({
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "uptime": uptime_str,
+            "uptime_seconds": int(uptime_seconds),
+            "statistics": {
+                "active_licenses": active_licenses,
+                "active_sessions": active_sessions,
+                "expired_licenses": expired_licenses,
+                "total_users": total_users,
+                "active_bans": active_bans
+            },
+            "database": {
+                "size_bytes": os.path.getsize(DB) if os.path.exists(DB) else 0,
+                "last_cleanup": getattr(app, 'last_cleanup', None)
+            }
+        }), 200
+        
+    except Exception as e:
+        log_security("health_check_error", details=str(e), severity="ERROR")
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e)
+        }), 500
 
 # ------------------------------
 #   MIDDLEWARE DE SEGURANÇA
 # ------------------------------
 @app.before_request
 def before_request():
-    # Log de requisições suspeitas
-    if request.endpoint not in ['home', 'ping']:
-        log_security(
-            "api_request",
-            ip=request.remote_addr,
-            details={
-                "endpoint": request.endpoint,
-                "method": request.method,
-                "path": request.path,
-                "user_agent": request.user_agent.string if request.user_agent else None
-            }
-        )
+    # Rate limiting para endpoints sensíveis
+    sensitive_endpoints = ['activate', 'verify_license', 'validate_token']
+    if request.endpoint in sensitive_endpoints:
+        allowed, message = check_rate_limit(request.remote_addr, request.endpoint)
+        if not allowed:
+            return jsonify({"error": "rate_limited", "message": message}), 429
+
+@app.after_request
+def add_security_headers(response):
+    """Adiciona headers de segurança"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
 
 # ------------------------------
 #   ROTAS PÚBLICAS
@@ -493,11 +804,10 @@ def home():
 
 @app.route("/ping", methods=["GET"])
 def ping():
-    """Endpoint para teste de conexão"""
     return jsonify({
         "status": "online",
         "timestamp": datetime.now().isoformat(),
-        "version": "2.0"
+        "version": "3.0"
     }), 200
 
 # ------------------------------
@@ -508,36 +818,26 @@ def verify_license():
     """Verifica se uma licença é válida"""
     try:
         data = request.json or {}
-        fingerprint = data.get("fingerprint")
+        fingerprint = sanitize_input(data.get("fingerprint", ""))
         expires = data.get("expires")
         
         if not fingerprint or not expires:
-            log_security("verify_missing_fields", fingerprint=fingerprint)
             return jsonify({"valid": False, "reason": "missing_fields"}), 400
         
-        # Converter expires para int
         try:
             expires_int = int(expires)
         except ValueError:
-            log_security("verify_invalid_expires", fingerprint=fingerprint, details={"expires": expires})
             return jsonify({"valid": False, "reason": "invalid_expires_format"}), 400
         
-        # ✅ 1. Verificar se a licença existe no banco
         if not verificar_licenca_ativa(fingerprint, expires_int):
-            log_security("license_not_found", fingerprint=fingerprint, details={"expires": expires_int})
             return jsonify({"valid": False, "reason": "license_not_found"}), 404
         
-        # ✅ 2. Verificar se não expirou (exceto se for ilimitada)
         now = int(time.time())
         if expires_int != UNLIMITED_EXPIRY and expires_int < now:
-            log_security("license_expired", fingerprint=fingerprint, details={"expires": expires_int, "now": now})
             return jsonify({"valid": False, "reason": "license_expired"}), 403
         
-        # ✅ 3. Atualizar uso e registrar
         atualizar_uso_licenca(fingerprint, expires_int)
         registrar_uso(fingerprint, "license_verified")
-        
-        log_security("license_verified", fingerprint=fingerprint)
         
         return jsonify({
             "valid": True,
@@ -546,7 +846,7 @@ def verify_license():
         })
         
     except Exception as e:
-        log_security("verify_error", details=str(e))
+        log_security("verify_error", details=str(e), severity="ERROR")
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
@@ -554,74 +854,54 @@ def verify_license():
 # ------------------------------
 @app.route("/verify_session", methods=["GET"])
 def verify_session():
-    """Verifica se uma sessão é válida"""
     try:
         token = request.args.get("token")
-        fp = request.args.get("fp")  # fingerprint
+        fp = request.args.get("fp")
         
         if not token or not fp:
             return jsonify({"valid": False, "reason": "missing_params"}), 400
         
-        # Verificar sessão
         if verificar_sessao(token, fp):
-            log_security("session_valid", fingerprint=fp)
             return jsonify({"valid": True})
         else:
-            log_security("session_invalid", fingerprint=fp)
             return jsonify({"valid": False, "reason": "session_invalid_or_expired"})
             
     except Exception as e:
-        log_security("session_error", details=str(e))
+        log_security("session_error", details=str(e), severity="ERROR")
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   VALIDAÇÃO DE TOKEN JWT (NOVO)
+#   VALIDAÇÃO DE TOKEN JWT
 # ------------------------------
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
-    """Valida um token JWT enviado pelo cliente"""
     try:
         data = request.json or {}
         token = data.get("token")
-        fingerprint = data.get("fingerprint")
+        fingerprint = sanitize_input(data.get("fingerprint", ""))
         
         if not token:
-            log_security("token_missing", ip=request.remote_addr)
             return jsonify({"valid": False, "reason": "token_required"}), 400
         
-        # Verificar se o token foi revogado
         if token_esta_revogado(token):
-            log_security("token_revoked", ip=request.remote_addr)
             return jsonify({"valid": False, "reason": "token_revoked"}), 403
         
-        # Validar o token JWT
         result = validar_token_jwt(token)
         
         if not result["valid"]:
-            log_security("token_invalid", 
-                        ip=request.remote_addr, 
-                        details={"reason": result["reason"]})
             return jsonify({"valid": False, "reason": result["reason"]}), 401
         
         payload = result["payload"]
         
-        # Se forneceu fingerprint, verificar se corresponde
         if fingerprint and payload.get("fp") != fingerprint:
-            log_security("token_fingerprint_mismatch",
-                        fingerprint=fingerprint,
-                        details={"token_fp": payload.get("fp")})
             return jsonify({"valid": False, "reason": "fingerprint_mismatch"}), 403
         
-        # Verificar se a licença ainda está ativa no banco
-        fp = payload.get("fp")
-        if fp:
-            licenca_valida = verificar_licenca_ativa(fp, payload.get("lic_exp", 0))
-            if not licenca_valida:
-                log_security("token_license_inactive", fingerprint=fp)
-                return jsonify({"valid": False, "reason": "license_inactive"}), 403
-        
-        # Token válido!
-        log_security("token_validated", fingerprint=payload.get("fp"))
+        # Alertar se foi usado fallback HS256
+        if result.get("fallback"):
+            log_security("jwt_hs256_fallback_used", 
+                        fingerprint=fingerprint,
+                        details={"token_preview": token[:20]},
+                        severity="WARNING")
         
         return jsonify({
             "valid": True,
@@ -633,92 +913,117 @@ def validate_token():
         })
         
     except Exception as e:
-        log_security("token_validation_error", details=str(e))
+        log_security("token_validation_error", details=str(e), severity="ERROR")
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   CLIENTE - ATIVAÇÃO (CORRIGIDA)
+#   CLIENTE - ATIVAÇÃO COM USER-AGENT
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
     try:
-        # ✅ VERIFICAÇÃO INICIAL: Checar se as chaves RSA existem
-        if not os.path.exists(KEY_PRIV):
-            log_security("activate_warning", 
-                        details={"warning": f"Arquivo {KEY_PRIV} não encontrado, usando fallback"})
-        
         data = request.json or {}
-        username = data.get("username")
-        password = data.get("password")
-        fingerprint = data.get("fingerprint")
+        username = sanitize_input(data.get("username", ""))
+        password = sanitize_input(data.get("password", ""))
+        fingerprint = sanitize_input(data.get("fingerprint", ""))
         
         if not username or not password or not fingerprint:
-            log_security("activate_missing_fields", details={"username": username})
             return jsonify({"error": "missing_fields"}), 400
 
         users = load_users().get("users", [])
         user = next((u for u in users if u["username"] == username and u["password"] == password), None)
 
         if not user:
-            log_security("activate_invalid_credentials", fingerprint=fingerprint, details={"username": username})
+            log_security("activate_invalid_credentials", fingerprint=fingerprint)
             return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
+
+        # Verificar se usuário está bloqueado
+        if user.get("status") == "blocked":
+            log_security("activate_blocked_user", fingerprint=fingerprint)
+            return jsonify({"status": "error", "reason": "user_blocked"}), 403
 
         now = int(time.time())
         expires = user.get("expires_at", 0)
         
-        # Para licença ilimitada
         if expires == UNLIMITED_EXPIRY:
-            # Licença ilimitada - sempre válida
             pass
         elif expires < now:
-            log_security("activate_expired", fingerprint=fingerprint, details={"username": username, "expires": expires})
             return jsonify({"status": "error", "reason": "expired"}), 403
 
-        # ✅ CORREÇÃO: Tratar device_id nulo corretamente
         device_id = user.get("device_id")
         
-        # Se device_id é None (nunca ativado), atribuir o fingerprint
+        # Salvar User-Agent do dispositivo
+        user_agent = request.user_agent.string if request.user_agent else "Unknown"
+        
         if device_id is None:
             user["device_id"] = fingerprint
+            user["device_user_agent"] = user_agent  # Salvar User-Agent inicial
             save_users({"users": users})
-            log_security("device_activated", fingerprint=fingerprint, details={"username": username})
-        # Se device_id existe e é diferente, recusar
         elif device_id != fingerprint:
-            log_security("activate_device_mismatch", fingerprint=fingerprint, 
-                        details={"username": username, "stored_device": device_id})
+            # Verificar mudança de User-Agent
+            previous_ua = user.get("device_user_agent", "")
+            if previous_ua and previous_ua != user_agent:
+                log_security("user_agent_changed",
+                            fingerprint=fingerprint,
+                            details={
+                                "previous_ua": previous_ua,
+                                "new_ua": user_agent,
+                                "username": username
+                            },
+                            severity="WARNING")
             return jsonify({"status": "error", "reason": "device_mismatch"}), 403
-        # Se device_id é igual, permitir (já ativado neste dispositivo)
+        else:
+            # Atualizar User-Agent se mudou (apenas para registro)
+            if user.get("device_user_agent") != user_agent:
+                user["device_user_agent"] = user_agent
+                save_users({"users": users})
+                log_security("user_agent_updated",
+                            fingerprint=fingerprint,
+                            details={
+                                "old_ua": user.get("device_user_agent"),
+                                "new_ua": user_agent
+                            },
+                            severity="INFO")
 
-        # ✅ SALVAR LICENÇA NO BANCO DE DADOS
+        # Salvar no banco SQLite com device_info
         conn = get_db()
         cursor = conn.cursor()
         
-        # Verificar se já existe
         cursor.execute('SELECT * FROM licenses WHERE fingerprint = ?', (fingerprint,))
         existing = cursor.fetchone()
         
+        device_info = json.dumps({
+            "user_agent": user_agent,
+            "first_seen": now,
+            "last_seen": now
+        })
+        
         if not existing:
             cursor.execute('''
-                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (fingerprint, username, now, expires, 'active', now))
+                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used, device_info)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (fingerprint, username, now, expires, 'active', now, device_info))
         else:
+            # Atualizar device_info preservando histórico
+            old_info = json.loads(existing['device_info']) if existing['device_info'] else {}
+            old_info['last_seen'] = now
+            old_info['user_agent'] = user_agent
             cursor.execute('''
                 UPDATE licenses 
-                SET expires_at = ?, status = 'active', last_used = ?
+                SET expires_at = ?, status = 'active', last_used = ?, device_info = ?
                 WHERE fingerprint = ?
-            ''', (expires, now, fingerprint))
+            ''', (expires, now, json.dumps(old_info), fingerprint))
         
         conn.commit()
         conn.close()
         
-        # ✅ CRIAR SESSÃO
+        # Criar sessão
         token = hashlib.sha256(f"{fingerprint}:{now}:{os.urandom(16).hex()}".encode()).hexdigest()
         criar_sessao(token, fingerprint)
         
-        # Para resposta, se for ilimitado, envia 0 para o cliente
         client_expires = 0 if expires == UNLIMITED_EXPIRY else expires
         
+        # Gerar resposta
         payload = {
             "username": username,
             "fingerprint": fingerprint,
@@ -728,19 +1033,14 @@ def activate():
 
         payload_bytes = json.dumps(payload, separators=(',', ':')).encode()
         sig = sign_payload(payload_bytes)
-        
-        # ✅ GERAR ASSINATURA HMAC (para validação local do cliente)
         assinatura_hmac = gerar_assinatura_hmac(client_expires, fingerprint)
         
-        # ✅ GERAR TOKEN JWT (agora com fallback)
         try:
             jwt_token = gerar_token_jwt(fingerprint, username, expires)
-        except Exception as jwt_error:
-            log_security("jwt_generation_critical", details={"error": str(jwt_error)})
-            jwt_token = None  # Continua mesmo sem JWT
+        except:
+            jwt_token = None
         
-        log_security("activate_success", fingerprint=fingerprint, details={"username": username, "expires": client_expires})
-        registrar_uso(fingerprint, "activate")
+        registrar_uso(fingerprint, "activate", user_agent=user_agent)
 
         return jsonify({
             "status": "success",
@@ -753,44 +1053,40 @@ def activate():
         })
 
     except Exception as e:
-        log_security("activate_error", details=str(e))
-        # ✅ IMPORTANTE: Log mais detalhado do erro
-        print(f"ERRO NA ATIVAÇÃO: {str(e)}")  # Vai aparecer nos logs do Render
-        import traceback
-        traceback.print_exc()  # Mostra o stack trace completo
+        log_security("activate_error", details=str(e), severity="ERROR")
         return jsonify({"status": "error", "reason": "internal_error"}), 500
 
 # ------------------------------
-#   ADMIN
+#   ADMIN - AUTENTICAÇÃO
 # ------------------------------
-def check_admin(a):
+def check_admin(auth):
     ADMIN_USER = os.getenv("ADMIN_USER", "admin")
     ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
-    return a and a.username == ADMIN_USER and a.password == ADMIN_PASS
+    return auth and auth.username == ADMIN_USER and auth.password == ADMIN_PASS
 
 def need_admin(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         auth = request.authorization
         if not check_admin(auth):
-            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm=\"Login Required\"'})
+            return ("Unauthorized", 401, {"WWW-Authenticate": 'Basic realm="Login Required"'})
         return f(*args, **kwargs)
     return wrapper
 
+# ------------------------------
+#   ADMIN - PAINEL PRINCIPAL (CORRIGIDO)
+# ------------------------------
 @app.route("/admin")
 @need_admin
 def admin():
     data = load_users()
     
-    # Buscar estatísticas do banco
     conn = get_db()
     cursor = conn.cursor()
     
-    # Contar licenças ativas
     cursor.execute("SELECT COUNT(*) FROM licenses WHERE status = 'active'")
     total_licenses = cursor.fetchone()[0]
     
-    # Últimos usos
     cursor.execute('''
         SELECT fingerprint, username, MAX(last_used) as last_used 
         FROM licenses 
@@ -803,14 +1099,389 @@ def admin():
     
     conn.close()
     
+    now_timestamp = int(time.time())
+    
+    # Processar cada usuário para calcular status correto
+    users = data.get("users", [])
+    for user in users:
+        expires_at = user.get("expires_at", 0)
+        
+        # Calcular status baseado na data atual
+        if expires_at == UNLIMITED_EXPIRY:
+            user["status_display"] = "Ilimitado"
+            user["status_class"] = "unlimited"
+            user["expires_display"] = "Nunca expira"
+            user["days_left"] = None
+        elif expires_at < now_timestamp:
+            user["status_display"] = "Expirado"
+            user["status_class"] = "expired"
+            user["expires_display"] = datetime.fromtimestamp(expires_at).strftime("%d/%m/%Y")
+            user["days_left"] = 0
+        else:
+            # Calcular diferença em dias
+            days_left = (expires_at - now_timestamp) // 86400
+            
+            if days_left == 0:
+                user["status_display"] = "Vence hoje"
+                user["status_class"] = "warning"
+            elif days_left == 1:
+                user["status_display"] = "Vence amanhã"
+                user["status_class"] = "warning"
+            elif days_left <= 7:
+                user["status_display"] = f"Vence em {days_left} dias"
+                user["status_class"] = "warning"
+            else:
+                user["status_display"] = "Ativo"
+                user["status_class"] = "active"
+            
+            user["expires_display"] = datetime.fromtimestamp(expires_at).strftime("%d/%m/%Y")
+            user["days_left"] = days_left
+    
     return render_template("admin_index.html", 
-                         users=data.get("users", []), 
+                         users=users, 
                          datetime=datetime,
+                         now_timestamp=now_timestamp,
                          total_licenses=total_licenses,
                          recent_usage=recent_usage)
 
 # ------------------------------
-#   ROTA ADMIN - RELATÓRIO DE USO
+#   ADMIN - BLOQUEAR/DESBLOQUEAR USUÁRIO
+# ------------------------------
+@app.route("/admin/toggle_block/<int:index>", methods=["POST"])
+@need_admin
+def admin_toggle_block(index):
+    """Alterna entre bloquear/desbloquear um usuário"""
+    try:
+        data = load_users()
+        users = data.get("users", [])
+        
+        if 0 <= index < len(users):
+            current_status = users[index].get("status", "active")
+            
+            if current_status == "blocked":
+                users[index]["status"] = "active"
+                new_status = "active"
+                log_msg = "Usuário desbloqueado com sucesso"
+            else:
+                users[index]["status"] = "blocked"
+                new_status = "blocked"
+                log_msg = "Usuário bloqueado com sucesso"
+            
+            save_users(data)
+            
+            # Atualizar banco de dados
+            fingerprint = users[index].get("device_id")
+            if fingerprint:
+                conn = get_db()
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE licenses SET status = ?
+                    WHERE fingerprint = ?
+                ''', (new_status, fingerprint))
+                
+                # Se estiver bloqueando, revogar tokens
+                if new_status == "blocked":
+                    cursor.execute('SELECT token FROM sessions WHERE fingerprint = ?', (fingerprint,))
+                    tokens = cursor.fetchall()
+                    for token_row in tokens:
+                        revogar_token(token_row[0], fingerprint, "user_blocked")
+                    cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fingerprint,))
+                
+                conn.commit()
+                conn.close()
+            
+            log_security("admin_toggle_block", 
+                        details={
+                            "username": users[index]["username"],
+                            "new_status": new_status
+                        })
+            
+            return redirect(url_for('admin', msg=log_msg, highlight=index))
+        else:
+            return redirect(url_for('admin', msg="Usuário não encontrado"))
+            
+    except Exception as e:
+        log_security("admin_toggle_block_error", details=str(e), severity="ERROR")
+        return redirect(url_for('admin', msg=f"Erro: {str(e)}"))
+
+# ------------------------------
+#   ADMIN - GERAR KEY
+# ------------------------------
+@app.route("/admin/generate", methods=["POST"])
+@need_admin
+def admin_generate():
+    username = sanitize_input(request.form.get("username", ""))
+    password = sanitize_input(request.form.get("password", ""))
+    prefix = sanitize_input(request.form.get("prefix", "FERA"))
+    expire_days_raw = request.form.get("expire_days", "30")
+    
+    try:
+        expire_days = int(expire_days_raw)
+    except:
+        expire_days = 30
+
+    if expire_days == 0:
+        expires_at = UNLIMITED_EXPIRY
+    else:
+        expires_at = int(time.time()) + expire_days * 86400
+
+    key = prefix + "-" + os.urandom(4).hex().upper()
+
+    data = load_users()
+    users = data.get("users", [])
+
+    # Verificar se usuário já existe
+    for i, u in enumerate(users):
+        if u.get("username") == username:
+            u["password"] = password
+            u["key"] = key
+            u["expires_at"] = expires_at
+            if "status" not in u:
+                u["status"] = "active"
+            save_users(data)
+            return redirect(url_for('admin', msg="Usuário atualizado", highlight=i))
+
+    # Criar novo usuário
+    users.append({
+        "username": username,
+        "password": password,
+        "key": key,
+        "device_id": None,
+        "expires_at": expires_at,
+        "status": "active",
+        "created_at": int(time.time())
+    })
+
+    save_users(data)
+    return redirect(url_for('admin', msg="Usuário criado com sucesso", highlight=len(users)-1))
+
+# ------------------------------
+#   ADMIN - RENOVAR +30 DIAS
+# ------------------------------
+@app.route("/admin/renew/<int:index>", methods=["POST"])
+@need_admin
+def admin_renew(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        if current == UNLIMITED_EXPIRY:
+            users[index]["expires_at"] = UNLIMITED_EXPIRY
+        else:
+            if current < now:
+                new_exp = now + 30 * 86400
+            else:
+                new_exp = current + 30 * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+        
+        # Atualizar banco
+        fingerprint = users[index].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET expires_at = ?, status = 'active'
+                WHERE fingerprint = ?
+            ''', (users[index]["expires_at"], fingerprint))
+            conn.commit()
+            conn.close()
+
+    return redirect(url_for('admin', msg="Licença renovada +30 dias", highlight=index))
+
+# ------------------------------
+#   ADMIN - RENOVAR CUSTOM
+# ------------------------------
+@app.route("/admin/renew_custom/<int:index>", methods=["POST"])
+@need_admin
+def admin_renew_custom(index):
+    days_raw = request.form.get("days", "30")
+
+    try:
+        days = int(days_raw)
+    except:
+        days = 30
+
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        now = int(time.time())
+        current = users[index].get("expires_at", 0)
+
+        if days == 0:
+            users[index]["expires_at"] = UNLIMITED_EXPIRY
+        else:
+            if current == UNLIMITED_EXPIRY:
+                new_exp = now + days * 86400
+            else:
+                if current < now:
+                    new_exp = now + days * 86400
+                else:
+                    new_exp = current + days * 86400
+            users[index]["expires_at"] = new_exp
+
+        save_users(data)
+        
+        # Atualizar banco
+        fingerprint = users[index].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET expires_at = ?, status = 'active'
+                WHERE fingerprint = ?
+            ''', (users[index]["expires_at"], fingerprint))
+            conn.commit()
+            conn.close()
+
+    return redirect(url_for('admin', msg=f"Licença renovada +{days} dias", highlight=index))
+
+# ------------------------------
+#   ADMIN - RESETAR KEY
+# ------------------------------
+@app.route("/admin/reset/<int:index>", methods=["POST"])
+@need_admin
+def admin_reset(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        old_key = users[index].get("key", "FERA-XXXX")
+        prefix = old_key.split("-")[0] if "-" in old_key else "FERA"
+        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
+        users[index]["key"] = new_key
+        save_users(data)
+
+    return redirect(url_for('admin', msg="Key resetada", highlight=index))
+
+# ------------------------------
+#   ADMIN - RESETAR DEVICE
+# ------------------------------
+@app.route("/admin/reset_device/<int:index>", methods=["POST"])
+@need_admin
+def admin_reset_device(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users[index]["device_id"] = None
+        users[index].pop("device_user_agent", None)  # Remover User-Agent salvo
+        save_users(data)
+
+    return redirect(url_for('admin', msg="Dispositivo resetado", highlight=index))
+
+# ------------------------------
+#   ADMIN - RESETAR TODOS DEVICES
+# ------------------------------
+@app.route("/admin/reset_all_devices", methods=["POST"])
+@need_admin
+def admin_reset_all_devices():
+    data = load_users()
+    users = data.get("users", [])
+    
+    for user in users:
+        user["device_id"] = None
+        user.pop("device_user_agent", None)
+    
+    save_users(data)
+    
+    return redirect(url_for('admin', msg=f"Todos os {len(users)} dispositivos foram resetados"))
+
+# ------------------------------
+#   ADMIN - LIMPAR EXPIRADOS
+# ------------------------------
+@app.route("/admin/clean_expired", methods=["POST"])
+@need_admin
+def admin_clean_expired():
+    data = load_users()
+    users = data.get("users", [])
+    now = int(time.time())
+    
+    filtered_users = []
+    expired_fingerprints = []
+    
+    for user in users:
+        expires_at = user.get("expires_at", 0)
+        
+        if expires_at == UNLIMITED_EXPIRY:
+            filtered_users.append(user)
+        elif expires_at > now:
+            filtered_users.append(user)
+        else:
+            if user.get("device_id"):
+                expired_fingerprints.append(user["device_id"])
+    
+    removed_count = len(users) - len(filtered_users)
+    data["users"] = filtered_users
+    save_users(data)
+    
+    if expired_fingerprints:
+        conn = get_db()
+        cursor = conn.cursor()
+        placeholders = ','.join(['?' for _ in expired_fingerprints])
+        cursor.execute(f'UPDATE licenses SET status = "expired" WHERE fingerprint IN ({placeholders})', expired_fingerprints)
+        conn.commit()
+        conn.close()
+    
+    return redirect(url_for('admin', msg=f"{removed_count} usuários expirados removidos"))
+
+# ------------------------------
+#   ADMIN - TORNAR ILIMITADO
+# ------------------------------
+@app.route("/admin/make_unlimited/<int:index>", methods=["POST"])
+@need_admin
+def admin_make_unlimited(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        users[index]["expires_at"] = UNLIMITED_EXPIRY
+        save_users(data)
+        
+        fingerprint = users[index].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET expires_at = ?
+                WHERE fingerprint = ?
+            ''', (UNLIMITED_EXPIRY, fingerprint))
+            conn.commit()
+            conn.close()
+
+    return redirect(url_for('admin', msg="Licença tornada ilimitada", highlight=index))
+
+# ------------------------------
+#   ADMIN - DELETAR USUÁRIO
+# ------------------------------
+@app.route("/admin/delete/<int:index>", methods=["POST"])
+@need_admin
+def admin_delete(index):
+    data = load_users()
+    users = data.get("users", [])
+
+    if 0 <= index < len(users):
+        deleted_user = users.pop(index)
+        save_users(data)
+        
+        fingerprint = deleted_user.get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM licenses WHERE fingerprint = ?', (fingerprint,))
+            cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fingerprint,))
+            conn.commit()
+            conn.close()
+
+    return redirect(url_for('admin', msg="Usuário deletado"))
+
+# ------------------------------
+#   ADMIN - RELATÓRIO DE USO
 # ------------------------------
 @app.route("/admin/usage_report")
 @need_admin
@@ -818,7 +1489,6 @@ def admin_usage_report():
     conn = get_db()
     cursor = conn.cursor()
     
-    # Últimos 100 usos
     cursor.execute('''
         SELECT fingerprint, action, timestamp, ip_address, user_agent 
         FROM license_usage 
@@ -841,109 +1511,7 @@ def admin_usage_report():
     return render_template("usage_report.html", usage_data=usage_data)
 
 # ------------------------------
-#   ADMIN - REVOGAR TOKENS (NOVO)
-# ------------------------------
-@app.route("/admin/revoke_tokens", methods=["POST"])
-@need_admin
-def admin_revoke_tokens():
-    """Revoga todos os tokens de um usuário/fingerprint"""
-    try:
-        data = request.json or {}
-        fingerprint = data.get("fingerprint")
-        username = data.get("username")
-        reason = data.get("reason", "admin_revoked")
-        
-        conn = get_db()
-        cursor = conn.cursor()
-        
-        if fingerprint:
-            # Revogar tokens específicos do fingerprint
-            cursor.execute('''
-                INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
-                SELECT token, fingerprint, ?, ? FROM sessions WHERE fingerprint = ?
-            ''', (int(time.time()), reason, fingerprint))
-            
-            # Limpar sessões
-            cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fingerprint,))
-            
-        elif username:
-            # Buscar fingerprints do usuário
-            cursor.execute('SELECT fingerprint FROM licenses WHERE username = ?', (username,))
-            fingerprints = [row[0] for row in cursor.fetchall()]
-            
-            for fp in fingerprints:
-                cursor.execute('''
-                    INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
-                    SELECT token, fingerprint, ?, ? FROM sessions WHERE fingerprint = ?
-                ''', (int(time.time()), reason, fp))
-                cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fp,))
-        
-        conn.commit()
-        conn.close()
-        
-        log_security("admin_revoked_tokens", 
-                    details={"fingerprint": fingerprint, "username": username, "reason": reason})
-        
-        return jsonify({"success": True, "message": "Tokens revogados com sucesso"})
-        
-    except Exception as e:
-        log_security("admin_revoke_error", details=str(e))
-        return jsonify({"success": False, "error": str(e)}), 500
-
-# ------------------------------
-#   GERAR KEY (ADMIN) - ATUALIZADA
-# ------------------------------
-@app.route("/admin/generate", methods=["POST"])
-@need_admin
-def admin_generate():
-    username = request.form.get("username")
-    password = request.form.get("password")
-    prefix = request.form.get("prefix") or "FERA"
-    expire_days_raw = request.form.get("expire_days", "30")
-    
-    try:
-        expire_days = int(expire_days_raw)
-    except Exception:
-        expire_days = 30
-
-    # Se expire_days == 0 => ilimitado
-    if expire_days == 0:
-        expires_at = UNLIMITED_EXPIRY
-    else:
-        expires_at = int(time.time()) + expire_days * 86400
-
-    key = prefix + "-" + os.urandom(4).hex().upper()
-
-    data = load_users()
-    users = data.get("users", [])
-
-    # evita duplicados
-    for u in users:
-        if u.get("username") == username:
-            u["password"] = password
-            u["key"] = key
-            u["expires_at"] = expires_at
-            # admin não altera revendedor
-            save_users(data)
-            
-            log_security("admin_user_updated", details={"username": username, "expires_at": expires_at})
-            return ("", 302, {"Location": "/admin"})
-
-    users.append({
-        "username": username,
-        "password": password,
-        "key": key,
-        "device_id": None,
-        "expires_at": expires_at,
-        "created_at": int(time.time())
-    })
-
-    save_users(data)
-    log_security("admin_user_created", details={"username": username, "expires_at": expires_at})
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   ROTA ADMIN - LICENÇAS DO BANCO
+#   ADMIN - BANCO DE DADOS
 # ------------------------------
 @app.route("/admin/database")
 @need_admin
@@ -965,7 +1533,8 @@ def admin_database():
             "issued_at": datetime.fromtimestamp(row[3]).strftime("%Y-%m-%d %H:%M:%S") if row[3] else "N/A",
             "expires_at": "ILIMITADO" if row[4] == UNLIMITED_EXPIRY else datetime.fromtimestamp(row[4]).strftime("%Y-%m-%d %H:%M:%S"),
             "status": row[5],
-            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA"
+            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA",
+            "device_info": row[7] if row[7] else "N/A"
         })
     
     conn.close()
@@ -973,276 +1542,32 @@ def admin_database():
     return render_template("database_view.html", licenses=licenses_db)
 
 # ------------------------------
-#   RENOVAR +30 DIAS
+#   ADMIN - LIMPEZA MANUAL DO BANCO
 # ------------------------------
-@app.route("/admin/renew/<int:index>", methods=["POST", "GET"])
+@app.route("/admin/cleanup_db", methods=["POST"])
 @need_admin
-def admin_renew(index):
-    data = load_users()
-    users = data.get("users", [])
-
-    if 0 <= index < len(users):
-        now = int(time.time())
-        current = users[index].get("expires_at", 0)
-
-        add_days = 30
-
-        # se já é ilimitado, mantém ilimitado
-        if current == UNLIMITED_EXPIRY:
-            users[index]["expires_at"] = UNLIMITED_EXPIRY
-        else:
-            if current < now:
-                new_exp = now + add_days * 86400
-            else:
-                new_exp = current + add_days * 86400
-            users[index]["expires_at"] = new_exp
-
-        save_users(data)
-        
-        # ✅ ATUALIZAR BANCO DE DADOS TAMBÉM
-        fingerprint = users[index].get("device_id")
-        if fingerprint:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE licenses SET expires_at = ?, status = 'active'
-                WHERE fingerprint = ?
-            ''', (users[index]["expires_at"], fingerprint))
-            conn.commit()
-            conn.close()
-        
-        log_security("admin_renewed", details={"username": users[index]["username"], "new_expires": users[index]["expires_at"]})
-
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   RENOVAR CUSTOM DIAS
-# ------------------------------
-@app.route("/admin/renew_custom/<int:index>", methods=["POST", "GET"])
-@need_admin
-def admin_renew_custom(index):
-    days_raw = None
-    if request.method == "POST":
-        days_raw = request.form.get("days", "30")
-    else:
-        days_raw = request.args.get("days", "30")
-
+def admin_cleanup_db():
+    """Endpoint para limpeza manual do banco de dados"""
     try:
-        days = int(days_raw)
-    except Exception:
-        days = 30
-
-    data = load_users()
-    users = data.get("users", [])
-
-    if 0 <= index < len(users):
-        now = int(time.time())
-        current = users[index].get("expires_at", 0)
-
-        # days == 0 => ilimitado
-        if days == 0:
-            users[index]["expires_at"] = UNLIMITED_EXPIRY
-        else:
-            # se já é ilimitado, converte para dias a partir de agora
-            if current == UNLIMITED_EXPIRY:
-                new_exp = now + days * 86400
-            else:
-                if current < now:
-                    new_exp = now + days * 86400
-                else:
-                    new_exp = current + days * 86400
-            users[index]["expires_at"] = new_exp
-
-        save_users(data)
-        
-        # ✅ ATUALIZAR BANCO DE DADOS TAMBÉM
-        fingerprint = users[index].get("device_id")
-        if fingerprint:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE licenses SET expires_at = ?, status = 'active'
-                WHERE fingerprint = ?
-            ''', (users[index]["expires_at"], fingerprint))
-            conn.commit()
-            conn.close()
-        
-        log_security("admin_renewed_custom", details={"username": users[index]["username"], "days": days, "new_expires": users[index]["expires_at"]})
-
-    return ("", 302, {"Location": "/admin"})
+        db_cleaner.clean_once()
+        return redirect(url_for('admin', msg="Limpeza manual do banco executada com sucesso"))
+    except Exception as e:
+        log_security("manual_cleanup_error", details=str(e), severity="ERROR")
+        return redirect(url_for('admin', msg=f"Erro na limpeza: {str(e)}"))
 
 # ------------------------------
-#   RESETAR KEY
-# ------------------------------
-@app.route("/admin/reset/<int:index>", methods=["POST", "GET"])
-@need_admin
-def admin_reset(index):
-    data = load_users()
-    users = data.get("users", [])
-
-    if 0 <= index < len(users):
-        old_key = users[index].get("key", "FERA-XXXX")
-        prefix = old_key.split("-")[0]
-        new_key = f"{prefix}-{os.urandom(4).hex().upper()}"
-        users[index]["key"] = new_key
-        save_users(data)
-        
-        log_security("admin_key_reset", details={"username": users[index]["username"], "new_key": new_key})
-
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   RESETAR DEVICE
-# ------------------------------
-@app.route("/admin/reset_device/<int:index>", methods=["POST", "GET"])
-@need_admin
-def admin_reset_device(index):
-    data = load_users()
-    users = data.get("users", [])
-
-    if 0 <= index < len(users):
-        users[index]["device_id"] = None
-        save_users(data)
-        
-        log_security("admin_device_reset", details={"username": users[index]["username"]})
-
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   RESETAR TODOS OS DEVICES
-# ------------------------------
-@app.route("/admin/reset_all_devices", methods=["POST"])
-@need_admin
-def admin_reset_all_devices():
-    data = load_users()
-    users = data.get("users", [])
-    
-    for user in users:
-        user["device_id"] = None
-    
-    save_users(data)
-    
-    log_security("admin_reset_all_devices", details={"count": len(users)})
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   LIMPAR USUÁRIOS EXPIRADOS
-# ------------------------------
-@app.route("/admin/clean_expired", methods=["POST"])
-@need_admin
-def admin_clean_expired():
-    data = load_users()
-    users = data.get("users", [])
-    now = int(time.time())
-    
-    # Filtrar apenas usuários não expirados ou ilimitados
-    filtered_users = []
-    expired_fingerprints = []
-    
-    for user in users:
-        expires_at = user.get("expires_at", 0)
-        
-        # Se for ilimitado, mantém
-        if expires_at == UNLIMITED_EXPIRY:
-            filtered_users.append(user)
-        # Se não expirou, mantém
-        elif expires_at > now:
-            filtered_users.append(user)
-        # Se expirou, remove
-        else:
-            if user.get("device_id"):
-                expired_fingerprints.append(user["device_id"])
-    
-    data["users"] = filtered_users
-    save_users(data)
-    
-    # ✅ REMOVER DO BANCO DE DADOS TAMBÉM
-    if expired_fingerprints:
-        conn = get_db()
-        cursor = conn.cursor()
-        placeholders = ','.join(['?' for _ in expired_fingerprints])
-        cursor.execute(f'UPDATE licenses SET status = "expired" WHERE fingerprint IN ({placeholders})', expired_fingerprints)
-        conn.commit()
-        conn.close()
-    
-    log_security("admin_clean_expired", details={"removed_count": len(users) - len(filtered_users)})
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   TORNAR LICENÇA ILIMITADA
-# ------------------------------
-@app.route("/admin/make_unlimited/<int:index>", methods=["POST"])
-@need_admin
-def admin_make_unlimited(index):
-    data = load_users()
-    users = data.get("users", [])
-
-    if 0 <= index < len(users):
-        users[index]["expires_at"] = UNLIMITED_EXPIRY
-        save_users(data)
-        
-        # ✅ ATUALIZAR BANCO DE DADOS TAMBÉM
-        fingerprint = users[index].get("device_id")
-        if fingerprint:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE licenses SET expires_at = ?
-                WHERE fingerprint = ?
-            ''', (UNLIMITED_EXPIRY, fingerprint))
-            conn.commit()
-            conn.close()
-        
-        log_security("admin_make_unlimited", details={"username": users[index]["username"]})
-
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   DELETAR USUÁRIO
-# ------------------------------
-@app.route("/admin/delete/<int:index>", methods=["POST", "GET"])
-@need_admin
-def admin_delete(index):
-    data = load_users()
-    users = data.get("users", [])
-
-    if 0 <= index < len(users):
-        deleted_user = users.pop(index)
-        save_users(data)
-        
-        # ✅ REMOVER DO BANCO DE DADOS TAMBÉM
-        fingerprint = deleted_user.get("device_id")
-        if fingerprint:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute('DELETE FROM licenses WHERE fingerprint = ?', (fingerprint,))
-            conn.commit()
-            conn.close()
-        
-        log_security("admin_delete_user", details={"username": deleted_user.get("username")})
-
-    return ("", 302, {"Location": "/admin"})
-
-# ------------------------------
-#   CONFIGURAÇÃO DE MÚLTIPLOS REVENDEDORES
+#   REVENDEDORES
 # ------------------------------
 def carregar_revendedores():
-    """
-    Lê todas as variáveis de ambiente que começam com 'RESELLER_' 
-    e também a variável legada RESELLER_TOKEN (se existir).
-    Retorna um dicionário {token: nome_do_revendedor}
-    """
     revendedores = {}
     
-    # 1. Variáveis individuais: RESELLER_NOME=token
     for chave, valor in os.environ.items():
         if chave.startswith('RESELLER_') and chave != 'RESELLER_TOKEN':
-            nome = chave[9:]  # remove 'RESELLER_'
+            nome = chave[9:]
             token = valor.strip()
-            if token:  # ignora valores vazios
+            if token:
                 revendedores[token] = nome
     
-    # 2. Variável legada RESELLER_TOKEN (formato "nome|token,nome|token" ou "token,token")
     token_legado = os.getenv('RESELLER_TOKEN')
     if token_legado:
         for parte in token_legado.split(','):
@@ -1251,42 +1576,37 @@ def carregar_revendedores():
                 nome, token = parte.split('|', 1)
                 revendedores[token.strip()] = nome.strip()
             else:
-                # apenas token, usa o próprio token como nome (compatibilidade)
                 revendedores[parte] = parte
     
     return revendedores
 
-# Mapeamento global: token -> nome do revendedor
 RESELLER_MAP = carregar_revendedores()
 
 # ------------------------------
-#   REVENDEDOR - GERAR KEY EXTERNA (TOKEN)
+#   REVENDEDOR - GERAR KEY
 # ------------------------------
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
-    token = request.form.get("token")
-    username = request.form.get("username")
-    password = request.form.get("password")
-    prefix = request.form.get("prefix") or "FERA"
+    token = sanitize_input(request.form.get("token", ""))
+    username = sanitize_input(request.form.get("username", ""))
+    password = sanitize_input(request.form.get("password", ""))
+    prefix = sanitize_input(request.form.get("prefix", "FERA"))
     expire_days_raw = request.form.get("expire_days", "30")
     
     try:
         expire_days = int(expire_days_raw)
-    except Exception:
+    except:
         expire_days = 30
 
-    # Verifica se o token está no mapeamento
     if token not in RESELLER_MAP:
         log_security("reseller_invalid_token", details={"token": token})
         return jsonify({"error": "invalid_token"}), 403
 
-    # Obtém o nome do revendedor
     reseller_nome = RESELLER_MAP[token]
 
     if not username or not password:
         return jsonify({"error": "missing_fields"}), 400
 
-    # expire_days == 0 => ilimitado
     if expire_days == 0:
         expires_at = UNLIMITED_EXPIRY
     else:
@@ -1302,10 +1622,11 @@ def reseller_generate():
             u["password"] = password
             u["key"] = key
             u["expires_at"] = expires_at
-            u["reseller"] = reseller_nome          # <-- salva revendedor
+            u["reseller"] = reseller_nome
+            if "status" not in u:
+                u["status"] = "active"
             save_users(data)
             
-            log_security("reseller_updated", details={"username": username, "reseller": reseller_nome})
             return jsonify({
                 "ok": True,
                 "key": key,
@@ -1313,20 +1634,19 @@ def reseller_generate():
                 "expires_at": expires_at
             })
 
-    # Novo usuário
     users.append({
         "username": username,
         "password": password,
         "key": key,
         "device_id": None,
         "expires_at": expires_at,
-        "reseller": reseller_nome,                  # <-- salva revendedor
+        "status": "active",
+        "reseller": reseller_nome,
         "created_at": int(time.time())
     })
 
     save_users(data)
     
-    log_security("reseller_created", details={"username": username, "expires_at": expires_at, "reseller": reseller_nome})
     return jsonify({
         "ok": True,
         "key": key,
@@ -1335,63 +1655,156 @@ def reseller_generate():
     })
 
 # ------------------------------
-#   ESTATÍSTICAS POR REVENDEDOR
+#   REVENDEDOR - LISTAR USUÁRIOS
+# ------------------------------
+@app.route("/reseller/users", methods=["GET"])
+def reseller_users():
+    token = request.args.get("token")
+    if not token:
+        return jsonify({"error": "token_required"}), 400
+    
+    if token not in RESELLER_MAP:
+        log_security("reseller_invalid_token", details={"token": token})
+        return jsonify({"error": "invalid_token"}), 403
+    
+    reseller_nome = RESELLER_MAP[token]
+    data = load_users()
+    users = data.get("users", [])
+    
+    # Filtrar usuários criados por este revendedor
+    reseller_users = [u for u in users if u.get("reseller") == reseller_nome]
+    
+    # Preparar dados para envio
+    user_list = []
+    for u in reseller_users:
+        expires_at = u.get("expires_at", 0)
+        now = int(time.time())
+        status = u.get("status", "active")
+        
+        if status == "blocked":
+            status_display = "Bloqueado"
+        elif expires_at == UNLIMITED_EXPIRY:
+            status_display = "Ilimitado"
+        elif expires_at < now:
+            status_display = "Expirado"
+        else:
+            status_display = "Ativo"
+        
+        user_list.append({
+            "username": u.get("username"),
+            "password": u.get("password"),
+            "device_id": u.get("device_id"),
+            "expires_at": expires_at,
+            "status": status,
+            "status_display": status_display,
+            "key": u.get("key")
+        })
+    
+    return jsonify({"users": user_list})
+
+# ------------------------------
+#   REVENDEDOR - RESETAR DISPOSITIVO
+# ------------------------------
+@app.route("/reseller/reset_device", methods=["POST"])
+def reseller_reset_device():
+    token = sanitize_input(request.form.get("token", ""))
+    username = sanitize_input(request.form.get("username", ""))
+    
+    if not token or not username:
+        return jsonify({"error": "missing_fields"}), 400
+    
+    if token not in RESELLER_MAP:
+        log_security("reseller_invalid_token", details={"token": token})
+        return jsonify({"error": "invalid_token"}), 403
+    
+    reseller_nome = RESELLER_MAP[token]
+    data = load_users()
+    users = data.get("users", [])
+    
+    user_index = None
+    user = None
+    for i, u in enumerate(users):
+        if u.get("username") == username:
+            user_index = i
+            user = u
+            break
+    
+    if not user:
+        return jsonify({"error": "user_not_found"}), 404
+    
+    if user.get("reseller") != reseller_nome:
+        return jsonify({"error": "not_authorized"}), 403
+    
+    # Resetar dispositivo
+    user["device_id"] = None
+    user.pop("device_user_agent", None)
+    
+    if not save_users(data):
+        return jsonify({"error": "save_failed"}), 500
+    
+    # Limpar sessões no SQLite
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM sessions WHERE fingerprint IN (SELECT fingerprint FROM licenses WHERE username = ?)", (username,))
+    cursor.execute("UPDATE licenses SET device_info = NULL, last_used = NULL WHERE username = ?", (username,))
+    conn.commit()
+    conn.close()
+    
+    log_security("reseller_reset_device",
+                details={"reseller": reseller_nome, "username": username},
+                severity="INFO")
+    
+    return jsonify({"ok": True, "message": f"Dispositivo do usuário {username} resetado com sucesso."}), 200
+
+# ------------------------------
+#   ADMIN - ESTATÍSTICAS REVENDEDORES
 # ------------------------------
 @app.route("/admin/reseller_stats")
 @need_admin
 def admin_reseller_stats():
-    # Parâmetros
-    reseller_filter = request.args.get("reseller", "")
+    reseller_filter = sanitize_input(request.args.get("reseller", ""))
     days = request.args.get("days", "7")
     try:
         days = int(days)
     except:
         days = 7
 
-    # Calcular timestamp de início
     since = int(time.time()) - (days * 86400)
 
-    # Carregar usuários
     data = load_users()
     users = data.get("users", [])
 
-    # Mapear revendedores disponíveis (nomes únicos)
     revendedores = set()
     for u in users:
         if u.get("reseller"):
             revendedores.add(u["reseller"])
     revendedores = sorted(revendedores)
 
-    # Inicializar variáveis
     total_usuarios_criados = 0
     total_ativacoes = 0
-    stats = []  # últimos 50 registros de ativação
-    chart_data = {}  # para o gráfico: data -> contagem
-    usuarios_lista = []  # lista de usuários do revendedor (detalhes)
+    stats = []
+    chart_data = {}
+    usuarios_lista = []
 
     if reseller_filter:
-        # Filtrar usuários do revendedor
         usuarios_rev = [u for u in users if u.get("reseller") == reseller_filter]
         total_usuarios_criados = len(usuarios_rev)
 
-        # Preparar lista de usuários com detalhes
         now_ts = int(time.time())
         for u in usuarios_rev:
             created = u.get("created_at")
             expires = u.get("expires_at")
             status = u.get("status", "active")
-            # Calcular dias desde a criação
-            dias_desde_criacao = (now_ts - created) // 86400 if created else None
-            # Formatar data de criação
+            
             data_criacao = datetime.fromtimestamp(created).strftime("%d/%m/%Y %H:%M") if created else "—"
-            # Formatar expiração
+            
             if expires == UNLIMITED_EXPIRY:
                 expiracao_str = "Ilimitado"
             elif expires:
                 expiracao_str = datetime.fromtimestamp(expires).strftime("%d/%m/%Y %H:%M")
             else:
                 expiracao_str = "—"
-            # Status amigável
+            
             if status == "blocked":
                 status_str = "Bloqueado"
             elif expires and expires < now_ts and expires != UNLIMITED_EXPIRY:
@@ -1402,13 +1815,11 @@ def admin_reseller_stats():
             usuarios_lista.append({
                 "username": u["username"],
                 "data_criacao": data_criacao,
-                "dias_desde_criacao": dias_desde_criacao,
                 "expiracao": expiracao_str,
                 "status": status_str,
                 "device_id": u.get("device_id", "—")
             })
 
-        # Obter fingerprints dos usuários que já ativaram
         fingerprints = [u["device_id"] for u in usuarios_rev if u.get("device_id")]
 
         if fingerprints:
@@ -1416,7 +1827,6 @@ def admin_reseller_stats():
             cursor = conn.cursor()
             placeholders = ','.join(['?' for _ in fingerprints])
 
-            # Contar ativações totais no período
             cursor.execute(f'''
                 SELECT COUNT(*) as total
                 FROM license_usage
@@ -1426,7 +1836,6 @@ def admin_reseller_stats():
             if row:
                 total_ativacoes = row[0]
 
-            # Dados para o gráfico: ativações por dia
             cursor.execute(f'''
                 SELECT DATE(timestamp, 'unixepoch') as dia, COUNT(*) as total
                 FROM license_usage
@@ -1437,7 +1846,6 @@ def admin_reseller_stats():
             for row in cursor.fetchall():
                 chart_data[row[0]] = row[1]
 
-            # Listar últimos 50 registros de ativação
             cursor.execute(f'''
                 SELECT fingerprint, action, timestamp, ip_address
                 FROM license_usage
@@ -1466,10 +1874,24 @@ def admin_reseller_stats():
                            usuarios_lista=usuarios_lista)
 
 # ------------------------------
-#   RUN
+#   INICIAR SERVIDOR
 # ------------------------------
 if __name__ == "__main__":
-    # Log inicial
     log_security("server_started", details={"timestamp": datetime.now().isoformat()})
     
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)), debug=False)
+    port = int(os.getenv("PORT", 10000))
+    debug = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    
+    print("\n" + "="*60)
+    print("🚀 SERVIDOR DE LICENÇAS INICIADO")
+    print("="*60)
+    print(f"📁 Banco de dados: {DB}")
+    print(f"🔐 JWT Algorithm: RS256 (HS256 como fallback apenas para validação)")
+    print(f"🛡️ Rate limiting: Persistente em SQLite")
+    print(f"🧹 Limpeza automática: Ativada (a cada 1 hora)")
+    print(f"📝 Log com rotação: Ativado (5MB, 3 backups)")
+    print(f"🏥 Health check: Disponível em /health")
+    print(f"🌐 Porta: {port}")
+    print("="*60 + "\n")
+    
+    app.run(host="0.0.0.0", port=port, debug=debug)
