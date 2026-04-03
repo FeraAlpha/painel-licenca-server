@@ -2023,16 +2023,6 @@
       "expires_at": 1777383943,
       "created_at": 1775223943,
       "status": "active"
-    },
-    {
-      "username": "Fera7403",
-      "password": "Alpha9726",
-      "key": "FERA-03BCA696",
-      "device_id": null,
-      "expires_at": 1780857180,
-      "reseller": "JCGAMER",
-      "created_at": 1775241180,
-      "status": "active"
     }
   ]
 }
