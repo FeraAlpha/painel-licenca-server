@@ -106,7 +106,6 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
     if not isinstance(value, str):
         value = str(value)
     value = value.strip()[:max_length]
-    # Opcional: remover caracteres não permitidos
     if allowed_chars:
         import re
         pattern = f"[^{re.escape(allowed_chars)}]"
@@ -114,7 +113,7 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
     return value
 
 # ------------------------------
-#   FUNÇÃO AUXILIAR: converter tempo de expiração (CORRIGIDA)
+#   FUNÇÃO AUXILIAR: converter tempo de expiração
 # ------------------------------
 def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_seconds=None, agora=None):
     """
@@ -128,7 +127,6 @@ def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_second
     
     total_seconds = 0
     
-    # Trata valores vazios ou None
     if expire_seconds is not None and expire_seconds != "":
         try:
             total_seconds = int(expire_seconds)
@@ -154,7 +152,7 @@ def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_second
 #   RATE LIMITING EM MEMÓRIA
 # ------------------------------
 RATE_LIMIT = {
-    'activate': {'limit': 5, 'window': 300},      # 5 tentativas em 5 minutos
+    'activate': {'limit': 5, 'window': 300},
     'verify_license': {'limit': 10, 'window': 300},
     'validate_token': {'limit': 20, 'window': 300},
 }
@@ -166,7 +164,6 @@ def check_rate_limit(endpoint, ip):
     window = RATE_LIMIT.get(endpoint, {}).get('window', 300)
     limit = RATE_LIMIT.get(endpoint, {}).get('limit', 10)
     
-    # Limpa registros antigos
     request_counts[ip] = [t for t in request_counts[ip] if t > now - window]
     
     if len(request_counts[ip]) >= limit:
@@ -178,8 +175,7 @@ def check_rate_limit(endpoint, ip):
 #   LIMPEZA AUTOMÁTICA DO BANCO
 # ------------------------------
 class DatabaseCleaner:
-    """Limpa dados antigos em segundo plano"""
-    def __init__(self, interval_seconds=86400):  # padrão 24 horas
+    def __init__(self, interval_seconds=86400):
         self.interval = interval_seconds
         self.timer = None
         self.running = False
@@ -207,16 +203,13 @@ class DatabaseCleaner:
             cursor = conn.cursor()
             now = int(time.time())
             
-            # 1. Limpar sessões expiradas
             cursor.execute('DELETE FROM sessions WHERE expires_at < ?', (now,))
             deleted_sessions = cursor.rowcount
             
-            # 2. Limpar tokens revogados com mais de 30 dias
             thirty_days_ago = now - (30 * 86400)
             cursor.execute('DELETE FROM revoked_tokens WHERE revoked_at < ?', (thirty_days_ago,))
             deleted_revoked = cursor.rowcount
             
-            # 3. Limpar logs de uso com mais de 90 dias
             ninety_days_ago = now - (90 * 86400)
             cursor.execute('DELETE FROM license_usage WHERE timestamp < ?', (ninety_days_ago,))
             deleted_usage = cursor.rowcount
@@ -251,16 +244,13 @@ os.makedirs("data", exist_ok=True)
 os.makedirs("data/backups", exist_ok=True)
 
 # ------------------------------
-#   FUNÇÕES JWT CORRIGIDAS
+#   FUNÇÕES JWT
 # ------------------------------
 def gerar_token_jwt(fingerprint, username, expires_at):
-    """Gera um token JWT para o cliente com fallback para HS256"""
     now = datetime.now(timezone.utc)
     
-    # Tentar usar RSA se as chaves existirem
     if not os.path.exists(KEY_PRIV):
-        log_security("jwt_private_key_missing", 
-                    details={"error": f"Arquivo {KEY_PRIV} não encontrado"})
+        log_security("jwt_private_key_missing", details={"error": f"Arquivo {KEY_PRIV} não encontrado"})
         return gerar_token_jwt_fallback(fingerprint, username, expires_at)
     
     try:
@@ -286,7 +276,6 @@ def gerar_token_jwt(fingerprint, username, expires_at):
         return gerar_token_jwt_fallback(fingerprint, username, expires_at)
 
 def gerar_token_jwt_fallback(fingerprint, username, expires_at):
-    """Fallback para gerar token JWT com HS256 quando RSA falha"""
     now = datetime.now(timezone.utc)
     payload = {
         "fp": fingerprint,
@@ -299,7 +288,6 @@ def gerar_token_jwt_fallback(fingerprint, username, expires_at):
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
 def validar_token_jwt(token):
-    """Valida um token JWT com suporte a RSA e fallback HS256"""
     try:
         if os.path.exists(KEY_PUB):
             try:
@@ -331,7 +319,7 @@ def validar_token_jwt(token):
         return {"valid": False, "reason": f"validation_error: {str(e)}"}
 
 # ------------------------------
-#   BANCO SQL MELHORADO
+#   BANCO SQL
 # ------------------------------
 def init_db():
     conn = sqlite3.connect(DB)
@@ -491,6 +479,8 @@ def load_users():
                 for user in users:
                     if user.get("expires_at") == 0:
                         user["expires_at"] = UNLIMITED_EXPIRY
+                    if "status" not in user:
+                        user["status"] = "active"
                 return data
     except Exception as e:
         log_security("load_users_error", details=str(e))
@@ -509,6 +499,8 @@ def load_users():
                 for user in users:
                     if user.get("expires_at") == 0:
                         user["expires_at"] = UNLIMITED_EXPIRY
+                    if "status" not in user:
+                        user["status"] = "active"
                 atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
                 return data
         except Exception as e:
@@ -517,7 +509,7 @@ def load_users():
     return {"users": []}
 
 # ------------------------------
-#   SAVE USERS (CORRIGIDA)
+#   SAVE USERS
 # ------------------------------
 def save_users_github(data, retries=3):
     if not GITHUB_TOKEN:
@@ -601,12 +593,10 @@ app = Flask(__name__, template_folder='templates')
 # ------------------------------
 @app.before_request
 def before_request():
-    # Rate limiting para endpoints sensíveis
     if request.endpoint in RATE_LIMIT:
         if not check_rate_limit(request.endpoint, request.remote_addr):
             return jsonify({"error": "rate_limited", "message": "Too many requests. Try again later."}), 429
     
-    # Logging básico (opcional)
     if request.endpoint not in ['home', 'ping']:
         log_security(
             "api_request",
@@ -702,7 +692,7 @@ def verify_session():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   VALIDAÇÃO DE TOKEN JWT (NOVO)
+#   VALIDAÇÃO DE TOKEN JWT
 # ------------------------------
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
@@ -758,7 +748,7 @@ def validate_token():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   CLIENTE - ATIVAÇÃO (CORRIGIDA)
+#   CLIENTE - ATIVAÇÃO
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -778,6 +768,11 @@ def activate():
         if not user:
             log_security("activate_invalid_credentials", fingerprint=fingerprint, details={"username": username})
             return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
+
+        # Verificar se o usuário está bloqueado
+        if user.get("status") == "blocked":
+            log_security("activate_blocked_user", fingerprint=fingerprint, details={"username": username})
+            return jsonify({"status": "error", "reason": "user_blocked"}), 403
 
         now = int(time.time())
         expires = user.get("expires_at", 0)
@@ -982,7 +977,6 @@ def admin_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
-    # Obter valores, tratando campos vazios como None
     expire_seconds_raw = request.form.get("expire_seconds", "").strip()
     expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
     
@@ -992,7 +986,6 @@ def admin_generate():
     expire_days_raw = request.form.get("expire_days", "").strip()
     expire_days_raw = expire_days_raw if expire_days_raw else None
     
-    # Calcular timestamp de expiração
     expires_at = calcular_timestamp_expira(
         expire_days=expire_days_raw,
         expire_hours=expire_hours_raw,
@@ -1009,6 +1002,7 @@ def admin_generate():
             u["password"] = password
             u["key"] = key
             u["expires_at"] = expires_at
+            u["status"] = "active"
             save_users(data)
             log_security("admin_user_updated", details={"username": username, "expires_at": expires_at})
             return ("", 302, {"Location": "/admin"})
@@ -1019,11 +1013,58 @@ def admin_generate():
         "key": key,
         "device_id": None,
         "expires_at": expires_at,
-        "created_at": int(time.time())
+        "created_at": int(time.time()),
+        "status": "active"
     })
 
     save_users(data)
     log_security("admin_user_created", details={"username": username, "expires_at": expires_at})
+    return ("", 302, {"Location": "/admin"})
+
+@app.route("/admin/toggle_block/<int:index>", methods=["POST"])
+@need_admin
+def admin_toggle_block(index):
+    """Alterna o status do usuário entre bloqueado e ativo"""
+    data = load_users()
+    users = data.get("users", [])
+    
+    if 0 <= index < len(users):
+        user = users[index]
+        current_status = user.get("status", "active")
+        
+        if current_status == "blocked":
+            user["status"] = "active"
+            log_security("admin_unblocked", details={"username": user["username"]})
+        else:
+            user["status"] = "blocked"
+            log_security("admin_blocked", details={"username": user["username"]})
+        
+        save_users(data)
+        
+        fingerprint = user.get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET status = ?
+                WHERE fingerprint = ?
+            ''', (user["status"], fingerprint))
+            conn.commit()
+            conn.close()
+        
+        if current_status != "blocked" and fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT OR IGNORE INTO revoked_tokens (token, fingerprint, revoked_at, reason)
+                SELECT token, fingerprint, ?, 'user_blocked' FROM sessions WHERE fingerprint = ?
+            ''', (int(time.time()), fingerprint))
+            cursor.execute('DELETE FROM sessions WHERE fingerprint = ?', (fingerprint,))
+            conn.commit()
+            conn.close()
+        
+        return ("", 302, {"Location": "/admin"})
+    
     return ("", 302, {"Location": "/admin"})
 
 @app.route("/admin/database")
@@ -1302,7 +1343,6 @@ def reseller_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
-    # Obter valores, tratando campos vazios como None
     expire_seconds_raw = request.form.get("expire_seconds", "").strip()
     expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
     
@@ -1312,7 +1352,6 @@ def reseller_generate():
     expire_days_raw = request.form.get("expire_days", "").strip()
     expire_days_raw = expire_days_raw if expire_days_raw else None
     
-    # Calcular timestamp de expiração
     expires_at = calcular_timestamp_expira(
         expire_days=expire_days_raw,
         expire_hours=expire_hours_raw,
@@ -1339,6 +1378,7 @@ def reseller_generate():
             u["key"] = key
             u["expires_at"] = expires_at
             u["reseller"] = reseller_nome
+            u["status"] = "active"
             save_users(data)
             
             log_security("reseller_updated", details={"username": username, "reseller": reseller_nome})
@@ -1356,7 +1396,8 @@ def reseller_generate():
         "device_id": None,
         "expires_at": expires_at,
         "reseller": reseller_nome,
-        "created_at": int(time.time())
+        "created_at": int(time.time()),
+        "status": "active"
     })
 
     save_users(data)
@@ -1579,7 +1620,6 @@ def admin_reseller_stats():
 #   INICIAR SERVIDOR
 # ------------------------------
 if __name__ == "__main__":
-    # Iniciar limpeza automática (a cada 24 horas)
     db_cleaner = DatabaseCleaner(interval_seconds=86400)
     db_cleaner.start()
     atexit.register(lambda: db_cleaner.stop())
@@ -1597,8 +1637,8 @@ if __name__ == "__main__":
     print(f"🛡️ Rate limiting: Ativado (memória)")
     print(f"🧹 Limpeza automática: Ativada (a cada 24h)")
     print(f"📝 Log com rotação: Ativado (5MB, 3 backups)")
+    print(f"🔒 Bloqueio/Desbloqueio: Ativado")
     print(f"🌐 Porta: {port}")
     print("="*60 + "\n")
     
-    # Em produção, configure um proxy reverso (Nginx) com HTTPS
     app.run(host="0.0.0.0", port=port, debug=debug)
