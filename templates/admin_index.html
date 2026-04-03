@@ -216,36 +216,39 @@
   }
   .admin-tools form { display:inline-block; }
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+  /* ===== ESTATÍSTICAS EM LINHA ÚNICA (ECONOMIZA ESPAÇO) ===== */
+  .stats-bar {
+    display: flex;
+    justify-content: space-around;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
     margin-bottom: 20px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
-  .stat-card {
-    background:var(--card);
-    border:1px solid var(--border);
-    padding:15px;
-    border-radius:var(--radius);
+  .stat-item {
     text-align: center;
-    transition: transform 0.2s;
-  }
-  
-  .stat-card:hover {
-    transform: translateY(-2px);
+    flex: 1;
+    min-width: 70px;
   }
 
-  .stat-card b {
-    font-size: 28px;
+  .stat-number {
+    font-size: 20px;
+    font-weight: 800;
     display: block;
-    margin-bottom: 5px;
+    line-height: 1.2;
   }
-  
-  .stat-card span {
-    font-size: 13px;
-    color:var(--text-light);
-    font-weight: 600;
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
   }
 
   .toast{
@@ -493,13 +496,6 @@
       width: 100%;
       margin-bottom: 8px;
     }
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    .stat-card b {
-      font-size: 22px;
-    }
   }
 
   @media (max-width: 480px) {
@@ -519,8 +515,14 @@
     .compact-row button {
       margin-top: 8px;
     }
-    .stats-grid {
-      grid-template-columns: 1fr;
+    .stat-item {
+      min-width: 60px;
+    }
+    .stat-number {
+      font-size: 16px;
+    }
+    .stat-label {
+      font-size: 9px;
     }
   }
 </style>
@@ -551,25 +553,27 @@
   <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas</a>
 </div>
 
-<div class="stats-grid">
-  <div class="stat-card">
-    <b id="dashTotal">0</b>
-    <span>👥 Total</span>
+<!-- ESTATÍSTICAS EM LINHA ÚNICA - ECONOMIZA ESPAÇO! -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-number" id="dashTotal">0</span>
+    <span class="stat-label">🔋 Total</span>
   </div>
-  <div class="stat-card">
-    <b id="dashAtivos">0</b>
-    <span>✅ Ativos</span>
+  <div class="stat-item">
+    <span class="stat-number" id="dashAtivos">0</span>
+    <span class="stat-label">✅ Ativos</span>
   </div>
-  <div class="stat-card">
-    <b id="dashExpirados">0</b>
-    <span>⛔ Expirados</span>
+  <div class="stat-item">
+    <span class="stat-number" id="dashExpirados">0</span>
+    <span class="stat-label">📍 Expirados</span>
   </div>
-  <div class="stat-card">
-    <b id="dashBloqueados">0</b>
-    <span>🚫 Bloqueados</span>
+  <div class="stat-item">
+    <span class="stat-number" id="dashBloqueados">0</span>
+    <span class="stat-label">❌ Bloqueados</span>
   </div>
 </div>
 
+<!-- CRIAÇÃO RÁPIDA (RECOLHIDA) -->
 <div class="card batch-create">
   <div class="collapsible-header" onclick="toggleCollapse(this)">
     <div class="card-header">
@@ -615,6 +619,7 @@
   </div>
 </div>
 
+<!-- GERAR NOVA LICENÇA -->
 <div class="card">
   <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Licença</h2>
 
@@ -653,6 +658,7 @@
   </form>
 </div>
 
+<!-- TABELA -->
 <div class="card">
   <div class="search-container">
     <input id="searchUser" placeholder="Buscar usuário, key ou dispositivo...">
