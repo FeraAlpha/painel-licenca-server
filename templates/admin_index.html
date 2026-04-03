@@ -216,7 +216,7 @@
   }
   .admin-tools form { display:inline-block; }
 
-  /* ===== ESTATÍSTICAS EM LINHA ÚNICA (ECONOMIZA ESPAÇO) ===== */
+  /* ===== ESTATÍSTICAS EM LINHA ÚNICA ===== */
   .stats-bar {
     display: flex;
     justify-content: space-around;
@@ -542,7 +542,7 @@
 <div class="admin-tools">
   <form method="post" action="/admin/reset_all_devices"
         onsubmit="return confirm('⚠️ Resetar TODOS os dispositivos? Esta ação não pode ser desfeita.')">
-    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Dispositivos</button>
+    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Dispositivos</button>
   </form>
 
   <form method="post" action="/admin/clean_expired"
@@ -550,14 +550,14 @@
     <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
   </form>
 
-  <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas</a>
+  <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
 </div>
 
-<!-- ESTATÍSTICAS EM LINHA ÚNICA - ECONOMIZA ESPAÇO! -->
+<!-- ESTATÍSTICAS EM LINHA ÚNICA COM SÍMBOLOS ORIGINAIS -->
 <div class="stats-bar">
   <div class="stat-item">
     <span class="stat-number" id="dashTotal">0</span>
-    <span class="stat-label">🔋 Total</span>
+    <span class="stat-label">👥 Total</span>
   </div>
   <div class="stat-item">
     <span class="stat-number" id="dashAtivos">0</span>
@@ -565,11 +565,11 @@
   </div>
   <div class="stat-item">
     <span class="stat-number" id="dashExpirados">0</span>
-    <span class="stat-label">📍 Expirados</span>
+    <span class="stat-label">⛔ Expirados</span>
   </div>
   <div class="stat-item">
     <span class="stat-number" id="dashBloqueados">0</span>
-    <span class="stat-label">❌ Bloqueados</span>
+    <span class="stat-label">🚫 Bloqueados</span>
   </div>
 </div>
 
@@ -577,7 +577,7 @@
 <div class="card batch-create">
   <div class="collapsible-header" onclick="toggleCollapse(this)">
     <div class="card-header">
-      <h2 style="font-size: 18px;"><i class="fas fa-layer-group"></i> Criação Rápida</h2>
+      <h2 style="font-size: 18px;"><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
       <span class="badge badge-ok">Novo</span>
     </div>
     <i class="fas fa-chevron-down toggle-icon"></i>
@@ -586,16 +586,16 @@
   <div class="collapsible-content collapsed">
     <div class="compact-row">
       <div>
-        <label><i class="fas fa-hashtag"></i> Qtd</label>
+        <label><i class="fas fa-hashtag"></i> Quantidade</label>
         <input type="number" id="quantidadeLogins" min="1" max="50" value="5">
       </div>
       <div>
-        <label><i class="fas fa-calendar"></i> Dias</label>
+        <label><i class="fas fa-calendar"></i> Dias de validade</label>
         <input type="number" id="diasLogins" min="1" max="999" value="35">
       </div>
       <div>
         <button class="btn btn-primary" onclick="gerarMultiplosLogins()" id="btnGerar" style="width: 100%;">
-          <i class="fas fa-magic"></i> Criar
+          <i class="fas fa-magic"></i> Gerar e Criar
         </button>
       </div>
     </div>
@@ -609,9 +609,9 @@
 
     <div id="previewLogins" class="batch-preview" style="display: none;">
       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <h4 style="font-size: 14px;"><i class="fas fa-list"></i> Criados:</h4>
+        <h4 style="font-size: 14px;"><i class="fas fa-list"></i> Logins Criados:</h4>
         <button class="btn btn-sm btn-success" onclick="copiarTodosLogins()">
-          <i class="fas fa-copy"></i> Copiar
+          <i class="fas fa-copy"></i> Copiar Todos
         </button>
       </div>
       <div id="listaLogins"></div>
@@ -619,15 +619,15 @@
   </div>
 </div>
 
-<!-- GERAR NOVA LICENÇA -->
+<!-- GERAR NOVA KEY -->
 <div class="card">
-  <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Licença</h2>
+  <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Key</h2>
 
   <form method="post" action="/admin/generate" id="generateForm">
     <label>Usuário</label>
     <input name="username" required>
 
-    <label>Senha <small>(gerada automaticamente)</small></label>
+    <label>Senha <small>(gerada automaticamente, pode editar)</small></label>
     <input name="password" id="autoPassword" required>
 
     <label>Prefixo</label>
@@ -637,7 +637,7 @@
     <div class="expiry-unit-row">
       <input type="number" id="expiryValue" step="any" value="35" style="flex:2">
       <select id="expiryUnit" style="flex:1">
-        <option value="days">Dias</option>
+        <option value="days">Dias (com decimal)</option>
         <option value="hours">Horas</option>
         <option value="minutes">Minutos</option>
         <option value="seconds">Segundos</option>
@@ -654,14 +654,14 @@
 
     <input type="hidden" name="expire_seconds" id="expireSeconds">
 
-    <button type="submit" class="btn btn-primary" onclick="prepareSubmit(event)">Gerar Licença</button>
+    <button type="submit" class="btn btn-primary" onclick="prepareSubmit(event)">Gerar</button>
   </form>
 </div>
 
 <!-- TABELA -->
 <div class="card">
   <div class="search-container">
-    <input id="searchUser" placeholder="Buscar usuário, key ou dispositivo...">
+    <input id="searchUser" placeholder="Buscar usuário, key ou dispositivo">
     <button class="btn btn-ghost" onclick="limparBusca()">✖ Limpar</button>
   </div>
 
@@ -718,7 +718,7 @@
               </form>
               <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" onsubmit="return confirm('Alterar status desse usuário?')">
                 {% if u.status == "blocked" %}
-                  <button type="submit" class="btn btn-primary btn-sm" onclick="setLoading(this)">✅ Desbloq</button>
+                  <button type="submit" class="btn btn-primary btn-sm" onclick="setLoading(this)">✅ Desbloquear</button>
                 {% else %}
                   <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">🚫 Bloquear</button>
                 {% endif %}
@@ -727,7 +727,7 @@
                 <button type="submit" class="btn btn-ghost btn-sm" onclick="setLoading(this)">Reset Key</button>
               </form>
               <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Reset Disp</button>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Reset Dispositivo</button>
               </form>
               <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')">
                 <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Del</button>
@@ -736,11 +736,11 @@
             <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
             <div class="actionsMenu">
               <form method="post" action="/admin/renew/{{ loop.index0 }}">
-                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30 Dias</button>
+                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
               </form>
               <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
                 <input type="number" name="days" min="1" value="7" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
-                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+ Dias</button>
+                <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
               </form>
               <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" onsubmit="return confirm('Alterar status desse usuário?')">
                 {% if u.status == "blocked" %}
@@ -756,7 +756,7 @@
                 <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Dispositivo</button>
               </form>
               <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')">
-                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Excluir</button>
+                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
               </form>
             </div>
           </td>
