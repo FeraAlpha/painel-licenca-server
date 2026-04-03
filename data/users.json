@@ -1405,7 +1405,7 @@
       "username": "Saulo",
       "password": "Fera@8471",
       "key": "FERA-38DEA463",
-      "device_id": "5c08b651c477564e0547c3de8d789c8b847485a2c27caa9e73afbe6f75909095",
+      "device_id": null,
       "expires_at": 1785382870,
       "created_at": 1775014870
     },
@@ -1781,7 +1781,7 @@
       "username": "Fera9037",
       "password": "Alpha5215",
       "key": "FERA-3CF69664",
-      "device_id": "3eb9c7ebf2250a5bcc78d181a22aa43e9ffbe5ccd311a404c22607c72d8288f2",
+      "device_id": null,
       "expires_at": 1778207348,
       "reseller": "ANJO",
       "created_at": 1775183348
