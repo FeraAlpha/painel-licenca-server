@@ -1697,7 +1697,7 @@
       "username": "Fabricio",
       "password": "Fera2029",
       "key": "FERA-E217F66A",
-      "device_id": "5fc84e0e3f9b27d4e030862f6f147a9bbfad98da4f0d6b289c6a9705d3faf880",
+      "device_id": null,
       "expires_at": 1784558286,
       "created_at": 1775054286,
       "status": "active"
@@ -1826,7 +1826,7 @@
       "username": "Fera3410",
       "password": "Alpha7010",
       "key": "FERA-26B32612",
-      "device_id": null,
+      "device_id": "2e33d24d02a222809a48d172cc3168ca61f7e98a2a687a24ebc773cdd3aba4b5",
       "expires_at": 1777146383,
       "created_at": 1775072783,
       "status": "active"
