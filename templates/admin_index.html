@@ -351,29 +351,6 @@
     transition: width 0.3s;
   }
 
-  .expiry-unit-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-  }
-  .expiry-unit-row select {
-    width: auto;
-    flex: 1;
-    min-width: 120px;
-    margin-bottom: 0;
-  }
-  .expiry-unit-row input {
-    flex: 2;
-    margin-bottom: 0;
-  }
-  .expiry-unit-row .unit-hint {
-    font-size: 12px;
-    color: var(--text-light);
-    margin-left: 8px;
-  }
-
   .collapsible-header {
     display: flex;
     justify-content: space-between;
@@ -410,6 +387,7 @@
     display: flex;
     gap: 8px;
     margin-bottom: 15px;
+    align-items: center;
   }
   
   .search-container input {
@@ -419,6 +397,15 @@
   
   .search-container button {
     margin-bottom: 0;
+    white-space: nowrap;
+  }
+  
+  .result-count {
+    font-size: 12px;
+    color: var(--text-light);
+    background: var(--bg);
+    padding: 5px 10px;
+    border-radius: 20px;
     white-space: nowrap;
   }
 
@@ -451,7 +438,7 @@
     white-space: nowrap;
   }
 
-  /* ===== FORMULÁRIO EM 2 COLUNAS (MELHORIA) ===== */
+  /* ===== FORMULÁRIO EM 2 COLUNAS ===== */
   .form-2cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -507,15 +494,14 @@
 
     .actionsWrap{ display:none; }
     .menuBtn{ display:inline-block; }
-
-    .expiry-unit-row {
-      flex-direction: column;
-      align-items: stretch;
+    
+    .search-container {
+      flex-wrap: wrap;
     }
-    .expiry-unit-row select,
-    .expiry-unit-row input {
+    
+    .result-count {
       width: 100%;
-      margin-bottom: 8px;
+      text-align: center;
     }
   }
 
@@ -658,7 +644,7 @@
   </div>
 </div>
 
-<!-- GERAR NOVA KEY - FORMULÁRIO EM 2 COLUNAS -->
+<!-- GERAR NOVA KEY - SEM PREFIXO -->
 <div class="card">
   <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Key</h2>
 
@@ -666,11 +652,6 @@
     <div>
       <label>Usuário</label>
       <input name="username" required placeholder="nome do usuário">
-    </div>
-
-    <div>
-      <label>Prefixo</label>
-      <input name="prefix" value="FERA">
     </div>
 
     <div class="full-width">
@@ -716,6 +697,10 @@
   <div class="search-container">
     <input id="searchUser" placeholder="Buscar usuário, key ou dispositivo">
     <button class="btn btn-ghost" onclick="limparBusca()">✖ Limpar</button>
+    <button class="btn btn-ghost" onclick="recarregarDados()" title="Atualizar dados">
+      🔄
+    </button>
+    <span id="resultCount" class="result-count">0 resultados</span>
   </div>
 
   <div class="table-wrapper">
@@ -762,54 +747,54 @@
           </td>
           <td class="actionsBox">
             <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <form method="post" action="/admin/renew/{{ loop.index0 }}" onsubmit="showSuccessMessage('✅ Licença renovada com sucesso!'); return true;">
                 <button type="submit" class="btn btn-primary btn-sm" onclick="setLoading(this)">+30</button>
               </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" onsubmit="showSuccessMessage('✅ Dias adicionados com sucesso!'); return true;">
                 <input type="number" name="days" min="1" value="7" style="width:60px;padding:6px;border-radius:8px;border:1px solid var(--border)">
                 <button type="submit" class="btn btn-primary btn-sm" onclick="setLoading(this)">+Dias</button>
               </form>
               <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" onsubmit="return confirm('Alterar status desse usuário?')">
                 {% if u.status == "blocked" %}
-                  <button type="submit" class="btn btn-primary btn-sm" onclick="setLoading(this)">✅ Desbloquear</button>
+                  <button type="submit" class="btn btn-primary btn-sm" onclick="setLoading(this); showSuccessMessage('✅ Usuário desbloqueado com sucesso!');">✅ Desbloquear</button>
                 {% else %}
-                  <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">🚫 Bloquear</button>
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this); showSuccessMessage('🔒 Usuário bloqueado com sucesso!');">🚫 Bloquear</button>
                 {% endif %}
               </form>
-              <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <form method="post" action="/admin/reset/{{ loop.index0 }}" onsubmit="showSuccessMessage('🔄 Key resetada com sucesso!'); return true;">
                 <button type="submit" class="btn btn-ghost btn-sm" onclick="setLoading(this)">Reset Key</button>
               </form>
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <form method="post" action="/admin/reset_device/{{ loop.index0 }}" onsubmit="showSuccessMessage('📱 Dispositivo resetado com sucesso!'); return true;">
                 <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Reset Dispositivo</button>
               </form>
               <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Del</button>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this); showSuccessMessage('🗑️ Usuário excluído com sucesso!');">Del</button>
               </form>
             </div>
             <button class="menuBtn" type="button" onclick="toggleMenu(this)">⋮ Ações</button>
             <div class="actionsMenu">
-              <form method="post" action="/admin/renew/{{ loop.index0 }}">
+              <form method="post" action="/admin/renew/{{ loop.index0 }}" onsubmit="showSuccessMessage('✅ Licença renovada com sucesso!'); return true;">
                 <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+30</button>
               </form>
-              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}">
+              <form method="post" action="/admin/renew_custom/{{ loop.index0 }}" onsubmit="showSuccessMessage('✅ Dias adicionados com sucesso!'); return true;">
                 <input type="number" name="days" min="1" value="7" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin:8px 0">
                 <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">+Dias</button>
               </form>
               <form method="post" action="/admin/toggle_block/{{ loop.index0 }}" onsubmit="return confirm('Alterar status desse usuário?')">
                 {% if u.status == "blocked" %}
-                  <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this)">✅ Desbloquear</button>
+                  <button type="submit" class="btn btn-primary" style="width:100%" onclick="setLoading(this); showSuccessMessage('✅ Usuário desbloqueado com sucesso!');">✅ Desbloquear</button>
                 {% else %}
-                  <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">🚫 Bloquear</button>
+                  <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this); showSuccessMessage('🔒 Usuário bloqueado com sucesso!');">🚫 Bloquear</button>
                 {% endif %}
               </form>
-              <form method="post" action="/admin/reset/{{ loop.index0 }}">
+              <form method="post" action="/admin/reset/{{ loop.index0 }}" onsubmit="showSuccessMessage('🔄 Key resetada com sucesso!'); return true;">
                 <button type="submit" class="btn btn-ghost" style="width:100%" onclick="setLoading(this)">Reset Key</button>
               </form>
-              <form method="post" action="/admin/reset_device/{{ loop.index0 }}">
+              <form method="post" action="/admin/reset_device/{{ loop.index0 }}" onsubmit="showSuccessMessage('📱 Dispositivo resetado com sucesso!'); return true;">
                 <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Reset Dispositivo</button>
               </form>
               <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')">
-                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this)">Del</button>
+                <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this); showSuccessMessage('🗑️ Usuário excluído com sucesso!');">Del</button>
               </form>
             </div>
           </td>
@@ -827,6 +812,22 @@ const API_URL = window.location.origin + "/admin/generate";
 
 let loginsGerados = [];
 let loginsCriados = [];
+
+// ================== FUNÇÃO DE SUCESSO (Melhoria #8) ==================
+function showSuccessMessage(message) {
+  const toast = document.getElementById('toast');
+  toast.innerText = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ================== RECARREGAR DADOS (Melhoria #1) ==================
+function recarregarDados() {
+  showSuccessMessage('🔄 Atualizando dados...');
+  setTimeout(() => {
+    location.reload();
+  }, 500);
+}
 
 function toggleCollapse(headerElement) {
   const card = headerElement.closest('.card');
@@ -850,7 +851,17 @@ function limparBusca() {
     tr.style.display = "";
   });
   updateDashboard();
-  toast("Busca limpa!", "ok");
+  atualizarContadorResultados();
+  showSuccessMessage('🔍 Busca limpa!');
+}
+
+function atualizarContadorResultados() {
+  const rows = document.querySelectorAll("#usersTable tbody tr");
+  let visiveis = 0;
+  rows.forEach(tr => {
+    if (tr.style.display !== 'none') visiveis++;
+  });
+  document.getElementById("resultCount").innerText = `${visiveis} resultados`;
 }
 
 function gerarNumeroAleatorio(tamanho) {
@@ -980,7 +991,7 @@ async function gerarMultiplosLogins() {
   updateDashboard();
 
   if (sucessos > 0) {
-    toast(`${sucessos} logins criados! Recarregando a página...`, 'ok');
+    showSuccessMessage(`${sucessos} logins criados! Recarregando a página...`);
     setTimeout(() => {
       window.location.reload();
     }, 1500);
@@ -1036,7 +1047,7 @@ function copiarTodosLogins() {
   });
   
   navigator.clipboard.writeText(texto);
-  toast('✅ Todos os logins foram copiados!');
+  showSuccessMessage('✅ Todos os logins foram copiados!');
 }
 
 function generateRandomPassword() {
@@ -1058,6 +1069,7 @@ document.addEventListener("DOMContentLoaded", function() {
   renderExp();
   updateDashboard();
   highlightUserFromURL();
+  atualizarContadorResultados();
 
   const unitSelect = document.getElementById('expiryUnit');
   const hintSpan = document.getElementById('unitHint');
@@ -1128,13 +1140,13 @@ function prepareSubmit(event) {
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
-  toast("Key copiada!");
+  showSuccessMessage("Key copiada!");
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
 function copiarCred(u,p){
   navigator.clipboard.writeText(`Usuário: ${u}\nSenha: ${p}`);
-  toast("Credenciais copiadas!");
+  showSuccessMessage("Credenciais copiadas!");
 }
 
 function togglePassword(btn) {
@@ -1163,9 +1175,13 @@ function setLoading(btn) {
 
 document.getElementById("searchUser").addEventListener("input", function(){
   const q = this.value.toLowerCase();
+  let visiveis = 0;
   document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
-    tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none";
+    const isVisible = tr.innerText.toLowerCase().includes(q);
+    tr.style.display = isVisible ? "" : "none";
+    if (isVisible) visiveis++;
   });
+  document.getElementById("resultCount").innerText = `${visiveis} resultados`;
   updateDashboard();
 });
 
@@ -1189,6 +1205,7 @@ function sortTable(col){
 
   rows.forEach(r => tbody.appendChild(r));
   tbody.setAttribute("data-sort", asc ? "asc" : "desc");
+  atualizarContadorResultados();
 }
 
 function sortTableDefault() {
@@ -1201,6 +1218,7 @@ function sortTableDefault() {
   });
   rows.forEach(r => tbody.appendChild(r));
   tbody.setAttribute("data-sort", "desc");
+  atualizarContadorResultados();
 }
 
 function formatDateBR(ts){
@@ -1325,6 +1343,8 @@ window.gerarMultiplosLogins = gerarMultiplosLogins;
 window.copiarTodosLogins = copiarTodosLogins;
 window.toggleCollapse = toggleCollapse;
 window.limparBusca = limparBusca;
+window.recarregarDados = recarregarDados;
+window.showSuccessMessage = showSuccessMessage;
 </script>
 </body>
 </html>
