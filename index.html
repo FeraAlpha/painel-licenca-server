@@ -480,7 +480,7 @@
     .toast.warn i{color:var(--warning)}
     .mutedSmall{font-size:12px;color:var(--muted)}
 
-    /* Modal para reset */
+    /* Modal para reset (removido) */
     .modal {
       display: none;
       position: fixed;
@@ -609,34 +609,6 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
-    <!-- RESETAR LOGIN (NOVO) -->
-    <div class="card">
-      <div class="cardhead">
-        <div class="title">
-          <i class="fas fa-sync-alt"></i>
-          <div>
-            <h2>Resetar Login</h2>
-            <div class="sub">Resete o dispositivo de um usuário (permite nova ativação)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label><i class="fas fa-user"></i> Usuário para resetar</label>
-        <input id="resetUsername" placeholder="Digite o nome do usuário" autocomplete="off">
-      </div>
-
-      <div class="rowbtns two">
-        <button class="btn btn-warning" onclick="abrirModalReset()">
-          <i class="fas fa-sync-alt"></i> Resetar Dispositivo
-        </button>
-      </div>
-
-      <div class="mutedSmall" style="margin-top:8px">
-        <i class="fas fa-info-circle"></i> Após resetar, o usuário poderá ativar a licença em um novo dispositivo
-      </div>
-    </div>
-
     <!-- HISTÓRICO -->
     <div class="card">
       <div class="cardhead">
@@ -652,25 +624,6 @@
       <div class="history" id="historyList"></div>
     </div>
 
-    <!-- MODAL DE CONFIRMAÇÃO -->
-    <div id="resetModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3><i class="fas fa-exclamation-triangle"></i> Confirmar Reset</h3>
-          <span class="close-modal" onclick="fecharModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-          <p>Tem certeza que deseja resetar o dispositivo do usuário <strong id="resetUsernameDisplay"></strong>?</p>
-          <p class="mutedSmall" style="margin-top:10px">Isso permitirá que ele ative a licença em um novo aparelho.</p>
-          <input type="text" id="confirmResetUsername" placeholder="Digite o nome do usuário para confirmar" style="width:100%; margin-top:10px;">
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-soft" onclick="fecharModal()">Cancelar</button>
-          <button class="btn btn-warning" onclick="confirmarReset()">Confirmar Reset</button>
-        </div>
-      </div>
-    </div>
-
     <!-- TOAST -->
     <div class="toast" id="toast">
       <i class="fas fa-circle-check"></i>
@@ -683,7 +636,6 @@
 
 <script>
   const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
-  const RESET_API_URL = "https://painel-licenca-server.onrender.com/reseller/reset_device";
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v3";
   const PREFIX = "FERA";
@@ -694,7 +646,6 @@
   let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PrecisionBoosterV2";
 
   let currentDays = 35;
-  let usuarioReset = "";
 
   function generateUsername() {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -767,66 +718,6 @@
       toast("Token removido", "ok", "Token excluído com sucesso");
     } else {
       toast("Operação cancelada", "ok", "Token mantido");
-    }
-  }
-
-  function abrirModalReset() {
-    const username = document.getElementById("resetUsername").value.trim();
-    if(!username) {
-      toast("Digite um usuário para resetar", "warn", "Campo vazio");
-      return;
-    }
-    usuarioReset = username;
-    document.getElementById("resetUsernameDisplay").innerText = username;
-    document.getElementById("confirmResetUsername").value = "";
-    document.getElementById("resetModal").style.display = "flex";
-  }
-
-  function fecharModal() {
-    document.getElementById("resetModal").style.display = "none";
-    usuarioReset = "";
-  }
-
-  async function confirmarReset() {
-    const confirmInput = document.getElementById("confirmResetUsername").value.trim();
-    
-    if(confirmInput !== usuarioReset) {
-      toast("Nome de usuário não confere", "warn", "Digite exatamente o mesmo nome");
-      return;
-    }
-    
-    const token = document.getElementById("token").value.trim();
-    if (!token) {
-      toast("Token não salvo", "warn", "Salve seu token primeiro");
-      fecharModal();
-      return;
-    }
-    
-    fecharModal();
-    
-    toast("Resetando dispositivo...", "ok", "Aguarde");
-    
-    try {
-      const response = await fetch(RESET_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          username: usuarioReset,
-          token: token
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.ok) {
-        toast(`Dispositivo de ${usuarioReset} resetado com sucesso!`, "ok", "O usuário pode ativar em outro aparelho.");
-        document.getElementById("resetUsername").value = "";
-      } else {
-        toast("Erro: " + (data.error || data.message || "Falha desconhecida"), "warn");
-      }
-    } catch (error) {
-      toast("Erro de conexão", "warn", "Tente novamente mais tarde");
-      console.error(error);
     }
   }
 
