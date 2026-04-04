@@ -1453,6 +1453,7 @@ def reseller_users():
     
     return jsonify({"users": user_list})
 
+# ================== ROTA PARA RESETAR DISPOSITIVO (REVENDEDOR) ==================
 @app.route("/reseller/reset_device", methods=["POST"])
 def reseller_reset_device():
     token = sanitize_input(request.form.get("token"))
@@ -1483,12 +1484,14 @@ def reseller_reset_device():
     if user.get("reseller") != reseller_nome:
         return jsonify({"error": "not_authorized"}), 403
     
+    # Resetar dispositivo
     user["device_id"] = None
     user.pop("device_user_agent", None)
     
     if not save_users(data):
         return jsonify({"error": "save_failed"}), 500
     
+    # Limpar sessões no banco SQL
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM sessions WHERE fingerprint IN (SELECT fingerprint FROM licenses WHERE username = ?)", (username,))
@@ -1638,6 +1641,7 @@ if __name__ == "__main__":
     print(f"🧹 Limpeza automática: Ativada (a cada 24h)")
     print(f"📝 Log com rotação: Ativado (5MB, 3 backups)")
     print(f"🔒 Bloqueio/Desbloqueio: Ativado")
+    print(f"🔄 Reset de dispositivo (revendedor): Ativado")
     print(f"🌐 Porta: {port}")
     print("="*60 + "\n")
     
