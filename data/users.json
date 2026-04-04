@@ -2054,6 +2054,16 @@
       "reseller": "NINJA",
       "created_at": 1775309475,
       "status": "active"
+    },
+    {
+      "username": "Fera9470",
+      "password": "Alpha7629",
+      "key": "FERA-4B4FBFD1",
+      "device_id": null,
+      "expires_at": 1775917774,
+      "reseller": "NINJA",
+      "created_at": 1775312974,
+      "status": "active"
     }
   ]
 }
