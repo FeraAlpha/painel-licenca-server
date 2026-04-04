@@ -46,12 +46,6 @@
     font-weight:800;
   }
 
-  .subtitle{
-    font-size:13px;
-    color:var(--text-light);
-    margin-top:4px;
-  }
-
   .card {
     background:var(--card);
     border:1px solid var(--border);
@@ -81,17 +75,17 @@
   input:focus, select:focus{ border-color:var(--accent); }
 
   .btn {
-    padding:10px 14px;
+    padding:8px 12px;
     border-radius:10px;
     cursor:pointer;
     font-weight:800;
     border:0;
-    font-size:14px;
+    font-size:13px;
     transition:.15s;
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .btn:hover{ transform:translateY(-1px); }
 
@@ -102,8 +96,8 @@
   .btn-success { background:var(--ok); color:white; }
 
   .btn-sm {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 5px 8px;
+    font-size: 11px;
   }
 
   .btn-loading {
@@ -208,13 +202,34 @@
     --text-light:#9aa4ab;
   }
 
-  .admin-tools {
-    display:flex;
-    gap:12px;
-    margin-bottom:18px;
-    flex-wrap:wrap;
+  /* BARRA DE FERRAMENTAS COMPACTA */
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 15px;
+    align-items: center;
   }
-  .admin-tools form { display:inline-block; }
+  
+  .toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+  
+  .toolbar .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .toolbar a.btn {
+    text-decoration: none;
+  }
 
   .stats-bar {
     display: flex;
@@ -551,6 +566,10 @@
     .stat-label {
       font-size: 9px;
     }
+    
+    .toolbar {
+      justify-content: center;
+    }
   }
 </style>
 </head>
@@ -559,17 +578,17 @@
 
 <header>
   <div>
-    <h1>Fera Alpha — Painel Administrativo</h1>
-    <div class="subtitle">Gerenciamento avançado</div>
+    <h1>Fera Alpha</h1>
   </div>
 
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
-<div class="admin-tools">
+<!-- BARRA DE FERRAMENTAS COMPACTA -->
+<div class="toolbar">
   <form method="post" action="/admin/reset_all_devices"
         onsubmit="return confirm('⚠️ Resetar TODOS os dispositivos? Esta ação não pode ser desfeita.')">
-    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Todos Dispositivos</button>
+    <button type="submit" class="btn btn-warning" onclick="setLoading(this)">🔄 Resetar Dispositivos</button>
   </form>
 
   <form method="post" action="/admin/clean_expired"
@@ -577,7 +596,9 @@
     <button type="submit" class="btn btn-danger" onclick="setLoading(this)">🗑️ Limpar Expirados</button>
   </form>
 
-  <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas por Revendedor</a>
+  <div class="toolbar-divider"></div>
+
+  <a href="/admin/reseller_stats" class="btn btn-ghost">📊 Estatísticas</a>
 </div>
 
 <div class="stats-bar">
@@ -765,7 +786,7 @@
                 <button type="submit" class="btn btn-ghost btn-sm" onclick="setLoading(this)">Reset Key</button>
               </form>
               <form method="post" action="/admin/reset_device/{{ loop.index0 }}" onsubmit="showSuccessMessage('📱 Dispositivo resetado com sucesso!'); return true;">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Reset Dispositivo</button>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this)">Reset Disp</button>
               </form>
               <form method="post" action="/admin/delete/{{ loop.index0 }}" onsubmit="return confirm('Excluir usuário?')">
                 <button type="submit" class="btn btn-danger btn-sm" onclick="setLoading(this); showSuccessMessage('🗑️ Usuário excluído com sucesso!');">Del</button>
@@ -813,7 +834,7 @@ const API_URL = window.location.origin + "/admin/generate";
 let loginsGerados = [];
 let loginsCriados = [];
 
-// ================== FUNÇÃO DE SUCESSO (Melhoria #8) ==================
+// ================== FUNÇÃO DE SUCESSO ==================
 function showSuccessMessage(message) {
   const toast = document.getElementById('toast');
   toast.innerText = message;
@@ -821,7 +842,7 @@ function showSuccessMessage(message) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ================== RECARREGAR DADOS (Melhoria #1) ==================
+// ================== RECARREGAR DADOS ==================
 function recarregarDados() {
   showSuccessMessage('🔄 Atualizando dados...');
   setTimeout(() => {
