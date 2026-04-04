@@ -2064,6 +2064,16 @@
       "reseller": "NINJA",
       "created_at": 1775312974,
       "status": "active"
+    },
+    {
+      "username": "Fera6285",
+      "password": "Alpha5936",
+      "key": "FERA-BEB2E57C",
+      "device_id": null,
+      "expires_at": 1778342163,
+      "reseller": "JCGAMER",
+      "created_at": 1775318163,
+      "status": "active"
     }
   ]
 }
