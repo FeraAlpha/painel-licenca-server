@@ -2034,6 +2034,16 @@
       "reseller": "JCGAMER",
       "created_at": 1775241180,
       "status": "active"
+    },
+    {
+      "username": "Fera2122",
+      "password": "Alpha6615",
+      "key": "FERA-D016A11E",
+      "device_id": null,
+      "expires_at": 1775914220,
+      "reseller": "NINJA",
+      "created_at": 1775309420,
+      "status": "active"
     }
   ]
 }
