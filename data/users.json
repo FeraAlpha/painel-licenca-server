@@ -60,7 +60,7 @@
       "username": "jcgamer",
       "password": "123",
       "key": "FERA-14F5303E",
-      "device_id": null,
+      "device_id": "463df7f14ce4f195edf5269bab063d2926a71d3b3ae7d4eafa2afb1253c3c308",
       "expires_at": 1784805874,
       "status": "active",
       "reseller": "JCGAMER"
@@ -2069,10 +2069,19 @@
       "username": "Fera6285",
       "password": "Alpha5936",
       "key": "FERA-BEB2E57C",
-      "device_id": null,
+      "device_id": "37e9a5013ae92927f113a28969dad55ba203660e51c0fe64b0b3a91e5d8c7312",
       "expires_at": 1778342163,
       "reseller": "JCGAMER",
       "created_at": 1775318163,
+      "status": "active"
+    },
+    {
+      "username": "Fera8010",
+      "password": "Alpha5341",
+      "key": "FERA-1404D065",
+      "device_id": null,
+      "expires_at": 1779897444,
+      "created_at": 1775318244,
       "status": "active"
     }
   ]
