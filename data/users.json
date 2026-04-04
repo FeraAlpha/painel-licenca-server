@@ -2033,16 +2033,6 @@
       "reseller": "JCGAMER",
       "created_at": 1775241180,
       "status": "active"
-    },
-    {
-      "username": "Fera3290",
-      "password": "Alpha1589",
-      "key": "FERA-D7CF1291",
-      "device_id": null,
-      "expires_at": 1784767452,
-      "reseller": "revendedor_super_fera_2025",
-      "created_at": 1775263452,
-      "status": "active"
     }
   ]
 }
