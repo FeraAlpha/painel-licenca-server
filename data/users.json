@@ -2153,6 +2153,16 @@
       "reseller": "JCGAMER",
       "created_at": 1775489766,
       "status": "active"
+    },
+    {
+      "username": "Fera9646",
+      "password": "Alpha6265",
+      "key": "FERA-992D1C50",
+      "device_id": null,
+      "expires_at": 1778513829,
+      "reseller": "JCGAMER",
+      "created_at": 1775489829,
+      "status": "active"
     }
   ]
 }
