@@ -2163,6 +2163,16 @@
       "reseller": "JCGAMER",
       "created_at": 1775489829,
       "status": "active"
+    },
+    {
+      "username": "Fera7060",
+      "password": "Alpha3393",
+      "key": "FERA-54BF8DCA",
+      "device_id": null,
+      "expires_at": 1778515496,
+      "reseller": "JCGAMER",
+      "created_at": 1775491496,
+      "status": "active"
     }
   ]
 }
