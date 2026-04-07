@@ -478,6 +478,36 @@
     font-size: 13px;
   }
 
+  .expiry-group {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 8px;
+  }
+
+  .expiry-group-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .expiry-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .expiry-row label {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+
   .compact-buttons {
     display: flex;
     gap: 8px;
@@ -569,6 +599,11 @@
     
     .toolbar {
       justify-content: center;
+    }
+
+    .expiry-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
   }
 </style>
@@ -665,7 +700,7 @@
   </div>
 </div>
 
-<!-- GERAR NOVA KEY - SEM PREFIXO -->
+<!-- GERAR NOVA KEY - COM SUPORTE A DIAS/HORAS/MINUTOS/SEGUNDOS -->
 <div class="card">
   <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Key</h2>
 
@@ -680,33 +715,57 @@
       <input name="password" id="autoPassword" required>
     </div>
 
-    <div>
-      <label>Expiração</label>
-      <input type="number" id="expiryValue" step="any" value="35" placeholder="valor">
-    </div>
-
-    <div>
-      <label>Unidade</label>
-      <select id="expiryUnit">
-        <option value="days">Dias (com decimal)</option>
-        <option value="hours">Horas</option>
-        <option value="minutes">Minutos</option>
-        <option value="seconds">Segundos</option>
-      </select>
-    </div>
-
-    <div class="full-width">
-      <label style="font-size: 12px; color: var(--text-light);" id="unitHint">Ex: 1.5 = 1 dia e 12h</label>
+    <div class="full-width expiry-group">
+      <div class="expiry-group-title">
+        <i class="fas fa-hourglass-half"></i> Tempo de Expiração
+        <small style="margin-left: auto;">(Preencha APENAS um campo)</small>
+      </div>
+      
+      <div class="expiry-row">
+        <div>
+          <label><i class="fas fa-calendar-day"></i> Dias</label>
+          <input type="number" id="expireDays" step="any" placeholder="Ex: 1, 7, 30" value="">
+        </div>
+        <div>
+          <label><i class="fas fa-clock"></i> Horas</label>
+          <input type="number" id="expireHours" step="any" placeholder="Ex: 24, 48" value="">
+        </div>
+      </div>
+      
+      <div class="expiry-row">
+        <div>
+          <label><i class="fas fa-hourglass-start"></i> Minutos</label>
+          <input type="number" id="expireMinutes" step="any" placeholder="Ex: 30, 60" value="">
+        </div>
+        <div>
+          <label><i class="fas fa-stopwatch"></i> Segundos</label>
+          <input type="number" id="expireSeconds" step="any" placeholder="Ex: 3600" value="">
+        </div>
+      </div>
+      
+      <div style="font-size: 11px; color: var(--text-light); margin-top: 8px; text-align: center;">
+        💡 Prioridade: Segundos > Minutos > Horas > Dias
+      </div>
     </div>
 
     <div class="full-width compact-buttons">
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(7)">7 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(35)">35 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(65)">65 Dias</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(110)">110 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(7, 'days')">7 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(35, 'days')">35 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(65, 'days')">65 Dias</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(110, 'days')">110 Dias</button>
+    </div>
+    
+    <div class="full-width compact-buttons" style="margin-top: 5px;">
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(24, 'hours')">24 Horas (1 dia)</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(12, 'hours')">12 Horas</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(30, 'minutes')">30 Minutos</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(5, 'minutes')">5 Minutos</button>
     </div>
 
-    <input type="hidden" name="expire_seconds" id="expireSeconds">
+    <input type="hidden" name="expire_days" id="hiddenExpireDays">
+    <input type="hidden" name="expire_hours" id="hiddenExpireHours">
+    <input type="hidden" name="expire_minutes" id="hiddenExpireMinutes">
+    <input type="hidden" name="expire_seconds" id="hiddenExpireSeconds">
 
     <div class="full-width">
       <button type="submit" class="btn btn-primary" style="width: 100%;" onclick="prepareSubmit(event)">Gerar Licença</button>
@@ -750,22 +809,22 @@
             <span class="password-value">{{ u.password }}</span>
             <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
             <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
-          </td>
+           </td>
           <td data-label="Key">
             {{ u.key }}
             <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
-          </td>
+           </td>
           <td data-label="Dispositivo">{{ u.device_id if u.device_id else '-' }}</td>
           <td data-label="Revendedor">{{ u.reseller if u.reseller else "Admin" }}</td>
           <td data-label="Criado em">{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
-          <td class="expCell"></td>
+          <td class="expCell"> </td>
           <td class="statusCell" data-status="{{ u.status }}">
             {% if u.status == "blocked" %}
               <span class="badge badge-exp">Bloqueado</span>
             {% else %}
               <span class="badge badge-ok">Ativo</span>
             {% endif %}
-          </td>
+           </td>
           <td class="actionsBox">
             <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
               <form method="post" action="/admin/renew/{{ loop.index0 }}" onsubmit="showSuccessMessage('✅ Licença renovada com sucesso!'); return true;">
@@ -818,8 +877,8 @@
                 <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this); showSuccessMessage('🗑️ Usuário excluído com sucesso!');">Del</button>
               </form>
             </div>
-          </td>
-        </tr>
+           </td>
+         </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -1091,19 +1150,17 @@ document.addEventListener("DOMContentLoaded", function() {
   updateDashboard();
   highlightUserFromURL();
   atualizarContadorResultados();
-
-  const unitSelect = document.getElementById('expiryUnit');
-  const hintSpan = document.getElementById('unitHint');
-  if (unitSelect && hintSpan) {
-    unitSelect.addEventListener('change', function() {
-      const unit = this.value;
-      if (unit === 'days') hintSpan.innerText = 'Ex: 1.5 = 1 dia e 12h';
-      else if (unit === 'hours') hintSpan.innerText = 'Ex: 24 = 1 dia';
-      else if (unit === 'minutes') hintSpan.innerText = 'Ex: 1440 = 1 dia';
-      else hintSpan.innerText = 'Ex: 86400 = 1 dia';
-    });
-  }
+  
+  // Limpar campos de expiração ao carregar
+  limparCamposExpiracao();
 });
+
+function limparCamposExpiracao() {
+  document.getElementById('expireDays').value = '';
+  document.getElementById('expireHours').value = '';
+  document.getElementById('expireMinutes').value = '';
+  document.getElementById('expireSeconds').value = '';
+}
 
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
@@ -1114,48 +1171,56 @@ function toast(msg, type="ok"){
   setTimeout(()=>t.classList.remove("show"), 3000);
 }
 
-function setQuickExpiration(days) {
-  document.getElementById('expiryValue').value = days;
-  document.getElementById('expiryUnit').value = 'days';
-  document.getElementById('unitHint').innerText = 'Ex: 1.5 = 1 dia e 12h';
+function setQuickExpiration(value, unit) {
+  limparCamposExpiracao();
+  
+  if (unit === 'days') {
+    document.getElementById('expireDays').value = value;
+  } else if (unit === 'hours') {
+    document.getElementById('expireHours').value = value;
+  } else if (unit === 'minutes') {
+    document.getElementById('expireMinutes').value = value;
+  } else if (unit === 'seconds') {
+    document.getElementById('expireSeconds').value = value;
+  }
+  
+  showSuccessMessage(`✅ ${value} ${unit} definido!`);
 }
 
 function prepareSubmit(event) {
   event.preventDefault();
   
-  const form = document.getElementById('generateForm');
-  const value = parseFloat(document.getElementById('expiryValue').value);
-  const unit = document.getElementById('expiryUnit').value;
+  const days = document.getElementById('expireDays').value;
+  const hours = document.getElementById('expireHours').value;
+  const minutes = document.getElementById('expireMinutes').value;
+  const seconds = document.getElementById('expireSeconds').value;
   
-  if (isNaN(value) || value <= 0) {
-    toast('Digite um valor positivo para a expiração', 'warn');
+  // Verifica se pelo menos um campo foi preenchido
+  if (!days && !hours && !minutes && !seconds) {
+    toast('⚠️ Preencha pelo menos um campo de expiração (Dias, Horas, Minutos ou Segundos)', 'warn');
     return;
   }
   
-  let seconds = 0;
-  switch (unit) {
-    case 'days':
-      seconds = value * 86400;
-      break;
-    case 'hours':
-      seconds = value * 3600;
-      break;
-    case 'minutes':
-      seconds = value * 60;
-      break;
-    case 'seconds':
-      seconds = value;
-      break;
-  }
+  // Validação: apenas um campo deve ser preenchido (ou prioridade)
+  let filledFields = 0;
+  if (days && days > 0) filledFields++;
+  if (hours && hours > 0) filledFields++;
+  if (minutes && minutes > 0) filledFields++;
+  if (seconds && seconds > 0) filledFields++;
   
-  seconds = Math.round(seconds);
-  if (seconds === 0) {
-    toast('A expiração não pode ser zero', 'warn');
+  if (filledFields > 1) {
+    toast('⚠️ Preencha APENAS um campo de expiração (prioridade: Segundos > Minutos > Horas > Dias)', 'warn');
     return;
   }
   
-  document.getElementById('expireSeconds').value = seconds;
-  form.submit();
+  // Define os campos hidden
+  document.getElementById('hiddenExpireDays').value = days || '';
+  document.getElementById('hiddenExpireHours').value = hours || '';
+  document.getElementById('hiddenExpireMinutes').value = minutes || '';
+  document.getElementById('hiddenExpireSeconds').value = seconds || '';
+  
+  // Submete o formulário
+  document.getElementById('generateForm').submit();
 }
 
 function copiar(t, el){
