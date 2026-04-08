@@ -2272,6 +2272,16 @@
       "reseller": "JCGAMER",
       "created_at": 1775608945,
       "status": "active"
+    },
+    {
+      "username": "Fera7629",
+      "password": "Alpha3933",
+      "key": "FERA-48A43B37",
+      "device_id": null,
+      "expires_at": 1776250194,
+      "reseller": "NINJA",
+      "created_at": 1775645394,
+      "status": "active"
     }
   ]
 }
