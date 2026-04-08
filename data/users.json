@@ -2282,6 +2282,16 @@
       "reseller": "NINJA",
       "created_at": 1775645394,
       "status": "active"
+    },
+    {
+      "username": "Fera8627",
+      "password": "Alpha1482",
+      "key": "FERA-520CFA7D",
+      "device_id": null,
+      "expires_at": 1776289361,
+      "reseller": "NINJA",
+      "created_at": 1775684561,
+      "status": "active"
     }
   ]
 }
