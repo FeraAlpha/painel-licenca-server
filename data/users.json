@@ -2002,7 +2002,7 @@
       "username": "44",
       "password": "44",
       "key": "FERA-BDF0152D",
-      "device_id": "f816eb5a80bab657b17556e3a317545871373a4f96f16e3896425fd64435edcf",
+      "device_id": null,
       "expires_at": 1778299138,
       "created_at": 1775188738,
       "status": "active"
@@ -2238,7 +2238,7 @@
       "username": "L",
       "password": "L",
       "key": "FERA-08079959",
-      "device_id": "web-mlwq7a0b-6rcru9bb",
+      "device_id": "web-mnp14b9n-gmw5va8h",
       "expires_at": 1775685913,
       "created_at": 1775591057,
       "status": "active"
