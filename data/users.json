@@ -254,7 +254,7 @@
       "username": "LKZ",
       "password": "LKZ",
       "key": "FERA-09539A81",
-      "device_id": "b3d6dd897dc86c9176c44959689ae4f5b7b64bc4c2e893ee67b11d43798cbeb9",
+      "device_id": null,
       "expires_at": 1780968176,
       "status": "active"
     },
