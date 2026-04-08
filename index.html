@@ -282,11 +282,6 @@
       min-width: 160px;
     }
 
-    .rowbtns.three .btn{
-      flex:1;
-      min-width: 120px;
-    }
-
     .loader{
       display:none;
       gap:10px;
@@ -482,73 +477,6 @@
     .toast.success i{color:var(--success)}
     .mutedSmall{font-size:12px;color:var(--muted)}
 
-    .links-section {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-    
-    .link-item {
-      background: var(--card2);
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    
-    .link-item:last-child {
-      margin-bottom: 0;
-    }
-    
-    .link-title {
-      font-weight: 900;
-      font-size: 14px;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .link-title i {
-      color: var(--primary);
-    }
-    
-    .link-url {
-      font-size: 12px;
-      color: var(--muted);
-      word-break: break-all;
-      margin-bottom: 10px;
-      font-family: monospace;
-    }
-    
-    .link-description {
-      font-size: 12px;
-      color: var(--text);
-      background: rgba(79,124,255,.08);
-      padding: 8px;
-      border-radius: 10px;
-      margin-top: 8px;
-      line-height: 1.4;
-    }
-    
-    .btn-copy-link {
-      background: rgba(79,124,255,.12);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: .2s;
-    }
-    
-    .btn-copy-link:hover {
-      background: rgba(79,124,255,.22);
-      transform: translateY(-1px);
-    }
-
     footer {
       margin-top: 20px;
       text-align: center;
@@ -658,49 +586,6 @@
       <div class="history" id="historyList"></div>
     </div>
 
-    <!-- LINKS DE DOWNLOAD -->
-    <div class="card">
-      <div class="cardhead">
-        <div class="title">
-          <i class="fas fa-download"></i>
-          <div>
-            <h2>Links de Download</h2>
-            <div class="sub">Aplicativos necessários</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="links-section">
-        <div class="link-item">
-          <div class="link-title">
-            <i class="fas fa-rocket"></i>
-            <span>Precision Booster V2</span>
-          </div>
-          <div class="link-url">https://www.mediafire.com/file/k2pc76ycsft0krw/P-Booster_V2.1.2.apk/file</div>
-          <button class="btn-copy-link" onclick="copyPrecisionLink()">
-            <i class="fas fa-copy"></i> Copiar Link
-          </button>
-          <div class="link-description">
-            <i class="fas fa-info-circle"></i> Aplicativo principal para otimização e desempenho do seu dispositivo.
-          </div>
-        </div>
-
-        <div class="link-item">
-          <div class="link-title">
-            <i class="fas fa-shield-alt"></i>
-            <span>Shizuku</span>
-          </div>
-          <div class="link-url">https://www.mediafire.com/file/zaupg0br4tlhfkt/Shizuku_13.5.4.apk/file</div>
-          <button class="btn-copy-link" onclick="copyShizukuLink()">
-            <i class="fas fa-copy"></i> Copiar Link
-          </button>
-          <div class="link-description">
-            <i class="fas fa-exclamation-triangle"></i> <strong>⚠️ OBRIGATÓRIO:</strong> Necessário para o funcionamento completo do Precision Booster. Permite permissões avançadas no sistema.
-          </div>
-        </div>
-      </div>
-    </div>
-
     <footer>
       <i class="fas fa-code-branch"></i> Versão 2.1.2 | 
       <i class="fab fa-telegram"></i> @SuportePBooster |
@@ -746,14 +631,6 @@
     const date = new Date();
     date.setDate(date.getDate() + days);
     return date.toLocaleDateString('pt-BR');
-  }
-
-  function getDaysLeft(expirationDate) {
-    const today = new Date();
-    const expDate = new Date(expirationDate);
-    const diffTime = expDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
   }
 
   async function buscarConfiguracao() {
@@ -818,99 +695,6 @@
     } else {
       toast("Operação cancelada", "ok", "Token mantido");
     }
-  }
-
-  function copyPrecisionLink() {
-    copyToClipboard(LINK_APK);
-    toast("Link copiado!", "success", "Precision Booster V2");
-  }
-
-  function copyShizukuLink() {
-    copyToClipboard(LINK_SHIZUKU);
-    toast("Link copiado!", "success", "Shizuku");
-  }
-
-  function copyWhatsAppMessage() {
-    const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
-
-    try {
-      const metaItems = box.querySelectorAll('.metaItem');
-      let username = "", password = "", days = "";
-      
-      metaItems.forEach(item => {
-        const label = item.querySelector('.metaLabel')?.innerText || "";
-        const value = item.querySelector('.metaValue')?.innerText || "";
-        
-        if (label.includes('Usuário')) username = value;
-        if (label.includes('Senha')) password = value;
-        if (label.includes('Dias')) days = value;
-      });
-      
-      username = username || "não informado";
-      password = password || "não informado";
-      days = days || "não informado";
-      
-      const expirationDate = calculateExpirationDate(parseInt(days));
-      
-      const message = generateProfessionalMessage(username, password, days, expirationDate);
-      copyToClipboard(message);
-      toast("✅ Mensagem copiada!", "success", "Pronta para enviar ao cliente");
-      
-    } catch (error) {
-      toast("Erro ao copiar", "warn", "Tente novamente");
-    }
-  }
-
-  function generateProfessionalMessage(username, password, days, expirationDate) {
-    return `╔══════════════════════════════════════════════════════╗
-║     🎯 ACESSO LIBERADO - ${NOME_APP} 🎯     ║
-╚══════════════════════════════════════════════════════╝
-
-✅ SEUS DADOS DE ACESSO:
-
-👤 USUÁRIO: ${username}
-🔑 SENHA: ${password}
-⏱️ VALIDADE: ${days} dias
-📅 EXPIRA EM: ${expirationDate}
-
-📲 DOWNLOAD DOS APLICATIVOS:
-
-🔹 ${NOME_APP}:
-${LINK_APK}
-
-🔹 Shizuku (OBRIGATÓRIO):
-${LINK_SHIZUKU}
-
-⚠️ IMPORTANTE:
-• Instale os DOIS aplicativos para o funcionamento correto
-• O Shizuku permite permissões avançadas no sistema
-• Após instalar, ative o Shizuku antes de abrir o ${NOME_APP}
-• Ative as permissões necessárias no aplicativo
-
-⚡ APROVEITE A MELHOR EXPERIÊNCIA DE OTIMIZAÇÃO!
-
-═══════════════════════════════════════════════════════
-🔒 SEGURANÇA:
-
-• Não compartilhe sua senha com ninguém
-• Cada conta é para uso em 1 dispositivo
-• O sistema detecta uso simultâneo
-• Mantenha o app atualizado para melhor performance
-
-═══════════════════════════════════════════════════════
-📌 POLÍTICA DE RESET DE LOGIN:
-
-✓ 1º reset: GRATUITO
-✓ Resets adicionais: R$3,00 cada
-✓ Suporte via Telegram: ${SUPPORT_TELEGRAM}
-
-═══════════════════════════════════════════════════════
-
-📢 DÚVIDAS? Chame no suporte!`;
   }
 
   async function generateLicense(){
@@ -1064,14 +848,11 @@ ${LINK_SHIZUKU}
 
       ${key ? `<div class="keybox" id="licenseKeyBox">🔑 KEY: ${escapeHtml(key)}</div>` : ""}
 
-      <div class="rowbtns three" style="margin-top:12px;">
+      <div class="rowbtns two" style="margin-top:12px;">
         <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
           <i class="fas fa-copy"></i> Credenciais
         </button>
-        <button class="btn btn-primary" type="button" onclick="copyWhatsAppMessage()">
-          <i class="fab fa-whatsapp"></i> Msg Profissional
-        </button>
-        <button class="btn btn-success" type="button" onclick="copyAllWithLink()">
+        <button class="btn btn-primary" type="button" onclick="copyAllWithLink()">
           <i class="fas fa-bolt"></i> Completo + Links
         </button>
       </div>
@@ -1104,10 +885,47 @@ ${LINK_SHIZUKU}
       days = days || "não informado";
       
       const expirationDate = calculateExpirationDate(parseInt(days));
-      const message = generateProfessionalMessage(username, password, days, expirationDate);
+      
+      const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯
+
+✅ SEUS DADOS DE ACESSO:
+
+👤 USUÁRIO: ${username}
+🔑 SENHA: ${password}
+⏱️ VALIDADE: ${days} dias
+📅 EXPIRA EM: ${expirationDate}
+
+📲 DOWNLOAD DOS APLICATIVOS:
+
+🔹 ${NOME_APP}:
+${LINK_APK}
+
+🔹 Shizuku (OBRIGATÓRIO):
+${LINK_SHIZUKU}
+
+⚠️ IMPORTANTE:
+• Instale os DOIS aplicativos para o funcionamento correto
+• O Shizuku permite permissões avançadas no sistema
+• Após instalar, ative o Shizuku antes de abrir o ${NOME_APP}
+
+⚡ APROVEITE A MELHOR EXPERIÊNCIA!
+
+─────────────────────────────────────────
+🔒 SEGURANÇA:
+
+• Não compartilhe sua senha com ninguém
+• Cada conta é para uso em 1 dispositivo
+• O sistema detecta uso simultâneo
+
+─────────────────────────────────────────
+📌 POLÍTICA DE RESET DE LOGIN:
+
+✓ 1º reset: GRATUITO
+✓ Resets adicionais: R$3,00 cada
+✓ Suporte via Telegram: ${SUPPORT_TELEGRAM}`;
       
       copyToClipboard(message);
-      toast("✅ Mensagem profissional copiada!", "success", "Pronta para enviar ao cliente");
+      toast("✅ Mensagem completa copiada!", "success", "Pronta para enviar ao cliente");
       
     } catch (error) {
       toast("Erro ao copiar", "warn", "Tente novamente");
@@ -1192,10 +1010,45 @@ ${LINK_SHIZUKU}
     }
 
     const expirationDate = calculateExpirationDate(parseInt(item.days));
-    const message = generateProfessionalMessage(item.username, item.password, item.days, expirationDate);
-    copyToClipboard(message);
+    
+    const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯
 
-    toast("Copiado", "success", "Mensagem profissional do histórico ✅");
+✅ SEUS DADOS DE ACESSO:
+
+👤 USUÁRIO: ${item.username}
+🔑 SENHA: ${item.password}
+⏱️ VALIDADE: ${item.days} dias
+📅 EXPIRA EM: ${expirationDate}
+
+📲 DOWNLOAD DOS APLICATIVOS:
+
+🔹 ${NOME_APP}:
+${LINK_APK}
+
+🔹 Shizuku (OBRIGATÓRIO):
+${LINK_SHIZUKU}
+
+⚠️ IMPORTANTE:
+• Instale os DOIS aplicativos para o funcionamento correto
+• O Shizuku permite permissões avançadas no sistema
+
+⚡ APROVEITE A MELHOR EXPERIÊNCIA!
+
+─────────────────────────────────────────
+🔒 SEGURANÇA:
+
+• Não compartilhe sua senha com ninguém
+• Cada conta é para uso em 1 dispositivo
+
+─────────────────────────────────────────
+📌 POLÍTICA DE RESET DE LOGIN:
+
+✓ 1º reset: GRATUITO
+✓ Resets adicionais: R$3,00 cada
+✓ Suporte via Telegram: ${SUPPORT_TELEGRAM}`;
+    
+    copyToClipboard(message);
+    toast("Copiado", "success", "Mensagem do histórico ✅");
   }
 
   function useHistory(index){
