@@ -12,7 +12,7 @@
       "username": "diegovilao",
       "password": "123",
       "key": "FERA-69DA2BA3",
-      "device_id": "e4ef757b1d840fc865f0f0073e92df8a7bec045db793f1797ba7ff04fce3579c",
+      "device_id": null,
       "expires_at": 1777210987,
       "status": "active"
     },
