@@ -36,7 +36,7 @@
       "username": "Nando",
       "password": "8585",
       "key": "FERA-CEF4AC98",
-      "device_id": null,
+      "device_id": "4516db1f2b62dd2e1b27378a8dc5cf777d7c528922fb3235392fdf891c8aa047",
       "expires_at": 1775967086,
       "status": "active"
     },
@@ -2238,7 +2238,7 @@
       "username": "L",
       "password": "L",
       "key": "FERA-08079959",
-      "device_id": null,
+      "device_id": "eed11a2516bda99df1643aea7f8af90c43905df5d6d6dd27aadb7b472c13d0e2",
       "expires_at": 1775779420,
       "created_at": 1775591057,
       "status": "active"
@@ -2301,16 +2301,6 @@
       "expires_at": 1778709978,
       "reseller": "JCGAMER",
       "created_at": 1775685978,
-      "status": "active"
-    },
-    {
-      "username": "Fera9127",
-      "password": "Alpha7449",
-      "key": "FERA-3FEDCC4E",
-      "device_id": null,
-      "expires_at": 1778717066,
-      "reseller": "JCGAMER",
-      "created_at": 1775693066,
       "status": "active"
     }
   ]
