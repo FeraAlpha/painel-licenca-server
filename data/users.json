@@ -2318,19 +2318,19 @@
       "password": "Alpha3963",
       "key": "FERA-CEAA8FF5",
       "device_id": "1c2c75b19fd30fb16854c5d41ce2e38fefee7eb4265c10490459a0a875d67bd3",
-      "expires_at": 1776439737,
+      "expires_at": 1776353337,
       "reseller": "NINJA",
       "created_at": 1775748537,
       "status": "active"
     },
     {
-      "username": "Fera4079",
-      "password": "Alpha1424",
-      "key": "FERA-12AE85EF",
+      "username": "Fera4654",
+      "password": "Alpha1636",
+      "key": "FERA-BDA2CACB",
       "device_id": null,
-      "expires_at": 1778773004,
-      "reseller": "revendedor_super_fera_2025",
-      "created_at": 1775749004,
+      "expires_at": 1776353830,
+      "reseller": "NINJA",
+      "created_at": 1775749030,
       "status": "active"
     }
   ]
