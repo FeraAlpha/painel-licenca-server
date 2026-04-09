@@ -2322,6 +2322,16 @@
       "reseller": "NINJA",
       "created_at": 1775748537,
       "status": "active"
+    },
+    {
+      "username": "Fera4079",
+      "password": "Alpha1424",
+      "key": "FERA-12AE85EF",
+      "device_id": null,
+      "expires_at": 1778773004,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1775749004,
+      "status": "active"
     }
   ]
 }
