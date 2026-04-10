@@ -900,12 +900,13 @@
     },
     {
       "username": "Rosenilson",
-      "password": "Fera9433",
-      "key": "FERA-F77D8C1D",
+      "password": "Alpha1384",
+      "key": "FERA-DD86B6F3",
       "device_id": "62d43a8a2044e359de7ee72c398b8d07861c3b9867513e14c24af79905c5bb20",
-      "expires_at": 1785328429,
+      "expires_at": 1781440458,
       "created_at": 1772667565,
-      "status": "active"
+      "status": "active",
+      "reseller": "revendedor_super_fera_2025"
     },
     {
       "username": "wesleywcf",
