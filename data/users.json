@@ -2439,6 +2439,16 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775926081,
       "status": "active"
+    },
+    {
+      "username": "Fera2065",
+      "password": "Alpha4301",
+      "key": "FERA-1E7F82E5",
+      "device_id": null,
+      "expires_at": 1778966138,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1775942138,
+      "status": "active"
     }
   ]
 }
