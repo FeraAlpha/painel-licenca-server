@@ -181,7 +181,7 @@
       "username": "Rush7",
       "password": "123",
       "key": "FERA-0BC43771",
-      "device_id": "2bbfab0001a25cc054f3162a6b4e63ad889c7d1f8afc750829aa709eb6057a5f",
+      "device_id": null,
       "expires_at": 1778295654,
       "status": "active"
     },
@@ -2445,7 +2445,7 @@
       "password": "Alpha4301",
       "key": "FERA-1E7F82E5",
       "device_id": null,
-      "expires_at": 1779052538,
+      "expires_at": 1778966138,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775942138,
       "status": "active"
