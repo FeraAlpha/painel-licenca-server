@@ -2434,8 +2434,8 @@
       "username": "Felipe01",
       "password": "Alpha6401",
       "key": "FERA-19AEE2CA",
-      "device_id": null,
-      "expires_at": 1779036481,
+      "device_id": "f7e5d4b3c0838dc9307c20c1f6daad840f9087e65487da86ca81159459e3f341",
+      "expires_at": 1778950081,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775926081,
       "status": "active"
