@@ -2377,7 +2377,7 @@
       "username": "B",
       "password": "B",
       "key": "FERA-698F2CDC",
-      "device_id": null,
+      "device_id": "b1212d8d2ffe392be520ceeff424ac30480af90952358c08126df9d7766c49df",
       "expires_at": 1776129074,
       "created_at": 1775783474,
       "status": "active"
