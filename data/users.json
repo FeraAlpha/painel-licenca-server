@@ -475,10 +475,10 @@
     },
     {
       "username": "jakson",
-      "password": "Fera@3756",
-      "key": "FERA-E47DD14C",
+      "password": "1234",
+      "key": "FERA-947618CB",
       "device_id": null,
-      "expires_at": 1775302878,
+      "expires_at": 1779030684,
       "reseller": "JCGAMER",
       "created_at": 1772278878,
       "status": "active"
