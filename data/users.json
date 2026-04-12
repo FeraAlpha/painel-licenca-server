@@ -2449,6 +2449,15 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775942138,
       "status": "active"
+    },
+    {
+      "username": "9",
+      "password": "9",
+      "key": "FERA-49D7009D",
+      "device_id": null,
+      "expires_at": 1776568810,
+      "created_at": 1775964010,
+      "status": "active"
     }
   ]
 }
