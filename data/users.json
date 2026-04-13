@@ -2535,6 +2535,15 @@
       "expires_at": 1776645336,
       "created_at": 1776040536,
       "status": "active"
+    },
+    {
+      "username": "EGO",
+      "password": "EGO",
+      "key": "FERA-F34E79E9",
+      "device_id": null,
+      "expires_at": 1776653843,
+      "created_at": 1776049043,
+      "status": "active"
     }
   ]
 }
