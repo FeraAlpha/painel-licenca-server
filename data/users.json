@@ -2554,6 +2554,15 @@
       "reseller": "JCGAMER",
       "created_at": 1776091414,
       "status": "active"
+    },
+    {
+      "username": "Fera8010",
+      "password": "Alpha5341",
+      "key": "FERA-2FA289D3",
+      "device_id": null,
+      "expires_at": 1780423708,
+      "created_at": 1776103708,
+      "status": "active"
     }
   ]
 }
