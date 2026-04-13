@@ -60,7 +60,7 @@
       "username": "jcgamer",
       "password": "1234",
       "key": "FERA-56DFEEF0",
-      "device_id": "258dee8d807bf37af1ef979e1e8eed2b573fae23fcb988a4103056f90cc98de6",
+      "device_id": null,
       "expires_at": 1784981133,
       "status": "active",
       "reseller": "JCGAMER"
