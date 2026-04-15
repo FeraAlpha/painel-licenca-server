@@ -2613,6 +2613,16 @@
       "reseller": "JCGAMER",
       "created_at": 1776206838,
       "status": "active"
+    },
+    {
+      "username": "Viniqy",
+      "password": "Alpha4515",
+      "key": "FERA-76A7FB04",
+      "device_id": null,
+      "expires_at": 1779299802,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1776275802,
+      "status": "active"
     }
   ]
 }
