@@ -2633,6 +2633,16 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1776296650,
       "status": "active"
+    },
+    {
+      "username": "Fera7010",
+      "password": "Alpha8140",
+      "key": "FERA-484A7598",
+      "device_id": null,
+      "expires_at": 1785866589,
+      "reseller": "ANJO",
+      "created_at": 1776362589,
+      "status": "active"
     }
   ]
 }
