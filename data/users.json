@@ -477,7 +477,7 @@
       "username": "jakson",
       "password": "1234",
       "key": "FERA-947618CB",
-      "device_id": "ef3e640a82e0f5167aeb79aec6c57c2a802f47a53873684c10a6de764b41ddf1",
+      "device_id": null,
       "expires_at": 1779030684,
       "reseller": "JCGAMER",
       "created_at": 1772278878,
