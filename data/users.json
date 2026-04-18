@@ -2540,7 +2540,7 @@
       "username": "EGO",
       "password": "EGO",
       "key": "FERA-F34E79E9",
-      "device_id": "daadd13ec0f52ab1c49f10dcfec3afaf79ee7bf2f0ed69c6a29dad7754b9918c",
+      "device_id": null,
       "expires_at": 1777258643,
       "created_at": 1776049043,
       "status": "active"
