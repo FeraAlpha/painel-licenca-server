@@ -2683,6 +2683,15 @@
       "reseller": "JCGAMER",
       "created_at": 1776624811,
       "status": "active"
+    },
+    {
+      "username": "Alpha",
+      "password": "Alpha",
+      "key": "FERA-2A3F502C",
+      "device_id": null,
+      "expires_at": 1777289602,
+      "created_at": 1776684802,
+      "status": "active"
     }
   ]
 }
