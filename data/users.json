@@ -2688,7 +2688,7 @@
       "username": "Alpha",
       "password": "Alpha",
       "key": "FERA-2A3F502C",
-      "device_id": "dcf6161b2c4c9cfd9dc324e7dd80bc21bd3dd6fd5ff95a7752237d8d0e461d0f",
+      "device_id": null,
       "expires_at": 1777289602,
       "created_at": 1776684802,
       "status": "active"
