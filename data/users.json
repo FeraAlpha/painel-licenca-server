@@ -2721,6 +2721,16 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1776961358,
       "status": "active"
+    },
+    {
+      "username": "Fera2154",
+      "password": "Alpha5831",
+      "key": "FERA-F3600F43",
+      "device_id": null,
+      "expires_at": 1777583818,
+      "reseller": "ANJO",
+      "created_at": 1776979018,
+      "status": "active"
     }
   ]
 }
