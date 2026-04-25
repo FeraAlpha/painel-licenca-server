@@ -2807,6 +2807,15 @@
       "reseller": "NINJA",
       "created_at": 1777139892,
       "status": "active"
+    },
+    {
+      "username": "user5",
+      "password": "Fera4473",
+      "key": "FERA-B15B6FAE",
+      "device_id": null,
+      "expires_at": 1777227722,
+      "created_at": 1777141322,
+      "status": "active"
     }
   ]
 }
