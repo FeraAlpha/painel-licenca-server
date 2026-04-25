@@ -2816,15 +2816,6 @@
       "expires_at": 1777746213,
       "created_at": 1777141413,
       "status": "active"
-    },
-    {
-      "username": "user85",
-      "password": "Fera2206",
-      "key": "FERA-94BBF4A4",
-      "device_id": null,
-      "expires_at": 1777746216,
-      "created_at": 1777141416,
-      "status": "active"
     }
   ]
 }
