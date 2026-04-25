@@ -2787,6 +2787,16 @@
       "reseller": "JCGAMER",
       "created_at": 1777138608,
       "status": "active"
+    },
+    {
+      "username": "Fera2703",
+      "password": "Alpha2742",
+      "key": "FERA-71E7386E",
+      "device_id": null,
+      "expires_at": 1780163044,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777139044,
+      "status": "active"
     }
   ]
 }
