@@ -1514,6 +1514,16 @@
       "reseller": "JCGAMER",
       "created_at": 1777229109,
       "status": "active"
+    },
+    {
+      "username": "Fera6501",
+      "password": "Alpha4434",
+      "key": "FERA-8C7CDB22",
+      "device_id": null,
+      "expires_at": 1780266573,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777242573,
+      "status": "active"
     }
   ]
 }
