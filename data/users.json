@@ -2873,6 +2873,16 @@
       "reseller": "ANJO",
       "created_at": 1777221717,
       "status": "active"
+    },
+    {
+      "username": "Fera7812",
+      "password": "Alpha3946",
+      "key": "FERA-92A5236B",
+      "device_id": null,
+      "expires_at": 1786731748,
+      "reseller": "JCGAMER",
+      "created_at": 1777227748,
+      "status": "active"
     }
   ]
 }
