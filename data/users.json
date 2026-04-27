@@ -1533,6 +1533,16 @@
       "expires_at": 1777253768,
       "created_at": 1777253468,
       "status": "active"
+    },
+    {
+      "username": "Teste",
+      "password": "Teste",
+      "key": "FERA-B9084A75",
+      "device_id": null,
+      "expires_at": 1777882952,
+      "reseller": "P4NC4K3",
+      "created_at": 1777278152,
+      "status": "active"
     }
   ]
 }
