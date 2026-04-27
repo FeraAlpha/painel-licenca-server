@@ -1563,6 +1563,16 @@
       "reseller": "JCGAMER",
       "created_at": 1777324709,
       "status": "active"
+    },
+    {
+      "username": "DXL",
+      "password": "DXL",
+      "key": "FERA-E6ED2115",
+      "device_id": null,
+      "expires_at": 1777930843,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777326043,
+      "status": "active"
     }
   ]
 }
