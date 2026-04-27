@@ -1573,6 +1573,16 @@
       "reseller": "JCGAMER",
       "created_at": 1777326428,
       "status": "active"
+    },
+    {
+      "username": "Fera8380",
+      "password": "Alpha1410",
+      "key": "FERA-C2DED23F",
+      "device_id": null,
+      "expires_at": 1780352627,
+      "reseller": "JCGAMER",
+      "created_at": 1777328627,
+      "status": "active"
     }
   ]
 }
