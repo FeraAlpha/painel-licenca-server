@@ -157,7 +157,7 @@
       "username": "P4NC4K3",
       "password": "123",
       "key": "FERA-1378C82C",
-      "device_id": "a98317f4e34c02ecc058132a5f18619ff173ea727f4b48871b968540b43c33f9",
+      "device_id": null,
       "expires_at": 1781882217,
       "status": "active"
     },
