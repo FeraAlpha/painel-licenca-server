@@ -696,12 +696,13 @@
     },
     {
       "username": "Matteus",
-      "password": "Fera5047",
-      "key": "FERA-7EFC994E",
+      "password": "Alpha5661",
+      "key": "FERA-74274FBE",
       "device_id": "877f4e72e2f57ac78027d83c4dbab251731b4207c866389b9f1c4e331903475d",
-      "expires_at": 1777332791,
+      "expires_at": 1780349724,
       "created_at": 1775086391,
-      "status": "active"
+      "status": "active",
+      "reseller": "JCGAMER"
     },
     {
       "username": "vgt",
