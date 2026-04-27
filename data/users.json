@@ -277,7 +277,7 @@
       "username": "jc",
       "password": "123",
       "key": "FERA-B9323643",
-      "device_id": null,
+      "device_id": "0f9b2fd01dbc407d46aba0a578af80e1f254fa350e420efae7c1e57f62845d99",
       "expires_at": 1781547400,
       "status": "active"
     },
