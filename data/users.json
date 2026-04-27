@@ -28,7 +28,7 @@
       "username": "Nando",
       "password": "8585",
       "key": "FERA-CEF4AC98",
-      "device_id": "b7bb9632963ab3e6e5d4548ccf19ca51366bb7303e47e80fd7f0405862663e06",
+      "device_id": null,
       "expires_at": 1779577219,
       "status": "active"
     },
