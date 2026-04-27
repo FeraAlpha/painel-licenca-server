@@ -1524,6 +1524,15 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777242573,
       "status": "active"
+    },
+    {
+      "username": "8",
+      "password": "8",
+      "key": "FERA-2DB2396D",
+      "device_id": null,
+      "expires_at": 1777253768,
+      "created_at": 1777253468,
+      "status": "active"
     }
   ]
 }
