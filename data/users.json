@@ -253,7 +253,7 @@
       "username": "jacson",
       "password": "1234",
       "key": "FERA-859A103D",
-      "device_id": null,
+      "device_id": "93dcf9f3cf75e25e751b23bcaf9ce3d15965db835fcc5cb13a0f3c8ae4e1ec8d",
       "expires_at": 1777384063,
       "status": "active"
     },
