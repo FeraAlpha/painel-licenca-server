@@ -1552,6 +1552,16 @@
       "expires_at": 1779024106,
       "created_at": 1777296106,
       "status": "active"
+    },
+    {
+      "username": "Diegovilao",
+      "password": "1234",
+      "key": "FERA-1B102222",
+      "device_id": null,
+      "expires_at": 1786828709,
+      "reseller": "JCGAMER",
+      "created_at": 1777324709,
+      "status": "active"
     }
   ]
 }
