@@ -1573,6 +1573,16 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777326043,
       "status": "active"
+    },
+    {
+      "username": "Fera8600",
+      "password": "Alpha2200",
+      "key": "FERA-BF9E4464",
+      "device_id": null,
+      "expires_at": 1780350428,
+      "reseller": "JCGAMER",
+      "created_at": 1777326428,
+      "status": "active"
     }
   ]
 }
