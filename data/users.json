@@ -1593,6 +1593,16 @@
       "reseller": "NINJA",
       "created_at": 1777395096,
       "status": "active"
+    },
+    {
+      "username": "Fera7111",
+      "password": "Alpha5278",
+      "key": "FERA-3752BF0B",
+      "device_id": null,
+      "expires_at": 1780434102,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777410102,
+      "status": "active"
     }
   ]
 }
