@@ -1583,6 +1583,16 @@
       "reseller": "JCGAMER",
       "created_at": 1777328627,
       "status": "active"
+    },
+    {
+      "username": "Fera3696",
+      "password": "Alpha9790",
+      "key": "FERA-A68BC858",
+      "device_id": null,
+      "expires_at": 1777999896,
+      "reseller": "NINJA",
+      "created_at": 1777395096,
+      "status": "active"
     }
   ]
 }
