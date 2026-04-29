@@ -1603,6 +1603,16 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777410102,
       "status": "active"
+    },
+    {
+      "username": "Fera3027",
+      "password": "Alpha7815",
+      "key": "FERA-01627B4D",
+      "device_id": null,
+      "expires_at": 1778068582,
+      "reseller": "ANJO",
+      "created_at": 1777463782,
+      "status": "active"
     }
   ]
 }
