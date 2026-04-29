@@ -165,7 +165,7 @@
       "username": "Rush7",
       "password": "123",
       "key": "FERA-0BC43771",
-      "device_id": "27f2dda68b90089e5e973a7438458728e4c6a0cfc800be36fd426ec2a1e7d29c",
+      "device_id": null,
       "expires_at": 1780887654,
       "status": "active"
     },
