@@ -1622,6 +1622,16 @@
       "expires_at": 1778088082,
       "created_at": 1777483282,
       "status": "active"
+    },
+    {
+      "username": "TESTE",
+      "password": "teste",
+      "key": "FERA-78B6C5A2",
+      "device_id": null,
+      "expires_at": 1778178543,
+      "reseller": "P4NC4K3",
+      "created_at": 1777573743,
+      "status": "active"
     }
   ]
 }
