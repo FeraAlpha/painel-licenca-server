@@ -1632,6 +1632,15 @@
       "reseller": "P4NC4K3",
       "created_at": 1777573743,
       "status": "active"
+    },
+    {
+      "username": "Luiz",
+      "password": "Fera1454",
+      "key": "FERA-AF093E9C",
+      "device_id": null,
+      "expires_at": 1781106391,
+      "created_at": 1777650391,
+      "status": "active"
     }
   ]
 }
