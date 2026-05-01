@@ -237,7 +237,7 @@
       "username": "FFera",
       "password": "123",
       "key": "FERA-54A309B7",
-      "device_id": "be68fea1a1f7974e1c3d04e76ebe212266a8d70f7ce75e538040f5f37eaf5313",
+      "device_id": null,
       "expires_at": 1779289211,
       "status": "active"
     },
