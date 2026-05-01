@@ -1641,6 +1641,16 @@
       "expires_at": 1781106391,
       "created_at": 1777650391,
       "status": "active"
+    },
+    {
+      "username": "Paulinho",
+      "password": "Paulinho",
+      "key": "FERA-F4042482",
+      "device_id": null,
+      "expires_at": 1780685522,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777661522,
+      "status": "active"
     }
   ]
 }
