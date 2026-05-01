@@ -1651,6 +1651,16 @@
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777661547,
       "status": "active"
+    },
+    {
+      "username": "Fera8638",
+      "password": "Alpha8497",
+      "key": "FERA-68417BEE",
+      "device_id": null,
+      "expires_at": 1780695011,
+      "reseller": "NINJA",
+      "created_at": 1777671011,
+      "status": "active"
     }
   ]
 }
