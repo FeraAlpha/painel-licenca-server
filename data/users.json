@@ -1641,6 +1641,16 @@
       "expires_at": 1781106391,
       "created_at": 1777650391,
       "status": "active"
+    },
+    {
+      "username": "Paulinho",
+      "password": "Paulinho",
+      "key": "FERA-4620F315",
+      "device_id": null,
+      "expires_at": 1787165547,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777661547,
+      "status": "active"
     }
   ]
 }
