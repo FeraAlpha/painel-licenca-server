@@ -195,6 +195,69 @@
   .badge-exp { background:#ffe1e1; color:#b32828; }
   .badge-multi { background:#e0e7ff; color:#2f6fed; }
 
+  /* Toggle Switch */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+    margin: 0;
+  }
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 34px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+  input:checked + .slider {
+    background-color: #2f6fed;
+  }
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  .switch.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .multi-status {
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #eef2f5;
+  }
+  .multi-status.active {
+    background: #e0e7ff;
+    color: #2f6fed;
+  }
+  .multi-status.inactive {
+    background: #ffe1e1;
+    color: #b32828;
+  }
+
   body.dark {
     --bg:#0e1113;
     --card:#1a1d21;
@@ -817,7 +880,7 @@
           <th onclick="sortTable(5)">Criado em</th>
           <th onclick="sortTable(6)">Expiração</th>
           <th>Status</th>
-          <th onclick="sortTable(8)">Multi‑disp</th>   <!-- NOVA COLUNA -->
+          <th onclick="sortTable(8)">Multi‑disp</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -843,16 +906,20 @@
               <span class="badge badge-ok">Ativo</span>
             {% endif %}
           </td>
-          <!-- CÉLULA MULTI-DISPOSITIVO -->
-          <td class="multiDeviceCell" data-user-id="{{ u.id }}">
-            {% if u.multi_device %}
-              <span class="badge badge-multi">✅ Sim</span>
-            {% else %}
-              <span class="badge badge-exp">❌ Não</span>
-            {% endif %}
-            <button class="btn btn-sm btn-ghost" onclick="toggleMultiDevice('{{ u.id }}', {{ 'true' if u.multi_device else 'false' }})" style="margin-left:6px;">
-              <i class="fas fa-sync-alt"></i>
-            </button>
+          <!-- CÉLULA MULTI-DISPOSITIVO COM TOGGLE SWITCH -->
+          <td class="multiDeviceCell" style="min-width: 150px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label class="switch" data-username="{{ u.username }}">
+                <input type="checkbox" class="multi-toggle" 
+                       data-username="{{ u.username }}" 
+                       {% if u.multi_device %}checked{% endif %}
+                       onchange="toggleMultiDeviceSwitch(this)">
+                <span class="slider"></span>
+              </label>
+              <span class="multi-status {% if u.multi_device %}active{% else %}inactive{% endif %}">
+                {% if u.multi_device %}✅ Multi-Device{% else %}❌ Único dispositivo{% endif %}
+              </span>
+            </div>
           </td>
           <td class="actionsBox">
             <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
@@ -1024,7 +1091,7 @@ async function gerarMultiplosLogins() {
           expire_days: String(login.dias),
           token: 'admin_token',
           prefix: 'FERA',
-          multi_device: '0'   // logins em massa não são multi por padrão
+          multi_device: '0'
         })
       });
 
@@ -1233,7 +1300,7 @@ function sortTable(col){
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
-    if (col === 5 || col === 6) { // Criado em (5) ou Expiração (6) - timestamps
+    if (col === 5 || col === 6) {
       const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
       const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
       A = parseInt(dateA) || 0;
@@ -1330,27 +1397,47 @@ function updateDashboard() {
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
 
-// NOVA FUNÇÃO: alternar multi-dispositivo via API
-async function toggleMultiDevice(userId, currentStatus) {
-  const newStatus = !currentStatus;
-  if (!confirm(`Deseja ${newStatus ? 'ativar' : 'desativar'} o modo multi-dispositivo para este usuário?`)) return;
+// NOVO: alternar multi-dispositivo via Toggle Switch (sem reload)
+async function toggleMultiDeviceSwitch(checkbox) {
+  const username = checkbox.getAttribute('data-username');
+  const newStatus = checkbox.checked;
+  const switchContainer = checkbox.closest('.switch');
+  const statusSpan = checkbox.closest('td').querySelector('.multi-status');
+
+  // Desabilita o switch durante a requisição
+  switchContainer.classList.add('disabled');
+  checkbox.disabled = true;
 
   try {
     const response = await fetch('/admin/toggle_multi_device', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, multi_device: newStatus })
+      body: JSON.stringify({ username: username, multi_device: newStatus })
     });
     const data = await response.json();
+
     if (data.success) {
-      showSuccessMessage(`✅ Multi-dispositivo ${newStatus ? 'ativado' : 'desativado'}!`);
-      setTimeout(() => location.reload(), 800);
+      // Atualiza visualmente o status
+      if (newStatus) {
+        statusSpan.textContent = '✅ Multi-Device';
+        statusSpan.className = 'multi-status active';
+      } else {
+        statusSpan.textContent = '❌ Único dispositivo';
+        statusSpan.className = 'multi-status inactive';
+      }
+      showSuccessMessage(`✅ Multi-dispositivo ${newStatus ? 'ativado' : 'desativado'} para ${username}`);
     } else {
+      // Reverte o checkbox se a API falhou
+      checkbox.checked = !newStatus;
       toast('Erro ao alterar status', 'warn');
     }
   } catch (err) {
     console.error(err);
-    toast('Erro de rede ao alternar multi-dispositivo', 'warn');
+    checkbox.checked = !newStatus;
+    toast('Erro de rede', 'warn');
+  } finally {
+    switchContainer.classList.remove('disabled');
+    checkbox.disabled = false;
   }
 }
 
@@ -1403,7 +1490,7 @@ window.setLoading = setLoading;
 window.toggleDark = toggleDark;
 window.sortTable = sortTable;
 window.toast = toast;
-window.toggleMultiDevice = toggleMultiDevice;
+window.toggleMultiDeviceSwitch = toggleMultiDeviceSwitch;
 </script>
 </body>
 </html>
