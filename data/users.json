@@ -179,7 +179,7 @@
       "device_id": "6b86deb06daff3680f59567607b27d7c317efb48dce18c8e47b9eb3711f6142c",
       "expires_at": 1781882217,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "Rush7",
