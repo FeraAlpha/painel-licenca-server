@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading, atexit
+import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading, atexit, re
 import jwt
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -25,7 +25,13 @@ CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
 
 # Configuração JWT
 JWT_SECRET = os.getenv("JWT_SECRET", "fer4_jwt_s3cr3t_k3y_ch4ng3_m3")
-JWT_EXPIRY_HOURS = 24
+JWT_EXPIRY_HOURS = 6  # ALTERADO: 6 horas para kill switch mais rápido
+
+# ------------------------------
+#   KILL SWITCH — arquivo de estado
+# ------------------------------
+KILL_SWITCH_FILE = "data/kill_switch.json"
+KILL_SWITCH_DEFAULT_MSG = "Acesso temporariamente suspenso. Fale com o suporte."
 
 # ------------------------------
 #   CONFIGURAÇÃO DE LOG COM ROTAÇÃO
@@ -143,6 +149,7 @@ RATE_LIMIT = {
     'activate': {'limit': 5, 'window': 300},
     'verify_license': {'limit': 10, 'window': 300},
     'validate_token': {'limit': 20, 'window': 300},
+    'kill_switch': {'limit': 60, 'window': 300},   # ADICIONADO
 }
 
 request_counts = defaultdict(list)
@@ -560,6 +567,73 @@ def save_users(data):
         return False
 
 # ------------------------------
+#   KILL SWITCH — helpers
+# ------------------------------
+def _ks_default_state():
+    return {
+        "global": False,
+        "min_version": "",
+        "versions": [],
+        "tokens": [],
+        "message": KILL_SWITCH_DEFAULT_MSG,
+        "support_url": ""
+    }
+
+def load_kill_switch():
+    try:
+        if os.path.exists(KILL_SWITCH_FILE):
+            with open(KILL_SWITCH_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                base = _ks_default_state()
+                base.update({k: v for k, v in data.items() if k in base})
+                if not base["message"]:
+                    base["message"] = os.getenv("KILL_SWITCH_MESSAGE", KILL_SWITCH_DEFAULT_MSG)
+                if not base["support_url"]:
+                    base["support_url"] = os.getenv("KILL_SWITCH_SUPPORT_URL", "")
+                return base
+    except Exception as e:
+        log_security("kill_switch_load_error", details=str(e), severity="ERROR")
+    
+    state = _ks_default_state()
+    state["global"] = os.getenv("KILL_SWITCH_GLOBAL", "false").lower() == "true"
+    state["min_version"] = os.getenv("KILL_SWITCH_MIN_VERSION", "")
+    versions_env = os.getenv("KILL_SWITCH_VERSIONS", "").strip()
+    if versions_env:
+        state["versions"] = [v.strip() for v in versions_env.split(",") if v.strip()]
+    state["message"] = os.getenv("KILL_SWITCH_MESSAGE", KILL_SWITCH_DEFAULT_MSG)
+    state["support_url"] = os.getenv("KILL_SWITCH_SUPPORT_URL", "")
+    return state
+
+def save_kill_switch(state):
+    try:
+        atomic_write(KILL_SWITCH_FILE, json.dumps(state, indent=2).encode())
+        return True
+    except Exception as e:
+        log_security("kill_switch_save_error", details=str(e), severity="ERROR")
+        return False
+
+def parse_version(v):
+    if not v or not isinstance(v, str):
+        return (0, 0, 0)
+    match = re.search(r'(\d+)(?:\.(\d+))?(?:\.(\d+))?', v)
+    if not match:
+        return (0, 0, 0)
+    return (int(match.group(1) or 0), int(match.group(2) or 0), int(match.group(3) or 0))
+
+def is_blocked_for(state, version=None, token=None):
+    if state.get("global"):
+        return {"blocked": True, "reason": "global"}
+    min_v = state.get("min_version", "")
+    if min_v and version:
+        if parse_version(version) < parse_version(min_v):
+            return {"blocked": True, "reason": "version"}
+    if version and version in state.get("versions", []):
+        return {"blocked": True, "reason": "version"}
+    if token and token in state.get("tokens", []):
+        return {"blocked": True, "reason": "token"}
+    return {"blocked": False, "reason": None}
+
+# ------------------------------
 #   ASSINATURA
 # ------------------------------
 def sign_payload(payload_bytes):
@@ -622,6 +696,34 @@ def ping():
         "timestamp": datetime.now().isoformat(),
         "version": "2.1"
     }), 200
+
+# ------------------------------
+#   KILL SWITCH — endpoint publico (app consulta no startup + heartbeat)
+# ------------------------------
+@app.route("/api/kill-switch", methods=["POST"])
+def api_kill_switch():
+    try:
+        ip = request.remote_addr or "unknown"
+        if not check_rate_limit("kill_switch", ip):
+            return jsonify({"blocked": False, "reason": None, "message": "", "supportUrl": "", "ts": int(time.time()*1000)}), 429
+
+        data = request.json or {}
+        version = sanitize_input(data.get("version"), max_length=20)
+        token = sanitize_input(data.get("token"), max_length=2048) if data.get("token") else None
+
+        state = load_kill_switch()
+        result = is_blocked_for(state, version=version, token=token)
+
+        return jsonify({
+            "blocked": result["blocked"],
+            "reason": result["reason"],
+            "message": state["message"] if result["blocked"] else "",
+            "supportUrl": state.get("support_url", ""),
+            "ts": int(time.time() * 1000)
+        })
+    except Exception as e:
+        log_security("kill_switch_endpoint_error", details=str(e), severity="ERROR")
+        return jsonify({"blocked": False, "reason": None, "message": "", "supportUrl": "", "ts": int(time.time()*1000)})
 
 # ------------------------------
 #   VERIFICAÇÃO DE LICENÇA
@@ -691,7 +793,7 @@ def verify_session():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   VALIDAÇÃO DE TOKEN JWT
+#   VALIDAÇÃO DE TOKEN JWT (COM KILL SWITCH)
 # ------------------------------
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
@@ -731,6 +833,21 @@ def validate_token():
                 log_security("token_license_inactive", fingerprint=fp)
                 return jsonify({"valid": False, "reason": "license_inactive"}), 403
         
+        # >>> KILL SWITCH HOOK <<<
+        version_app = sanitize_input(data.get("version", ""), max_length=20)
+        ks_state = load_kill_switch()
+        ks_check = is_blocked_for(ks_state, version=version_app, token=token)
+        if ks_check["blocked"]:
+            log_security("token_kill_switched", fingerprint=payload.get("fp"),
+                         details={"version": version_app, "reason": ks_check["reason"]})
+            return jsonify({
+                "valid": False,
+                "reason": "kill_switch",
+                "kill_switch_reason": ks_check["reason"],
+                "message": ks_state["message"],
+                "supportUrl": ks_state.get("support_url", "")
+            }), 403
+        
         log_security("token_validated", fingerprint=payload.get("fp"))
         
         return jsonify({
@@ -747,7 +864,7 @@ def validate_token():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   CLIENTE - ATIVAÇÃO (COM MULTI-DISPOSITIVO)
+#   CLIENTE - ATIVAÇÃO (COM MULTI-DISPOSITIVO E KILL SWITCH)
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -760,6 +877,21 @@ def activate():
         if not username or not password or not fingerprint:
             log_security("activate_missing_fields", details={"username": username})
             return jsonify({"error": "missing_fields"}), 400
+
+        # >>> KILL SWITCH HOOK (antes de qualquer outra lógica) <<<
+        version_app = sanitize_input(data.get("version", ""), max_length=20)
+        ks_state = load_kill_switch()
+        ks_check = is_blocked_for(ks_state, version=version_app)
+        if ks_check["blocked"]:
+            log_security("activate_kill_switched", fingerprint=fingerprint,
+                         details={"username": username, "version": version_app, "reason": ks_check["reason"]})
+            return jsonify({
+                "status": "error",
+                "reason": "kill_switch",
+                "kill_switch_reason": ks_check["reason"],
+                "message": ks_state["message"],
+                "supportUrl": ks_state.get("support_url", "")
+            }), 403
 
         users = load_users().get("users", [])
         user = next((u for u in users if u["username"] == username and u["password"] == password), None)
@@ -947,11 +1079,15 @@ def admin():
     
     conn.close()
     
+    # Carrega estado do kill switch para o template
+    kill_switch_state = load_kill_switch()
+    
     return render_template("admin_index.html", 
                          users=users, 
                          datetime=datetime,
                          total_licenses=total_licenses,
-                         recent_usage=recent_usage)
+                         recent_usage=recent_usage,
+                         kill_switch=kill_switch_state)
 
 @app.route("/admin/usage_report")
 @need_admin
@@ -1054,7 +1190,7 @@ def admin_generate():
             u["key"] = key
             u["expires_at"] = expires_at
             u["status"] = "active"
-            u["multi_device"] = multi_device   # adicionar/atualizar
+            u["multi_device"] = multi_device
             save_users(data)
             log_security("admin_user_updated", details={"username": username, "expires_at": expires_at, "multi_device": multi_device})
             return ("", 302, {"Location": "/admin"})
@@ -1073,6 +1209,64 @@ def admin_generate():
     save_users(data)
     log_security("admin_user_created", details={"username": username, "expires_at": expires_at, "multi_device": multi_device})
     return ("", 302, {"Location": "/admin"})
+
+# ==============================================================
+#                ROTA KILL SWITCH ADMIN
+# ==============================================================
+@app.route("/admin/kill_switch_update", methods=["POST"])
+@need_admin
+def admin_kill_switch_update():
+    try:
+        body = request.get_json(silent=True) or request.form.to_dict()
+        action = (body.get("action") or "set").lower()
+
+        state = load_kill_switch()
+
+        if action == "reset":
+            state = _ks_default_state()
+        elif action == "set":
+            if "global" in body:
+                state["global"] = str(body.get("global")).lower() in ("1", "true", "on", "yes")
+            if "min_version" in body:
+                state["min_version"] = sanitize_input(body.get("min_version"), max_length=20)
+            if "message" in body:
+                state["message"] = sanitize_input(body.get("message"), max_length=500)
+            if "support_url" in body:
+                state["support_url"] = sanitize_input(body.get("support_url"), max_length=300)
+            if "versions" in body:
+                raw = body.get("versions") or ""
+                if isinstance(raw, list):
+                    state["versions"] = [str(v).strip() for v in raw if str(v).strip()]
+                else:
+                    state["versions"] = [v.strip() for v in str(raw).split(",") if v.strip()]
+            if "tokens" in body:
+                raw = body.get("tokens") or ""
+                if isinstance(raw, list):
+                    state["tokens"] = [str(v).strip() for v in raw if str(v).strip()]
+                else:
+                    state["tokens"] = [v.strip() for v in str(raw).split(",") if v.strip()]
+        elif action == "add_token":
+            tk = sanitize_input(body.get("token"), max_length=2048)
+            if tk and tk not in state["tokens"]:
+                state["tokens"].append(tk)
+        elif action == "remove_token":
+            tk = sanitize_input(body.get("token"), max_length=2048)
+            state["tokens"] = [t for t in state["tokens"] if t != tk]
+        else:
+            return jsonify({"success": False, "error": "invalid_action"}), 400
+
+        if not save_kill_switch(state):
+            return jsonify({"success": False, "error": "save_failed"}), 500
+
+        log_security("admin_kill_switch_updated", details={"action": action, "state": state}, severity="WARNING")
+
+        if request.form:
+            return ("", 302, {"Location": "/admin"})
+        return jsonify({"success": True, "state": state})
+    except Exception as e:
+        log_security("admin_kill_switch_error", details=str(e), severity="ERROR")
+        return jsonify({"success": False, "error": "internal_error"}), 500
+# ==============================================================
 
 # ==============================================================
 #                ROTA CORRIGIDA – multi‑dispositivo
@@ -1455,7 +1649,7 @@ def reseller_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
-    # APENAS DIAS E MINUTOS (o frontend do revendedor também deve ser ajustado)
+    # APENAS DIAS E MINUTOS
     expire_minutes_raw = request.form.get("expire_minutes", "").strip()
     expire_minutes_raw = expire_minutes_raw if expire_minutes_raw else None
     
@@ -1582,11 +1776,9 @@ def reseller_reset_device():
     data = load_users()
     users = data.get("users", [])
     
-    user_index = None
     user = None
-    for i, u in enumerate(users):
+    for u in users:
         if u.get("username") == username:
-            user_index = i
             user = u
             break
     
@@ -1710,8 +1902,7 @@ def admin_reseller_stats():
                 ORDER BY timestamp DESC
                 LIMIT 50
             ''', fingerprints + [since])
-            recent = cursor.fetchall()
-            for r in recent:
+            for r in cursor.fetchall():
                 stats.append({
                     "fingerprint": r[0],
                     "action": r[1],
@@ -1752,6 +1943,7 @@ if __name__ == "__main__":
     print(f"🧹 Limpeza automática: Ativada (a cada 24h)")
     print(f"📝 Log com rotação: Ativado (5MB, 3 backups)")
     print(f"🔒 Bloqueio/Desbloqueio: Ativado")
+    print(f"🛑 Kill Switch: Ativado (arquivo: {KILL_SWITCH_FILE})")
     print(f"🌐 Porta: {port}")
     print("="*60 + "\n")
     
