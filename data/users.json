@@ -431,10 +431,10 @@
     },
     {
       "username": "Fera",
-      "password": "Fera",
-      "key": "FERA-5D400CF2",
+      "password": "Alpha",
+      "key": "FERA-6EC5EBE3",
       "device_id": null,
-      "expires_at": 1786188712,
+      "expires_at": 1787204290,
       "created_at": 1772567882,
       "reseller": "revendedor_super_fera_2025",
       "status": "active",
