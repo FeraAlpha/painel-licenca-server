@@ -93,7 +93,6 @@ def ensure_rsa_keys():
             log_security("rsa_keys_generation_error", details=str(e), severity="ERROR")
             raise
 
-# Chamar a função imediatamente para garantir que as chaves existam
 ensure_rsa_keys()
 
 # ------------------------------
@@ -113,7 +112,7 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
     return value
 
 # ------------------------------
-#   FUNÇÃO AUXILIAR: converter tempo de expiração (CORRIGIDA COM MINUTOS)
+#   FUNÇÃO AUXILIAR: converter tempo de expiração
 # ------------------------------
 def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_minutes=None, expire_seconds=None, agora=None):
     """
@@ -336,7 +335,8 @@ def init_db():
                   expires_at INTEGER, 
                   status TEXT DEFAULT 'active',
                   last_used INTEGER,
-                  device_info TEXT)''')
+                  device_info TEXT,
+                  multi_device INTEGER DEFAULT 0)''')  # <-- ADICIONADO multi_device
     
     c.execute('''CREATE TABLE IF NOT EXISTS sessions
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -361,6 +361,12 @@ def init_db():
                   fingerprint TEXT,
                   revoked_at INTEGER,
                   reason TEXT)''')
+    
+    # Adicionar coluna multi_device se não existir (para banco existente)
+    try:
+        c.execute('ALTER TABLE licenses ADD COLUMN multi_device INTEGER DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass
     
     c.execute('CREATE INDEX IF NOT EXISTS idx_fingerprint ON licenses(fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_sessions ON sessions(token, fingerprint)')
@@ -471,7 +477,7 @@ def atomic_write(path, data_bytes):
     os.replace(tmp, path)
 
 # ------------------------------
-#   LOAD USERS
+#   LOAD USERS (adicionado suporte a multi_device)
 # ------------------------------
 def load_users():
     try:
@@ -484,6 +490,8 @@ def load_users():
                         user["expires_at"] = UNLIMITED_EXPIRY
                     if "status" not in user:
                         user["status"] = "active"
+                    if "multi_device" not in user:
+                        user["multi_device"] = False  # padrão
                 return data
     except Exception as e:
         log_security("load_users_error", details=str(e))
@@ -504,6 +512,8 @@ def load_users():
                         user["expires_at"] = UNLIMITED_EXPIRY
                     if "status" not in user:
                         user["status"] = "active"
+                    if "multi_device" not in user:
+                        user["multi_device"] = False
                 atomic_write(USERS_FILE, json.dumps(data, indent=2).encode())
                 return data
         except Exception as e:
@@ -624,7 +634,7 @@ def ping():
     return jsonify({
         "status": "online",
         "timestamp": datetime.now().isoformat(),
-        "version": "2.0"
+        "version": "2.1"
     }), 200
 
 # ------------------------------
@@ -751,7 +761,7 @@ def validate_token():
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
 # ------------------------------
-#   CLIENTE - ATIVAÇÃO
+#   CLIENTE - ATIVAÇÃO (COM MULTI-DISPOSITIVO)
 # ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -786,17 +796,26 @@ def activate():
             log_security("activate_expired", fingerprint=fingerprint, details={"username": username, "expires": expires})
             return jsonify({"status": "error", "reason": "expired"}), 403
 
+        # VERIFICAÇÃO DE DISPOSITIVO COM SUPORTE A MULTI-DISP
         device_id = user.get("device_id")
+        is_multi = user.get("multi_device", False)
         
-        if device_id is None:
-            user["device_id"] = fingerprint
-            save_users({"users": users})
-            log_security("device_activated", fingerprint=fingerprint, details={"username": username})
-        elif device_id != fingerprint:
-            log_security("activate_device_mismatch", fingerprint=fingerprint, 
-                        details={"username": username, "stored_device": device_id})
-            return jsonify({"status": "error", "reason": "device_mismatch"}), 403
+        if is_multi:
+            # Se for multi-dispositivo, ignora completamente a verificação e não altera device_id
+            log_security("device_multi_ignored", fingerprint=fingerprint, details={"username": username})
+            # Não grava device_id (permite qualquer fingerprint)
+        else:
+            # Comportamento normal: verifica device_id
+            if device_id is None:
+                user["device_id"] = fingerprint
+                save_users({"users": users})
+                log_security("device_activated", fingerprint=fingerprint, details={"username": username})
+            elif device_id != fingerprint:
+                log_security("activate_device_mismatch", fingerprint=fingerprint, 
+                            details={"username": username, "stored_device": device_id})
+                return jsonify({"status": "error", "reason": "device_mismatch"}), 403
 
+        # Sincroniza com SQLite (licenses)
         conn = get_db()
         cursor = conn.cursor()
         
@@ -805,15 +824,15 @@ def activate():
         
         if not existing:
             cursor.execute('''
-                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (fingerprint, username, now, expires, 'active', now))
+                INSERT INTO licenses (fingerprint, username, issued_at, expires_at, status, last_used, multi_device)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (fingerprint, username, now, expires, 'active', now, 1 if is_multi else 0))
         else:
             cursor.execute('''
                 UPDATE licenses 
-                SET expires_at = ?, status = 'active', last_used = ?
+                SET expires_at = ?, status = 'active', last_used = ?, multi_device = ?
                 WHERE fingerprint = ?
-            ''', (expires, now, fingerprint))
+            ''', (expires, now, 1 if is_multi else 0, fingerprint))
         
         conn.commit()
         conn.close()
@@ -881,6 +900,11 @@ def need_admin(f):
 @need_admin
 def admin():
     data = load_users()
+    users = data.get("users", [])
+    
+    # Adiciona um ID artificial baseado no índice para uso no frontend
+    for idx, user in enumerate(users):
+        user["id"] = idx   # para referência no template
     
     conn = get_db()
     cursor = conn.cursor()
@@ -901,7 +925,7 @@ def admin():
     conn.close()
     
     return render_template("admin_index.html", 
-                         users=data.get("users", []), 
+                         users=users, 
                          datetime=datetime,
                          total_licenses=total_licenses,
                          recent_usage=recent_usage)
@@ -980,6 +1004,10 @@ def admin_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
+    # Capturar flag multi_device (vem do campo hidden)
+    multi_device_raw = request.form.get("multi_device", "0")
+    multi_device = (multi_device_raw == "1" or multi_device_raw == "true")
+    
     # LER TODOS OS TIPOS DE EXPIRAÇÃO
     expire_seconds_raw = request.form.get("expire_seconds", "").strip()
     expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
@@ -1011,8 +1039,9 @@ def admin_generate():
             u["key"] = key
             u["expires_at"] = expires_at
             u["status"] = "active"
+            u["multi_device"] = multi_device   # adicionar/atualizar
             save_users(data)
-            log_security("admin_user_updated", details={"username": username, "expires_at": expires_at})
+            log_security("admin_user_updated", details={"username": username, "expires_at": expires_at, "multi_device": multi_device})
             return ("", 302, {"Location": "/admin"})
 
     users.append({
@@ -1022,12 +1051,57 @@ def admin_generate():
         "device_id": None,
         "expires_at": expires_at,
         "created_at": int(time.time()),
-        "status": "active"
+        "status": "active",
+        "multi_device": multi_device
     })
 
     save_users(data)
-    log_security("admin_user_created", details={"username": username, "expires_at": expires_at})
+    log_security("admin_user_created", details={"username": username, "expires_at": expires_at, "multi_device": multi_device})
     return ("", 302, {"Location": "/admin"})
+
+@app.route("/admin/toggle_multi_device", methods=["POST"])
+@need_admin
+def admin_toggle_multi_device():
+    """Alterna o modo multi-dispositivo de um usuário (recebe user_id = índice)"""
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "Invalid JSON"}), 400
+    
+    user_id = data.get("user_id")
+    new_multi = data.get("multi_device")  # booleano
+    
+    if user_id is None or new_multi is None:
+        return jsonify({"success": False, "error": "user_id and multi_device required"}), 400
+    
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "error": "user_id must be integer"}), 400
+    
+    full_data = load_users()
+    users = full_data.get("users", [])
+    
+    if 0 <= user_id < len(users):
+        users[user_id]["multi_device"] = bool(new_multi)
+        save_users(full_data)
+        
+        # Sincroniza com SQLite se houver fingerprint
+        fingerprint = users[user_id].get("device_id")
+        if fingerprint:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE licenses SET multi_device = ?
+                WHERE fingerprint = ?
+            ''', (1 if new_multi else 0, fingerprint))
+            conn.commit()
+            conn.close()
+        
+        log_security("admin_toggle_multi_device", 
+                    details={"username": users[user_id]["username"], "new_multi": new_multi})
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": "User not found"}), 404
 
 @app.route("/admin/toggle_block/<int:index>", methods=["POST"])
 @need_admin
@@ -1095,7 +1169,8 @@ def admin_database():
             "issued_at": datetime.fromtimestamp(row[3]).strftime("%Y-%m-%d %H:%M:%S") if row[3] else "N/A",
             "expires_at": "ILIMITADO" if row[4] == UNLIMITED_EXPIRY else datetime.fromtimestamp(row[4]).strftime("%Y-%m-%d %H:%M:%S"),
             "status": row[5],
-            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA"
+            "last_used": datetime.fromtimestamp(row[6]).strftime("%Y-%m-%d %H:%M:%S") if row[6] else "NUNCA",
+            "multi_device": "Sim" if row[8] else "Não"
         })
     
     conn.close()
@@ -1391,6 +1466,9 @@ def reseller_generate():
             u["expires_at"] = expires_at
             u["reseller"] = reseller_nome
             u["status"] = "active"
+            # revendedor não pode definir multi_device (padrão False)
+            if "multi_device" not in u:
+                u["multi_device"] = False
             save_users(data)
             
             log_security("reseller_updated", details={"username": username, "reseller": reseller_nome})
@@ -1409,7 +1487,8 @@ def reseller_generate():
         "expires_at": expires_at,
         "reseller": reseller_nome,
         "created_at": int(time.time()),
-        "status": "active"
+        "status": "active",
+        "multi_device": False   # revendedor não cria multi por padrão
     })
 
     save_users(data)
@@ -1460,7 +1539,8 @@ def reseller_users():
             "expires_at": expires_at,
             "status": status,
             "status_display": status_display,
-            "key": u.get("key")
+            "key": u.get("key"),
+            "multi_device": u.get("multi_device", False)
         })
     
     return jsonify({"users": user_list})
@@ -1572,7 +1652,8 @@ def admin_reseller_stats():
                 "data_criacao": data_criacao,
                 "expiracao": expiracao_str,
                 "status": status_str,
-                "device_id": u.get("device_id", "—")
+                "device_id": u.get("device_id", "—"),
+                "multi_device": "Sim" if u.get("multi_device") else "Não"
             })
 
         fingerprints = [u["device_id"] for u in usuarios_rev if u.get("device_id")]
