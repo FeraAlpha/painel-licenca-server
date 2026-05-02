@@ -336,7 +336,7 @@ def init_db():
                   status TEXT DEFAULT 'active',
                   last_used INTEGER,
                   device_info TEXT,
-                  multi_device INTEGER DEFAULT 0)''')  # <-- ADICIONADO multi_device
+                  multi_device INTEGER DEFAULT 0)''')
     
     c.execute('''CREATE TABLE IF NOT EXISTS sessions
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1059,49 +1059,63 @@ def admin_generate():
     log_security("admin_user_created", details={"username": username, "expires_at": expires_at, "multi_device": multi_device})
     return ("", 302, {"Location": "/admin"})
 
+# ==============================================================
+#                ROTA CORRIGIDA – multi‑dispositivo
+# ==============================================================
 @app.route("/admin/toggle_multi_device", methods=["POST"])
 @need_admin
 def admin_toggle_multi_device():
-    """Alterna o modo multi-dispositivo de um usuário (recebe user_id = índice)"""
+    """Alterna o modo multi-dispositivo de um usuário (identificado pelo username)"""
     data = request.get_json()
     if not data:
         return jsonify({"success": False, "error": "Invalid JSON"}), 400
-    
-    user_id = data.get("user_id")
-    new_multi = data.get("multi_device")  # booleano
-    
-    if user_id is None or new_multi is None:
-        return jsonify({"success": False, "error": "user_id and multi_device required"}), 400
-    
-    try:
-        user_id = int(user_id)
-    except (TypeError, ValueError):
-        return jsonify({"success": False, "error": "user_id must be integer"}), 400
-    
+
+    username = data.get("username")
+    new_multi = data.get("multi_device")   # booleano
+
+    if not username or new_multi is None:
+        return jsonify({"success": False, "error": "username and multi_device required"}), 400
+
     full_data = load_users()
     users = full_data.get("users", [])
-    
-    if 0 <= user_id < len(users):
-        users[user_id]["multi_device"] = bool(new_multi)
-        save_users(full_data)
-        
-        # Sincroniza com SQLite se houver fingerprint
-        fingerprint = users[user_id].get("device_id")
-        if fingerprint:
-            conn = get_db()
-            cursor = conn.cursor()
+
+    user_encontrado = None
+    for user in users:
+        if user.get("username") == username:
+            user_encontrado = user
+            break
+
+    if not user_encontrado:
+        return jsonify({"success": False, "error": "User not found"}), 404
+
+    # Atualiza o usuário
+    user_encontrado["multi_device"] = bool(new_multi)
+
+    # Salva no JSON
+    if not save_users(full_data):
+        return jsonify({"success": False, "error": "Failed to save user data"}), 500
+
+    # Sincroniza com SQLite (tabela licenses) se houver fingerprint
+    fingerprint = user_encontrado.get("device_id")
+    if fingerprint:
+        conn = get_db()
+        cursor = conn.cursor()
+        try:
             cursor.execute('''
                 UPDATE licenses SET multi_device = ?
                 WHERE fingerprint = ?
             ''', (1 if new_multi else 0, fingerprint))
             conn.commit()
+        except Exception as e:
+            print(f"Erro ao atualizar SQLite: {e}")
+        finally:
             conn.close()
-        
-        log_security("admin_toggle_multi_device", 
-                    details={"username": users[user_id]["username"], "new_multi": new_multi})
-        return jsonify({"success": True})
-    else:
-        return jsonify({"success": False, "error": "User not found"}), 404
+
+    log_security("admin_toggle_multi_device",
+                details={"username": username, "new_multi": new_multi})
+
+    return jsonify({"success": True})
+# ==============================================================
 
 @app.route("/admin/toggle_block/<int:index>", methods=["POST"])
 @need_admin
