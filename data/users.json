@@ -1851,6 +1851,17 @@
       "created_at": 1777682829,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera1019",
+      "password": "Alpha9132",
+      "key": "FERA-5503D4F2",
+      "device_id": null,
+      "expires_at": 1778300327,
+      "reseller": "NINJA",
+      "created_at": 1777695527,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
