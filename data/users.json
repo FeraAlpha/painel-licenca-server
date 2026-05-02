@@ -176,10 +176,10 @@
       "username": "P4NC4K3",
       "password": "123",
       "key": "FERA-1378C82C",
-      "device_id": "156e245bcef798d701deb45f97dbb00c506b2cac14a059db8d031390f8dc19a9",
+      "device_id": null,
       "expires_at": 1781882217,
       "status": "active",
-      "multi_device": true
+      "multi_device": false
     },
     {
       "username": "Rush7",
@@ -213,7 +213,7 @@
       "password": "ff123",
       "key": "FERA-0F0EBB6C",
       "device_id": null,
-      "expires_at": 1778299063,
+      "expires_at": 1780891063,
       "status": "active",
       "multi_device": false
     },
