@@ -776,6 +776,46 @@
       <input type="text" name="support_url" placeholder="https://wa.me/55SEUNUMERO" value="{{ kill_switch.support_url or '' }}">
     </div>
 
+    <!-- ========== SEÇÃO ADICIONADA: ATUALIZAÇÃO DO APP ========== -->
+    <div style="margin-top:18px; padding-top:14px; border-top:1px solid #2A2A2A;">
+      <h3 style="font-size:14px; margin:0 0 10px 0; color:#16A34A; display:flex; align-items:center; gap:6px;">
+        <i class="fas fa-cloud-download-alt"></i> Atualização do App
+        {% if kill_switch.update_url %}
+          <span class="badge badge-ok" style="font-size:10px;">ATIVO v{{ kill_switch.update_version or '?' }}</span>
+        {% else %}
+          <span class="badge" style="font-size:10px; background:#333; color:#999;">SEM ATUALIZAÇÃO</span>
+        {% endif %}
+      </h3>
+
+      <div class="compact-row">
+        <div>
+          <label><i class="fas fa-tag"></i> Nova versão (ex: 2.2.4)</label>
+          <input type="text" name="update_version" placeholder="2.2.4" maxlength="20" value="{{ kill_switch.update_version or '' }}">
+        </div>
+        <div>
+          <label><i class="fas fa-link"></i> Link de download do APK</label>
+          <input type="text" name="update_url" placeholder="https://drive.google.com/.../p-booster-2.2.4.apk" maxlength="500" value="{{ kill_switch.update_url or '' }}">
+        </div>
+      </div>
+
+      <div class="kill-switch-tip" style="margin-top:8px; background:#0F1A12; border-color:#16A34A40;">
+        <strong><i class="fas fa-info-circle" style="color:#16A34A;"></i> Como funciona:</strong>
+        <ul style="margin:6px 0 0 16px; padding:0; font-size:12px;">
+          <li><strong>Sem bloqueio global + link preenchido</strong> → modal verde "Nova versão disponível" aparece pro usuário (ele pode dispensar)</li>
+          <li><strong>Com bloqueio global + link preenchido</strong> → tela verde obrigando atualizar (bloqueia o uso)</li>
+          <li><strong>Com bloqueio global + sem link</strong> → tela vermelha de bloqueio normal</li>
+          <li>Deixe os 2 campos vazios pra remover qualquer aviso de atualização</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:8px;">
+        <button class="btn btn-ghost" type="button" onclick="clearUpdate()" style="font-size:12px;">
+          <i class="fas fa-times"></i> Limpar atualização
+        </button>
+      </div>
+    </div>
+    <!-- ========== FIM DA SEÇÃO ========== -->
+
     <div style="display:flex; gap:8px; margin-top:10px;">
       <button class="btn btn-primary" type="submit">
         <i class="fas fa-save"></i> Salvar
@@ -1516,6 +1556,26 @@ function resetKillSwitch() {
   }
 }
 
+// Função para limpar apenas os campos de atualização
+function clearUpdate() {
+  if (confirm('Remover o aviso de atualização do app?\n\nO modal verde de "Nova versão disponível" deixará de aparecer para os usuários.')) {
+    fetch('/admin/kill_switch_update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ action: 'clear_update' })
+    }).then(response => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        showSuccessMessage('Atualização removida com sucesso!');
+        setTimeout(() => location.reload(), 1000);
+      }
+    }).catch(err => {
+      toast('Erro ao limpar atualização', 'warn');
+    });
+  }
+}
+
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
@@ -1567,6 +1627,7 @@ window.sortTable = sortTable;
 window.toast = toast;
 window.toggleMultiDeviceSwitch = toggleMultiDeviceSwitch;
 window.resetKillSwitch = resetKillSwitch;
+window.clearUpdate = clearUpdate;
 </script>
 </body>
 </html>
