@@ -714,10 +714,58 @@ def api_kill_switch():
         state = load_kill_switch()
         result = is_blocked_for(state, version=version, token=token)
 
+        # Se o kill switch global/version/tokens já bloqueou, retorna na hora.
+        if result["blocked"]:
+            return jsonify({
+                "blocked": True,
+                "reason": result["reason"],
+                "message": state["message"],
+                "supportUrl": state.get("support_url", ""),
+                "ts": int(time.time() * 1000)
+            })
+
+        # >>> NOVO: checagem por token (revogado ou usuário bloqueado) <<<
+        if token:
+            # 1) Token explicitamente revogado pelo admin
+            if token_esta_revogado(token):
+                log_security("kill_switch_token_revoked", ip=ip)
+                return jsonify({
+                    "blocked": True,
+                    "reason": "token",
+                    "message": state["message"] or KILL_SWITCH_DEFAULT_MSG,
+                    "supportUrl": state.get("support_url", ""),
+                    "ts": int(time.time() * 1000)
+                })
+
+            # 2) Usuário do token marcado como blocked / licença inativa
+            jwt_check = validar_token_jwt(token)
+            if jwt_check.get("valid"):
+                payload = jwt_check.get("payload", {})
+                fp = payload.get("fp")
+                if fp:
+                    conn = get_db()
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        'SELECT status FROM licenses WHERE fingerprint = ? LIMIT 1',
+                        (fp,)
+                    )
+                    row = cursor.fetchone()
+                    conn.close()
+                    if row and str(row[0]).lower() == "blocked":
+                        log_security("kill_switch_user_blocked", fingerprint=fp, ip=ip)
+                        return jsonify({
+                            "blocked": True,
+                            "reason": "token",
+                            "message": state["message"] or KILL_SWITCH_DEFAULT_MSG,
+                            "supportUrl": state.get("support_url", ""),
+                            "ts": int(time.time() * 1000)
+                        })
+
+        # Nada bloqueou — libera
         return jsonify({
-            "blocked": result["blocked"],
-            "reason": result["reason"],
-            "message": state["message"] if result["blocked"] else "",
+            "blocked": False,
+            "reason": None,
+            "message": "",
             "supportUrl": state.get("support_url", ""),
             "ts": int(time.time() * 1000)
         })
