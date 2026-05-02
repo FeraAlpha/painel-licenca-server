@@ -25,7 +25,6 @@ CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
 
 # Configuração JWT
 JWT_SECRET = os.getenv("JWT_SECRET", "fer4_jwt_s3cr3t_k3y_ch4ng3_m3")
-JWT_ALGORITHM = "RS256"
 JWT_EXPIRY_HOURS = 24
 
 # ------------------------------
@@ -47,7 +46,6 @@ handler.setFormatter(formatter)
 security_logger.addHandler(handler)
 
 def log_security(event_type, fingerprint=None, ip=None, details=None, severity="INFO"):
-    """Registra eventos de segurança com rotação automática"""
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         ip = ip or (request.remote_addr if 'request' in globals() else "N/A")
@@ -74,7 +72,6 @@ def log_security(event_type, fingerprint=None, ip=None, details=None, severity="
 #   GERENCIAMENTO AUTOMÁTICO DE CHAVES RSA
 # ------------------------------
 def ensure_rsa_keys():
-    """Gera as chaves RSA se não existirem"""
     if not os.path.exists(KEY_PRIV) or not os.path.exists(KEY_PUB):
         log_security("rsa_keys_generating", details={"reason": "keys_not_found"})
         try:
@@ -99,7 +96,6 @@ ensure_rsa_keys()
 #   SANITIZAÇÃO DE INPUTS
 # ------------------------------
 def sanitize_input(value, max_length=100, allowed_chars=None):
-    """Sanitiza uma string de entrada, limitando tamanho e removendo caracteres perigosos"""
     if value is None:
         return ""
     if not isinstance(value, str):
@@ -112,31 +108,21 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
     return value
 
 # ------------------------------
-#   FUNÇÃO AUXILIAR: converter tempo de expiração
+#   FUNÇÃO AUXILIAR: converter tempo de expiração (APENAS DIAS E MINUTOS)
 # ------------------------------
-def calcular_timestamp_expira(expire_days=None, expire_hours=None, expire_minutes=None, expire_seconds=None, agora=None):
+def calcular_timestamp_expira(expire_days=None, expire_minutes=None, agora=None):
     """
     Calcula o timestamp de expiração baseado nos parâmetros.
-    PRIORIDADE: seconds > minutes > hours > days
+    PRIORIDADE: minutos > dias (se minutos for preenchido, ignora dias)
     """
     if agora is None:
         agora = int(time.time())
     
     total_seconds = 0
     
-    if expire_seconds is not None and expire_seconds != "":
-        try:
-            total_seconds = int(expire_seconds)
-        except:
-            total_seconds = 0
-    elif expire_minutes is not None and expire_minutes != "":
+    if expire_minutes is not None and expire_minutes != "":
         try:
             total_seconds = int(float(expire_minutes) * 60)
-        except:
-            total_seconds = 0
-    elif expire_hours is not None and expire_hours != "":
-        try:
-            total_seconds = int(float(expire_hours) * 3600)
         except:
             total_seconds = 0
     elif expire_days is not None and expire_days != "":
@@ -491,7 +477,7 @@ def load_users():
                     if "status" not in user:
                         user["status"] = "active"
                     if "multi_device" not in user:
-                        user["multi_device"] = False  # padrão
+                        user["multi_device"] = False
                 return data
     except Exception as e:
         log_security("load_users_error", details=str(e))
@@ -882,6 +868,36 @@ def activate():
 # ------------------------------
 #   ADMIN
 # ------------------------------
+def contar_sessoes_ativas(username=None, fingerprint=None):
+    """Retorna o número de sessões ativas (não expiradas) para um determinado usuário."""
+    conn = get_db()
+    cursor = conn.cursor()
+    now = int(time.time())
+
+    if fingerprint:
+        cursor.execute('SELECT COUNT(*) FROM sessions WHERE fingerprint = ? AND expires_at > ?', (fingerprint, now))
+    elif username:
+        # Primeiro obtém os fingerprints associados ao username na tabela licenses
+        cursor.execute('SELECT fingerprint FROM licenses WHERE username = ?', (username,))
+        rows = cursor.fetchall()
+        if not rows:
+            conn.close()
+            return 0
+        fingerprints = [row[0] for row in rows if row[0] is not None]
+        if not fingerprints:
+            conn.close()
+            return 0
+        placeholders = ','.join(['?' for _ in fingerprints])
+        query = f'SELECT COUNT(*) FROM sessions WHERE fingerprint IN ({placeholders}) AND expires_at > ?'
+        cursor.execute(query, fingerprints + [now])
+    else:
+        conn.close()
+        return 0
+
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count
+
 def check_admin(a):
     ADMIN_USER = os.getenv("ADMIN_USER", "admin")
     ADMIN_PASS = os.getenv("ADMIN_PASS", "1234")
@@ -905,6 +921,13 @@ def admin():
     # Adiciona um ID artificial baseado no índice para uso no frontend
     for idx, user in enumerate(users):
         user["id"] = idx   # para referência no template
+        # Conta dispositivos ativos
+        fp = user.get("device_id")
+        if fp:
+            active = contar_sessoes_ativas(fingerprint=fp)
+        else:
+            active = contar_sessoes_ativas(username=user["username"])
+        user["active_devices"] = active
     
     conn = get_db()
     cursor = conn.cursor()
@@ -1008,24 +1031,16 @@ def admin_generate():
     multi_device_raw = request.form.get("multi_device", "0")
     multi_device = (multi_device_raw == "1" or multi_device_raw == "true")
     
-    # LER TODOS OS TIPOS DE EXPIRAÇÃO
-    expire_seconds_raw = request.form.get("expire_seconds", "").strip()
-    expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
-    
+    # LER APENAS DIAS E MINUTOS
     expire_minutes_raw = request.form.get("expire_minutes", "").strip()
     expire_minutes_raw = expire_minutes_raw if expire_minutes_raw else None
-    
-    expire_hours_raw = request.form.get("expire_hours", "").strip()
-    expire_hours_raw = expire_hours_raw if expire_hours_raw else None
     
     expire_days_raw = request.form.get("expire_days", "").strip()
     expire_days_raw = expire_days_raw if expire_days_raw else None
     
     expires_at = calcular_timestamp_expira(
         expire_days=expire_days_raw,
-        expire_hours=expire_hours_raw,
-        expire_minutes=expire_minutes_raw,
-        expire_seconds=expire_seconds_raw
+        expire_minutes=expire_minutes_raw
     )
 
     key = prefix + "-" + os.urandom(4).hex().upper()
@@ -1440,23 +1455,16 @@ def reseller_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
-    expire_seconds_raw = request.form.get("expire_seconds", "").strip()
-    expire_seconds_raw = expire_seconds_raw if expire_seconds_raw else None
-    
+    # APENAS DIAS E MINUTOS (o frontend do revendedor também deve ser ajustado)
     expire_minutes_raw = request.form.get("expire_minutes", "").strip()
     expire_minutes_raw = expire_minutes_raw if expire_minutes_raw else None
-    
-    expire_hours_raw = request.form.get("expire_hours", "").strip()
-    expire_hours_raw = expire_hours_raw if expire_hours_raw else None
     
     expire_days_raw = request.form.get("expire_days", "").strip()
     expire_days_raw = expire_days_raw if expire_days_raw else None
     
     expires_at = calcular_timestamp_expira(
         expire_days=expire_days_raw,
-        expire_hours=expire_hours_raw,
-        expire_minutes=expire_minutes_raw,
-        expire_seconds=expire_seconds_raw
+        expire_minutes=expire_minutes_raw
     )
 
     if token not in RESELLER_MAP:
@@ -1480,7 +1488,6 @@ def reseller_generate():
             u["expires_at"] = expires_at
             u["reseller"] = reseller_nome
             u["status"] = "active"
-            # revendedor não pode definir multi_device (padrão False)
             if "multi_device" not in u:
                 u["multi_device"] = False
             save_users(data)
@@ -1502,7 +1509,7 @@ def reseller_generate():
         "reseller": reseller_nome,
         "created_at": int(time.time()),
         "status": "active",
-        "multi_device": False   # revendedor não cria multi por padrão
+        "multi_device": False
     })
 
     save_users(data)
