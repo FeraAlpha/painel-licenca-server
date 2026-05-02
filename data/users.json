@@ -116,7 +116,7 @@
       "device_id": "ba4d8cf21a6b847c075dd28c28873589145f939ca556480cad200f28df0b1420",
       "expires_at": 1780235193,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "leo",
