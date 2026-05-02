@@ -576,7 +576,9 @@ def _ks_default_state():
         "versions": [],
         "tokens": [],
         "message": KILL_SWITCH_DEFAULT_MSG,
-        "support_url": ""
+        "support_url": "",
+        "update_url": "",
+        "update_version": ""
     }
 
 def load_kill_switch():
@@ -705,39 +707,47 @@ def api_kill_switch():
     try:
         ip = request.remote_addr or "unknown"
         if not check_rate_limit("kill_switch", ip):
-            return jsonify({"blocked": False, "reason": None, "message": "", "supportUrl": "", "ts": int(time.time()*1000)}), 429
+            return jsonify({
+                "blocked": False, "reason": None, "message": "", "supportUrl": "",
+                "updateUrl": "", "updateVersion": "",
+                "ts": int(time.time()*1000)
+            }), 429
 
         data = request.json or {}
         version = sanitize_input(data.get("version"), max_length=20)
         token = sanitize_input(data.get("token"), max_length=2048) if data.get("token") else None
 
         state = load_kill_switch()
+        update_url = state.get("update_url", "") or ""
+        update_version = state.get("update_version", "") or ""
+        support_url = state.get("support_url", "") or ""
+
         result = is_blocked_for(state, version=version, token=token)
 
-        # Se o kill switch global/version/tokens já bloqueou, retorna na hora.
         if result["blocked"]:
             return jsonify({
                 "blocked": True,
                 "reason": result["reason"],
                 "message": state["message"],
-                "supportUrl": state.get("support_url", ""),
+                "supportUrl": support_url,
+                "updateUrl": update_url,
+                "updateVersion": update_version,
                 "ts": int(time.time() * 1000)
             })
 
-        # >>> NOVO: checagem por token (revogado ou usuário bloqueado) <<<
         if token:
-            # 1) Token explicitamente revogado pelo admin
             if token_esta_revogado(token):
                 log_security("kill_switch_token_revoked", ip=ip)
                 return jsonify({
                     "blocked": True,
                     "reason": "token",
                     "message": state["message"] or KILL_SWITCH_DEFAULT_MSG,
-                    "supportUrl": state.get("support_url", ""),
+                    "supportUrl": support_url,
+                    "updateUrl": update_url,
+                    "updateVersion": update_version,
                     "ts": int(time.time() * 1000)
                 })
 
-            # 2) Usuário do token marcado como blocked / licença inativa
             jwt_check = validar_token_jwt(token)
             if jwt_check.get("valid"):
                 payload = jwt_check.get("payload", {})
@@ -757,21 +767,28 @@ def api_kill_switch():
                             "blocked": True,
                             "reason": "token",
                             "message": state["message"] or KILL_SWITCH_DEFAULT_MSG,
-                            "supportUrl": state.get("support_url", ""),
+                            "supportUrl": support_url,
+                            "updateUrl": update_url,
+                            "updateVersion": update_version,
                             "ts": int(time.time() * 1000)
                         })
 
-        # Nada bloqueou — libera
         return jsonify({
             "blocked": False,
             "reason": None,
-            "message": "",
-            "supportUrl": state.get("support_url", ""),
+            "message": state.get("message", "") if update_url else "",
+            "supportUrl": support_url,
+            "updateUrl": update_url,
+            "updateVersion": update_version,
             "ts": int(time.time() * 1000)
         })
     except Exception as e:
         log_security("kill_switch_endpoint_error", details=str(e), severity="ERROR")
-        return jsonify({"blocked": False, "reason": None, "message": "", "supportUrl": "", "ts": int(time.time()*1000)})
+        return jsonify({
+            "blocked": False, "reason": None, "message": "", "supportUrl": "",
+            "updateUrl": "", "updateVersion": "",
+            "ts": int(time.time()*1000)
+        })
 
 # ------------------------------
 #   VERIFICAÇÃO DE LICENÇA
@@ -1272,6 +1289,9 @@ def admin_kill_switch_update():
 
         if action == "reset":
             state = _ks_default_state()
+        elif action == "clear_update":
+            state["update_url"] = ""
+            state["update_version"] = ""
         elif action == "set":
             if "global" in body:
                 state["global"] = str(body.get("global")).lower() in ("1", "true", "on", "yes")
@@ -1281,6 +1301,10 @@ def admin_kill_switch_update():
                 state["message"] = sanitize_input(body.get("message"), max_length=500)
             if "support_url" in body:
                 state["support_url"] = sanitize_input(body.get("support_url"), max_length=300)
+            if "update_url" in body:
+                state["update_url"] = sanitize_input(body.get("update_url"), max_length=500)
+            if "update_version" in body:
+                state["update_version"] = sanitize_input(body.get("update_version"), max_length=20)
             if "versions" in body:
                 raw = body.get("versions") or ""
                 if isinstance(raw, list):
