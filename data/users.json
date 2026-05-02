@@ -6,7 +6,8 @@
       "key": "FERA-F3A3F588",
       "device_id": null,
       "expires_at": 1777461620,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "melflo",
@@ -14,7 +15,8 @@
       "key": "FERA-C6DCE3DA",
       "device_id": null,
       "expires_at": 1850402785,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Tronerboy",
@@ -22,7 +24,8 @@
       "key": "FERA-CB64A09A",
       "device_id": null,
       "expires_at": 1881852663,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Nando",
@@ -30,7 +33,8 @@
       "key": "FERA-CEF4AC98",
       "device_id": "2212d7dffdb3a7b4410a29939d93c8a5264f1e029ab8935ed2ce64ab13cb6692",
       "expires_at": 1779577219,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "K4iO",
@@ -38,7 +42,8 @@
       "key": "FERA-5B23E10B",
       "device_id": null,
       "expires_at": 1841951029,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "jcgamer",
@@ -47,7 +52,8 @@
       "device_id": "0f9b2fd01dbc407d46aba0a578af80e1f254fa350e420efae7c1e57f62845d99",
       "expires_at": 1784981133,
       "status": "active",
-      "reseller": "JCGAMER"
+      "reseller": "JCGAMER",
+      "multi_device": false
     },
     {
       "username": "RamonS24",
@@ -55,7 +61,8 @@
       "key": "FERA-C9A2D9FF",
       "device_id": "db8986c73400e6581c66a0401cc8f18f926b340cd76b31623c7db718e22b86fd",
       "expires_at": 1882050403,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "ggrodrigo",
@@ -63,7 +70,8 @@
       "key": "FERA-13D7BE4E",
       "device_id": null,
       "expires_at": 1795720476,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "bdxdenis",
@@ -71,7 +79,8 @@
       "key": "FERA-97F35A76",
       "device_id": null,
       "expires_at": 1780237913,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Luan03",
@@ -79,7 +88,8 @@
       "key": "FERA-68B906DE",
       "device_id": null,
       "expires_at": 1798039750,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Paulosilva",
@@ -87,7 +97,8 @@
       "key": "FERA-0E0A2010",
       "device_id": null,
       "expires_at": 1796669589,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "NeT1NNN",
@@ -95,7 +106,8 @@
       "key": "FERA-A9B28F6E",
       "device_id": "9529595edb55fe8aa900b9aa25ab98934c824765c6d0178f9483d947589f0f40",
       "expires_at": 1782174944,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "DORA7",
@@ -103,7 +115,8 @@
       "key": "FERA-75ED8236",
       "device_id": "ba4d8cf21a6b847c075dd28c28873589145f939ca556480cad200f28df0b1420",
       "expires_at": 1780235193,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "leo",
@@ -111,7 +124,8 @@
       "key": "FERA-7236479F",
       "device_id": null,
       "expires_at": 1784397193,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Mz",
@@ -119,7 +133,8 @@
       "key": "FERA-01D793CF",
       "device_id": null,
       "expires_at": 1797041302,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "JC",
@@ -127,7 +142,8 @@
       "key": "FERA-FFB5614F",
       "device_id": "0f9b2fd01dbc407d46aba0a578af80e1f254fa350e420efae7c1e57f62845d99",
       "expires_at": 1799763418,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "wiliam",
@@ -135,7 +151,8 @@
       "key": "FERA-C28865BA",
       "device_id": null,
       "expires_at": 1800158840,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Manomix",
@@ -143,7 +160,8 @@
       "key": "FERA-C260C7B6",
       "device_id": null,
       "expires_at": 1797796271,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Dmartes",
@@ -151,7 +169,8 @@
       "key": "FERA-522FC7F6",
       "device_id": null,
       "expires_at": 1798301151,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "P4NC4K3",
@@ -159,7 +178,8 @@
       "key": "FERA-1378C82C",
       "device_id": "156e245bcef798d701deb45f97dbb00c506b2cac14a059db8d031390f8dc19a9",
       "expires_at": 1781882217,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Rush7",
@@ -167,7 +187,8 @@
       "key": "FERA-0BC43771",
       "device_id": "07ee47ade7d6205329cf7fb90b962425517aed6192c05f9833930d5da3af10ed",
       "expires_at": 1780887654,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "jcs22",
@@ -175,7 +196,8 @@
       "key": "FERA-6390A355",
       "device_id": null,
       "expires_at": 1799761591,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "ninja",
@@ -183,15 +205,17 @@
       "key": "FERA-E1C845C4",
       "device_id": "efb0e3136422978d64a14f62c5472da9dd60f95db7ab2d6fa9e8aae8ba65b6c6",
       "expires_at": 1785516277,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "anzol",
       "password": "ff123",
       "key": "FERA-0F0EBB6C",
       "device_id": null,
-      "expires_at": 1777621170,
-      "status": "active"
+      "expires_at": 1778299063,
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Paulo",
@@ -199,7 +223,8 @@
       "key": "FERA-8C400F3A",
       "device_id": null,
       "expires_at": 1781659458,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "JOAO",
@@ -207,7 +232,8 @@
       "key": "FERA-A1B2FDF1",
       "device_id": null,
       "expires_at": 1777895337,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Theodoro",
@@ -215,7 +241,8 @@
       "key": "FERA-1B99AB67",
       "device_id": null,
       "expires_at": 1839690209,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera444",
@@ -223,7 +250,8 @@
       "key": "FERA-584D1E08",
       "device_id": "02b29f75a66c9ec2943706c851bf66dab8f72aa21e68ab9152da97364d6ab8f9",
       "expires_at": 1780965418,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "LKZ",
@@ -231,7 +259,8 @@
       "key": "FERA-09539A81",
       "device_id": "07759987893db266f48b198a7affdefde0c9877d6058665d8bff5d957db58e4a",
       "expires_at": 1780968176,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "FFera",
@@ -239,7 +268,8 @@
       "key": "FERA-54A309B7",
       "device_id": null,
       "expires_at": 1779289211,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Feera1",
@@ -247,7 +277,8 @@
       "key": "FERA-7E9A380A",
       "device_id": null,
       "expires_at": 1782490468,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "jacson",
@@ -255,7 +286,8 @@
       "key": "FERA-859A103D",
       "device_id": "93dcf9f3cf75e25e751b23bcaf9ce3d15965db835fcc5cb13a0f3c8ae4e1ec8d",
       "expires_at": 1777384063,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "lleo",
@@ -263,7 +295,8 @@
       "key": "FERA-BA863055",
       "device_id": "0f9b2fd01dbc407d46aba0a578af80e1f254fa350e420efae7c1e57f62845d99",
       "expires_at": 1779068317,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Deiverson",
@@ -271,7 +304,8 @@
       "key": "FERA-C5F5BBCA",
       "device_id": null,
       "expires_at": 1777616380,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "jc",
@@ -279,7 +313,8 @@
       "key": "FERA-B9323643",
       "device_id": "0f9b2fd01dbc407d46aba0a578af80e1f254fa350e420efae7c1e57f62845d99",
       "expires_at": 1781547400,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Victor",
@@ -288,7 +323,8 @@
       "device_id": "003e3a76f937535885aaaa31b29a0833112133e9e4870001ec9f150cc8323c4a",
       "expires_at": 1778897928,
       "status": "active",
-      "reseller": "revendedor_super_fera_2025"
+      "reseller": "revendedor_super_fera_2025",
+      "multi_device": false
     },
     {
       "username": "Taciano",
@@ -296,7 +332,8 @@
       "key": "FERA-CAB29F7E",
       "device_id": "faaf949948c2e5832a3f1f2577df2c9ee436ce3a9c5ceca27033081adf49d080",
       "expires_at": 1778354674,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Ping",
@@ -304,7 +341,8 @@
       "key": "FERA-F26F14AD",
       "device_id": null,
       "expires_at": 1778547589,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "PH",
@@ -313,7 +351,8 @@
       "device_id": "240d791d30fd43d6e407a4b0fb80d8172b28d771fb7d2defc6c78a72c160e0d5",
       "expires_at": 1779119958,
       "created_at": 1772205119,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Preto",
@@ -322,7 +361,8 @@
       "device_id": null,
       "expires_at": 1781749719,
       "created_at": 1772245719,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "jakson",
@@ -332,7 +372,8 @@
       "expires_at": 1779030684,
       "reseller": "JCGAMER",
       "created_at": 1772278878,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "junior#12",
@@ -342,7 +383,8 @@
       "expires_at": 1781909656,
       "reseller": "JCGAMER",
       "created_at": 1772319256,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Rick",
@@ -352,7 +394,8 @@
       "expires_at": 1781876667,
       "reseller": "JCGAMER",
       "created_at": 1772372667,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Junior",
@@ -362,7 +405,8 @@
       "expires_at": 1777915527,
       "reseller": "JCGAMER",
       "created_at": 1772384279,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Mt",
@@ -371,7 +415,8 @@
       "device_id": "07ebdf5d7c367375c2a02fd5a3cebe0f0411e057dc4c2a9db7e603a82b16d235",
       "expires_at": 1778962959,
       "created_at": 1772404260,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Jwjs",
@@ -381,7 +426,8 @@
       "expires_at": 1781938442,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772434442,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera",
@@ -391,7 +437,8 @@
       "expires_at": 1786188712,
       "created_at": 1772567882,
       "reseller": "revendedor_super_fera_2025",
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user9",
@@ -400,7 +447,8 @@
       "device_id": null,
       "expires_at": 1777746209,
       "created_at": 1772652189,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Rosenilson",
@@ -410,7 +458,8 @@
       "expires_at": 1781872458,
       "created_at": 1772667565,
       "status": "active",
-      "reseller": "revendedor_super_fera_2025"
+      "reseller": "revendedor_super_fera_2025",
+      "multi_device": false
     },
     {
       "username": "FeraAlpha",
@@ -419,7 +468,8 @@
       "device_id": "0f9b2fd01dbc407d46aba0a578af80e1f254fa350e420efae7c1e57f62845d99",
       "expires_at": 1782175263,
       "created_at": 1772671263,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Claudio",
@@ -429,7 +479,8 @@
       "expires_at": 1778353295,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772737295,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Ant\u00f4nio",
@@ -439,7 +490,8 @@
       "expires_at": 1778353462,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772737462,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "FelipeL",
@@ -449,7 +501,8 @@
       "expires_at": 1782596926,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1772747326,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9333",
@@ -459,7 +512,8 @@
       "expires_at": 1782674033,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773170033,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera5834",
@@ -469,7 +523,8 @@
       "expires_at": 1783890180,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773176580,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "SnerY",
@@ -479,7 +534,8 @@
       "expires_at": 1782954686,
       "reseller": "JCGAMER",
       "created_at": 1773450686,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1033",
@@ -489,7 +545,8 @@
       "expires_at": 1779070332,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1773454332,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Saulo",
@@ -498,7 +555,8 @@
       "device_id": "21f4f860a60f6f6a0be82f637cac2d6e7cfd4b51e68bb22d97076635b0f39cb5",
       "expires_at": 1785382870,
       "created_at": 1775014870,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "vn",
@@ -507,7 +565,8 @@
       "device_id": "e02a1c3254dcd2969648c55a9ae42350fec7d504d643e4facb81b29ce902d353",
       "expires_at": 1780644981,
       "created_at": 1775028981,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "ANJO",
@@ -516,7 +575,8 @@
       "device_id": "6465a732c2e5e685394d2b3cf7fd9fec663a131f0dc0ee65f924e477fce0171a",
       "expires_at": 1785138066,
       "created_at": 1775029266,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Dante",
@@ -525,7 +585,8 @@
       "device_id": null,
       "expires_at": 1778064251,
       "created_at": 1775040251,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2258",
@@ -534,7 +595,8 @@
       "device_id": "4a346d73b82960c83b755b01a566bac902439aee3d3317dc33ffc4a1ab6f45d2",
       "expires_at": 1778067210,
       "created_at": 1775043210,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Nervozin",
@@ -543,7 +605,8 @@
       "device_id": "b295b4cd5bb1fc42c579a20685147b620e2690b465034ae6d1c2876bf16084d3",
       "expires_at": 1781525007,
       "created_at": 1775045007,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9078",
@@ -553,7 +616,8 @@
       "expires_at": 1778072864,
       "reseller": "ANJO",
       "created_at": 1775048864,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Willian",
@@ -562,7 +626,8 @@
       "device_id": "349bd78b5c68a218c354009f53caf8321cef3b2b23d4e5100660952fce90181a",
       "expires_at": 1778073880,
       "created_at": 1775049880,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "00",
@@ -571,7 +636,8 @@
       "device_id": null,
       "expires_at": 1778212051,
       "created_at": 1775049934,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8485",
@@ -581,7 +647,8 @@
       "expires_at": 1784554817,
       "reseller": "ANJO",
       "created_at": 1775050817,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fabricio",
@@ -590,7 +657,8 @@
       "device_id": "d8924ba03f2fa63c4d75a080667151fc9ecf82f18897d97cd2b040cf5cf96810",
       "expires_at": 1784558286,
       "created_at": 1775054286,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Jeovane",
@@ -599,7 +667,8 @@
       "device_id": null,
       "expires_at": 1780673734,
       "created_at": 1775057734,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Andriel",
@@ -608,7 +677,8 @@
       "device_id": "e7ce3925fe22cfba479786aea27c6ce6ef23791131aae25e3bb754daf2d66f0d",
       "expires_at": 1777909338,
       "created_at": 1775058138,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Reinan",
@@ -617,7 +687,8 @@
       "device_id": "4e548dcb84fe4ae3a91a3aa6970a2aec7c7f0105ae739fb79b2691d801f17e89",
       "expires_at": 1777824276,
       "created_at": 1775059476,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8784",
@@ -627,7 +698,8 @@
       "expires_at": 1778084318,
       "reseller": "DANTE",
       "created_at": 1775060318,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7784",
@@ -637,7 +709,8 @@
       "expires_at": 1778084468,
       "reseller": "DANTE",
       "created_at": 1775060468,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6281",
@@ -647,7 +720,8 @@
       "expires_at": 1778089096,
       "reseller": "JCGAMER",
       "created_at": 1775065096,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8819",
@@ -656,7 +730,8 @@
       "device_id": null,
       "expires_at": 1777831772,
       "created_at": 1775066972,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4187",
@@ -665,7 +740,8 @@
       "device_id": "f01fd4a66d13a5bb91cbfde1fa78d51b89648929e4bf6fae06fca38483589ce7",
       "expires_at": 1779646325,
       "created_at": 1775067125,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7412",
@@ -674,7 +750,8 @@
       "device_id": "3da21474e908fe557a060050f6c8f464acb95d3aec362870ee4fcb716461c870",
       "expires_at": 1777491881,
       "created_at": 1775072681,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6343",
@@ -683,7 +760,8 @@
       "device_id": "413ade6c47505908ddc7d8f7acda8e20570a4a7aff2d596cdc7af57df5a3f69f",
       "expires_at": 1777491946,
       "created_at": 1775072746,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Denilson",
@@ -692,7 +770,8 @@
       "device_id": null,
       "expires_at": 1784150293,
       "created_at": 1775078293,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "vgt",
@@ -701,7 +780,8 @@
       "device_id": "c48370bfd2eb4caeadb992129edac104740620e033d61a9a0e7ad4a8bb385e3d",
       "expires_at": 1778370607,
       "created_at": 1775087406,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user10",
@@ -710,7 +790,8 @@
       "device_id": "9aa5ed886b2cf65dcba8eba3f3fb86ec81eeb3278a06388010cdf0699ba4167b",
       "expires_at": 1777676547,
       "created_at": 1775091738,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Thiagoo",
@@ -719,7 +800,8 @@
       "device_id": "7c6042f89d7d0d5ae82b77fbe6c126ebfc0f3a69a018d9ca22365ea92430af1d",
       "expires_at": 1778119338,
       "created_at": 1775095338,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera3165",
@@ -728,7 +810,8 @@
       "device_id": null,
       "expires_at": 1777725673,
       "created_at": 1775133673,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1687",
@@ -737,7 +820,8 @@
       "device_id": null,
       "expires_at": 1777815863,
       "created_at": 1775137463,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Junior5074",
@@ -746,7 +830,8 @@
       "device_id": "24c5249a4e0186588c00e634ee3f5b376f740d666655a8b1f9e896f650ae2587",
       "expires_at": 1778164957,
       "created_at": 1775140957,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "03",
@@ -755,7 +840,8 @@
       "device_id": "0a4767f4643757c98004b9730528f734cddc94ce4f92aa65f53b1bc3b4e8fc3e",
       "expires_at": 1778172990,
       "created_at": 1775148990,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Pp",
@@ -764,7 +850,8 @@
       "device_id": null,
       "expires_at": 1778196636,
       "created_at": 1775172636,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9037",
@@ -774,7 +861,8 @@
       "expires_at": 1778207348,
       "reseller": "ANJO",
       "created_at": 1775183348,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "44",
@@ -783,7 +871,8 @@
       "device_id": null,
       "expires_at": 1778299138,
       "created_at": 1775188738,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera5692",
@@ -792,7 +881,8 @@
       "device_id": null,
       "expires_at": 1777383943,
       "created_at": 1775223943,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7403",
@@ -802,7 +892,8 @@
       "expires_at": 1778368838,
       "reseller": "JCGAMER",
       "created_at": 1775241180,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8708",
@@ -812,7 +903,8 @@
       "expires_at": 1778419875,
       "reseller": "NINJA",
       "created_at": 1775309475,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6285",
@@ -822,7 +914,8 @@
       "expires_at": 1778342163,
       "reseller": "JCGAMER",
       "created_at": 1775318163,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6067",
@@ -831,7 +924,8 @@
       "device_id": "9f51d4ef1a160492f24ee379a55393a9addd2ec866ba97552920f62c9943c3be",
       "expires_at": 1779731935,
       "created_at": 1775325535,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8985",
@@ -841,7 +935,8 @@
       "expires_at": 1778358218,
       "reseller": "JCGAMER",
       "created_at": 1775334218,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera5035",
@@ -851,7 +946,8 @@
       "expires_at": 1778364863,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775340863,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9499",
@@ -861,7 +957,8 @@
       "expires_at": 1780959233,
       "reseller": "JCGAMER",
       "created_at": 1775343233,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1574",
@@ -871,7 +968,8 @@
       "expires_at": 1778378925,
       "reseller": "JCGAMER",
       "created_at": 1775354925,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2287",
@@ -881,7 +979,8 @@
       "expires_at": 1781033105,
       "reseller": "JCGAMER",
       "created_at": 1775417105,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1100",
@@ -891,7 +990,8 @@
       "expires_at": 1781105536,
       "reseller": "JCGAMER",
       "created_at": 1775489536,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7282",
@@ -901,7 +1001,8 @@
       "expires_at": 1778513766,
       "reseller": "JCGAMER",
       "created_at": 1775489766,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9646",
@@ -911,7 +1012,8 @@
       "expires_at": 1778513829,
       "reseller": "JCGAMER",
       "created_at": 1775489829,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7060",
@@ -921,7 +1023,8 @@
       "expires_at": 1778515496,
       "reseller": "JCGAMER",
       "created_at": 1775491496,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4829",
@@ -931,7 +1034,8 @@
       "expires_at": 1778517989,
       "reseller": "JCGAMER",
       "created_at": 1775493989,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7404",
@@ -941,7 +1045,8 @@
       "expires_at": 1778520722,
       "reseller": "JCGAMER",
       "created_at": 1775496722,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera3805",
@@ -951,7 +1056,8 @@
       "expires_at": 1785002137,
       "reseller": "JCGAMER",
       "created_at": 1775498137,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1850",
@@ -961,7 +1067,8 @@
       "expires_at": 1785007078,
       "reseller": "JCGAMER",
       "created_at": 1775503078,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4000",
@@ -971,7 +1078,8 @@
       "expires_at": 1778539947,
       "reseller": "JCGAMER",
       "created_at": 1775515947,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4073",
@@ -981,7 +1089,8 @@
       "expires_at": 1778635680,
       "reseller": "JCGAMER",
       "created_at": 1775525280,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "L",
@@ -990,7 +1099,8 @@
       "device_id": "pb-moaegpv6-rd0n4in6",
       "expires_at": 1777388634,
       "created_at": 1775591057,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7522",
@@ -1000,7 +1110,8 @@
       "expires_at": 1778703308,
       "reseller": "JCGAMER",
       "created_at": 1775592908,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4113",
@@ -1010,7 +1121,8 @@
       "expires_at": 1778706934,
       "reseller": "JCGAMER",
       "created_at": 1775596534,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera5737",
@@ -1020,7 +1132,8 @@
       "expires_at": 1778719345,
       "reseller": "JCGAMER",
       "created_at": 1775608945,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6846",
@@ -1030,7 +1143,8 @@
       "expires_at": 1778709978,
       "reseller": "JCGAMER",
       "created_at": 1775685978,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Tronerboyapp",
@@ -1039,7 +1153,8 @@
       "device_id": "94a17c1a825ab14a3d3a3fc053daae7dc84738f4abd4297692c825a60a91b781",
       "expires_at": 1779188828,
       "created_at": 1775732828,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4079",
@@ -1048,7 +1163,8 @@
       "device_id": "afa45dd70c0db23b2650212a36971243e52be14254c735e442f56bdd79320672",
       "expires_at": 1779206376,
       "created_at": 1775750376,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9327",
@@ -1058,7 +1174,8 @@
       "expires_at": 1778781753,
       "reseller": "JCGAMER",
       "created_at": 1775757753,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4121",
@@ -1068,7 +1185,8 @@
       "expires_at": 1785275857,
       "reseller": "JCGAMER",
       "created_at": 1775771857,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "N",
@@ -1077,7 +1195,8 @@
       "device_id": null,
       "expires_at": 1778708316,
       "created_at": 1775788158,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8635",
@@ -1087,7 +1206,8 @@
       "expires_at": 1778846754,
       "reseller": "JCGAMER",
       "created_at": 1775822754,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8207",
@@ -1097,7 +1217,8 @@
       "expires_at": 1778875208,
       "reseller": "JCGAMER",
       "created_at": 1775851208,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Felipe01",
@@ -1107,7 +1228,8 @@
       "expires_at": 1778950081,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775926081,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2065",
@@ -1117,7 +1239,8 @@
       "expires_at": 1779052538,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1775942138,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4775",
@@ -1127,7 +1250,8 @@
       "expires_at": 1779030872,
       "reseller": "JCGAMER",
       "created_at": 1776006872,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9667",
@@ -1137,7 +1261,8 @@
       "expires_at": 1779037106,
       "reseller": "JCGAMER",
       "created_at": 1776013106,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera3434",
@@ -1147,7 +1272,8 @@
       "expires_at": 1779052952,
       "reseller": "JCGAMER",
       "created_at": 1776028952,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1782",
@@ -1156,7 +1282,8 @@
       "device_id": "8226b92c257089f66a674070ded16091cb95ca6a2345c7695ca3d3b74ad08ea9",
       "expires_at": 1777836544,
       "created_at": 1776040536,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "EGO",
@@ -1165,7 +1292,8 @@
       "device_id": null,
       "expires_at": 1777258643,
       "created_at": 1776049043,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera3562",
@@ -1175,7 +1303,8 @@
       "expires_at": 1779115414,
       "reseller": "JCGAMER",
       "created_at": 1776091414,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8010",
@@ -1184,7 +1313,8 @@
       "device_id": null,
       "expires_at": 1780423708,
       "created_at": 1776103708,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7570",
@@ -1194,7 +1324,8 @@
       "expires_at": 1781727350,
       "reseller": "JCGAMER",
       "created_at": 1776111350,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1998",
@@ -1204,7 +1335,8 @@
       "expires_at": 1779226611,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1776116211,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2990",
@@ -1214,7 +1346,8 @@
       "expires_at": 1779143645,
       "reseller": "JCGAMER",
       "created_at": 1776119645,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7028",
@@ -1224,7 +1357,8 @@
       "expires_at": 1779230838,
       "reseller": "JCGAMER",
       "created_at": 1776206838,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Viniqy",
@@ -1234,7 +1368,8 @@
       "expires_at": 1779386202,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1776275802,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7651",
@@ -1244,7 +1379,8 @@
       "expires_at": 1779407050,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1776296650,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7010",
@@ -1254,7 +1390,8 @@
       "expires_at": 1785952989,
       "reseller": "ANJO",
       "created_at": 1776362589,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4006",
@@ -1264,7 +1401,8 @@
       "expires_at": 1779460799,
       "reseller": "JCGAMER",
       "created_at": 1776436799,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8873",
@@ -1274,7 +1412,8 @@
       "expires_at": 1779472427,
       "reseller": "JCGAMER",
       "created_at": 1776448427,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8800",
@@ -1284,7 +1423,8 @@
       "expires_at": 1779496007,
       "reseller": "JCGAMER",
       "created_at": 1776472007,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8467",
@@ -1294,7 +1434,8 @@
       "expires_at": 1779648811,
       "reseller": "JCGAMER",
       "created_at": 1776624811,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Alpha",
@@ -1303,7 +1444,8 @@
       "device_id": null,
       "expires_at": 1777289602,
       "created_at": 1776684802,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Ll",
@@ -1312,7 +1454,8 @@
       "device_id": null,
       "expires_at": 1777306379,
       "created_at": 1776701579,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera9959",
@@ -1322,7 +1465,8 @@
       "expires_at": 1779750036,
       "reseller": "JCGAMER",
       "created_at": 1776726036,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7241",
@@ -1332,7 +1476,8 @@
       "expires_at": 1779985358,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1776961358,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2154",
@@ -1342,7 +1487,8 @@
       "expires_at": 1777583818,
       "reseller": "ANJO",
       "created_at": 1776979018,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "h",
@@ -1351,7 +1497,8 @@
       "device_id": "8dc6d7dc720dc9c9d51f02ea1379021d0c69ea1c578f9757314c0fccb388dd00",
       "expires_at": 1777725823,
       "created_at": 1776987516,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "3",
@@ -1360,7 +1507,8 @@
       "device_id": "web-mlwq7a0b-6rcru9bb",
       "expires_at": 1777828063,
       "created_at": 1776995421,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "M",
@@ -1369,7 +1517,8 @@
       "device_id": "5fe92fdf158e8680ac4ac5961c2db9f8749a52721051deece15ca9e70359b942",
       "expires_at": 1778334524,
       "created_at": 1777038524,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1081",
@@ -1378,7 +1527,8 @@
       "device_id": "fae5d7195d2c2fb29a031d7a91e379f786d7335cfcabf070d45b3f588b0ee232",
       "expires_at": 1780067778,
       "created_at": 1777043778,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4214",
@@ -1388,7 +1538,8 @@
       "expires_at": 1780071390,
       "reseller": "JCGAMER",
       "created_at": 1777047390,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1507",
@@ -1398,7 +1549,8 @@
       "expires_at": 1780162608,
       "reseller": "JCGAMER",
       "created_at": 1777138608,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2703",
@@ -1408,7 +1560,8 @@
       "expires_at": 1780163044,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777139044,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera1341",
@@ -1418,7 +1571,8 @@
       "expires_at": 1780163892,
       "reseller": "NINJA",
       "created_at": 1777139892,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user845",
@@ -1427,7 +1581,8 @@
       "device_id": "073c63c837c9488fdaf425524a0b132a011c66f767ab2772d46e6131fd1f3adf",
       "expires_at": 1777746283,
       "created_at": 1777141483,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user17",
@@ -1436,7 +1591,8 @@
       "device_id": null,
       "expires_at": 1777746285,
       "created_at": 1777141485,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user1771",
@@ -1445,7 +1601,8 @@
       "device_id": null,
       "expires_at": 1777746287,
       "created_at": 1777141487,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user1161",
@@ -1454,7 +1611,8 @@
       "device_id": null,
       "expires_at": 1777746290,
       "created_at": 1777141490,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6668",
@@ -1464,7 +1622,8 @@
       "expires_at": 1780168355,
       "reseller": "NINJA",
       "created_at": 1777144355,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera2980",
@@ -1474,7 +1633,8 @@
       "expires_at": 1786649487,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777145487,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera5162",
@@ -1484,7 +1644,8 @@
       "expires_at": 1777826517,
       "reseller": "ANJO",
       "created_at": 1777221717,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7812",
@@ -1494,7 +1655,8 @@
       "expires_at": 1786731748,
       "reseller": "JCGAMER",
       "created_at": 1777227748,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6376",
@@ -1504,7 +1666,8 @@
       "expires_at": 1780253109,
       "reseller": "JCGAMER",
       "created_at": 1777229109,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera6501",
@@ -1514,7 +1677,8 @@
       "expires_at": 1780266573,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777242573,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "8",
@@ -1523,7 +1687,8 @@
       "device_id": "pb-moaegpv6-rd0n4in6",
       "expires_at": 1777997253,
       "created_at": 1777253468,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Teste",
@@ -1533,7 +1698,8 @@
       "expires_at": 1777882952,
       "reseller": "P4NC4K3",
       "created_at": 1777278152,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "user1121",
@@ -1542,7 +1708,8 @@
       "device_id": "271a3467ec0d1e20c7e24337ea1aebe22b6f66cfbba39ec9329e36c359f3993f",
       "expires_at": 1779024106,
       "created_at": 1777296106,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Diegovilao",
@@ -1552,7 +1719,8 @@
       "expires_at": 1786828709,
       "reseller": "JCGAMER",
       "created_at": 1777324709,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "DXL",
@@ -1562,7 +1730,8 @@
       "expires_at": 1777930843,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777326043,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8600",
@@ -1572,7 +1741,8 @@
       "expires_at": 1780350428,
       "reseller": "JCGAMER",
       "created_at": 1777326428,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8380",
@@ -1582,7 +1752,8 @@
       "expires_at": 1780352627,
       "reseller": "JCGAMER",
       "created_at": 1777328627,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera3696",
@@ -1592,7 +1763,8 @@
       "expires_at": 1777999896,
       "reseller": "NINJA",
       "created_at": 1777395096,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera7111",
@@ -1602,7 +1774,8 @@
       "expires_at": 1780434102,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777410102,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera3027",
@@ -1612,7 +1785,8 @@
       "expires_at": 1778068582,
       "reseller": "ANJO",
       "created_at": 1777463782,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "1",
@@ -1621,7 +1795,8 @@
       "device_id": "3c935f2ef764bc9ab6b0ec1b1ca6b1f9496ad9b383c1bf9b4d6a2d18ea439cb7",
       "expires_at": 1778088082,
       "created_at": 1777483282,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "TESTE",
@@ -1631,7 +1806,8 @@
       "expires_at": 1778178543,
       "reseller": "P4NC4K3",
       "created_at": 1777573743,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Luiz",
@@ -1640,7 +1816,8 @@
       "device_id": "df25e63d0c671aa9b44dc7c0a93a1dc4fcdc2d2c1bccef0b30284476ef7b1310",
       "expires_at": 1781106391,
       "created_at": 1777650391,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Paulinho",
@@ -1650,7 +1827,8 @@
       "expires_at": 1787165547,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777661547,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera8638",
@@ -1660,7 +1838,8 @@
       "expires_at": 1780695011,
       "reseller": "NINJA",
       "created_at": 1777671011,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     },
     {
       "username": "Fera4588",
@@ -1670,7 +1849,8 @@
       "expires_at": 1780706829,
       "reseller": "revendedor_super_fera_2025",
       "created_at": 1777682829,
-      "status": "active"
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
