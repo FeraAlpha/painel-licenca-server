@@ -1860,7 +1860,7 @@
       "expires_at": 1787204357,
       "created_at": 1777700357,
       "status": "active",
-      "multi_device": true
+      "multi_device": false
     }
   ]
 }
