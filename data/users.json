@@ -1859,7 +1859,7 @@
       "device_id": null,
       "expires_at": 1787204357,
       "created_at": 1777700357,
-      "status": "blocked",
+      "status": "active",
       "multi_device": true
     }
   ]
