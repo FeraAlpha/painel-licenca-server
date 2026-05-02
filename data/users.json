@@ -215,7 +215,7 @@
       "device_id": null,
       "expires_at": 1780891063,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "Paulo",
