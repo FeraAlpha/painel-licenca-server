@@ -53,7 +53,7 @@
       "expires_at": 1784981133,
       "status": "active",
       "reseller": "JCGAMER",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "RamonS24",
