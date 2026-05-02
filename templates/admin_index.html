@@ -193,6 +193,7 @@
   .badge-ok { background:#d7f5dd; color:var(--ok); }
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
+  .badge-multi { background:#e0e7ff; color:#2f6fed; }
 
   body.dark {
     --bg:#0e1113;
@@ -202,7 +203,6 @@
     --text-light:#9aa4ab;
   }
 
-  /* BARRA DE FERRAMENTAS COMPACTA */
   .toolbar {
     display: flex;
     gap: 8px;
@@ -453,7 +453,6 @@
     white-space: nowrap;
   }
 
-  /* ===== FORMULÁRIO EM 2 COLUNAS ===== */
   .form-2cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -519,6 +518,20 @@
     padding: 8px;
     font-size: 12px;
     justify-content: center;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .checkbox-label input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
   }
 
   @media (max-width: 820px){
@@ -619,7 +632,7 @@
   <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
 </header>
 
-<!-- BARRA DE FERRAMENTAS COMPACTA -->
+<!-- BARRA DE FERRAMENTAS -->
 <div class="toolbar">
   <form method="post" action="/admin/reset_all_devices"
         onsubmit="return confirm('⚠️ Resetar TODOS os dispositivos? Esta ação não pode ser desfeita.')">
@@ -700,7 +713,7 @@
   </div>
 </div>
 
-<!-- GERAR NOVA KEY - COM SUPORTE A DIAS/HORAS/MINUTOS/SEGUNDOS -->
+<!-- GERAR NOVA KEY (COM MULTI-DISPOSITIVO) -->
 <div class="card">
   <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Key</h2>
 
@@ -762,10 +775,19 @@
       <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(5, 'minutes')">5 Minutos</button>
     </div>
 
+    <!-- NOVO: CHECKBOX PARA MULTI-DISPOSITIVO -->
+    <div class="full-width" style="margin-top: 8px;">
+      <label class="checkbox-label">
+        <input type="checkbox" id="multiDeviceCheck"> 
+        <i class="fas fa-globe"></i> Conta multi‑dispositivo (funciona em qualquer aparelho, sem reset)
+      </label>
+    </div>
+
     <input type="hidden" name="expire_days" id="hiddenExpireDays">
     <input type="hidden" name="expire_hours" id="hiddenExpireHours">
     <input type="hidden" name="expire_minutes" id="hiddenExpireMinutes">
     <input type="hidden" name="expire_seconds" id="hiddenExpireSeconds">
+    <input type="hidden" name="multi_device" id="hiddenMultiDevice" value="0">
 
     <div class="full-width">
       <button type="submit" class="btn btn-primary" style="width: 100%;" onclick="prepareSubmit(event)">Gerar Licença</button>
@@ -775,7 +797,7 @@
 
 <div class="card">
   <div class="search-container">
-    <input id="searchUser" placeholder="Buscar usuário, key ou dispositivo">
+    <input id="searchUser" placeholder="Buscar usuário, senha ou dispositivo">
     <button class="btn btn-ghost" onclick="limparBusca()">✖ Limpar</button>
     <button class="btn btn-ghost" onclick="recarregarDados()" title="Atualizar dados">
       🔄
@@ -790,12 +812,12 @@
           <th onclick="sortTable(0)">ID</th>
           <th onclick="sortTable(1)">Usuário</th>
           <th>Senha</th>
-          <th>Key</th>
-          <th>Dispositivo</th>
-          <th>Revendedor</th>
-          <th onclick="sortTable(6)">Criado em</th>
-          <th onclick="sortTable(7)">Expiração</th>
+          <th onclick="sortTable(3)">Dispositivo</th>
+          <th onclick="sortTable(4)">Revendedor</th>
+          <th onclick="sortTable(5)">Criado em</th>
+          <th onclick="sortTable(6)">Expiração</th>
           <th>Status</th>
+          <th onclick="sortTable(8)">Multi‑disp</th>   <!-- NOVA COLUNA -->
           <th>Ações</th>
         </tr>
       </thead>
@@ -809,22 +831,29 @@
             <span class="password-value">{{ u.password }}</span>
             <button class="password-toggle" onclick="togglePassword(this)">👁️</button>
             <span class="copy" onclick="copiarCred('{{ u.username }}','{{ u.password }}')">copiar</span>
-           </td>
-          <td data-label="Key">
-            {{ u.key }}
-            <span class="copy" onclick="copiar('{{ u.key }}', this)">copiar</span>
-           </td>
+          </td>
           <td data-label="Dispositivo">{{ u.device_id if u.device_id else '-' }}</td>
           <td data-label="Revendedor">{{ u.reseller if u.reseller else "Admin" }}</td>
           <td data-label="Criado em">{{ datetime.fromtimestamp(u.created_at).strftime("%d/%m/%Y %H:%M") if u.created_at else "—" }}</td>
-          <td class="expCell"> </td>
+          <td class="expCell"></td>
           <td class="statusCell" data-status="{{ u.status }}">
             {% if u.status == "blocked" %}
               <span class="badge badge-exp">Bloqueado</span>
             {% else %}
               <span class="badge badge-ok">Ativo</span>
             {% endif %}
-           </td>
+          </td>
+          <!-- CÉLULA MULTI-DISPOSITIVO -->
+          <td class="multiDeviceCell" data-user-id="{{ u.id }}">
+            {% if u.multi_device %}
+              <span class="badge badge-multi">✅ Sim</span>
+            {% else %}
+              <span class="badge badge-exp">❌ Não</span>
+            {% endif %}
+            <button class="btn btn-sm btn-ghost" onclick="toggleMultiDevice('{{ u.id }}', {{ 'true' if u.multi_device else 'false' }})" style="margin-left:6px;">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </td>
           <td class="actionsBox">
             <div class="actionsWrap" style="display:flex;gap:6px;flex-wrap:wrap">
               <form method="post" action="/admin/renew/{{ loop.index0 }}" onsubmit="showSuccessMessage('✅ Licença renovada com sucesso!'); return true;">
@@ -877,8 +906,8 @@
                 <button type="submit" class="btn btn-danger" style="width:100%" onclick="setLoading(this); showSuccessMessage('🗑️ Usuário excluído com sucesso!');">Del</button>
               </form>
             </div>
-           </td>
-         </tr>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -893,7 +922,6 @@ const API_URL = window.location.origin + "/admin/generate";
 let loginsGerados = [];
 let loginsCriados = [];
 
-// ================== FUNÇÃO DE SUCESSO ==================
 function showSuccessMessage(message) {
   const toast = document.getElementById('toast');
   toast.innerText = message;
@@ -901,12 +929,9 @@ function showSuccessMessage(message) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ================== RECARREGAR DADOS ==================
 function recarregarDados() {
   showSuccessMessage('🔄 Atualizando dados...');
-  setTimeout(() => {
-    location.reload();
-  }, 500);
+  setTimeout(() => location.reload(), 500);
 }
 
 function toggleCollapse(headerElement) {
@@ -915,7 +940,6 @@ function toggleCollapse(headerElement) {
   const icon = headerElement.querySelector('.toggle-icon');
   
   content.classList.toggle('collapsed');
-  
   if (content.classList.contains('collapsed')) {
     icon.classList.remove('fa-chevron-up');
     icon.classList.add('fa-chevron-down');
@@ -927,9 +951,7 @@ function toggleCollapse(headerElement) {
 
 function limparBusca() {
   document.getElementById('searchUser').value = '';
-  document.querySelectorAll("#usersTable tbody tr").forEach(tr => {
-    tr.style.display = "";
-  });
+  document.querySelectorAll("#usersTable tbody tr").forEach(tr => tr.style.display = "");
   updateDashboard();
   atualizarContadorResultados();
   showSuccessMessage('🔍 Busca limpa!');
@@ -938,17 +960,13 @@ function limparBusca() {
 function atualizarContadorResultados() {
   const rows = document.querySelectorAll("#usersTable tbody tr");
   let visiveis = 0;
-  rows.forEach(tr => {
-    if (tr.style.display !== 'none') visiveis++;
-  });
+  rows.forEach(tr => { if (tr.style.display !== 'none') visiveis++; });
   document.getElementById("resultCount").innerText = `${visiveis} resultados`;
 }
 
 function gerarNumeroAleatorio(tamanho) {
   let numero = '';
-  for (let i = 0; i < tamanho; i++) {
-    numero += Math.floor(Math.random() * 10);
-  }
+  for (let i = 0; i < tamanho; i++) numero += Math.floor(Math.random() * 10);
   return numero;
 }
 
@@ -960,7 +978,6 @@ async function gerarMultiplosLogins() {
     toast('Digite um número válido de dias (mínimo 1)', 'warn');
     return;
   }
-
   if (quantidade > 50) {
     toast('Máximo de 50 logins por vez', 'warn');
     return;
@@ -976,36 +993,23 @@ async function gerarMultiplosLogins() {
 
   loginsGerados = [];
   loginsCriados = [];
-  
   const usuariosUsados = new Set();
   
   for (let i = 0; i < quantidade; i++) {
     const tamanhoNumero = Math.floor(Math.random() * 4) + 1;
     let numeroAleatorio;
-    
-    do {
-      numeroAleatorio = gerarNumeroAleatorio(tamanhoNumero);
-    } while (usuariosUsados.has(numeroAleatorio) && quantidade < 9000);
-    
+    do { numeroAleatorio = gerarNumeroAleatorio(tamanhoNumero); } 
+    while (usuariosUsados.has(numeroAleatorio) && quantidade < 9000);
     usuariosUsados.add(numeroAleatorio);
-    
     const usuario = `user${numeroAleatorio}`;
     const senha = generateRandomPassword();
-    
-    loginsGerados.push({
-      numero: i + 1,
-      username: usuario,
-      password: senha,
-      dias: dias
-    });
+    loginsGerados.push({ numero: i+1, username: usuario, password: senha, dias: dias });
   }
 
-  let sucessos = 0;
-  let erros = 0;
+  let sucessos = 0, erros = 0;
 
   for (let i = 0; i < loginsGerados.length; i++) {
     const login = loginsGerados[i];
-    
     const progresso = (i / loginsGerados.length) * 100;
     document.getElementById('progressFill').style.width = progresso + '%';
     document.getElementById('progressText').innerText = `Criando ${i+1} de ${loginsGerados.length}...`;
@@ -1019,13 +1023,13 @@ async function gerarMultiplosLogins() {
           password: login.password,
           expire_days: String(login.dias),
           token: 'admin_token',
-          prefix: 'FERA'
+          prefix: 'FERA',
+          multi_device: '0'   // logins em massa não são multi por padrão
         })
       });
 
       const raw = await response.text();
       let key = null;
-
       try {
         const data = JSON.parse(raw);
         if (data && data.ok && data.key) key = data.key;
@@ -1036,45 +1040,28 @@ async function gerarMultiplosLogins() {
 
       if (key) {
         sucessos++;
-        loginsCriados.push({
-          ...login,
-          key: key,
-          status: 'sucesso'
-        });
+        loginsCriados.push({ ...login, key: key, status: 'sucesso' });
       } else {
         erros++;
-        loginsCriados.push({
-          ...login,
-          status: 'erro'
-        });
+        loginsCriados.push({ ...login, status: 'erro' });
       }
-
     } catch (error) {
-      console.error('Erro ao criar login:', error);
       erros++;
-      loginsCriados.push({
-        ...login,
-        status: 'erro'
-      });
+      loginsCriados.push({ ...login, status: 'erro' });
     }
-
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   document.getElementById('progressFill').style.width = '100%';
   document.getElementById('progressText').innerText = `Concluído! ${sucessos} sucessos, ${erros} erros.`;
-
   btn.disabled = false;
   btn.classList.remove('btn-loading');
-
   mostrarPreview();
   updateDashboard();
 
   if (sucessos > 0) {
     showSuccessMessage(`${sucessos} logins criados! Recarregando a página...`);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+    setTimeout(() => window.location.reload(), 1500);
   } else {
     toast(`${erros} erros na criação. Nenhum login foi adicionado.`, 'warn');
   }
@@ -1083,26 +1070,20 @@ async function gerarMultiplosLogins() {
 function mostrarPreview() {
   const preview = document.getElementById('previewLogins');
   const lista = document.getElementById('listaLogins');
-  
   lista.innerHTML = '';
-  
   loginsCriados.forEach(login => {
     const statusClass = login.status === 'sucesso' ? 'badge-ok' : 'badge-exp';
     const statusText = login.status === 'sucesso' ? '✓' : '❌';
-    
     lista.innerHTML += `
       <div class="batch-item">
-        <div style="flex: 2;">
-          <strong>#${login.numero}</strong> ${login.username}
-        </div>
-        <div style="text-align: right;">
-          <span class="badge ${statusClass}" style="margin-right: 5px;">${statusText}</span>
+        <div style="flex:2;"><strong>#${login.numero}</strong> ${login.username}</div>
+        <div style="text-align:right;">
+          <span class="badge ${statusClass}" style="margin-right:5px;">${statusText}</span>
           <code style="background:var(--card); padding:4px 8px; border-radius:6px;">${login.password}</code>
         </div>
       </div>
     `;
   });
-  
   preview.style.display = 'block';
 }
 
@@ -1111,21 +1092,12 @@ function copiarTodosLogins() {
     toast('Nenhum login criado ainda!', 'warn');
     return;
   }
-  
-  let texto = `🔑 LOGINS CRIADOS - FERA ALPHA 🔑\n`;
-  texto += `📅 Validade: ${loginsCriados[0].dias} dias\n`;
-  texto += `🕒 Criado em: ${new Date().toLocaleString('pt-BR')}\n`;
-  texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-  
+  let texto = `🔑 LOGINS CRIADOS - FERA ALPHA 🔑\n📅 Validade: ${loginsCriados[0].dias} dias\n🕒 Criado em: ${new Date().toLocaleString('pt-BR')}\n━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   loginsCriados.forEach(login => {
     if (login.status === 'sucesso') {
-      texto += `📌 LOGIN #${login.numero}\n`;
-      texto += `👤 Usuário: ${login.username}\n`;
-      texto += `🔑 Senha: ${login.password}\n`;
-      texto += `━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      texto += `📌 LOGIN #${login.numero}\n👤 Usuário: ${login.username}\n🔑 Senha: ${login.password}\n━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
   });
-  
   navigator.clipboard.writeText(texto);
   showSuccessMessage('✅ Todos os logins foram copiados!');
 }
@@ -1137,9 +1109,7 @@ function generateRandomPassword() {
 
 document.addEventListener("DOMContentLoaded", function() {
   const passField = document.getElementById('autoPassword');
-  if (passField) {
-    passField.value = generateRandomPassword();
-  }
+  if (passField) passField.value = generateRandomPassword();
 
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
@@ -1150,8 +1120,6 @@ document.addEventListener("DOMContentLoaded", function() {
   updateDashboard();
   highlightUserFromURL();
   atualizarContadorResultados();
-  
-  // Limpar campos de expiração ao carregar
   limparCamposExpiracao();
 });
 
@@ -1164,7 +1132,7 @@ function limparCamposExpiracao() {
 
 function toggleDark(){ document.body.classList.toggle("dark"); }
 
-function toast(msg, type="ok"){
+function toast(msg, type){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add("show");
@@ -1173,60 +1141,46 @@ function toast(msg, type="ok"){
 
 function setQuickExpiration(value, unit) {
   limparCamposExpiracao();
-  
-  if (unit === 'days') {
-    document.getElementById('expireDays').value = value;
-  } else if (unit === 'hours') {
-    document.getElementById('expireHours').value = value;
-  } else if (unit === 'minutes') {
-    document.getElementById('expireMinutes').value = value;
-  } else if (unit === 'seconds') {
-    document.getElementById('expireSeconds').value = value;
-  }
-  
+  if (unit === 'days') document.getElementById('expireDays').value = value;
+  else if (unit === 'hours') document.getElementById('expireHours').value = value;
+  else if (unit === 'minutes') document.getElementById('expireMinutes').value = value;
+  else if (unit === 'seconds') document.getElementById('expireSeconds').value = value;
   showSuccessMessage(`✅ ${value} ${unit} definido!`);
 }
 
 function prepareSubmit(event) {
   event.preventDefault();
-  
   const days = document.getElementById('expireDays').value;
   const hours = document.getElementById('expireHours').value;
   const minutes = document.getElementById('expireMinutes').value;
   const seconds = document.getElementById('expireSeconds').value;
+  const isMulti = document.getElementById('multiDeviceCheck').checked;
   
-  // Verifica se pelo menos um campo foi preenchido
   if (!days && !hours && !minutes && !seconds) {
-    toast('⚠️ Preencha pelo menos um campo de expiração (Dias, Horas, Minutos ou Segundos)', 'warn');
+    toast('⚠️ Preencha pelo menos um campo de expiração', 'warn');
     return;
   }
-  
-  // Validação: apenas um campo deve ser preenchido (ou prioridade)
-  let filledFields = 0;
-  if (days && days > 0) filledFields++;
-  if (hours && hours > 0) filledFields++;
-  if (minutes && minutes > 0) filledFields++;
-  if (seconds && seconds > 0) filledFields++;
-  
-  if (filledFields > 1) {
-    toast('⚠️ Preencha APENAS um campo de expiração (prioridade: Segundos > Minutos > Horas > Dias)', 'warn');
+  let filled = 0;
+  if (days && days > 0) filled++;
+  if (hours && hours > 0) filled++;
+  if (minutes && minutes > 0) filled++;
+  if (seconds && seconds > 0) filled++;
+  if (filled > 1) {
+    toast('⚠️ Preencha APENAS um campo de expiração', 'warn');
     return;
   }
-  
-  // Define os campos hidden
   document.getElementById('hiddenExpireDays').value = days || '';
   document.getElementById('hiddenExpireHours').value = hours || '';
   document.getElementById('hiddenExpireMinutes').value = minutes || '';
   document.getElementById('hiddenExpireSeconds').value = seconds || '';
-  
-  // Submete o formulário
+  document.getElementById('hiddenMultiDevice').value = isMulti ? '1' : '0';
   document.getElementById('generateForm').submit();
 }
 
 function copiar(t, el){
   navigator.clipboard.writeText(t);
   el.innerText = "✓";
-  showSuccessMessage("Key copiada!");
+  showSuccessMessage("Copiado!");
   setTimeout(()=> el.innerText = "copiar",1000);
 }
 
@@ -1279,7 +1233,7 @@ function sortTable(col){
   rows.sort((a,b)=>{
     let A = a.cells[col].innerText.toLowerCase();
     let B = b.cells[col].innerText.toLowerCase();
-    if (col === 6 || col === 7) {
+    if (col === 5 || col === 6) { // Criado em (5) ou Expiração (6) - timestamps
       const dateA = a.cells[col].querySelector('.expCell') ? a.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : a.cells[col].innerText;
       const dateB = b.cells[col].querySelector('.expCell') ? b.cells[col].querySelector('.expCell').getAttribute('data-timestamp') : b.cells[col].innerText;
       A = parseInt(dateA) || 0;
@@ -1333,11 +1287,7 @@ function renderExp() {
     const expTimestamp = Math.floor(expDate.getTime() / 1000);
 
     if (expTimestamp < nowTimestamp) {
-      cell.innerHTML = `
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <span class='badge badge-exp'>Expirado</span>
-          <span style="font-size:12px;color:var(--text-light)">📅 ${formatDateBR(exp)}</span>
-        </div>`;
+      cell.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px"><span class='badge badge-exp'>Expirado</span><span style="font-size:12px;color:var(--text-light)">📅 ${formatDateBR(exp)}</span></div>`;
       return;
     }
     const diffDays = Math.floor((expTimestamp - nowTimestamp) / 86400);
@@ -1347,11 +1297,7 @@ function renderExp() {
     else if (diffDays === 1) badge = "<span class='badge badge-warn'>Vence amanhã</span>";
     else if (diffDays < 7) badge = `<span class='badge badge-warn'>${diffDays} dias</span>`;
     else badge = `<span class='badge badge-ok'>${diffDays} dias</span>`;
-    cell.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:4px">
-        ${badge}
-        <span style="font-size:12px;color:var(--text-light)">📅 ${dateText}</span>
-      </div>`;
+    cell.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px">${badge}<span style="font-size:12px;color:var(--text-light)">📅 ${dateText}</span></div>`;
   });
 }
 
@@ -1375,12 +1321,8 @@ function updateDashboard() {
     const expDate = new Date(exp * 1000);
     expDate.setHours(0, 0, 0, 0);
     const expTimestamp = Math.floor(expDate.getTime() / 1000);
-
-    if (exp > 0 && expTimestamp < nowTimestamp) {
-      expirados++;
-    } else {
-      ativos++;
-    }
+    if (exp > 0 && expTimestamp < nowTimestamp) expirados++;
+    else ativos++;
   });
   document.getElementById("dashTotal").innerText = total;
   document.getElementById("dashAtivos").innerText = ativos;
@@ -1388,12 +1330,34 @@ function updateDashboard() {
   document.getElementById("dashBloqueados").innerText = bloqueados;
 }
 
+// NOVA FUNÇÃO: alternar multi-dispositivo via API
+async function toggleMultiDevice(userId, currentStatus) {
+  const newStatus = !currentStatus;
+  if (!confirm(`Deseja ${newStatus ? 'ativar' : 'desativar'} o modo multi-dispositivo para este usuário?`)) return;
+
+  try {
+    const response = await fetch('/admin/toggle_multi_device', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, multi_device: newStatus })
+    });
+    const data = await response.json();
+    if (data.success) {
+      showSuccessMessage(`✅ Multi-dispositivo ${newStatus ? 'ativado' : 'desativado'}!`);
+      setTimeout(() => location.reload(), 800);
+    } else {
+      toast('Erro ao alterar status', 'warn');
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Erro de rede ao alternar multi-dispositivo', 'warn');
+  }
+}
+
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
-  document.querySelectorAll(".actionsMenu").forEach(m=>{
-    if(m !== menu) m.style.display = "none";
-  });
+  document.querySelectorAll(".actionsMenu").forEach(m=>{ if(m !== menu) m.style.display = "none"; });
   menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
 
@@ -1410,9 +1374,7 @@ function highlightUserFromURL() {
     const row = document.querySelector(`tr[data-id="${highlightId}"]`);
     if (row) {
       row.classList.add('highlight');
-      setTimeout(() => {
-        row.classList.remove('highlight');
-      }, 2000);
+      setTimeout(() => row.classList.remove('highlight'), 2000);
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     const newUrl = window.location.pathname;
@@ -1425,12 +1387,23 @@ setInterval(() => {
   updateDashboard();
 }, 10000);
 
+// Garantia de exposição global (para chamadas inline)
 window.gerarMultiplosLogins = gerarMultiplosLogins;
 window.copiarTodosLogins = copiarTodosLogins;
 window.toggleCollapse = toggleCollapse;
 window.limparBusca = limparBusca;
 window.recarregarDados = recarregarDados;
 window.showSuccessMessage = showSuccessMessage;
+window.setQuickExpiration = setQuickExpiration;
+window.prepareSubmit = prepareSubmit;
+window.copiar = copiar;
+window.copiarCred = copiarCred;
+window.togglePassword = togglePassword;
+window.setLoading = setLoading;
+window.toggleDark = toggleDark;
+window.sortTable = sortTable;
+window.toast = toast;
+window.toggleMultiDevice = toggleMultiDevice;
 </script>
 </body>
 </html>
