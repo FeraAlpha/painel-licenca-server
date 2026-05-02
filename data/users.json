@@ -34,7 +34,7 @@
       "device_id": "2212d7dffdb3a7b4410a29939d93c8a5264f1e029ab8935ed2ce64ab13cb6692",
       "expires_at": 1779577219,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "K4iO",
