@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, make_response
 import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading, atexit, re, secrets
 import jwt
 from Crypto.PublicKey import RSA
@@ -32,6 +32,50 @@ JWT_EXPIRY_HOURS = 720  # 30 dias — kill switch real é via /api/kill-switch h
 # ------------------------------
 KILL_SWITCH_FILE = "data/kill_switch.json"
 KILL_SWITCH_DEFAULT_MSG = "Acesso temporariamente suspenso. Fale com o suporte."
+
+# ─────────────────────────────────────────────────────────────────
+# CHAVE DE ASSINATURA HMAC — IDÊNTICA A QUE ESTÁ NO APP NATIVO
+# ─────────────────────────────────────────────────────────────────
+# Esta chave está embutida no HmacModule.kt do app Android (codificada
+# com XOR para não aparecer como string no APK). NÃO MUDE este valor
+# sem republicar o app — se mudar de um lado só, todos os usuários
+# vão ficar bloqueados por reason="tamper" (assinatura inválida).
+# ─────────────────────────────────────────────────────────────────
+PB_BRIDGE_KEY = "SecBridge_Key_V2_PrecisionBoostr"
+
+def _sign_kill_switch_response(payload_str: str) -> str:
+    """
+    Calcula SHA256("CHAVE:payload") em hex.
+    Mesmo esquema que o HmacModule.verifyBridgeHmac() do app valida.
+    O `payload_str` deve ser o JSON exato que vai no body da resposta
+    (mesmos bytes), porque o app valida byte a byte.
+    """
+    raw = f"{PB_BRIDGE_KEY}:{payload_str}".encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+def _kill_switch_signed_response(response_dict: dict):
+    """
+    Helper que serializa o dict, calcula a assinatura HMAC e devolve
+    um Response do Flask com:
+      - body: JSON serializado (formato fixo, sort_keys=True)
+      - header X-Server-Signature: hex SHA256("CHAVE:body")
+      - Content-Type: application/json
+
+    Use SEMPRE este helper para retornar do /api/kill-switch.
+    NÃO use jsonify direto — jsonify re-serializa de jeito diferente
+    e quebra a assinatura.
+    """
+    payload_str = json.dumps(
+        response_dict,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    signature = _sign_kill_switch_response(payload_str)
+    resp = make_response(payload_str, 200)
+    resp.headers["Content-Type"] = "application/json"
+    resp.headers["X-Server-Signature"] = signature
+    return resp
 
 # ------------------------------
 #   CONFIGURAÇÃO DE LOG COM ROTAÇÃO
@@ -793,7 +837,8 @@ def api_kill_switch():
             response["pass"] = pass_str
             response["pass_expires_at"] = expires_ms
 
-        return jsonify(response)
+        # Substitui o jsonify pela versão assinada
+        return _kill_switch_signed_response(response)
 
     except Exception as e:
         log_security("kill_switch_endpoint_error", details=str(e), severity="ERROR")
@@ -2170,6 +2215,7 @@ if __name__ == "__main__":
     print(f"🛑 Kill Switch: Ativado (arquivo: {KILL_SWITCH_FILE})")
     print(f"🕳️ Honeypot: endpoints isca ativos")
     print(f"🔑 Pass rotativo: ativo (TTL=30min)")
+    print(f"🔏 Assinatura HMAC: ativa no /api/kill-switch")
     print(f"🌐 Porta: {port}")
     print("="*60 + "\n")
     
