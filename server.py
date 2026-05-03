@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading, atexit, re
+import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading, atexit, re, secrets
 import jwt
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -314,7 +314,7 @@ def validar_token_jwt(token):
         return {"valid": False, "reason": f"validation_error: {str(e)}"}
 
 # ------------------------------
-#   BANCO SQL
+#   BANCO SQL + MIGRAÇÕES ANTI-CRACK
 # ------------------------------
 def init_db():
     conn = sqlite3.connect(DB)
@@ -365,6 +365,25 @@ def init_db():
     c.execute('CREATE INDEX IF NOT EXISTS idx_sessions ON sessions(token, fingerprint)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_license_status ON licenses(status, expires_at)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_revoked_tokens ON revoked_tokens(token)')
+    
+    # ========== MIGRAÇÕES ANTI-CRACK ==========
+    try:
+        c.execute('ALTER TABLE licenses ADD COLUMN suspect INTEGER DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass  # já existe
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS decoy_hits (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ts INTEGER NOT NULL,
+                    ip TEXT,
+                    ua TEXT,
+                    path TEXT,
+                    payload TEXT,
+                    token_seen TEXT
+                )''')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_decoy_ts ON decoy_hits(ts DESC)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_decoy_token ON decoy_hits(token_seen)')
+    # ==========================================
     
     conn.commit()
     conn.close()
@@ -636,6 +655,24 @@ def is_blocked_for(state, version=None, token=None):
     return {"blocked": False, "reason": None}
 
 # ------------------------------
+#   CAMADA A — PASS ROTATIVO (HMAC)
+# ------------------------------
+PASS_HMAC_SECRET = os.environ.get("PASS_HMAC_SECRET")
+if not PASS_HMAC_SECRET:
+    PASS_HMAC_SECRET = secrets.token_urlsafe(64)
+    print("[pass] AVISO: PASS_HMAC_SECRET não definida — usando random temporário")
+PASS_TTL_MS = 30 * 60 * 1000  # 30 minutos
+
+def _issue_pass(token, version):
+    """Gera pass HMAC + timestamp de expiração."""
+    now_ms = int(time.time() * 1000)
+    expires_ms = now_ms + PASS_TTL_MS
+    msg = f"{token or 'anon'}|{version or '0'}|{expires_ms}".encode()
+    sig = hmac.new(PASS_HMAC_SECRET.encode(), msg, hashlib.sha256).digest()
+    pass_str = base64.urlsafe_b64encode(sig)[:32].decode()
+    return pass_str, expires_ms
+
+# ------------------------------
 #   ASSINATURA
 # ------------------------------
 def sign_payload(payload_bytes):
@@ -723,65 +760,41 @@ def api_kill_switch():
         support_url = state.get("support_url", "") or ""
 
         result = is_blocked_for(state, version=version, token=token)
+        blocked = result["blocked"]
+        reason = result["reason"]
+        message = state["message"] if blocked else ""
 
-        if result["blocked"]:
-            return jsonify({
-                "blocked": True,
-                "reason": result["reason"],
-                "message": state["message"],
-                "supportUrl": support_url,
-                "updateUrl": update_url,
-                "updateVersion": update_version,
-                "ts": int(time.time() * 1000)
-            })
-
+        # >>> ADIÇÃO 1: token suspeito (marcado pelo honeypot) vira blocked <<<
         if token:
-            if token_esta_revogado(token):
-                log_security("kill_switch_token_revoked", ip=ip)
-                return jsonify({
-                    "blocked": True,
-                    "reason": "token",
-                    "message": state["message"] or KILL_SWITCH_DEFAULT_MSG,
-                    "supportUrl": support_url,
-                    "updateUrl": update_url,
-                    "updateVersion": update_version,
-                    "ts": int(time.time() * 1000)
-                })
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT suspect FROM licenses WHERE token=?", (token,))
+            row = cursor.fetchone()
+            conn.close()
+            if row and row[0] == 1:
+                blocked = True
+                reason = "suspect"
+                message = "Acesso suspenso. Entre em contato com o suporte."
 
-            jwt_check = validar_token_jwt(token)
-            if jwt_check.get("valid"):
-                payload = jwt_check.get("payload", {})
-                fp = payload.get("fp")
-                if fp:
-                    conn = get_db()
-                    cursor = conn.cursor()
-                    cursor.execute(
-                        'SELECT status FROM licenses WHERE fingerprint = ? LIMIT 1',
-                        (fp,)
-                    )
-                    row = cursor.fetchone()
-                    conn.close()
-                    if row and str(row[0]).lower() == "blocked":
-                        log_security("kill_switch_user_blocked", fingerprint=fp, ip=ip)
-                        return jsonify({
-                            "blocked": True,
-                            "reason": "token",
-                            "message": state["message"] or KILL_SWITCH_DEFAULT_MSG,
-                            "supportUrl": support_url,
-                            "updateUrl": update_url,
-                            "updateVersion": update_version,
-                            "ts": int(time.time() * 1000)
-                        })
-
-        return jsonify({
-            "blocked": False,
-            "reason": None,
-            "message": state.get("message", "") if update_url else "",
+        # Montagem da resposta base
+        response = {
+            "blocked": blocked,
+            "reason": reason,
+            "message": message,
             "supportUrl": support_url,
             "updateUrl": update_url,
             "updateVersion": update_version,
             "ts": int(time.time() * 1000)
-        })
+        }
+
+        # >>> ADIÇÃO 2: emite pass somente se NAO bloqueado <<<
+        if not blocked:
+            pass_str, expires_ms = _issue_pass(token, version)
+            response["pass"] = pass_str
+            response["pass_expires_at"] = expires_ms
+
+        return jsonify(response)
+
     except Exception as e:
         log_security("kill_switch_endpoint_error", details=str(e), severity="ERROR")
         return jsonify({
@@ -1994,6 +2007,145 @@ def admin_reseller_stats():
                            usuarios_lista=usuarios_lista)
 
 # ------------------------------
+#   CAMADA B — HONEYPOT (endpoints isca)
+# ------------------------------
+def _decoy_hit(path):
+    """Loga a tentativa e marca token (se houver) como suspeito."""
+    try:
+        body_raw = request.get_data(as_text=True)[:2000]
+        token_seen = None
+        try:
+            j = request.get_json(silent=True) or {}
+            token_seen = j.get("token") or j.get("auth_token") or j.get("license")
+        except Exception:
+            pass
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO decoy_hits (ts, ip, ua, path, payload, token_seen) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                int(time.time() * 1000),
+                request.headers.get("X-Forwarded-For", request.remote_addr),
+                request.headers.get("User-Agent", "")[:500],
+                path,
+                body_raw,
+                token_seen,
+            ),
+        )
+        if token_seen:
+            cur.execute("UPDATE licenses SET suspect=1 WHERE token=?", (token_seen,))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[decoy] erro logando hit em {path}: {e}")
+
+def _decoy_response(kind):
+    fake = {
+        "login":    {"success": True, "token": "ok-" + os.urandom(8).hex(), "user_id": 12345},
+        "auth":     {"success": True, "authenticated": True},
+        "verify":   {"verified": True, "valid": True},
+        "unlock":   {"unlocked": True, "premium": True},
+        "premium":  {"premium": True, "expires_at": 99999999999},
+        "activate": {"activated": True, "license_valid": True, "expires_at": 99999999999},
+        "admin":    {"ok": True, "redirect": "/admin/dashboard"},
+    }
+    return jsonify(fake.get(kind, {"success": True})), 200
+
+@app.route("/api/login", methods=["GET", "POST"])
+def _decoy_login():
+    _decoy_hit("/api/login")
+    return _decoy_response("login")
+
+@app.route("/api/auth", methods=["GET", "POST"])
+def _decoy_auth():
+    _decoy_hit("/api/auth")
+    return _decoy_response("auth")
+
+@app.route("/api/auth/check", methods=["GET", "POST"])
+def _decoy_auth_check():
+    _decoy_hit("/api/auth/check")
+    return _decoy_response("auth")
+
+@app.route("/api/verify", methods=["GET", "POST"])
+def _decoy_verify():
+    _decoy_hit("/api/verify")
+    return _decoy_response("verify")
+
+@app.route("/api/unlock", methods=["GET", "POST"])
+def _decoy_unlock():
+    _decoy_hit("/api/unlock")
+    return _decoy_response("unlock")
+
+@app.route("/api/premium", methods=["GET", "POST"])
+def _decoy_premium():
+    _decoy_hit("/api/premium")
+    return _decoy_response("premium")
+
+@app.route("/api/activate-key", methods=["GET", "POST"])
+def _decoy_activate():
+    _decoy_hit("/api/activate-key")
+    return _decoy_response("activate")
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def _decoy_admin_login():
+    _decoy_hit("/admin/login")
+    return _decoy_response("admin")
+
+# ------------------------------
+#   ENDPOINTS ADMIN PARA HONEYPOT
+# ------------------------------
+@app.route("/admin/decoy-hits", methods=["GET"])
+@need_admin
+def admin_decoy_hits_page():
+    return render_template("admin_decoy_hits.html")
+
+@app.route("/admin/api/decoy-hits", methods=["GET"])
+@need_admin
+def admin_decoy_hits_api():
+    limit = min(int(request.args.get("limit", 200)), 1000)
+    conn = get_db()
+    cursor = conn.cursor()
+    rows = cursor.execute(
+        "SELECT id, ts, ip, ua, path, payload, token_seen FROM decoy_hits ORDER BY ts DESC LIMIT ?",
+        (limit,)
+    ).fetchall()
+    conn.close()
+    return jsonify([
+        {
+            "id": r[0], "ts": r[1], "ip": r[2], "ua": r[3],
+            "path": r[4], "payload": r[5], "token_seen": r[6],
+        } for r in rows
+    ])
+
+@app.route("/admin/api/ban-token", methods=["POST"])
+@need_admin
+def admin_ban_token():
+    data = request.get_json(silent=True) or {}
+    token = data.get("token", "").strip()
+    if not token:
+        return jsonify({"ok": False, "error": "token vazio"}), 400
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE licenses SET suspect=1, status='blocked' WHERE token=?", (token,))
+    conn.commit()
+    conn.close()
+    return jsonify({"ok": True})
+
+@app.route("/admin/api/clear-decoy-hits", methods=["POST"])
+@need_admin
+def admin_clear_decoy():
+    data = request.get_json(silent=True) or {}
+    days = int(data.get("olderThanDays", 30))
+    cutoff_ms = int(time.time() * 1000) - days * 86400 * 1000
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM decoy_hits WHERE ts < ?", (cutoff_ms,))
+    conn.commit()
+    conn.close()
+    return jsonify({"ok": True})
+
+# ------------------------------
 #   INICIAR SERVIDOR
 # ------------------------------
 if __name__ == "__main__":
@@ -2016,6 +2168,8 @@ if __name__ == "__main__":
     print(f"📝 Log com rotação: Ativado (5MB, 3 backups)")
     print(f"🔒 Bloqueio/Desbloqueio: Ativado")
     print(f"🛑 Kill Switch: Ativado (arquivo: {KILL_SWITCH_FILE})")
+    print(f"🕳️ Honeypot: endpoints isca ativos")
+    print(f"🔑 Pass rotativo: ativo (TTL=30min)")
     print(f"🌐 Porta: {port}")
     print("="*60 + "\n")
     
