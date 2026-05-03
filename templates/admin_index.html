@@ -194,6 +194,7 @@
   .badge-warn { background:#fff3c9; color:#8a6c1e; }
   .badge-exp { background:#ffe1e1; color:#b32828; }
   .badge-multi { background:#e0e7ff; color:#2f6fed; }
+  .badge-suspect { background:#f0ad4e; color:white; }
 
   /* Toggle Switch */
   .switch {
@@ -616,6 +617,28 @@
     margin: 6px 0 0 20px;
   }
 
+  /* Badge contador no menu */
+  .menu-badge {
+    display: inline-block;
+    background-color: #d93c3c;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .decoy-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
   @media (max-width: 820px){
     thead th {
       position: static;
@@ -710,8 +733,14 @@
   <div>
     <h1>Fera Alpha</h1>
   </div>
-
-  <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <!-- Link para página de tentativas suspeitas com contador -->
+    <a href="/admin/decoy-hits" class="btn btn-ghost decoy-link" style="text-decoration: none;">
+      <i class="fas fa-shield-alt"></i> Tentativas suspeitas
+      <span id="decoy-badge-count" class="menu-badge" style="display: none;">0</span>
+    </a>
+    <button class="btn btn-ghost" onclick="toggleDark()">🌙 Tema</button>
+  </div>
 </header>
 
 <!-- BARRA DE FERRAMENTAS -->
@@ -1017,6 +1046,11 @@
             {% else %}
               <span class="badge badge-ok">Ativo</span>
             {% endif %}
+            {% if u.suspect %}
+              <span class="badge badge-suspect" style="margin-left: 6px;" title="Token aparece em tentativas suspeitas no honeypot">
+                ⚠️ Suspeito
+              </span>
+            {% endif %}
           </td>
           <!-- Multi-dispositivo toggle -->
           <td class="multiDeviceCell" style="min-width: 150px;">
@@ -1299,6 +1333,8 @@ document.addEventListener("DOMContentLoaded", function() {
   highlightUserFromURL();
   atualizarContadorResultados();
   limparCamposExpiracao();
+  atualizarBadgeDecoy();  // atualiza contador do honey
+  setInterval(atualizarBadgeDecoy, 120000);
 });
 
 function limparCamposExpiracao() {
@@ -1576,6 +1612,25 @@ function clearUpdate() {
   }
 }
 
+// Atualiza badge do menu "Tentativas suspeitas"
+async function atualizarBadgeDecoy() {
+  try {
+    const res = await fetch('/admin/api/decoy-hits?limit=1000');
+    const hits = await res.json();
+    const cutoff = Date.now() - 24*60*60*1000;
+    const recentes = hits.filter(h => h.ts > cutoff).length;
+    const badge = document.getElementById('decoy-badge-count');
+    if (badge) {
+      if (recentes > 0) {
+        badge.textContent = recentes;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  } catch(e) {}
+}
+
 function toggleMenu(btn){
   const box = btn.closest(".actionsBox");
   const menu = box.querySelector(".actionsMenu");
@@ -1628,6 +1683,7 @@ window.toast = toast;
 window.toggleMultiDeviceSwitch = toggleMultiDeviceSwitch;
 window.resetKillSwitch = resetKillSwitch;
 window.clearUpdate = clearUpdate;
+window.atualizarBadgeDecoy = atualizarBadgeDecoy;
 </script>
 </body>
 </html>
