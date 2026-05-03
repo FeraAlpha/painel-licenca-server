@@ -25,7 +25,7 @@ CHAVE_SECRETA = "FER4_4LPH4_2024_S3CR3T_K3Y_N0T_SH4R3D"
 
 # Configuração JWT
 JWT_SECRET = os.getenv("JWT_SECRET", "fer4_jwt_s3cr3t_k3y_ch4ng3_m3")
-JWT_EXPIRY_HOURS = 6  # ALTERADO: 6 horas para kill switch mais rápido
+JWT_EXPIRY_HOURS = 720  # 30 dias — kill switch real é via /api/kill-switch heartbeat, não via expiração de JWT
 
 # ------------------------------
 #   KILL SWITCH — arquivo de estado
