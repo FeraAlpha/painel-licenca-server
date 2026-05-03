@@ -1893,6 +1893,17 @@
       "created_at": 1777745437,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera6070",
+      "password": "Alpha3823",
+      "key": "FERA-D487EF99",
+      "device_id": null,
+      "expires_at": 1778448323,
+      "reseller": "NINJA",
+      "created_at": 1777843523,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
