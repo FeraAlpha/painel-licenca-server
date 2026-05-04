@@ -555,7 +555,7 @@
       "expires_at": 1780644981,
       "created_at": 1775028981,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "ANJO",
