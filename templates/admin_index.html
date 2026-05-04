@@ -14,44 +14,72 @@
     --text:#2b2f33;
     --text-light:#687078;
     --accent:#2f6fed;
+    --accent-soft:#e8edff;
     --danger:#d93c3c;
+    --danger-soft:#ffe8e8;
     --ok:#177a30;
-    --radius:12px;
+    --ok-soft:#e6f4ea;
+    --warning:#e8a317;
+    --warning-soft:#fff8e6;
+    --radius:14px;
+    --radius-sm:10px;
+    --shadow:0 2px 8px rgba(0,0,0,0.06);
+    --shadow-lg:0 8px 30px rgba(0,0,0,0.10);
   }
 
   * {
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Inter, Arial, sans-serif;
+    font-family:Inter, 'Segoe UI', system-ui, Arial, sans-serif;
   }
 
   body {
     background:var(--bg);
-    padding:20px;
+    padding:24px;
     color:var(--text);
+    max-width:1400px;
+    margin:0 auto;
   }
 
   header {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:16px;
+    margin-bottom:24px;
     gap:12px;
     flex-wrap:wrap;
   }
 
   h1 {
-    font-size:24px;
+    font-size:26px;
     font-weight:800;
+    letter-spacing:-0.5px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  h1::before {
+    content:"⚡";
+    font-size:28px;
+  }
+
+  h2 {
+    font-size:17px;
+    font-weight:700;
   }
 
   .card {
     background:var(--card);
     border:1px solid var(--border);
-    padding:20px;
+    padding:22px 24px;
     border-radius:var(--radius);
-    margin-bottom:18px;
+    margin-bottom:20px;
+    box-shadow:var(--shadow);
+    transition:box-shadow 0.2s;
+  }
+  .card:hover {
+    box-shadow:var(--shadow-lg);
   }
 
   .card-header {
@@ -61,42 +89,62 @@
     margin-bottom: 0;
   }
 
-  label { font-weight:700; }
-  input, select {
-    width:100%;
-    padding:11px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    margin-bottom:12px;
-    background:white;
-    outline:none;
+  label { 
+    font-weight:600;
+    font-size:13px;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  label small {
+    font-weight:400;
+    color:var(--text-light);
   }
 
-  input:focus, select:focus{ border-color:var(--accent); }
+  input, select, textarea {
+    width:100%;
+    padding:11px 14px;
+    border-radius:var(--radius-sm);
+    border:1.5px solid var(--border);
+    margin-bottom:14px;
+    background:white;
+    outline:none;
+    font-size:14px;
+    transition:border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus, select:focus, textarea:focus { 
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(47,111,237,0.1);
+  }
 
   .btn {
-    padding:8px 12px;
-    border-radius:10px;
+    padding:10px 16px;
+    border-radius:var(--radius-sm);
     cursor:pointer;
-    font-weight:800;
+    font-weight:700;
     border:0;
     font-size:13px;
-    transition:.15s;
+    transition:all 0.2s;
     position: relative;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    white-space:nowrap;
   }
-  .btn:hover{ transform:translateY(-1px); }
+  .btn:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+  .btn:active{ transform:translateY(0); }
 
   .btn-primary { background:var(--accent); color:white; }
   .btn-danger  { background:var(--danger); color:white; }
-  .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text); }
-  .btn-warning { background:#f0ad4e; color:white; }
+  .btn-ghost   { background:transparent; border:1.5px solid var(--border); color:var(--text); }
+  .btn-ghost:hover { background:var(--bg); }
+  .btn-warning { background:var(--warning); color:white; }
   .btn-success { background:var(--ok); color:white; }
 
   .btn-sm {
-    padding: 5px 8px;
+    padding: 6px 10px;
     font-size: 11px;
   }
 
@@ -130,24 +178,27 @@
   table {
     width:100%;
     border-collapse:collapse;
-    font-size:14px;
+    font-size:13px;
   }
 
   thead th {
     background:#eceff1;
-    padding:12px;
-    border-bottom:1px solid var(--border);
+    padding:13px 12px;
+    border-bottom:2px solid var(--border);
     cursor:pointer;
     user-select:none;
     position: sticky;
     top: 0;
-    background-color: var(--card);
+    background-color: #f0f2f5;
     z-index: 10;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
   }
 
   tbody td {
-    padding:12px;
+    padding:13px 12px;
     border-bottom:1px solid var(--border);
     word-break:break-word;
     vertical-align:middle;
@@ -160,6 +211,7 @@
     cursor:pointer;
     font-weight:800;
     margin-left:8px;
+    font-size:12px;
   }
 
   .password-value { display: none; }
@@ -184,24 +236,27 @@
   }
 
   .badge {
-    padding:6px 10px;
-    border-radius:18px;
-    font-size:13px;
-    font-weight:800;
-    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
   }
-  .badge-ok { background:#d7f5dd; color:var(--ok); }
-  .badge-warn { background:#fff3c9; color:#8a6c1e; }
-  .badge-exp { background:#ffe1e1; color:#b32828; }
-  .badge-multi { background:#e0e7ff; color:#2f6fed; }
-  .badge-suspect { background:#f0ad4e; color:white; }
+  .badge-ok { background:var(--ok-soft); color:var(--ok); }
+  .badge-warn { background:var(--warning-soft); color:#8a6c1e; }
+  .badge-exp { background:var(--danger-soft); color:#b32828; }
+  .badge-multi { background:var(--accent-soft); color:var(--accent); }
+  .badge-suspect { background:var(--warning); color:white; }
+  .badge-neutral { background:#eef2f5; color:var(--text-light); }
 
   /* Toggle Switch */
   .switch {
     position: relative;
     display: inline-block;
-    width: 52px;
-    height: 26px;
+    width: 48px;
+    height: 24px;
     margin: 0;
   }
   .switch input {
@@ -223,8 +278,8 @@
   .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     left: 3px;
     bottom: 3px;
     background-color: white;
@@ -232,30 +287,30 @@
     border-radius: 50%;
   }
   input:checked + .slider {
-    background-color: #2f6fed;
+    background-color: var(--accent);
   }
   input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(24px);
   }
   .switch.disabled {
     opacity: 0.5;
     pointer-events: none;
   }
   .multi-status {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
-    margin-left: 10px;
+    margin-left: 8px;
     display: inline-block;
     padding: 4px 8px;
     border-radius: 20px;
     background: #eef2f5;
   }
   .multi-status.active {
-    background: #e0e7ff;
-    color: #2f6fed;
+    background: var(--accent-soft);
+    color: var(--accent);
   }
   .multi-status.inactive {
-    background: #ffe1e1;
+    background: var(--danger-soft);
     color: #b32828;
   }
 
@@ -265,29 +320,36 @@
     --border:#2a2e32;
     --text:#e5ecef;
     --text-light:#9aa4ab;
+    --accent-soft:#1a2744;
+    --danger-soft:#2d1a1a;
+    --ok-soft:#1a2d1a;
+    --warning-soft:#2d2a1a;
+    --shadow:0 2px 8px rgba(0,0,0,0.3);
+    --shadow-lg:0 8px 30px rgba(0,0,0,0.5);
   }
 
   .toolbar {
     display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 22px;
     flex-wrap: wrap;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 15px;
+    padding: 12px 18px;
     align-items: center;
+    box-shadow:var(--shadow);
   }
   
   .toolbar-divider {
     width: 1px;
-    height: 24px;
+    height: 26px;
     background: var(--border);
-    margin: 0 4px;
+    margin: 0 6px;
   }
   
   .toolbar .btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 12px;
   }
   
@@ -296,53 +358,55 @@
   }
 
   .stats-bar {
-    display: flex;
-    justify-content: space-around;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 8px 12px;
-    margin-bottom: 20px;
-    gap: 8px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+    gap:12px;
+    margin-bottom:22px;
   }
 
   .stat-item {
-    text-align: center;
-    flex: 1;
-    min-width: 70px;
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    text-align:center;
+    box-shadow:var(--shadow);
   }
 
   .stat-number {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: 800;
     display: block;
     line-height: 1.2;
+    color:var(--accent);
   }
 
   .stat-label {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-light);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
+    margin-top:4px;
   }
 
   .toast{
     position:fixed;
-    bottom:18px;
-    right:18px;
-    background:#111;
+    bottom:24px;
+    right:24px;
+    background:#1a1d21;
     color:#fff;
-    padding:10px 14px;
+    padding:12px 18px;
     border-radius:12px;
-    font-weight:800;
+    font-weight:700;
     opacity:0;
     transform:translateY(10px);
-    transition:.2s;
+    transition:all 0.3s;
     pointer-events:none;
     z-index:999;
+    box-shadow:var(--shadow-lg);
+    font-size:13px;
   }
   .toast.show{
     opacity:1;
@@ -389,11 +453,10 @@
   .batch-create {
     background: linear-gradient(145deg, #ffffff, #f0f3ff);
     border: 2px dashed var(--accent);
-    margin-bottom: 20px;
   }
 
   .batch-preview {
-    background: var(--card2);
+    background: var(--card);
     border-radius: var(--radius);
     padding: 12px;
     margin-top: 12px;
@@ -416,9 +479,9 @@
 
   .progress-bar {
     width: 100%;
-    height: 4px;
+    height: 5px;
     background: var(--border);
-    border-radius: 2px;
+    border-radius: 3px;
     overflow: hidden;
     margin: 10px 0;
   }
@@ -427,7 +490,8 @@
     height: 100%;
     background: var(--accent);
     width: 0%;
-    transition: width 0.3s;
+    transition: width 0.4s;
+    border-radius:3px;
   }
 
   .collapsible-header {
@@ -448,12 +512,13 @@
     pointer-events: none;
     transition: transform 0.2s ease;
     font-size: 18px;
+    color:var(--accent);
   }
 
   .collapsible-content {
     max-height: 2000px;
     overflow: hidden;
-    transition: max-height 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out, margin 0.4s ease-out;
   }
 
   .collapsible-content.collapsed {
@@ -497,7 +562,7 @@
   
   .compact-row > div {
     flex: 1;
-    min-width: 100px;
+    min-width: 120px;
   }
   
   .compact-row label {
@@ -506,21 +571,21 @@
     display: block;
   }
   
-  .compact-row input {
+  .compact-row input, .compact-row select {
     margin-bottom: 0;
-    padding: 8px;
+    padding: 9px 12px;
     font-size: 13px;
   }
   
   .compact-row button {
-    padding: 8px 12px;
+    padding: 9px 14px;
     white-space: nowrap;
   }
 
   .form-2cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 14px;
   }
 
   .form-2cols .full-width {
@@ -537,15 +602,15 @@
   .form-2cols input, 
   .form-2cols select {
     margin-bottom: 0;
-    padding: 8px 10px;
+    padding: 10px 12px;
     font-size: 13px;
   }
 
   .expiry-group {
     background: var(--bg);
-    border-radius: 10px;
-    padding: 12px;
-    margin-top: 8px;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    border:1px solid var(--border);
   }
 
   .expiry-group-title {
@@ -553,7 +618,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-light);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -561,9 +626,8 @@
 
   .expiry-row {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-bottom: 10px;
   }
 
   .expiry-row label {
@@ -580,7 +644,7 @@
   .compact-buttons .btn {
     flex: 1;
     padding: 8px;
-    font-size: 12px;
+    font-size: 11px;
     justify-content: center;
   }
 
@@ -598,48 +662,116 @@
     cursor: pointer;
   }
 
-  /* Kill Switch Card */
-  .kill-switch-card {
-    border-left: 4px solid #d93c3c;
-  }
-  .kill-switch-status {
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .kill-switch-tip {
-    margin-top: 14px;
-    padding: 10px;
-    background: #fff3c9;
-    border-radius: 8px;
-    font-size: 12px;
-  }
-  .kill-switch-tip ol {
-    margin: 6px 0 0 20px;
+  /* ============================================= */
+  /*    KILL SWITCH + APP UPDATE — REDESIGN        */
+  /* ============================================= */
+  .ks-section {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
   }
 
-  /* Badge contador no menu */
-  .menu-badge {
-    display: inline-block;
-    background-color: #d93c3c;
-    color: white;
-    border-radius: 50%;
-    font-size: 10px;
-    font-weight: bold;
-    min-width: 18px;
-    height: 18px;
-    line-height: 18px;
-    text-align: center;
-    padding: 0 5px;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-  .decoy-link {
-    display: inline-flex;
-    align-items: center;
-    text-decoration: none;
+  .ks-card {
+    border-radius:var(--radius);
+    padding:20px 22px;
+    border:1.5px solid var(--border);
+    background:var(--card);
+    position:relative;
+    overflow:hidden;
   }
 
-  @media (max-width: 820px){
+  .ks-card::before {
+    content:'';
+    position:absolute;
+    top:0; left:0;
+    width:4px;
+    height:100%;
+    border-radius:4px 0 0 4px;
+  }
+
+  .ks-card--danger::before { background:var(--danger); }
+  .ks-card--success::before { background:var(--ok); }
+  .ks-card--accent::before { background:var(--accent); }
+
+  .ks-card__header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+
+  .ks-card__title {
+    font-size:15px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .ks-card__title i {
+    font-size:18px;
+    width:36px;
+    height:36px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:var(--bg);
+    color:var(--accent);
+  }
+
+  .ks-status-pill {
+    padding:8px 16px;
+    border-radius:24px;
+    font-size:13px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .ks-status-pill--blocked { background:var(--danger-soft); color:var(--danger); }
+  .ks-status-pill--free { background:var(--ok-soft); color:var(--ok); }
+  .ks-status-pill--update { background:var(--accent-soft); color:var(--accent); }
+  .ks-status-pill--none { background:#eef2f5; color:var(--text-light); }
+
+  .ks-form-row {
+    display:flex;
+    gap:10px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+  }
+  .ks-form-row > div { flex:1; min-width:140px; }
+  .ks-form-row label { font-size:11px; margin-bottom:3px; display:block; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px; }
+  .ks-form-row input, .ks-form-row select { margin-bottom:0; padding:9px 12px; font-size:13px; }
+
+  .ks-tip {
+    margin-top:12px;
+    padding:12px 14px;
+    background:var(--bg);
+    border-radius:var(--radius-sm);
+    font-size:12px;
+    line-height:1.6;
+    color:var(--text-light);
+    border-left:3px solid var(--accent);
+  }
+  .ks-tip strong { color:var(--text); }
+  .ks-tip code { background:var(--card); padding:2px 8px; border-radius:6px; font-size:11px; }
+
+  .ks-btn-row {
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+
+  .ks-full {
+    grid-column: span 2;
+  }
+
+  @media (max-width: 820px) {
+    .ks-section { grid-template-columns:1fr; }
+    .ks-full { grid-column: span 1; }
+
     thead th {
       position: static;
     }
@@ -703,26 +835,26 @@
       margin-top: 8px;
     }
     
-    .stat-item {
-      min-width: 60px;
+    .stats-bar {
+      grid-template-columns: repeat(auto-fit, minmax(80px,1fr));
     }
-    
+
     .stat-number {
-      font-size: 16px;
+      font-size: 20px;
     }
     
     .stat-label {
-      font-size: 9px;
+      font-size: 10px;
     }
     
     .toolbar {
       justify-content: center;
     }
 
-    .expiry-row {
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
+    .ks-form-row { flex-direction:column; }
+    .ks-form-row > div { min-width:100%; }
+    .ks-btn-row { flex-direction:column; }
+    .ks-btn-row .btn { width:100%; justify-content:center; }
   }
 </style>
 </head>
@@ -761,111 +893,131 @@
 </div>
 
 <!-- ============================================= -->
-<!--         KILL SWITCH CARD (NOVO)               -->
+<!--    KILL SWITCH + ATUALIZAÇÃO DO APP (NOVO)     -->
 <!-- ============================================= -->
-<div class="card kill-switch-card">
-  <div class="card-header">
-    <h2 style="font-size:18px; display:flex; align-items:center; gap:8px;">
-      <i class="fas fa-power-off"></i> Kill Switch — Controle de Bloqueio Global
-    </h2>
-    <span class="badge {% if kill_switch.global %}badge-exp{% else %}badge-ok{% endif %} kill-switch-status">
-      {% if kill_switch.global %}🔴 BLOQUEADO{% else %}🟢 LIBERADO{% endif %}
-    </span>
-  </div>
-
-  <form method="POST" action="/admin/kill_switch_update" style="margin-top:14px;">
-    <input type="hidden" name="action" value="set">
-
-    <div class="compact-row">
-      <div>
-        <label><i class="fas fa-globe"></i> Bloqueio global (todos os apps)</label>
-        <select name="global">
-          <option value="false" {% if not kill_switch.global %}selected{% endif %}>Liberado (false)</option>
-          <option value="true" {% if kill_switch.global %}selected{% endif %}>Bloqueado (true)</option>
-        </select>
+<div class="ks-section">
+  
+  <!-- COLUNA 1: KILL SWITCH / BLOQUEIO GLOBAL -->
+  <div class="ks-card ks-card--danger">
+    <div class="ks-card__header">
+      <div class="ks-card__title">
+        <i class="fas fa-power-off" style="background:var(--danger-soft); color:var(--danger);"></i> 
+        Kill Switch
       </div>
-      <div>
-        <label><i class="fas fa-code-branch"></i> Versão mínima permitida</label>
-        <input type="text" name="min_version" placeholder="ex: 2.2.4" value="{{ kill_switch.min_version or '' }}">
-      </div>
+      <span class="ks-status-pill {% if kill_switch.global %}ks-status-pill--blocked{% else %}ks-status-pill--free{% endif %}">
+        {% if kill_switch.global %}🔴 Bloqueado{% else %}🟢 Liberado{% endif %}
+      </span>
     </div>
 
-    <div>
-      <label><i class="fas fa-ban"></i> Versões específicas a bloquear (separadas por vírgula)</label>
-      <input type="text" name="versions" placeholder="2.2.0, 2.2.1" value="{{ kill_switch.versions|join(', ') }}">
-    </div>
+    <form method="POST" action="/admin/kill_switch_update">
+      <input type="hidden" name="action" value="set">
 
-    <div>
-      <label><i class="fas fa-envelope"></i> Mensagem exibida no app bloqueado</label>
-      <input type="text" name="message" maxlength="500" value="{{ kill_switch.message }}">
-    </div>
-
-    <div>
-      <label><i class="fab fa-whatsapp"></i> URL de suporte (WhatsApp, Telegram, etc)</label>
-      <input type="text" name="support_url" placeholder="https://wa.me/55SEUNUMERO" value="{{ kill_switch.support_url or '' }}">
-    </div>
-
-    <!-- ========== SEÇÃO ADICIONADA: ATUALIZAÇÃO DO APP ========== -->
-    <div style="margin-top:18px; padding-top:14px; border-top:1px solid #2A2A2A;">
-      <h3 style="font-size:14px; margin:0 0 10px 0; color:#16A34A; display:flex; align-items:center; gap:6px;">
-        <i class="fas fa-cloud-download-alt"></i> Atualização do App
-        {% if kill_switch.update_url %}
-          <span class="badge badge-ok" style="font-size:10px;">ATIVO v{{ kill_switch.update_version or '?' }}</span>
-        {% else %}
-          <span class="badge" style="font-size:10px; background:#333; color:#999;">SEM ATUALIZAÇÃO</span>
-        {% endif %}
-      </h3>
-
-      <div class="compact-row">
+      <div class="ks-form-row" style="margin-bottom:10px;">
         <div>
-          <label><i class="fas fa-tag"></i> Nova versão (ex: 2.2.4)</label>
-          <input type="text" name="update_version" placeholder="2.2.4" maxlength="20" value="{{ kill_switch.update_version or '' }}">
+          <label><i class="fas fa-globe"></i> Modo global</label>
+          <select name="global">
+            <option value="false" {% if not kill_switch.global %}selected{% endif %}>Liberado (false)</option>
+            <option value="true" {% if kill_switch.global %}selected{% endif %}>Bloqueado (true)</option>
+          </select>
         </div>
         <div>
-          <label><i class="fas fa-link"></i> Link de download do APK</label>
-          <input type="text" name="update_url" placeholder="https://drive.google.com/.../p-booster-2.2.4.apk" maxlength="500" value="{{ kill_switch.update_url or '' }}">
+          <label><i class="fas fa-code-branch"></i> Versão mínima</label>
+          <input type="text" name="min_version" placeholder="ex: 2.2.4" value="{{ kill_switch.min_version or '' }}">
         </div>
       </div>
 
-      <div class="kill-switch-tip" style="margin-top:8px; background:#0F1A12; border-color:#16A34A40;">
-        <strong><i class="fas fa-info-circle" style="color:#16A34A;"></i> Como funciona:</strong>
-        <ul style="margin:6px 0 0 16px; padding:0; font-size:12px;">
-          <li><strong>Sem bloqueio global + link preenchido</strong> → modal verde "Nova versão disponível" aparece pro usuário (ele pode dispensar)</li>
-          <li><strong>Com bloqueio global + link preenchido</strong> → tela verde obrigando atualizar (bloqueia o uso)</li>
-          <li><strong>Com bloqueio global + sem link</strong> → tela vermelha de bloqueio normal</li>
-          <li>Deixe os 2 campos vazios pra remover qualquer aviso de atualização</li>
-        </ul>
+      <div class="ks-form-row" style="margin-bottom:10px;">
+        <div style="flex:2;">
+          <label><i class="fas fa-ban"></i> Versões bloqueadas (vírgula)</label>
+          <input type="text" name="versions" placeholder="2.2.0, 2.2.1" value="{{ kill_switch.versions|join(', ') }}">
+        </div>
       </div>
 
-      <div style="margin-top:8px;">
-        <button class="btn btn-ghost" type="button" onclick="clearUpdate()" style="font-size:12px;">
-          <i class="fas fa-times"></i> Limpar atualização
+      <div class="ks-form-row" style="margin-bottom:10px;">
+        <div style="flex:2;">
+          <label><i class="fas fa-envelope"></i> Mensagem no app bloqueado</label>
+          <input type="text" name="message" maxlength="500" value="{{ kill_switch.message }}">
+        </div>
+      </div>
+
+      <div class="ks-form-row">
+        <div style="flex:2;">
+          <label><i class="fab fa-whatsapp"></i> URL de suporte</label>
+          <input type="text" name="support_url" placeholder="https://wa.me/55SEUNUMERO" value="{{ kill_switch.support_url or '' }}">
+        </div>
+      </div>
+
+      <div class="ks-tip">
+        <strong>📋 Fluxo recomendado:</strong> Build da nova versão → Publica APK → Avisa usuários (1-3 dias) → Seta <code>min_version</code> → Bloqueia versões antigas automaticamente.
+      </div>
+
+      <div class="ks-btn-row">
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-save"></i> Salvar configurações
+        </button>
+        <button class="btn btn-warning" type="button" onclick="resetKillSwitch()">
+          <i class="fas fa-undo"></i> Resetar (liberar tudo)
         </button>
       </div>
-    </div>
-    <!-- ========== FIM DA SEÇÃO ========== -->
-
-    <div style="display:flex; gap:8px; margin-top:10px;">
-      <button class="btn btn-primary" type="submit">
-        <i class="fas fa-save"></i> Salvar
-      </button>
-      <button class="btn btn-warning" type="button" onclick="resetKillSwitch()">
-        <i class="fas fa-undo"></i> Resetar (Liberar tudo)
-      </button>
-    </div>
-  </form>
-
-  <div class="kill-switch-tip">
-    <strong><i class="fas fa-info-circle"></i> Fluxo recomendado ao lançar nova versão:</strong>
-    <ol>
-      <li>Faz build da nova versão (ex: 2.2.4) e publica o APK</li>
-      <li>Avisa usuários pra atualizar (1-3 dias)</li>
-      <li>Vem aqui e seta <code>min_version = 2.2.4</code> + Salvar</li>
-      <li>Todos os apps abaixo de 2.2.4 são bloqueados automaticamente no próximo /activate ou /token/validate</li>
-    </ol>
+    </form>
   </div>
-</div>
 
+  <!-- COLUNA 2: ATUALIZAÇÃO DO APP -->
+  <div class="ks-card ks-card--accent">
+    <div class="ks-card__header">
+      <div class="ks-card__title">
+        <i class="fas fa-cloud-download-alt" style="background:var(--accent-soft); color:var(--accent);"></i>
+        Atualização do App
+      </div>
+      {% if kill_switch.update_url %}
+        <span class="ks-status-pill ks-status-pill--update">🆕 v{{ kill_switch.update_version or '?' }}</span>
+      {% else %}
+        <span class="ks-status-pill ks-status-pill--none">Nenhuma</span>
+      {% endif %}
+    </div>
+
+    <form method="POST" action="/admin/kill_switch_update">
+      <input type="hidden" name="action" value="set">
+
+      <div class="ks-form-row" style="margin-bottom:10px;">
+        <div>
+          <label><i class="fas fa-tag"></i> Nova versão</label>
+          <input type="text" name="update_version" placeholder="ex: 2.2.4" maxlength="20" value="{{ kill_switch.update_version or '' }}">
+        </div>
+      </div>
+
+      <div class="ks-form-row">
+        <div style="flex:2;">
+          <label><i class="fas fa-link"></i> Link de download do APK</label>
+          <input type="text" name="update_url" placeholder="https://drive.google.com/.../app-2.2.4.apk" maxlength="500" value="{{ kill_switch.update_url or '' }}">
+        </div>
+      </div>
+
+      <div class="ks-tip" style="border-left-color:var(--ok);">
+        <strong>💡 Comportamento:</strong><br>
+        • <strong>Link preenchido + Bloqueio OFF</strong> → Modal verde "Nova versão" (usuário pode dispensar)<br>
+        • <strong>Link preenchido + Bloqueio ON</strong> → Tela obrigatória de atualização (bloqueia uso)<br>
+        • <strong>Bloqueio ON + Sem link</strong> → Tela vermelha de bloqueio<br>
+        • <strong>Campos vazios</strong> → Remove qualquer aviso
+      </div>
+
+      <div class="ks-btn-row">
+        <button class="btn btn-primary" type="submit" onclick="setLoading(this)">
+          <i class="fas fa-save"></i> Salvar atualização
+        </button>
+        <button class="btn btn-ghost" type="button" onclick="clearUpdate()">
+          <i class="fas fa-times"></i> Remover atualização
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+<!-- ============================================= -->
+<!--        FIM DO KILL SWITCH + APP UPDATE         -->
+<!-- ============================================= -->
+
+<!-- ESTATÍSTICAS RÁPIDAS -->
 <div class="stats-bar">
   <div class="stat-item">
     <span class="stat-number" id="dashTotal">0</span>
@@ -885,10 +1037,11 @@
   </div>
 </div>
 
+<!-- CRIAR MÚLTIPLOS LOGINS -->
 <div class="card batch-create">
   <div class="collapsible-header" onclick="toggleCollapse(this)">
     <div class="card-header">
-      <h2 style="font-size: 18px;"><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
+      <h2><i class="fas fa-layer-group"></i> Criar Múltiplos Logins</h2>
       <span class="badge badge-ok">Novo</span>
     </div>
     <i class="fas fa-chevron-down toggle-icon"></i>
@@ -930,9 +1083,9 @@
   </div>
 </div>
 
-<!-- GERAR NOVA KEY (apenas DIAS e MINUTOS) -->
+<!-- GERAR NOVA KEY -->
 <div class="card">
-  <h2 style="margin-bottom:12px; font-size: 18px;"><i class="fas fa-key"></i> Gerar Nova Key</h2>
+  <h2 style="margin-bottom:14px;"><i class="fas fa-key"></i> Gerar Nova Key</h2>
 
   <form method="post" action="/admin/generate" id="generateForm" class="form-2cols">
     <div>
@@ -975,9 +1128,9 @@
     </div>
     
     <div class="full-width compact-buttons" style="margin-top: 5px;">
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(30, 'minutes')">30 Minutos</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(60, 'minutes')">60 Minutos (1h)</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(120, 'minutes')">120 Minutos (2h)</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(30, 'minutes')">30 Min</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(60, 'minutes')">60 Min</button>
+      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(120, 'minutes')">120 Min</button>
     </div>
 
     <!-- CHECKBOX PARA MULTI-DISPOSITIVO -->
@@ -998,6 +1151,7 @@
   </form>
 </div>
 
+<!-- TABELA DE USUÁRIOS -->
 <div class="card">
   <div class="search-container">
     <input id="searchUser" placeholder="Buscar usuário, senha ou dispositivo">
@@ -1021,7 +1175,7 @@
           <th onclick="sortTable(6)">Expiração</th>
           <th>Status</th>
           <th onclick="sortTable(8)">Multi‑disp</th>
-          <th onclick="sortTable(9)">💻 Disp. ativos</th>
+          <th onclick="sortTable(9)">💻 Ativos</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -1060,7 +1214,7 @@
                 <span class="slider"></span>
               </label>
               <span class="multi-status {% if u.multi_device %}active{% else %}inactive{% endif %}">
-                {% if u.multi_device %}✅ Multi-Device{% else %}❌ Único dispositivo{% endif %}
+                {% if u.multi_device %}✅ Multi{% else %}❌ Único{% endif %}
               </span>
             </div>
           </td>
@@ -1333,7 +1487,7 @@ document.addEventListener("DOMContentLoaded", function() {
   highlightUserFromURL();
   atualizarContadorResultados();
   limparCamposExpiracao();
-  atualizarBadgeDecoy();  // atualiza contador do honey
+  atualizarBadgeDecoy();
   setInterval(atualizarBadgeDecoy, 120000);
 });
 
@@ -1551,10 +1705,10 @@ async function toggleMultiDeviceSwitch(checkbox) {
 
     if (data.success) {
       if (newStatus) {
-        statusSpan.textContent = '✅ Multi-Device';
+        statusSpan.textContent = '✅ Multi';
         statusSpan.className = 'multi-status active';
       } else {
-        statusSpan.textContent = '❌ Único dispositivo';
+        statusSpan.textContent = '❌ Único';
         statusSpan.className = 'multi-status inactive';
       }
       showSuccessMessage(`✅ Multi-dispositivo ${newStatus ? 'ativado' : 'desativado'} para ${username}`);
