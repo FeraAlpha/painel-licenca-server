@@ -174,12 +174,12 @@
     },
     {
       "username": "P4NC4K3",
-      "password": "123",
-      "key": "FERA-1378C82C",
+      "password": "Teste",
+      "key": "FERA-92D983DA",
       "device_id": null,
-      "expires_at": 1781882217,
+      "expires_at": 1778182094,
       "status": "active",
-      "multi_device": true
+      "multi_device": false
     },
     {
       "username": "Rush7",
