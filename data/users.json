@@ -1990,6 +1990,17 @@
       "created_at": 1777942822,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera8352",
+      "password": "Alpha2122",
+      "key": "FERA-1FBBEA75",
+      "device_id": null,
+      "expires_at": 1781038427,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1778014427,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
