@@ -1957,6 +1957,17 @@
       "created_at": 1777913515,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera4517",
+      "password": "Alpha2105",
+      "key": "FERA-B0DB31C8",
+      "device_id": null,
+      "expires_at": 1780965336,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777941336,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
