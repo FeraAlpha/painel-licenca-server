@@ -339,7 +339,7 @@
       "username": "Ping",
       "password": "Ping",
       "key": "FERA-D7C71B68",
-      "device_id": null,
+      "device_id": "da1b9f6c3a86f4fbea06b1ab11b67949c7a697d661fd71de1f7e76e7d134f915",
       "expires_at": 1780964613,
       "status": "active",
       "multi_device": false
