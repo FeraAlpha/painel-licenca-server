@@ -1968,6 +1968,17 @@
       "created_at": 1777941336,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera2950",
+      "password": "Alpha5119",
+      "key": "FERA-2701FA42",
+      "device_id": null,
+      "expires_at": 1780965696,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1777941696,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
