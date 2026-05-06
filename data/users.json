@@ -2077,6 +2077,16 @@
       "created_at": 1778109449,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Wagner",
+      "password": "2026",
+      "key": "FERA-4A39DFBF",
+      "device_id": null,
+      "expires_at": 1783726338,
+      "created_at": 1778110338,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
