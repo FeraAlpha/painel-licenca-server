@@ -2044,6 +2044,17 @@
       "created_at": 1778103938,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera3971",
+      "password": "Alpha6214",
+      "key": "FERA-79B49A0C",
+      "device_id": null,
+      "expires_at": 1781129306,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1778105306,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
