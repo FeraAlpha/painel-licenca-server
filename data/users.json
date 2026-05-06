@@ -2066,6 +2066,17 @@
       "created_at": 1778107376,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera6497",
+      "password": "Alpha1583",
+      "key": "FERA-82629F48",
+      "device_id": null,
+      "expires_at": 1778714249,
+      "reseller": "WAGNER",
+      "created_at": 1778109449,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
