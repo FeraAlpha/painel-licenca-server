@@ -623,8 +623,13 @@
   }
 
   function generatePassword() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    return `Alpha${randomNum}`;
+    // Senha de 14 caracteres: letras maiúsculas, minúsculas e números
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let senha = "";
+    for (let i = 0; i < 14; i++) {
+        senha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return senha;
   }
 
   function calculateExpirationDate(days) {
