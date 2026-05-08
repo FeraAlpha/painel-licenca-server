@@ -2118,6 +2118,17 @@
       "created_at": 1778238044,
       "status": "active",
       "multi_device": true
+    },
+    {
+      "username": "Fera7008",
+      "password": "sLHEzBB57VWoLi",
+      "key": "FERA-3480DDE6",
+      "device_id": null,
+      "expires_at": 1781279832,
+      "reseller": "WAGNER",
+      "created_at": 1778255832,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
