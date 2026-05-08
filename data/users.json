@@ -2103,7 +2103,7 @@
       "username": "LS_FPS",
       "password": "@.LEANDRO.$",
       "key": "FERA-B3B06248",
-      "device_id": "7cda4c9736e5743749702abe249c3f7b999d7c05f25eb1f3455acc523e482c0f",
+      "device_id": null,
       "expires_at": 1778806669,
       "created_at": 1778201869,
       "status": "active",
