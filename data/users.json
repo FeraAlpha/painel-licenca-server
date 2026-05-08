@@ -2098,6 +2098,16 @@
       "created_at": 1778184350,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "LS_FPS",
+      "password": "@.LEANDRO.$",
+      "key": "FERA-B3B06248",
+      "device_id": null,
+      "expires_at": 1778806669,
+      "created_at": 1778201869,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
