@@ -1428,10 +1428,10 @@
     },
     {
       "username": "Alpha",
-      "password": "Alpha",
-      "key": "FERA-2A3F502C",
+      "password": "Fera8323",
+      "key": "FERA-56C0F740",
       "device_id": null,
-      "expires_at": 1777289602,
+      "expires_at": 1778324400,
       "created_at": 1776684802,
       "status": "active",
       "multi_device": false
