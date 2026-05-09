@@ -2204,6 +2204,17 @@
       "created_at": 1778333360,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB9KJPDDJ5",
+      "password": "575U-NVVJ-MWVP",
+      "key": "PB-430474A0",
+      "device_id": null,
+      "expires_at": 1781380993,
+      "reseller": "WAGNER",
+      "created_at": 1778356993,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
