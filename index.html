@@ -133,7 +133,7 @@
       margin-top:2px
     }
 
-    .field{margin-bottom:12px}
+    .field{margin-bottom:12px; position: relative;}
 
     label{
       display:flex;
@@ -162,6 +162,54 @@
       box-shadow: 0 0 0 3px rgba(79,124,255,.15);
     }
     input::placeholder{color:#93a1b3}
+
+    /* input com ícone de olho */
+    .password-wrapper {
+      position: relative;
+    }
+    .password-wrapper input {
+      padding-right: 45px; /* espaço para o ícone */
+    }
+    .password-wrapper .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 5px;
+      line-height: 1;
+    }
+    .password-wrapper .toggle-password:hover {
+      color: var(--primary);
+    }
+
+    .input-with-button {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .input-with-button input {
+      flex: 1;
+    }
+    .btn-icon {
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+    .btn-icon:hover {
+      background: var(--border);
+    }
 
     .days{
       display:flex;
@@ -521,14 +569,27 @@
         </div>
       </div>
 
+      <!-- USUÁRIO -->
       <div class="field">
         <label><i class="fas fa-user"></i> Usuário</label>
-        <input id="username" placeholder="Fera4271" autocomplete="off">
+        <div class="input-with-button">
+          <input id="username" placeholder="PB0521X7A3" autocomplete="off" readonly>
+          <button class="btn-icon" onclick="regenerateUsername()" title="Gerar novo usuário"><i class="fas fa-arrows-rotate"></i></button>
+        </div>
       </div>
 
+      <!-- SENHA -->
       <div class="field">
         <label><i class="fas fa-lock"></i> Senha</label>
-        <input id="password" placeholder="Alpha8392" autocomplete="off">
+        <div class="input-with-button">
+          <div class="password-wrapper" style="flex:1;">
+            <input id="password" type="password" placeholder="XXXX-XXXX-XXXX" autocomplete="off" readonly>
+            <button class="toggle-password" id="togglePasswordBtn" onclick="togglePasswordVisibility()">
+              <i class="fas fa-eye" id="togglePasswordIcon"></i>
+            </button>
+          </div>
+          <button class="btn-icon" onclick="regeneratePassword()" title="Gerar nova senha"><i class="fas fa-arrows-rotate"></i></button>
+        </div>
       </div>
 
       <div class="field">
@@ -606,7 +667,7 @@
   const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v3";
-  const PREFIX = "FERA";
+  const PREFIX = "PB";  // Prefixo para usuário e senha
   
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
 
@@ -617,19 +678,69 @@
 
   let currentDays = 35;
 
+  // ========== GERAÇÃO DE USUÁRIO (PB + MÊS + DIA + ALEATÓRIO) ==========
   function generateUsername() {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    return `Fera${randomNum}`;
+    const agora = new Date();
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const dia = String(agora.getDate()).padStart(2, '0');
+    // 4 caracteres aleatórios maiúsculos (letras e números, evitando confusos)
+    const charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let sufixo = "";
+    for (let i = 0; i < 4; i++) {
+      sufixo += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return `PB${mes}${dia}${sufixo}`;
   }
 
+  // ========== GERAÇÃO DE SENHA (ESTILO CHAVE DE PRODUTO, 14 CARACTERES) ==========
   function generatePassword() {
-    // Senha de 14 caracteres: letras maiúsculas, minúsculas e números
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let senha = "";
-    for (let i = 0; i < 14; i++) {
-        senha += chars.charAt(Math.floor(Math.random() * chars.length));
+    // Caracteres maiúsculos e números, sem I,O,0,1 para evitar confusão
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    
+    // Gera 12 caracteres aleatórios (total 14 com os dois hífens)
+    let raw = "";
+    for (let i = 0; i < 12; i++) {
+      raw += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    return senha;
+    
+    // Formato: 4-4-4 (três blocos de 4 = 12 caracteres, mais dois hífens = 14)
+    return `${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`;
+  }
+
+  // Regenerar usuário
+  function regenerateUsername() {
+    document.getElementById("username").value = generateUsername();
+    toast("Usuário gerado", "success", "Novo usuário criado ✅");
+  }
+
+  // Regenerar senha
+  function regeneratePassword() {
+    document.getElementById("password").value = generatePassword();
+    const pwdField = document.getElementById("password");
+    const icon = document.getElementById("togglePasswordIcon");
+    if (pwdField.type === "text") {
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+    toast("Senha gerada", "success", "Nova senha criada ✅");
+  }
+
+  // Mostrar/ocultar senha
+  function togglePasswordVisibility() {
+    const pwdField = document.getElementById("password");
+    const icon = document.getElementById("togglePasswordIcon");
+    if (pwdField.type === "password") {
+      pwdField.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      pwdField.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
   }
 
   function calculateExpirationDate(days) {
@@ -739,7 +850,7 @@
       }
 
       if(!key){
-        const match = raw.match(/FERA[-_A-Z0-9]{6,}/i);
+        const match = raw.match(/PB[-_A-Z0-9]{6,}/i);
         if(match) key = match[0];
       }
 
@@ -767,6 +878,7 @@
 
       toast("Login criado com sucesso!", "success", "Pronto ✅");
 
+      // Gerar novas credenciais automaticamente para o próximo
       document.getElementById("username").value = generateUsername();
       document.getElementById("password").value = generatePassword();
 
