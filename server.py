@@ -9,7 +9,6 @@ from functools import wraps
 from collections import defaultdict
 from logging.handlers import RotatingFileHandler
 import logging
-from flask_cors import CORS   # <-- NOVO: permite requisições cross-origin
 
 # Configurações de banco e arquivos
 DB = "data/licenses.db"
@@ -744,7 +743,6 @@ def gerar_assinatura_hmac(expires, fingerprint):
 #   FLASK APP
 # ------------------------------
 app = Flask(__name__, template_folder='templates')
-CORS(app)  # <-- NOVO: Habilita CORS para todas as rotas, permitindo acesso do painel revendedor
 
 # ------------------------------
 #   MIDDLEWARE DE SEGURANÇA
