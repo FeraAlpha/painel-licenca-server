@@ -2199,7 +2199,7 @@
       "username": "Test",
       "password": "Test",
       "key": "FERA-C22B3361",
-      "device_id": null,
+      "device_id": "7b8e5d0a6e0b948853d9abeb656634e62ed0f8c2852b59e07d3d6a613ec36244",
       "expires_at": 1778938160,
       "created_at": 1778333360,
       "status": "active",
