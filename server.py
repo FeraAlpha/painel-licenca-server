@@ -9,7 +9,6 @@ from functools import wraps
 from collections import defaultdict
 from logging.handlers import RotatingFileHandler
 import logging
-from flask_cors import CORS   # <-- ADICIONADO
 
 # Configurações de banco e arquivos
 DB = "data/licenses.db"
@@ -37,13 +36,35 @@ KILL_SWITCH_DEFAULT_MSG = "Acesso temporariamente suspenso. Fale com o suporte."
 # ─────────────────────────────────────────────────────────────────
 # CHAVE DE ASSINATURA HMAC — IDÊNTICA A QUE ESTÁ NO APP NATIVO
 # ─────────────────────────────────────────────────────────────────
+# Esta chave está embutida no HmacModule.kt do app Android (codificada
+# com XOR para não aparecer como string no APK). NÃO MUDE este valor
+# sem republicar o app — se mudar de um lado só, todos os usuários
+# vão ficar bloqueados por reason="tamper" (assinatura inválida).
+# ─────────────────────────────────────────────────────────────────
 PB_BRIDGE_KEY = "SecBridge_Key_V2_PrecisionBoostr"
 
 def _sign_kill_switch_response(payload_str: str) -> str:
+    """
+    Calcula SHA256("CHAVE:payload") em hex.
+    Mesmo esquema que o HmacModule.verifyBridgeHmac() do app valida.
+    O `payload_str` deve ser o JSON exato que vai no body da resposta
+    (mesmos bytes), porque o app valida byte a byte.
+    """
     raw = f"{PB_BRIDGE_KEY}:{payload_str}".encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
 
 def _kill_switch_signed_response(response_dict: dict):
+    """
+    Helper que serializa o dict, calcula a assinatura HMAC e devolve
+    um Response do Flask com:
+      - body: JSON serializado (formato fixo, sort_keys=True)
+      - header X-Server-Signature: hex SHA256("CHAVE:body")
+      - Content-Type: application/json
+
+    Use SEMPRE este helper para retornar do /api/kill-switch.
+    NÃO use jsonify direto — jsonify re-serializa de jeito diferente
+    e quebra a assinatura.
+    """
     payload_str = json.dumps(
         response_dict,
         sort_keys=True,
@@ -140,6 +161,10 @@ def sanitize_input(value, max_length=100, allowed_chars=None):
 #   FUNÇÃO AUXILIAR: converter tempo de expiração (APENAS DIAS E MINUTOS)
 # ------------------------------
 def calcular_timestamp_expira(expire_days=None, expire_minutes=None, agora=None):
+    """
+    Calcula o timestamp de expiração baseado nos parâmetros.
+    PRIORIDADE: minutos > dias (se minutos for preenchido, ignora dias)
+    """
     if agora is None:
         agora = int(time.time())
     
@@ -168,7 +193,7 @@ RATE_LIMIT = {
     'activate': {'limit': 5, 'window': 300},
     'verify_license': {'limit': 10, 'window': 300},
     'validate_token': {'limit': 20, 'window': 300},
-    'kill_switch': {'limit': 60, 'window': 300},
+    'kill_switch': {'limit': 60, 'window': 300},   # ADICIONADO
 }
 
 request_counts = defaultdict(list)
@@ -374,6 +399,7 @@ def init_db():
                   revoked_at INTEGER,
                   reason TEXT)''')
     
+    # Adicionar coluna multi_device se não existir (para banco existente)
     try:
         c.execute('ALTER TABLE licenses ADD COLUMN multi_device INTEGER DEFAULT 0')
     except sqlite3.OperationalError:
@@ -384,10 +410,11 @@ def init_db():
     c.execute('CREATE INDEX IF NOT EXISTS idx_license_status ON licenses(status, expires_at)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_revoked_tokens ON revoked_tokens(token)')
     
+    # ========== MIGRAÇÕES ANTI-CRACK ==========
     try:
         c.execute('ALTER TABLE licenses ADD COLUMN suspect INTEGER DEFAULT 0')
     except sqlite3.OperationalError:
-        pass
+        pass  # já existe
     
     c.execute('''CREATE TABLE IF NOT EXISTS decoy_hits (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -400,6 +427,7 @@ def init_db():
                 )''')
     c.execute('CREATE INDEX IF NOT EXISTS idx_decoy_ts ON decoy_hits(ts DESC)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_decoy_token ON decoy_hits(token_seen)')
+    # ==========================================
     
     conn.commit()
     conn.close()
@@ -680,6 +708,7 @@ if not PASS_HMAC_SECRET:
 PASS_TTL_MS = 30 * 60 * 1000  # 30 minutos
 
 def _issue_pass(token, version):
+    """Gera pass HMAC + timestamp de expiração."""
     now_ms = int(time.time() * 1000)
     expires_ms = now_ms + PASS_TTL_MS
     msg = f"{token or 'anon'}|{version or '0'}|{expires_ms}".encode()
@@ -714,7 +743,6 @@ def gerar_assinatura_hmac(expires, fingerprint):
 #   FLASK APP
 # ------------------------------
 app = Flask(__name__, template_folder='templates')
-CORS(app)  # <-- ADICIONADO: permite requisições do painel revendedor
 
 # ------------------------------
 #   MIDDLEWARE DE SEGURANÇA
@@ -738,7 +766,7 @@ def before_request():
         )
 
 # ------------------------------
-#   ROTAS PÚBLICAS (mantidas sem alteração)
+#   ROTAS PÚBLICAS
 # ------------------------------
 @app.route("/")
 def home():
@@ -752,6 +780,9 @@ def ping():
         "version": "2.1"
     }), 200
 
+# ------------------------------
+#   KILL SWITCH — endpoint publico (app consulta no startup + heartbeat)
+# ------------------------------
 @app.route("/api/kill-switch", methods=["POST"])
 def api_kill_switch():
     try:
@@ -777,6 +808,7 @@ def api_kill_switch():
         reason = result["reason"]
         message = state["message"] if blocked else ""
 
+        # >>> ADIÇÃO 1: token suspeito (marcado pelo honeypot) vira blocked <<<
         if token:
             conn = get_db()
             cursor = conn.cursor()
@@ -788,6 +820,7 @@ def api_kill_switch():
                 reason = "suspect"
                 message = "Acesso suspenso. Entre em contato com o suporte."
 
+        # Montagem da resposta base
         response = {
             "blocked": blocked,
             "reason": reason,
@@ -798,11 +831,13 @@ def api_kill_switch():
             "ts": int(time.time() * 1000)
         }
 
+        # >>> ADIÇÃO 2: emite pass somente se NAO bloqueado <<<
         if not blocked:
             pass_str, expires_ms = _issue_pass(token, version)
             response["pass"] = pass_str
             response["pass_expires_at"] = expires_ms
 
+        # Substitui o jsonify pela versão assinada
         return _kill_switch_signed_response(response)
 
     except Exception as e:
@@ -813,6 +848,9 @@ def api_kill_switch():
             "ts": int(time.time()*1000)
         })
 
+# ------------------------------
+#   VERIFICAÇÃO DE LICENÇA
+# ------------------------------
 @app.route("/verify_license", methods=["POST"])
 def verify_license():
     try:
@@ -854,6 +892,9 @@ def verify_license():
         log_security("verify_error", details=str(e))
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
+# ------------------------------
+#   VERIFICAÇÃO DE SESSÃO
+# ------------------------------
 @app.route("/verify_session", methods=["GET"])
 def verify_session():
     try:
@@ -874,6 +915,9 @@ def verify_session():
         log_security("session_error", details=str(e))
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
+# ------------------------------
+#   VALIDAÇÃO DE TOKEN JWT (COM KILL SWITCH)
+# ------------------------------
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
     try:
@@ -912,6 +956,7 @@ def validate_token():
                 log_security("token_license_inactive", fingerprint=fp)
                 return jsonify({"valid": False, "reason": "license_inactive"}), 403
         
+        # >>> KILL SWITCH HOOK <<<
         version_app = sanitize_input(data.get("version", ""), max_length=20)
         ks_state = load_kill_switch()
         ks_check = is_blocked_for(ks_state, version=version_app, token=token)
@@ -941,6 +986,9 @@ def validate_token():
         log_security("token_validation_error", details=str(e))
         return jsonify({"valid": False, "reason": "internal_error"}), 500
 
+# ------------------------------
+#   CLIENTE - ATIVAÇÃO (COM MULTI-DISPOSITIVO E KILL SWITCH)
+# ------------------------------
 @app.route("/activate", methods=["POST"])
 def activate():
     try:
@@ -953,6 +1001,7 @@ def activate():
             log_security("activate_missing_fields", details={"username": username})
             return jsonify({"error": "missing_fields"}), 400
 
+        # >>> KILL SWITCH HOOK (antes de qualquer outra lógica) <<<
         version_app = sanitize_input(data.get("version", ""), max_length=20)
         ks_state = load_kill_switch()
         ks_check = is_blocked_for(ks_state, version=version_app)
@@ -974,6 +1023,7 @@ def activate():
             log_security("activate_invalid_credentials", fingerprint=fingerprint, details={"username": username})
             return jsonify({"status": "error", "reason": "invalid_credentials"}), 403
 
+        # Verificar se o usuário está bloqueado
         if user.get("status") == "blocked":
             log_security("activate_blocked_user", fingerprint=fingerprint, details={"username": username})
             return jsonify({"status": "error", "reason": "user_blocked"}), 403
@@ -987,12 +1037,16 @@ def activate():
             log_security("activate_expired", fingerprint=fingerprint, details={"username": username, "expires": expires})
             return jsonify({"status": "error", "reason": "expired"}), 403
 
+        # VERIFICAÇÃO DE DISPOSITIVO COM SUPORTE A MULTI-DISP
         device_id = user.get("device_id")
         is_multi = user.get("multi_device", False)
         
         if is_multi:
+            # Se for multi-dispositivo, ignora completamente a verificação e não altera device_id
             log_security("device_multi_ignored", fingerprint=fingerprint, details={"username": username})
+            # Não grava device_id (permite qualquer fingerprint)
         else:
+            # Comportamento normal: verifica device_id
             if device_id is None:
                 user["device_id"] = fingerprint
                 save_users({"users": users})
@@ -1002,6 +1056,7 @@ def activate():
                             details={"username": username, "stored_device": device_id})
                 return jsonify({"status": "error", "reason": "device_mismatch"}), 403
 
+        # Sincroniza com SQLite (licenses)
         conn = get_db()
         cursor = conn.cursor()
         
@@ -1069,6 +1124,7 @@ def activate():
 #   ADMIN
 # ------------------------------
 def contar_sessoes_ativas(username=None, fingerprint=None):
+    """Retorna o número de sessões ativas (não expiradas) para um determinado usuário."""
     conn = get_db()
     cursor = conn.cursor()
     now = int(time.time())
@@ -1076,6 +1132,7 @@ def contar_sessoes_ativas(username=None, fingerprint=None):
     if fingerprint:
         cursor.execute('SELECT COUNT(*) FROM sessions WHERE fingerprint = ? AND expires_at > ?', (fingerprint, now))
     elif username:
+        # Primeiro obtém os fingerprints associados ao username na tabela licenses
         cursor.execute('SELECT fingerprint FROM licenses WHERE username = ?', (username,))
         rows = cursor.fetchall()
         if not rows:
@@ -1116,8 +1173,10 @@ def admin():
     data = load_users()
     users = data.get("users", [])
     
+    # Adiciona um ID artificial baseado no índice para uso no frontend
     for idx, user in enumerate(users):
-        user["id"] = idx
+        user["id"] = idx   # para referência no template
+        # Conta dispositivos ativos
         fp = user.get("device_id")
         if fp:
             active = contar_sessoes_ativas(fingerprint=fp)
@@ -1143,6 +1202,7 @@ def admin():
     
     conn.close()
     
+    # Carrega estado do kill switch para o template
     kill_switch_state = load_kill_switch()
     
     return render_template("admin_index.html", 
@@ -1226,9 +1286,11 @@ def admin_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
+    # Capturar flag multi_device (vem do campo hidden)
     multi_device_raw = request.form.get("multi_device", "0")
     multi_device = (multi_device_raw == "1" or multi_device_raw == "true")
     
+    # LER APENAS DIAS E MINUTOS
     expire_minutes_raw = request.form.get("expire_minutes", "").strip()
     expire_minutes_raw = expire_minutes_raw if expire_minutes_raw else None
     
@@ -1271,6 +1333,9 @@ def admin_generate():
     log_security("admin_user_created", details={"username": username, "expires_at": expires_at, "multi_device": multi_device})
     return ("", 302, {"Location": "/admin"})
 
+# ==============================================================
+#                ROTA KILL SWITCH ADMIN
+# ==============================================================
 @app.route("/admin/kill_switch_update", methods=["POST"])
 @need_admin
 def admin_kill_switch_update():
@@ -1331,16 +1396,21 @@ def admin_kill_switch_update():
     except Exception as e:
         log_security("admin_kill_switch_error", details=str(e), severity="ERROR")
         return jsonify({"success": False, "error": "internal_error"}), 500
+# ==============================================================
 
+# ==============================================================
+#                ROTA CORRIGIDA – multi‑dispositivo
+# ==============================================================
 @app.route("/admin/toggle_multi_device", methods=["POST"])
 @need_admin
 def admin_toggle_multi_device():
+    """Alterna o modo multi-dispositivo de um usuário (identificado pelo username)"""
     data = request.get_json()
     if not data:
         return jsonify({"success": False, "error": "Invalid JSON"}), 400
 
     username = data.get("username")
-    new_multi = data.get("multi_device")
+    new_multi = data.get("multi_device")   # booleano
 
     if not username or new_multi is None:
         return jsonify({"success": False, "error": "username and multi_device required"}), 400
@@ -1357,11 +1427,14 @@ def admin_toggle_multi_device():
     if not user_encontrado:
         return jsonify({"success": False, "error": "User not found"}), 404
 
+    # Atualiza o usuário
     user_encontrado["multi_device"] = bool(new_multi)
 
+    # Salva no JSON
     if not save_users(full_data):
         return jsonify({"success": False, "error": "Failed to save user data"}), 500
 
+    # Sincroniza com SQLite (tabela licenses) se houver fingerprint
     fingerprint = user_encontrado.get("device_id")
     if fingerprint:
         conn = get_db()
@@ -1381,10 +1454,12 @@ def admin_toggle_multi_device():
                 details={"username": username, "new_multi": new_multi})
 
     return jsonify({"success": True})
+# ==============================================================
 
 @app.route("/admin/toggle_block/<int:index>", methods=["POST"])
 @need_admin
 def admin_toggle_block(index):
+    """Alterna o status do usuário entre bloqueado e ativo"""
     data = load_users()
     users = data.get("users", [])
     
@@ -1704,6 +1779,7 @@ def reseller_generate():
     password = sanitize_input(request.form.get("password"))
     prefix = sanitize_input(request.form.get("prefix") or "FERA")
     
+    # APENAS DIAS E MINUTOS
     expire_minutes_raw = request.form.get("expire_minutes", "").strip()
     expire_minutes_raw = expire_minutes_raw if expire_minutes_raw else None
     
@@ -1979,6 +2055,7 @@ def admin_reseller_stats():
 #   CAMADA B — HONEYPOT (endpoints isca)
 # ------------------------------
 def _decoy_hit(path):
+    """Loga a tentativa e marca token (se houver) como suspeito."""
     try:
         body_raw = request.get_data(as_text=True)[:2000]
         token_seen = None
