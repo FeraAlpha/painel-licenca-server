@@ -632,6 +632,33 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
+    <!-- RESETAR DISPOSITIVO -->
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-rotate-left"></i>
+          <div>
+            <h2>Resetar Dispositivo</h2>
+            <div class="sub">Libera o login para ser usado em outro aparelho</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-user"></i> Usuário (login existente)</label>
+        <input id="resetUsername" placeholder="PBXXXXXXXX" autocomplete="off">
+      </div>
+
+      <button class="btn btn-danger" id="resetBtn" onclick="resetDevice()">
+        <i class="fas fa-power-off"></i> Resetar Dispositivo
+      </button>
+
+      <div class="loader" id="resetLoader" style="display:none;">
+        <div class="spin"></div>
+        <span>Resetando dispositivo...</span>
+      </div>
+    </div>
+
     <!-- HISTÓRICO -->
     <div class="card">
       <div class="cardhead">
@@ -664,10 +691,12 @@
   </div>
 
 <script>
-  const API_URL = "https://painel-licenca-server.onrender.com/reseller/generate";
+  const BASE_URL = "https://painel-licenca-server.onrender.com";
+  const GENERATE_URL = BASE_URL + "/reseller/generate";
+  const RESET_DEVICE_URL = BASE_URL + "/reseller/reset_device";
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v3";
-  const PREFIX = "PB";  // Prefixo para usuário e senha
+  const PREFIX = "PB";
   
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
 
@@ -690,26 +719,19 @@
 
   // ========== GERAÇÃO DE SENHA (ESTILO CHAVE DE PRODUTO, 14 CARACTERES) ==========
   function generatePassword() {
-    // Caracteres maiúsculos e números, sem I,O,0,1 para evitar confusão
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    
-    // Gera 12 caracteres aleatórios (total 14 com os dois hífens)
     let raw = "";
     for (let i = 0; i < 12; i++) {
       raw += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    
-    // Formato: 4-4-4 (três blocos de 4 = 12 caracteres, mais dois hífens = 14)
     return `${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`;
   }
 
-  // Regenerar usuário
   function regenerateUsername() {
     document.getElementById("username").value = generateUsername();
     toast("Usuário gerado", "success", "Novo usuário criado ✅");
   }
 
-  // Regenerar senha
   function regeneratePassword() {
     document.getElementById("password").value = generatePassword();
     const pwdField = document.getElementById("password");
@@ -724,7 +746,6 @@
     toast("Senha gerada", "success", "Nova senha criada ✅");
   }
 
-  // Mostrar/ocultar senha
   function togglePasswordVisibility() {
     const pwdField = document.getElementById("password");
     const icon = document.getElementById("togglePasswordIcon");
@@ -749,13 +770,10 @@
     try {
       const response = await fetch(GITHUB_URL + '?t=' + Date.now());
       const config = await response.json();
-      
       LINK_APK = config.app?.link_download || LINK_APK;
       NOME_APP = config.app?.nome_app || NOME_APP;
-      
       localStorage.setItem('LINK_APK_CACHE', LINK_APK);
       localStorage.setItem('NOME_APP_CACHE', NOME_APP);
-      
       return true;
     } catch (error) {
       LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
@@ -769,15 +787,11 @@
     if(saved) {
       document.getElementById("token").value = saved;
     }
-
     document.getElementById("username").value = generateUsername();
     document.getElementById("password").value = generatePassword();
-    
     renderHistory();
-    
     await buscarConfiguracao();
     setInterval(buscarConfiguracao, 120000);
-
     document.addEventListener("keydown", (e) => {
       if(e.key === "Enter") generateLicense();
     });
@@ -809,6 +823,57 @@
     }
   }
 
+  // ========== RESET DE DISPOSITIVO ==========
+  async function resetDevice() {
+    const username = document.getElementById("resetUsername").value.trim();
+    const token = localStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
+
+    if (!username) {
+      toast("Informe o nome de usuário", "warn", "Campo obrigatório");
+      return;
+    }
+    if (!token) {
+      toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro");
+      return;
+    }
+
+    if (!confirm(`⚠️ Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele faça login em outro aparelho.`)) {
+      return;
+    }
+
+    const loader = document.getElementById("resetLoader");
+    const btn = document.getElementById("resetBtn");
+    loader.style.display = "flex";
+    btn.disabled = true;
+    btn.classList.add("btn-loading");
+
+    try {
+      const resp = await fetch(RESET_DEVICE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ username, token })
+      });
+
+      const data = await resp.json();
+      loader.style.display = "none";
+      btn.disabled = false;
+      btn.classList.remove("btn-loading");
+
+      if (data.ok) {
+        toast("Dispositivo resetado com sucesso!", "success", "Login liberado ✅");
+        document.getElementById("resetUsername").value = "";
+      } else {
+        toast(data.error || "Erro ao resetar", "warn", "Tente novamente");
+      }
+    } catch (error) {
+      loader.style.display = "none";
+      btn.disabled = false;
+      btn.classList.remove("btn-loading");
+      toast("Erro de conexão", "warn", "Verifique sua internet");
+      console.error(error);
+    }
+  }
+
   async function generateLicense(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -823,7 +888,7 @@
     document.getElementById("generateBtn").disabled = true;
 
     try{
-      const resp = await fetch(API_URL, {
+      const resp = await fetch(GENERATE_URL, {
         method:"POST",
         headers:{"Content-Type":"application/x-www-form-urlencoded"},
         body: new URLSearchParams({
@@ -836,7 +901,6 @@
       });
 
       const raw = await resp.text();
-
       let key = null;
       try{
         const data = JSON.parse(raw);
@@ -844,7 +908,6 @@
       }catch(e){
         key = null;
       }
-
       if(!key){
         const match = raw.match(/PB[-_A-Z0-9]{6,}/i);
         if(match) key = match[0];
@@ -871,10 +934,8 @@
       showMiniResult(payload);
       pushHistory(payload);
       renderHistory();
-
       toast("Login criado com sucesso!", "success", "Pronto ✅");
 
-      // Gerar novas credenciais automaticamente para o próximo
       document.getElementById("username").value = generateUsername();
       document.getElementById("password").value = generatePassword();
 
@@ -900,7 +961,6 @@
       showMiniResult(payload);
       pushHistory(payload);
       renderHistory();
-
       toast("Login criado com sucesso!", "success", "Pronto ✅");
 
       document.getElementById("username").value = generateUsername();
@@ -913,7 +973,6 @@
   function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
-
     const expirationDate = calculateExpirationDate(parseInt(days));
 
     box.innerHTML = `
@@ -921,46 +980,37 @@
         <i class="fas fa-circle-check"></i>
         <span>${escapeHtml(title)}</span>
       </div>
-
       <div class="metaGrid">
         <div class="metaItem">
           <div class="metaLabel"><i class="fas fa-user"></i> Usuário</div>
           <div class="metaValue">${escapeHtml(username || "-")}</div>
         </div>
-
         <div class="metaItem">
           <div class="metaLabel"><i class="fas fa-lock"></i> Senha</div>
           <div class="metaValue">${escapeHtml(password || "-")}</div>
         </div>
-
         <div class="metaItem">
           <div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div>
           <div class="metaValue">${escapeHtml(days)} dias</div>
         </div>
-
         <div class="metaItem">
           <div class="metaLabel"><i class="fas fa-calendar-alt"></i> Expira em</div>
           <div class="metaValue">${escapeHtml(expirationDate)}</div>
         </div>
-
         <div class="metaItem">
           <div class="metaLabel"><i class="fas fa-tag"></i> Prefixo</div>
           <div class="metaValue">${escapeHtml(prefix)}</div>
         </div>
-
         <div class="metaItem">
           <div class="metaLabel"><i class="fas fa-shield-check"></i> Status</div>
           <div class="metaValue">${escapeHtml(status)}</div>
         </div>
-
         <div class="metaItem" style="grid-column: 1 / -1;">
           <div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div>
           <div class="metaValue">${escapeHtml(createdAtLabel)}</div>
         </div>
       </div>
-
       ${key ? `<div class="keybox" id="licenseKeyBox">🔑 KEY: ${escapeHtml(key)}</div>` : ""}
-
       <div class="rowbtns two" style="margin-top:12px;">
         <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
           <i class="fas fa-copy"></i> Credenciais
@@ -981,22 +1031,17 @@
 
     try {
       const metaItems = box.querySelectorAll('.metaItem');
-      
       let username = "", password = "", days = "";
-      
       metaItems.forEach(item => {
         const label = item.querySelector('.metaLabel')?.innerText || "";
         const value = item.querySelector('.metaValue')?.innerText || "";
-        
         if (label.includes('Usuário')) username = value;
         if (label.includes('Senha')) password = value;
         if (label.includes('Dias')) days = value;
       });
-      
       username = username || "não informado";
       password = password || "não informado";
       days = days || "não informado";
-      
       const expirationDate = calculateExpirationDate(parseInt(days));
       
       const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯
@@ -1039,7 +1084,6 @@ ${LINK_SHIZUKU}
       
       copyToClipboard(message);
       toast("✅ Mensagem completa copiada!", "success", "Pronta para enviar ao cliente");
-      
     } catch (error) {
       toast("Erro ao copiar", "warn", "Tente novamente");
     }
@@ -1051,15 +1095,12 @@ ${LINK_SHIZUKU}
       toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
       return;
     }
-
     const values = box.querySelectorAll(".metaGrid .metaValue");
     const username = values[0]?.innerText || "";
     const password = values[1]?.innerText || "";
     const days = values[2]?.innerText || "";
-
     const texto = `✅ ACESSO ${NOME_APP}\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Links:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n⚠️ Instale os DOIS aplicativos!`;
     copyToClipboard(texto);
-
     toast("Copiado", "success", "Credenciais + links ✅");
   }
 
@@ -1084,14 +1125,11 @@ ${LINK_SHIZUKU}
   function renderHistory(){
     const list = document.getElementById("historyList");
     if(!list) return;
-
     const history = getHistory();
-
     if(history.length === 0){
       list.innerHTML = `<div class="empty">Nenhum login gerado ainda. Assim que você gerar, ele aparece aqui ✅</div>`;
       return;
     }
-
     list.innerHTML = history.map((h, idx) => `
       <div class="hItem">
         <div class="hLeft">
@@ -1101,7 +1139,6 @@ ${LINK_SHIZUKU}
             <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
           </div>
         </div>
-
         <div class="hRight">
           <button class="btn-mini" onclick="copyHistoryData(${idx})">
             <i class="fas fa-copy"></i>
@@ -1121,9 +1158,7 @@ ${LINK_SHIZUKU}
       toast("Erro ao copiar", "warn", "Registro não encontrado");
       return;
     }
-
     const expirationDate = calculateExpirationDate(parseInt(item.days));
-    
     const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯
 
 ✅ SEUS DADOS DE ACESSO:
@@ -1159,7 +1194,6 @@ ${LINK_SHIZUKU}
 ✓ 1º reset: GRATUITO
 ✓ Resets adicionais: R$3,00 cada
 ✓ Suporte via Telegram: ${SUPPORT_TELEGRAM}`;
-    
     copyToClipboard(message);
     toast("Copiado", "success", "Mensagem do histórico ✅");
   }
@@ -1168,7 +1202,6 @@ ${LINK_SHIZUKU}
     const history = getHistory();
     const item = history[index];
     if(!item) return;
-
     showMiniResult(item);
     toast("Resultado carregado", "success", "Histórico aberto ✅");
   }
@@ -1197,14 +1230,11 @@ ${LINK_SHIZUKU}
     const t = document.getElementById("toast");
     const m = document.getElementById("toastMsg");
     const s = document.getElementById("toastSub");
-
     m.textContent = msg;
     s.textContent = sub;
-
     t.classList.remove("warn", "success");
     if(type === "warn") t.classList.add("warn");
     if(type === "success") t.classList.add("success");
-
     t.classList.add("show");
     clearTimeout(window.__toastTimer);
     window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2500);
