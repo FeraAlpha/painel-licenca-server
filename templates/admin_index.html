@@ -665,10 +665,15 @@
   /* ============================================= */
   /*    KILL SWITCH + APP UPDATE — REDESIGN        */
   /* ============================================= */
+  .ks-collapsible-card {
+    margin-bottom: 20px;
+  }
+
   .ks-section {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:18px;
+    padding-top: 18px;
   }
 
   .ks-card {
@@ -893,125 +898,149 @@
 </div>
 
 <!-- ============================================= -->
-<!--    KILL SWITCH + ATUALIZAÇÃO DO APP (NOVO)     -->
+<!--    KILL SWITCH + APP UPDATE (COLAPSÁVEL)       -->
 <!-- ============================================= -->
-<div class="ks-section">
-  
-  <!-- COLUNA 1: KILL SWITCH / BLOQUEIO GLOBAL -->
-  <div class="ks-card ks-card--danger">
-    <div class="ks-card__header">
-      <div class="ks-card__title">
-        <i class="fas fa-power-off" style="background:var(--danger-soft); color:var(--danger);"></i> 
-        Kill Switch
-      </div>
-      <span class="ks-status-pill {% if kill_switch.global %}ks-status-pill--blocked{% else %}ks-status-pill--free{% endif %}">
-        {% if kill_switch.global %}🔴 Bloqueado{% else %}🟢 Liberado{% endif %}
-      </span>
+<div class="card ks-collapsible-card">
+  <div class="collapsible-header" onclick="toggleCollapse(this)">
+    <div class="card-header">
+      <h2 style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-sliders-h" style="color:var(--accent);"></i> 
+        Kill Switch &amp; Atualização do App
+        <span style="margin-left:12px;">
+          {% if kill_switch.global %}
+            <span class="badge badge-exp" style="font-size:11px;">🔴 Bloqueio Global</span>
+          {% else %}
+            <span class="badge badge-ok" style="font-size:11px;">🟢 Normal</span>
+          {% endif %}
+          {% if kill_switch.update_url %}
+            <span class="badge badge-multi" style="font-size:11px; margin-left:6px;">🆕 Atualização disponível</span>
+          {% endif %}
+        </span>
+      </h2>
     </div>
-
-    <form method="POST" action="/admin/kill_switch_update">
-      <input type="hidden" name="action" value="set">
-
-      <div class="ks-form-row" style="margin-bottom:10px;">
-        <div>
-          <label><i class="fas fa-globe"></i> Modo global</label>
-          <select name="global">
-            <option value="false" {% if not kill_switch.global %}selected{% endif %}>Liberado (false)</option>
-            <option value="true" {% if kill_switch.global %}selected{% endif %}>Bloqueado (true)</option>
-          </select>
-        </div>
-        <div>
-          <label><i class="fas fa-code-branch"></i> Versão mínima</label>
-          <input type="text" name="min_version" placeholder="ex: 2.2.4" value="{{ kill_switch.min_version or '' }}">
-        </div>
-      </div>
-
-      <div class="ks-form-row" style="margin-bottom:10px;">
-        <div style="flex:2;">
-          <label><i class="fas fa-ban"></i> Versões bloqueadas (vírgula)</label>
-          <input type="text" name="versions" placeholder="2.2.0, 2.2.1" value="{{ kill_switch.versions|join(', ') }}">
-        </div>
-      </div>
-
-      <div class="ks-form-row" style="margin-bottom:10px;">
-        <div style="flex:2;">
-          <label><i class="fas fa-envelope"></i> Mensagem no app bloqueado</label>
-          <input type="text" name="message" maxlength="500" value="{{ kill_switch.message }}">
-        </div>
-      </div>
-
-      <div class="ks-form-row">
-        <div style="flex:2;">
-          <label><i class="fab fa-whatsapp"></i> URL de suporte</label>
-          <input type="text" name="support_url" placeholder="https://wa.me/55SEUNUMERO" value="{{ kill_switch.support_url or '' }}">
-        </div>
-      </div>
-
-      <div class="ks-tip">
-        <strong>📋 Fluxo recomendado:</strong> Build da nova versão → Publica APK → Avisa usuários (1-3 dias) → Seta <code>min_version</code> → Bloqueia versões antigas automaticamente.
-      </div>
-
-      <div class="ks-btn-row">
-        <button class="btn btn-primary" type="submit">
-          <i class="fas fa-save"></i> Salvar configurações
-        </button>
-        <button class="btn btn-warning" type="button" onclick="resetKillSwitch()">
-          <i class="fas fa-undo"></i> Resetar (liberar tudo)
-        </button>
-      </div>
-    </form>
+    <i class="fas fa-chevron-down toggle-icon"></i>
   </div>
 
-  <!-- COLUNA 2: ATUALIZAÇÃO DO APP -->
-  <div class="ks-card ks-card--accent">
-    <div class="ks-card__header">
-      <div class="ks-card__title">
-        <i class="fas fa-cloud-download-alt" style="background:var(--accent-soft); color:var(--accent);"></i>
-        Atualização do App
+  <div class="collapsible-content collapsed">
+    <div class="ks-section">
+      
+      <!-- COLUNA 1: KILL SWITCH / BLOQUEIO GLOBAL -->
+      <div class="ks-card ks-card--danger">
+        <div class="ks-card__header">
+          <div class="ks-card__title">
+            <i class="fas fa-power-off" style="background:var(--danger-soft); color:var(--danger);"></i> 
+            Kill Switch
+          </div>
+          <span class="ks-status-pill {% if kill_switch.global %}ks-status-pill--blocked{% else %}ks-status-pill--free{% endif %}">
+            {% if kill_switch.global %}🔴 Bloqueado{% else %}🟢 Liberado{% endif %}
+          </span>
+        </div>
+
+        <form method="POST" action="/admin/kill_switch_update">
+          <input type="hidden" name="action" value="set">
+
+          <div class="ks-form-row" style="margin-bottom:10px;">
+            <div>
+              <label><i class="fas fa-globe"></i> Modo global</label>
+              <select name="global">
+                <option value="false" {% if not kill_switch.global %}selected{% endif %}>Liberado (false)</option>
+                <option value="true" {% if kill_switch.global %}selected{% endif %}>Bloqueado (true)</option>
+              </select>
+            </div>
+            <div>
+              <label><i class="fas fa-code-branch"></i> Versão mínima</label>
+              <input type="text" name="min_version" placeholder="ex: 2.2.4" value="{{ kill_switch.min_version or '' }}">
+            </div>
+          </div>
+
+          <div class="ks-form-row" style="margin-bottom:10px;">
+            <div style="flex:2;">
+              <label><i class="fas fa-ban"></i> Versões bloqueadas (vírgula)</label>
+              <input type="text" name="versions" placeholder="2.2.0, 2.2.1" value="{{ kill_switch.versions|join(', ') }}">
+            </div>
+          </div>
+
+          <div class="ks-form-row" style="margin-bottom:10px;">
+            <div style="flex:2;">
+              <label><i class="fas fa-envelope"></i> Mensagem no app bloqueado</label>
+              <input type="text" name="message" maxlength="500" value="{{ kill_switch.message }}">
+            </div>
+          </div>
+
+          <div class="ks-form-row">
+            <div style="flex:2;">
+              <label><i class="fab fa-whatsapp"></i> URL de suporte</label>
+              <input type="text" name="support_url" placeholder="https://wa.me/55SEUNUMERO" value="{{ kill_switch.support_url or '' }}">
+            </div>
+          </div>
+
+          <div class="ks-tip">
+            <strong>📋 Fluxo recomendado:</strong> Build da nova versão → Publica APK → Avisa usuários (1-3 dias) → Seta <code>min_version</code> → Bloqueia versões antigas automaticamente.
+          </div>
+
+          <div class="ks-btn-row">
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-save"></i> Salvar configurações
+            </button>
+            <button class="btn btn-warning" type="button" onclick="resetKillSwitch()">
+              <i class="fas fa-undo"></i> Resetar (liberar tudo)
+            </button>
+          </div>
+        </form>
       </div>
-      {% if kill_switch.update_url %}
-        <span class="ks-status-pill ks-status-pill--update">🆕 v{{ kill_switch.update_version or '?' }}</span>
-      {% else %}
-        <span class="ks-status-pill ks-status-pill--none">Nenhuma</span>
-      {% endif %}
+
+      <!-- COLUNA 2: ATUALIZAÇÃO DO APP -->
+      <div class="ks-card ks-card--accent">
+        <div class="ks-card__header">
+          <div class="ks-card__title">
+            <i class="fas fa-cloud-download-alt" style="background:var(--accent-soft); color:var(--accent);"></i>
+            Atualização do App
+          </div>
+          {% if kill_switch.update_url %}
+            <span class="ks-status-pill ks-status-pill--update">🆕 v{{ kill_switch.update_version or '?' }}</span>
+          {% else %}
+            <span class="ks-status-pill ks-status-pill--none">Nenhuma</span>
+          {% endif %}
+        </div>
+
+        <form method="POST" action="/admin/kill_switch_update">
+          <input type="hidden" name="action" value="set">
+
+          <div class="ks-form-row" style="margin-bottom:10px;">
+            <div>
+              <label><i class="fas fa-tag"></i> Nova versão</label>
+              <input type="text" name="update_version" placeholder="ex: 2.2.4" maxlength="20" value="{{ kill_switch.update_version or '' }}">
+            </div>
+          </div>
+
+          <div class="ks-form-row">
+            <div style="flex:2;">
+              <label><i class="fas fa-link"></i> Link de download do APK</label>
+              <input type="text" name="update_url" placeholder="https://drive.google.com/.../app-2.2.4.apk" maxlength="500" value="{{ kill_switch.update_url or '' }}">
+            </div>
+          </div>
+
+          <div class="ks-tip" style="border-left-color:var(--ok);">
+            <strong>💡 Comportamento:</strong><br>
+            • <strong>Link preenchido + Bloqueio OFF</strong> → Modal verde "Nova versão" (usuário pode dispensar)<br>
+            • <strong>Link preenchido + Bloqueio ON</strong> → Tela obrigatória de atualização (bloqueia uso)<br>
+            • <strong>Bloqueio ON + Sem link</strong> → Tela vermelha de bloqueio<br>
+            • <strong>Campos vazios</strong> → Remove qualquer aviso
+          </div>
+
+          <div class="ks-btn-row">
+            <button class="btn btn-primary" type="submit" onclick="setLoading(this)">
+              <i class="fas fa-save"></i> Salvar atualização
+            </button>
+            <button class="btn btn-ghost" type="button" onclick="clearUpdate()">
+              <i class="fas fa-times"></i> Remover atualização
+            </button>
+          </div>
+        </form>
+      </div>
+
     </div>
-
-    <form method="POST" action="/admin/kill_switch_update">
-      <input type="hidden" name="action" value="set">
-
-      <div class="ks-form-row" style="margin-bottom:10px;">
-        <div>
-          <label><i class="fas fa-tag"></i> Nova versão</label>
-          <input type="text" name="update_version" placeholder="ex: 2.2.4" maxlength="20" value="{{ kill_switch.update_version or '' }}">
-        </div>
-      </div>
-
-      <div class="ks-form-row">
-        <div style="flex:2;">
-          <label><i class="fas fa-link"></i> Link de download do APK</label>
-          <input type="text" name="update_url" placeholder="https://drive.google.com/.../app-2.2.4.apk" maxlength="500" value="{{ kill_switch.update_url or '' }}">
-        </div>
-      </div>
-
-      <div class="ks-tip" style="border-left-color:var(--ok);">
-        <strong>💡 Comportamento:</strong><br>
-        • <strong>Link preenchido + Bloqueio OFF</strong> → Modal verde "Nova versão" (usuário pode dispensar)<br>
-        • <strong>Link preenchido + Bloqueio ON</strong> → Tela obrigatória de atualização (bloqueia uso)<br>
-        • <strong>Bloqueio ON + Sem link</strong> → Tela vermelha de bloqueio<br>
-        • <strong>Campos vazios</strong> → Remove qualquer aviso
-      </div>
-
-      <div class="ks-btn-row">
-        <button class="btn btn-primary" type="submit" onclick="setLoading(this)">
-          <i class="fas fa-save"></i> Salvar atualização
-        </button>
-        <button class="btn btn-ghost" type="button" onclick="clearUpdate()">
-          <i class="fas fa-times"></i> Remover atualização
-        </button>
-      </div>
-    </form>
   </div>
-
 </div>
 <!-- ============================================= -->
 <!--        FIM DO KILL SWITCH + APP UPDATE         -->
@@ -1301,9 +1330,11 @@ function recarregarDados() {
 }
 
 function toggleCollapse(headerElement) {
-  const card = headerElement.closest('.card');
+  const card = headerElement.closest('.card') || headerElement.closest('.ks-collapsible-card');
   const content = card.querySelector('.collapsible-content');
   const icon = headerElement.querySelector('.toggle-icon');
+  
+  if (!content || !icon) return;
   
   content.classList.toggle('collapsed');
   if (content.classList.contains('collapsed')) {
