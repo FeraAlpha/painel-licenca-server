@@ -2183,6 +2183,17 @@
       "created_at": 1778327418,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB6VKALRXV",
+      "password": "53MA-G2DA-JTF6",
+      "key": "PB-198C5038",
+      "device_id": null,
+      "expires_at": 1781355696,
+      "reseller": "WAGNER",
+      "created_at": 1778331696,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
