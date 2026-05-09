@@ -1945,7 +1945,7 @@
       "expires_at": 1778504836,
       "created_at": 1777913515,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "Fera4517",
