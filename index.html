@@ -573,7 +573,7 @@
       <div class="field">
         <label><i class="fas fa-user"></i> Usuário</label>
         <div class="input-with-button">
-          <input id="username" placeholder="PB0521X7A3" autocomplete="off" readonly>
+          <input id="username" placeholder="PBXXXXXXXX" autocomplete="off" readonly>
           <button class="btn-icon" onclick="regenerateUsername()" title="Gerar novo usuário"><i class="fas fa-arrows-rotate"></i></button>
         </div>
       </div>
@@ -678,18 +678,14 @@
 
   let currentDays = 35;
 
-  // ========== GERAÇÃO DE USUÁRIO (PB + MÊS + DIA + ALEATÓRIO) ==========
+  // ========== GERAÇÃO DE USUÁRIO (PB + 8 ALEATÓRIOS) ==========
   function generateUsername() {
-    const agora = new Date();
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
-    const dia = String(agora.getDate()).padStart(2, '0');
-    // 4 caracteres aleatórios maiúsculos (letras e números, evitando confusos)
-    const charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let sufixo = "";
-    for (let i = 0; i < 4; i++) {
-      sufixo += charset.charAt(Math.floor(Math.random() * charset.length));
+    for (let i = 0; i < 8; i++) {
+      sufixo += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    return `PB${mes}${dia}${sufixo}`;
+    return `PB${sufixo}`;
   }
 
   // ========== GERAÇÃO DE SENHA (ESTILO CHAVE DE PRODUTO, 14 CARACTERES) ==========
