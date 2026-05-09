@@ -9,7 +9,6 @@ from functools import wraps
 from collections import defaultdict
 from logging.handlers import RotatingFileHandler
 import logging
-from flask_cors import CORS   # <-- NOVO
 
 # Configurações de banco e arquivos
 DB = "data/licenses.db"
@@ -744,7 +743,16 @@ def gerar_assinatura_hmac(expires, fingerprint):
 #   FLASK APP
 # ------------------------------
 app = Flask(__name__, template_folder='templates')
-CORS(app)  # <-- NOVO
+
+# ------------------------------
+#   CORS MANUAL (substitui flask-cors)
+# ------------------------------
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
 
 # ------------------------------
 #   MIDDLEWARE DE SEGURANÇA
