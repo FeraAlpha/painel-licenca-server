@@ -2172,6 +2172,17 @@
       "created_at": 1778284872,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBE8439BLS",
+      "password": "M5GM-24FN-Q56H",
+      "key": "PB-1620D2B8",
+      "device_id": null,
+      "expires_at": 1778932218,
+      "reseller": "WAGNER",
+      "created_at": 1778327418,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
