@@ -163,12 +163,11 @@
     }
     input::placeholder{color:#93a1b3}
 
-    /* input com ícone de olho */
     .password-wrapper {
       position: relative;
     }
     .password-wrapper input {
-      padding-right: 45px; /* espaço para o ícone */
+      padding-right: 45px;
     }
     .password-wrapper .toggle-password {
       position: absolute;
@@ -569,7 +568,6 @@
         </div>
       </div>
 
-      <!-- USUÁRIO -->
       <div class="field">
         <label><i class="fas fa-user"></i> Usuário</label>
         <div class="input-with-button">
@@ -578,7 +576,6 @@
         </div>
       </div>
 
-      <!-- SENHA -->
       <div class="field">
         <label><i class="fas fa-lock"></i> Senha</label>
         <div class="input-with-button">
@@ -632,6 +629,40 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
+    <!-- RENOVAR LOGIN (NOVO) -->
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-clock"></i>
+          <div>
+            <h2>Renovar Login</h2>
+            <div class="sub">Adicione mais dias a um login existente</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-user"></i> Usuário (login existente)</label>
+        <input id="renewUsername" placeholder="PBXXXXXXXX" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-calendar-plus"></i> Dias para adicionar</label>
+        <input id="renewDays" type="number" min="1" max="365" value="30" placeholder="30">
+      </div>
+
+      <button class="btn btn-success" id="renewBtn" onclick="renewLicense()">
+        <i class="fas fa-sync-alt"></i> Renovar Licença
+      </button>
+
+      <div class="loader" id="renewLoader" style="display:none;">
+        <div class="spin"></div>
+        <span>Renovando licença...</span>
+      </div>
+
+      <div class="resultBox" id="renewResultBox"></div>
+    </div>
+
     <!-- RESETAR DISPOSITIVO -->
     <div class="card">
       <div class="cardhead">
@@ -675,7 +706,7 @@
     </div>
 
     <footer>
-      <i class="fas fa-code-branch"></i> Versão 2.1.2 | 
+      <i class="fas fa-code-branch"></i> Versão 2.1.3 | 
       <i class="fab fa-telegram"></i> @SuportePBooster |
       <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
     </footer>
@@ -694,6 +725,7 @@
   const BASE_URL = "https://painel-licenca-server.onrender.com";
   const GENERATE_URL = BASE_URL + "/reseller/generate";
   const RESET_DEVICE_URL = BASE_URL + "/reseller/reset_device";
+  const RENEW_URL = BASE_URL + "/reseller/renew";
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v3";
   const PREFIX = "PB";
@@ -707,7 +739,6 @@
 
   let currentDays = 35;
 
-  // ========== GERAÇÃO DE USUÁRIO (PB + 8 ALEATÓRIOS) ==========
   function generateUsername() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let sufixo = "";
@@ -717,7 +748,6 @@
     return `PB${sufixo}`;
   }
 
-  // ========== GERAÇÃO DE SENHA (ESTILO CHAVE DE PRODUTO, 14 CARACTERES) ==========
   function generatePassword() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let raw = "";
@@ -823,6 +853,63 @@
     }
   }
 
+  // ========== RENOVAR LICENÇA ==========
+  async function renewLicense() {
+    const username = document.getElementById("renewUsername").value.trim();
+    const days = parseInt(document.getElementById("renewDays").value) || 30;
+    const token = localStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
+
+    if (!username) {
+      toast("Informe o nome de usuário", "warn", "Campo obrigatório");
+      return;
+    }
+    if (days < 1 || days > 365) {
+      toast("Dias inválidos", "warn", "Digite um valor entre 1 e 365");
+      return;
+    }
+    if (!token) {
+      toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro");
+      return;
+    }
+
+    if (!confirm(`⚠️ Adicionar ${days} dias ao usuário "${username}"?`)) return;
+
+    const loader = document.getElementById("renewLoader");
+    const btn = document.getElementById("renewBtn");
+    loader.style.display = "flex";
+    btn.disabled = true;
+    btn.classList.add("btn-loading");
+
+    try {
+      const resp = await fetch(RENEW_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ username, token, days: String(days) })
+      });
+
+      const data = await resp.json();
+      loader.style.display = "none";
+      btn.disabled = false;
+      btn.classList.remove("btn-loading");
+
+      if (data.ok) {
+        const box = document.getElementById("renewResultBox");
+        box.style.display = "block";
+        box.innerHTML = `<div class="resultTitle"><i class="fas fa-check-circle"></i> <span>${escapeHtml(data.message)}</span></div>`;
+        toast("Licença renovada com sucesso!", "success", `+${days} dias adicionados ✅`);
+        document.getElementById("renewUsername").value = "";
+      } else {
+        toast(data.error || "Erro ao renovar", "warn", "Tente novamente");
+      }
+    } catch (error) {
+      loader.style.display = "none";
+      btn.disabled = false;
+      btn.classList.remove("btn-loading");
+      toast("Erro de conexão", "warn", "Verifique sua internet");
+      console.error(error);
+    }
+  }
+
   // ========== RESET DE DISPOSITIVO ==========
   async function resetDevice() {
     const username = document.getElementById("resetUsername").value.trim();
@@ -837,9 +924,7 @@
       return;
     }
 
-    if (!confirm(`⚠️ Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele faça login em outro aparelho.`)) {
-      return;
-    }
+    if (!confirm(`⚠️ Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele faça login em outro aparelho.`)) return;
 
     const loader = document.getElementById("resetLoader");
     const btn = document.getElementById("resetBtn");
