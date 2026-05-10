@@ -359,22 +359,22 @@
 
   .stats-bar {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
-    gap:12px;
-    margin-bottom:22px;
+    grid-template-columns: repeat(auto-fit, minmax(100px,1fr));
+    gap:10px;
+    margin-bottom:20px;
   }
 
   .stat-item {
     background: var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:14px 12px;
+    padding:10px 8px;
     text-align:center;
     box-shadow:var(--shadow);
   }
 
   .stat-number {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     display: block;
     line-height: 1.2;
@@ -382,13 +382,13 @@
   }
 
   .stat-label {
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-light);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    margin-top:4px;
+    margin-top:3px;
   }
 
   .toast{
@@ -841,15 +841,15 @@
     }
     
     .stats-bar {
-      grid-template-columns: repeat(auto-fit, minmax(80px,1fr));
+      grid-template-columns: repeat(auto-fit, minmax(70px,1fr));
     }
 
     .stat-number {
-      font-size: 18px;
+      font-size: 16px;
     }
     
     .stat-label {
-      font-size: 9px;
+      font-size: 8px;
     }
     
     .toolbar {
@@ -871,7 +871,6 @@
     <h1>Fera Alpha</h1>
   </div>
   <div style="display: flex; gap: 12px; align-items: center;">
-    <!-- Link para página de tentativas suspeitas com contador -->
     <a href="/admin/decoy-hits" class="btn btn-ghost decoy-link" style="text-decoration: none;">
       <i class="fas fa-shield-alt"></i> Tentativas suspeitas
       <span id="decoy-badge-count" class="menu-badge" style="display: none;">0</span>
@@ -1154,12 +1153,6 @@
       <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(35, 'days')">35 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(65, 'days')">65 Dias</button>
       <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(110, 'days')">110 Dias</button>
-    </div>
-    
-    <div class="full-width compact-buttons" style="margin-top: 5px;">
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(30, 'minutes')">30 Min</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(60, 'minutes')">60 Min</button>
-      <button type="button" class="btn btn-ghost" onclick="setQuickExpiration(120, 'minutes')">120 Min</button>
     </div>
 
     <!-- CHECKBOX PARA MULTI-DISPOSITIVO -->
