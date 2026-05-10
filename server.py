@@ -167,7 +167,7 @@ RATE_LIMIT = {
     'activate': {'limit': 5, 'window': 300},
     'verify_license': {'limit': 10, 'window': 300},
     'validate_token': {'limit': 20, 'window': 300},
-    'kill_switch': {'limit': 60, 'window': 300},   # ADICIONADO
+    'kill_switch': {'limit': 60, 'window': 300},
 }
 
 request_counts = defaultdict(list)
@@ -1921,8 +1921,13 @@ def reseller_renew():
     if not user:
         return jsonify({"error": "user_not_found"}), 404
 
-    if user.get("reseller") != reseller_nome:
-        return jsonify({"error": "not_authorized"}), 403
+    # Verificação de autorização com log detalhado
+    user_reseller = user.get("reseller")
+    if user_reseller != reseller_nome:
+        log_security("reseller_renew_unauthorized",
+                    details={"reseller_token": reseller_nome, "user_reseller": user_reseller, "username": username},
+                    severity="WARNING")
+        return jsonify({"error": "not_authorized", "message": "Você não tem permissão para renovar este usuário."}), 403
 
     now = int(time.time())
     current_exp = user.get("expires_at", 0)
