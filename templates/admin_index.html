@@ -368,13 +368,13 @@
     background: var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:16px;
+    padding:14px 12px;
     text-align:center;
     box-shadow:var(--shadow);
   }
 
   .stat-number {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 800;
     display: block;
     line-height: 1.2;
@@ -382,12 +382,12 @@
   }
 
   .stat-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     margin-top:4px;
   }
 
@@ -845,11 +845,11 @@
     }
 
     .stat-number {
-      font-size: 20px;
+      font-size: 18px;
     }
     
     .stat-label {
-      font-size: 10px;
+      font-size: 9px;
     }
     
     .toolbar {
@@ -1119,12 +1119,12 @@
   <form method="post" action="/admin/generate" id="generateForm" class="form-2cols">
     <div>
       <label>Usuário</label>
-      <input name="username" required placeholder="nome do usuário">
+      <input name="username" id="usernameField" required placeholder="VIP-XXXXXXXX">
     </div>
 
     <div class="full-width">
       <label>Senha <small>(gerada automaticamente, pode editar)</small></label>
-      <input name="password" id="autoPassword" required>
+      <input name="password" id="autoPassword" required placeholder="XXXX-XXXX-XXXX">
     </div>
 
     <div class="full-width expiry-group">
@@ -1317,6 +1317,26 @@ const API_URL = window.location.origin + "/admin/generate";
 let loginsGerados = [];
 let loginsCriados = [];
 
+// ========== NOVAS FUNÇÕES DE GERAÇÃO ==========
+function generateAdminUsername() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let sufixo = "";
+  for (let i = 0; i < 8; i++) {
+    sufixo += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `VIP-${sufixo}`;
+}
+
+function generateAdminPassword() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let raw = "";
+  for (let i = 0; i < 12; i++) {
+    raw += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`;
+}
+// =============================================
+
 function showSuccessMessage(message) {
   const toast = document.getElementById('toast');
   toast.innerText = message;
@@ -1505,8 +1525,11 @@ function generateRandomPassword() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+  const userField = document.getElementById('usernameField');
   const passField = document.getElementById('autoPassword');
-  if (passField) passField.value = generateRandomPassword();
+  
+  if (userField) userField.value = generateAdminUsername();
+  if (passField) passField.value = generateAdminPassword();
 
   const url = new URL(window.location.href);
   const msg = url.searchParams.get("msg");
