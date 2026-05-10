@@ -277,9 +277,7 @@
       border:1px solid var(--border);
       color:var(--text);
     }
-    .btn-soft:hover{
-      background: rgba(240,243,255,.7);
-    }
+    .btn-soft:hover{ background: rgba(240,243,255,.7); }
 
     .btn-danger{
       background: rgba(255,78,78,.10);
@@ -319,15 +317,9 @@
       margin-top:10px;
       flex-wrap:wrap;
     }
-    .rowbtns .btn{
-      width:100%;
-      padding:12px
-    }
+    .rowbtns .btn{ width:100%; padding:12px }
 
-    .rowbtns.two .btn{
-      flex:1;
-      min-width: 160px;
-    }
+    .rowbtns.two .btn{ flex:1; min-width: 160px; }
 
     .loader{
       display:none;
@@ -533,6 +525,11 @@
       border-top: 1px solid var(--border);
     }
 
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
     footer i {
       color: var(--primary);
     }
@@ -629,7 +626,7 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
-    <!-- RENOVAR LOGIN (NOVO) -->
+    <!-- RENOVAR LOGIN -->
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -707,7 +704,7 @@
 
     <footer>
       <i class="fas fa-code-branch"></i> Versão 2.1.3 | 
-      <i class="fab fa-telegram"></i> @SuportePBooster |
+      <i class="fab fa-whatsapp"></i> <a href="https://wa.me/5511996198873">Suporte</a> |
       <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
     </footer>
 
@@ -735,7 +732,7 @@
   let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/6g66fzuudkhmgty/P-Booster_V2.2.2.apk/file";
   let LINK_SHIZUKU = "https://www.mediafire.com/file/zaupg0br4tlhfkt/Shizuku_13.5.4.apk/file";
   let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PRECISION BOOSTER V2";
-  let SUPPORT_TELEGRAM = "@SuportePBooster";
+  const SUPPORT_WA = "https://wa.me/5511996198873";
 
   let currentDays = 35;
 
@@ -859,19 +856,9 @@
     const days = parseInt(document.getElementById("renewDays").value) || 30;
     const token = localStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
 
-    if (!username) {
-      toast("Informe o nome de usuário", "warn", "Campo obrigatório");
-      return;
-    }
-    if (days < 1 || days > 365) {
-      toast("Dias inválidos", "warn", "Digite um valor entre 1 e 365");
-      return;
-    }
-    if (!token) {
-      toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro");
-      return;
-    }
-
+    if (!username) { toast("Informe o nome de usuário", "warn", "Campo obrigatório"); return; }
+    if (days < 1 || days > 365) { toast("Dias inválidos", "warn", "Digite um valor entre 1 e 365"); return; }
+    if (!token) { toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro"); return; }
     if (!confirm(`⚠️ Adicionar ${days} dias ao usuário "${username}"?`)) return;
 
     const loader = document.getElementById("renewLoader");
@@ -915,15 +902,8 @@
     const username = document.getElementById("resetUsername").value.trim();
     const token = localStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
 
-    if (!username) {
-      toast("Informe o nome de usuário", "warn", "Campo obrigatório");
-      return;
-    }
-    if (!token) {
-      toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro");
-      return;
-    }
-
+    if (!username) { toast("Informe o nome de usuário", "warn", "Campo obrigatório"); return; }
+    if (!token) { toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro"); return; }
     if (!confirm(`⚠️ Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele faça login em outro aparelho.`)) return;
 
     const loader = document.getElementById("resetLoader");
@@ -976,27 +956,13 @@
       const resp = await fetch(GENERATE_URL, {
         method:"POST",
         headers:{"Content-Type":"application/x-www-form-urlencoded"},
-        body: new URLSearchParams({
-          username,
-          password,
-          expire_days: String(currentDays),
-          token,
-          prefix: PREFIX
-        })
+        body: new URLSearchParams({ username, password, expire_days: String(currentDays), token, prefix: PREFIX })
       });
 
       const raw = await resp.text();
       let key = null;
-      try{
-        const data = JSON.parse(raw);
-        if(data && data.ok && data.key) key = data.key;
-      }catch(e){
-        key = null;
-      }
-      if(!key){
-        const match = raw.match(/PB[-_A-Z0-9]{6,}/i);
-        if(match) key = match[0];
-      }
+      try{ const data = JSON.parse(raw); if(data && data.ok && data.key) key = data.key; }catch(e){ key = null; }
+      if(!key){ const match = raw.match(/PB[-_A-Z0-9]{6,}/i); if(match) key = match[0]; }
 
       document.getElementById("loader").style.display = "none";
       document.getElementById("generateBtn").disabled = false;
@@ -1006,12 +972,9 @@
 
       const payload = {
         title: "Login criado com sucesso!",
-        username,
-        password,
-        days: currentDays,
-        key,
-        prefix: PREFIX,
-        status: "OK",
+        username, password,
+        days: currentDays, key,
+        prefix: PREFIX, status: "OK",
         createdAt: now.toISOString(),
         createdAtLabel: timeStr
       };
@@ -1033,12 +996,9 @@
 
       const payload = {
         title: "Login criado com sucesso!",
-        username,
-        password,
-        days: currentDays,
-        key: null,
-        prefix: PREFIX,
-        status: "OK",
+        username, password,
+        days: currentDays, key: null,
+        prefix: PREFIX, status: "OK",
         createdAt: now.toISOString(),
         createdAtLabel: timeStr
       };
@@ -1050,7 +1010,6 @@
 
       document.getElementById("username").value = generateUsername();
       document.getElementById("password").value = generatePassword();
-
       console.error(err);
     }
   }
@@ -1059,6 +1018,7 @@
     const box = document.getElementById("resultBox");
     box.style.display = "block";
     const expirationDate = calculateExpirationDate(parseInt(days));
+    const daysClean = String(days).replace('dias','').trim();
 
     box.innerHTML = `
       <div class="resultTitle">
@@ -1066,53 +1026,26 @@
         <span>${escapeHtml(title)}</span>
       </div>
       <div class="metaGrid">
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-user"></i> Usuário</div>
-          <div class="metaValue">${escapeHtml(username || "-")}</div>
-        </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-lock"></i> Senha</div>
-          <div class="metaValue">${escapeHtml(password || "-")}</div>
-        </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div>
-          <div class="metaValue">${escapeHtml(days)} dias</div>
-        </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-calendar-alt"></i> Expira em</div>
-          <div class="metaValue">${escapeHtml(expirationDate)}</div>
-        </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-tag"></i> Prefixo</div>
-          <div class="metaValue">${escapeHtml(prefix)}</div>
-        </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-shield-check"></i> Status</div>
-          <div class="metaValue">${escapeHtml(status)}</div>
-        </div>
-        <div class="metaItem" style="grid-column: 1 / -1;">
-          <div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div>
-          <div class="metaValue">${escapeHtml(createdAtLabel)}</div>
-        </div>
+        <div class="metaItem"><div class="metaLabel"><i class="fas fa-user"></i> Usuário</div><div class="metaValue">${escapeHtml(username || "-")}</div></div>
+        <div class="metaItem"><div class="metaLabel"><i class="fas fa-lock"></i> Senha</div><div class="metaValue">${escapeHtml(password || "-")}</div></div>
+        <div class="metaItem"><div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div><div class="metaValue">${escapeHtml(daysClean)} dias</div></div>
+        <div class="metaItem"><div class="metaLabel"><i class="fas fa-calendar-alt"></i> Expira em</div><div class="metaValue">${escapeHtml(expirationDate)}</div></div>
+        <div class="metaItem"><div class="metaLabel"><i class="fas fa-tag"></i> Prefixo</div><div class="metaValue">${escapeHtml(prefix)}</div></div>
+        <div class="metaItem"><div class="metaLabel"><i class="fas fa-shield-check"></i> Status</div><div class="metaValue">${escapeHtml(status)}</div></div>
+        <div class="metaItem" style="grid-column: 1 / -1;"><div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div><div class="metaValue">${escapeHtml(createdAtLabel)}</div></div>
       </div>
       ${key ? `<div class="keybox" id="licenseKeyBox">🔑 KEY: ${escapeHtml(key)}</div>` : ""}
       <div class="rowbtns two" style="margin-top:12px;">
-        <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
-          <i class="fas fa-copy"></i> Credenciais
-        </button>
-        <button class="btn btn-primary" type="button" onclick="copyAllWithLink()">
-          <i class="fas fa-bolt"></i> Completo + Links
-        </button>
+        <button class="btn btn-soft" type="button" onclick="copyUserPassDays()"><i class="fas fa-copy"></i> Credenciais</button>
+        <button class="btn btn-primary" type="button" onclick="copyAllWithLink()"><i class="fas fa-bolt"></i> Completo + Links</button>
       </div>
     `;
   }
 
+  // ========== MENSAGEM COMPLETA (WhatsApp formatado) ==========
   function copyAllWithLink() {
     const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
+    if(!box || box.style.display === "none"){ toast("Nenhum resultado", "warn", "Gere uma licença primeiro"); return; }
 
     try {
       const metaItems = box.querySelectorAll('.metaItem');
@@ -1122,83 +1055,106 @@
         const value = item.querySelector('.metaValue')?.innerText || "";
         if (label.includes('Usuário')) username = value;
         if (label.includes('Senha')) password = value;
-        if (label.includes('Dias')) days = value;
+        if (label.includes('Dias')) days = value.replace('dias','').trim();
       });
       username = username || "não informado";
       password = password || "não informado";
       days = days || "não informado";
       const expirationDate = calculateExpirationDate(parseInt(days));
       
-      const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯
+      const message = `🔥 *ACESSO LIBERADO — ${NOME_APP}* 🔥
 
-✅ SEUS DADOS DE ACESSO:
+━━━━━━━━━━━━━━━━━━━━━
+🎟️ *SUA LICENÇA PREMIUM*
+━━━━━━━━━━━━━━━━━━━━━
 
-👤 USUÁRIO: ${username}
-🔑 SENHA: ${password}
-⏱️ VALIDADE: ${days} dias
-📅 EXPIRA EM: ${expirationDate}
+👤 *Usuário:* \`${username}\`
+🔑 *Senha:* \`${password}\`
+📅 *Validade:* ${days} dias
+⏰ *Expira em:* ${expirationDate}
 
-📲 DOWNLOAD DOS APLICATIVOS:
+━━━━━━━━━━━━━━━━━━━━━
+📲 *DOWNLOAD DOS APPS*
+━━━━━━━━━━━━━━━━━━━━━
 
-🔹 ${NOME_APP}:
-${LINK_APK}
+🔹 *${NOME_APP}:*
+👉 ${LINK_APK}
 
-🔹 Shizuku (OBRIGATÓRIO):
-${LINK_SHIZUKU}
+🔹 *Shizuku (OBRIGATÓRIO):*
+👉 ${LINK_SHIZUKU}
 
-⚠️ IMPORTANTE:
-• Instale os DOIS aplicativos para o funcionamento correto
-• O Shizuku permite permissões avançadas no sistema
-• Após instalar, ative o Shizuku antes de abrir o ${NOME_APP}
+━━━━━━━━━━━━━━━━━━━━━
+📌 *PASSO A PASSO*
+━━━━━━━━━━━━━━━━━━━━━
 
-⚡ APROVEITE A MELHOR EXPERIÊNCIA!
+1️⃣ Instale o *Shizuku* primeiro
+2️⃣ Ative o Shizuku (toque em "Pareamento")
+3️⃣ Instale o *${NOME_APP}*
+4️⃣ Abra o app e faça login com os dados acima
+5️⃣ Escolha seu modo (Root ou Shizuku)
+6️⃣ Ative o Boost e jogue!
 
-─────────────────────────────────────────
-🔒 SEGURANÇA:
+━━━━━━━━━━━━━━━━━━━━━
+🔄 *POLÍTICA DE RESET*
+━━━━━━━━━━━━━━━━━━━━━
 
-• Não compartilhe sua senha com ninguém
-• Cada conta é para uso em 1 dispositivo
-• O sistema detecta uso simultâneo
+✅ *1º reset:* GRATUITO
+💰 *Demais resets:* R$ 3,00 cada
 
-─────────────────────────────────────────
-📌 POLÍTICA DE RESET DE LOGIN:
+📱 *Quando usar o reset:*
+• Trocou de celular? ✅ Pode resetar
+• Celular quebrou ou foi roubado? ✅ Pode resetar
+• Formatou o aparelho? ✅ Pode resetar
 
-✓ 1º reset: GRATUITO
-✓ Resets adicionais: R$3,00 cada
-✓ Suporte via Telegram: ${SUPPORT_TELEGRAM}`;
+⚠️ *Não use o reset para:*
+• Emprestar o login para um amigo
+• Ficar trocando de dispositivo toda hora
+• Usar o mesmo login em 2 celulares ao mesmo tempo
+
+🛡️ *O sistema detecta uso simultâneo e pode bloquear a licença permanentemente.*
+
+━━━━━━━━━━━━━━━━━━━━━
+📞 *SUPORTE DIRETO*
+━━━━━━━━━━━━━━━━━━━━━
+
+💬 *Fale conosco no WhatsApp:*
+👉 ${SUPPORT_WA}
+
+━━━━━━━━━━━━━━━━━━━━━
+🛡️ *SEGURANÇA*
+━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ Não compartilhe sua senha
+📱 1 dispositivo por licença
+🚫 Compartilhar login = bloqueio
+
+━━━━━━━━━━━━━━━━━━━━━
+*BOA JOGATINA! 🎮⚡*
+━━━━━━━━━━━━━━━━━━━━━`;
       
       copyToClipboard(message);
-      toast("✅ Mensagem completa copiada!", "success", "Pronta para enviar ao cliente");
+      toast("✅ Mensagem profissional copiada!", "success", "Pronta para enviar ao cliente");
     } catch (error) {
       toast("Erro ao copiar", "warn", "Tente novamente");
     }
   }
 
+  // ========== MENSAGEM RÁPIDA ==========
   function copyUserPassDays(){
     const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
+    if(!box || box.style.display === "none"){ toast("Nenhum resultado", "warn", "Gere uma licença primeiro"); return; }
     const values = box.querySelectorAll(".metaGrid .metaValue");
     const username = values[0]?.innerText || "";
     const password = values[1]?.innerText || "";
-    const days = values[2]?.innerText || "";
-    const texto = `✅ ACESSO ${NOME_APP}\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Links:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n⚠️ Instale os DOIS aplicativos!`;
+    const days = (values[2]?.innerText || "").replace('dias','').trim();
+    const texto = `✅ *ACESSO ${NOME_APP}*\n\n👤 *Usuário:* \`${username}\`\n🔑 *Senha:* \`${password}\`\n⏱️ *Dias:* ${days}\n\n📲 *Links:*\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n🔄 *1º reset GRÁTIS | Demais R$ 3,00*\n⚠️ Não emprestar nem trocar de dispositivo sem necessidade.\n📞 *Suporte:* ${SUPPORT_WA}\n\n⚠️ Instale os DOIS aplicativos!`;
     copyToClipboard(texto);
     toast("Copiado", "success", "Credenciais + links ✅");
   }
 
   function getHistory(){
-    try{
-      const raw = localStorage.getItem(HISTORY_KEY);
-      if(!raw) return [];
-      const arr = JSON.parse(raw);
-      if(!Array.isArray(arr)) return [];
-      return arr;
-    }catch(e){
-      return [];
-    }
+    try{ const raw = localStorage.getItem(HISTORY_KEY); if(!raw) return []; const arr = JSON.parse(raw); if(!Array.isArray(arr)) return []; return arr; }
+    catch(e){ return []; }
   }
 
   function pushHistory(item){
@@ -1220,67 +1176,98 @@ ${LINK_SHIZUKU}
         <div class="hLeft">
           <div class="hUser">${escapeHtml(h.username || "cliente")}</div>
           <div class="hMeta">
-            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(h.days)} dias</span>
+            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(String(h.days).replace('dias','').trim())} dias</span>
             <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
           </div>
         </div>
         <div class="hRight">
-          <button class="btn-mini" onclick="copyHistoryData(${idx})">
-            <i class="fas fa-copy"></i>
-          </button>
-          <button class="btn-mini" onclick="useHistory(${idx})">
-            <i class="fas fa-eye"></i>
-          </button>
+          <button class="btn-mini" onclick="copyHistoryData(${idx})"><i class="fas fa-copy"></i></button>
+          <button class="btn-mini" onclick="useHistory(${idx})"><i class="fas fa-eye"></i></button>
         </div>
       </div>
     `).join("");
   }
 
+  // ========== MENSAGEM DO HISTÓRICO ==========
   function copyHistoryData(index){
     const history = getHistory();
     const item = history[index];
-    if(!item){
-      toast("Erro ao copiar", "warn", "Registro não encontrado");
-      return;
-    }
+    if(!item){ toast("Erro ao copiar", "warn", "Registro não encontrado"); return; }
     const expirationDate = calculateExpirationDate(parseInt(item.days));
-    const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯
+    const daysClean = String(item.days).replace('dias','').trim();
+    
+    const message = `🔥 *ACESSO LIBERADO — ${NOME_APP}* 🔥
 
-✅ SEUS DADOS DE ACESSO:
+━━━━━━━━━━━━━━━━━━━━━
+🎟️ *SUA LICENÇA PREMIUM*
+━━━━━━━━━━━━━━━━━━━━━
 
-👤 USUÁRIO: ${item.username}
-🔑 SENHA: ${item.password}
-⏱️ VALIDADE: ${item.days} dias
-📅 EXPIRA EM: ${expirationDate}
+👤 *Usuário:* \`${item.username}\`
+🔑 *Senha:* \`${item.password}\`
+📅 *Validade:* ${daysClean} dias
+⏰ *Expira em:* ${expirationDate}
 
-📲 DOWNLOAD DOS APLICATIVOS:
+━━━━━━━━━━━━━━━━━━━━━
+📲 *DOWNLOAD DOS APPS*
+━━━━━━━━━━━━━━━━━━━━━
 
-🔹 ${NOME_APP}:
-${LINK_APK}
+🔹 *${NOME_APP}:*
+👉 ${LINK_APK}
 
-🔹 Shizuku (OBRIGATÓRIO):
-${LINK_SHIZUKU}
+🔹 *Shizuku (OBRIGATÓRIO):*
+👉 ${LINK_SHIZUKU}
 
-⚠️ IMPORTANTE:
-• Instale os DOIS aplicativos para o funcionamento correto
-• O Shizuku permite permissões avançadas no sistema
+━━━━━━━━━━━━━━━━━━━━━
+📌 *PASSO A PASSO*
+━━━━━━━━━━━━━━━━━━━━━
 
-⚡ APROVEITE A MELHOR EXPERIÊNCIA!
+1️⃣ Instale o *Shizuku* primeiro
+2️⃣ Ative o Shizuku (toque em "Pareamento")
+3️⃣ Instale o *${NOME_APP}*
+4️⃣ Abra o app e faça login com os dados acima
+5️⃣ Escolha seu modo (Root ou Shizuku)
+6️⃣ Ative o Boost e jogue!
 
-─────────────────────────────────────────
-🔒 SEGURANÇA:
+━━━━━━━━━━━━━━━━━━━━━
+🔄 *POLÍTICA DE RESET*
+━━━━━━━━━━━━━━━━━━━━━
 
-• Não compartilhe sua senha com ninguém
-• Cada conta é para uso em 1 dispositivo
+✅ *1º reset:* GRATUITO
+💰 *Demais resets:* R$ 3,00 cada
 
-─────────────────────────────────────────
-📌 POLÍTICA DE RESET DE LOGIN:
+📱 *Quando usar o reset:*
+• Trocou de celular? ✅ Pode resetar
+• Celular quebrou ou foi roubado? ✅ Pode resetar
+• Formatou o aparelho? ✅ Pode resetar
 
-✓ 1º reset: GRATUITO
-✓ Resets adicionais: R$3,00 cada
-✓ Suporte via Telegram: ${SUPPORT_TELEGRAM}`;
+⚠️ *Não use o reset para:*
+• Emprestar o login para um amigo
+• Ficar trocando de dispositivo toda hora
+• Usar o mesmo login em 2 celulares ao mesmo tempo
+
+🛡️ *O sistema detecta uso simultâneo e pode bloquear a licença permanentemente.*
+
+━━━━━━━━━━━━━━━━━━━━━
+📞 *SUPORTE DIRETO*
+━━━━━━━━━━━━━━━━━━━━━
+
+💬 *Fale conosco no WhatsApp:*
+👉 ${SUPPORT_WA}
+
+━━━━━━━━━━━━━━━━━━━━━
+🛡️ *SEGURANÇA*
+━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ Não compartilhe sua senha
+📱 1 dispositivo por licença
+🚫 Compartilhar login = bloqueio
+
+━━━━━━━━━━━━━━━━━━━━━
+*BOA JOGATINA! 🎮⚡*
+━━━━━━━━━━━━━━━━━━━━━`;
+    
     copyToClipboard(message);
-    toast("Copiado", "success", "Mensagem do histórico ✅");
+    toast("Copiado", "success", "Mensagem profissional ✅");
   }
 
   function useHistory(index){
