@@ -2304,6 +2304,17 @@
       "created_at": 1778605493,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBDNTA63MJ",
+      "password": "BDKX-72B2-HTPH",
+      "key": "PB-1F75BE0E",
+      "device_id": null,
+      "expires_at": 1779211274,
+      "reseller": "NINJA",
+      "created_at": 1778606474,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
