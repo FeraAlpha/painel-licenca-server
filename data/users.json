@@ -2390,6 +2390,17 @@
       "created_at": 1778726580,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBWXRQYPKP",
+      "password": "THFW-BY8Z-7622",
+      "key": "PB-BC29C5BD",
+      "device_id": null,
+      "expires_at": 1781767036,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1778743036,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
