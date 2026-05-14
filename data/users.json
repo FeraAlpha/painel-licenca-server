@@ -2401,6 +2401,17 @@
       "created_at": 1778743036,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBBYP5B7KH",
+      "password": "ADHB-TZPN-NRVX",
+      "key": "PB-900F1AD0",
+      "device_id": null,
+      "expires_at": 1781776974,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1778752974,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
