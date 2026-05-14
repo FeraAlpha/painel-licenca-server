@@ -39,9 +39,196 @@
         radial-gradient(900px 550px at 20% 0%, rgba(79,124,255,.14), transparent 60%),
         radial-gradient(900px 550px at 85% 15%, rgba(106,92,255,.12), transparent 60%),
         linear-gradient(180deg, rgba(255,255,255,1), rgba(246,247,255,1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: padding 0.3s;
     }
 
-    .wrap{max-width:720px;margin:0 auto}
+    /* GATE (tela de bloqueio) */
+    #gate {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeInUp 0.5s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gate-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .gate-card.shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+      20%, 40%, 60%, 80% { transform: translateX(6px); }
+    }
+
+    .gate-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      margin: 0 auto 16px;
+      box-shadow: 0 14px 30px var(--glow);
+    }
+
+    .gate-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .gate-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .gate-input-group {
+      margin-bottom: 16px;
+    }
+
+    .gate-input-group label {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .gate-input-group label i { color: var(--primary); }
+
+    .gate-input-wrapper {
+      position: relative;
+    }
+
+    .gate-input-wrapper input {
+      width: 100%;
+      padding: 13px 45px 13px 14px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .gate-input-wrapper input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.15);
+    }
+
+    .gate-input-wrapper .toggle-visibility {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 5px;
+    }
+
+    .gate-remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .gate-remember input {
+      accent-color: var(--primary);
+    }
+
+    .gate-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 900;
+      font-size: 15px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+      box-shadow: 0 18px 40px rgba(79,124,255,.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .gate-btn:hover { transform: translateY(-2px); }
+
+    .gate-btn.loading {
+      pointer-events: none;
+      color: transparent;
+      position: relative;
+    }
+
+    .gate-btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .gate-error {
+      color: var(--error);
+      font-size: 13px;
+      margin-top: 12px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .gate-error.show { display: block; }
+
+    .gate-footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .gate-footer i { color: var(--primary); }
+
+    /* MAIN APP (oculto por padrão) */
+    #mainApp {
+      width: 100%;
+      max-width: 720px;
+      display: none;
+      animation: fadeInUp 0.5s ease;
+    }
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
@@ -58,7 +245,6 @@
       background: var(--card);
       box-shadow: var(--shadow);
       margin-bottom:18px;
-      animation: fadeInUp 0.5s ease;
     }
 
     .brand{
@@ -98,13 +284,33 @@
     }
     .chip i{color:var(--primary)}
 
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      margin-left: 10px;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239,68,68,0.1);
+      border-color: var(--error);
+      color: var(--error);
+    }
+
     .card{
       background: var(--card);
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:18px;
       box-shadow: var(--shadow);
-      animation: fadeInUp 0.5s ease;
     }
 
     .card + .card{margin-top:14px;}
@@ -540,7 +746,43 @@
 </head>
 
 <body>
-  <div class="wrap">
+  <!-- GATE (Tela de bloqueio) -->
+  <div id="gate">
+    <div class="gate-card" id="gateCard">
+      <div class="gate-logo"><i class="fas fa-dragon"></i></div>
+      <div class="gate-title">Fera Alpha</div>
+      <div class="gate-subtitle">Painel do Revendedor</div>
+
+      <div class="gate-input-group">
+        <label><i class="fas fa-key"></i> Token de Acesso</label>
+        <div class="gate-input-wrapper">
+          <input type="password" id="gateToken" placeholder="Digite seu token" autocomplete="off">
+          <button class="toggle-visibility" id="gateTogglePass" onclick="toggleGatePassword()">
+            <i class="fas fa-eye" id="gateToggleIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <label class="gate-remember">
+        <input type="checkbox" id="gateRemember"> Lembrar token neste dispositivo
+      </label>
+
+      <button class="gate-btn" id="gateBtn" onclick="validateToken()">
+        <i class="fas fa-shield-check"></i> Verificar Token
+      </button>
+
+      <div class="gate-error" id="gateError">
+        <i class="fas fa-circle-exclamation"></i> <span id="gateErrorMsg">Token inválido ou expirado</span>
+      </div>
+
+      <div class="gate-footer">
+        <i class="fab fa-telegram"></i> Não possui token? Contate o administrador via Telegram
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (Painel principal) -->
+  <div id="mainApp">
     <div class="topbar">
       <div class="brand">
         <div class="logo"><i class="fas fa-dragon"></i></div>
@@ -550,9 +792,14 @@
         </div>
       </div>
 
-      <div class="chip">
-        <i class="fas fa-shield-halved"></i>
-        <span>Revendedor</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="chip">
+          <i class="fas fa-shield-halved"></i>
+          <span>Revendedor</span>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Sair / Trocar token">
+          <i class="fas fa-right-from-bracket"></i> Sair
+        </button>
       </div>
     </div>
 
@@ -629,7 +876,7 @@
       <div class="resultBox" id="resultBox"></div>
     </div>
 
-    <!-- RENOVAR LOGIN (NOVO) -->
+    <!-- RENOVAR LOGIN -->
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -706,18 +953,18 @@
     </div>
 
     <footer>
-      <i class="fas fa-code-branch"></i> Versão 2.1.3 | 
+      <i class="fas fa-code-branch"></i> Versão 2.2.0 | 
       <i class="fab fa-telegram"></i> @SuportePBooster |
       <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
     </footer>
+  </div>
 
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-      <i class="fas fa-circle-check"></i>
-      <div>
-        <div id="toastMsg" style="font-weight:900"></div>
-        <div class="mutedSmall" id="toastSub"></div>
-      </div>
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <i class="fas fa-circle-check"></i>
+    <div>
+      <div id="toastMsg" style="font-weight:900"></div>
+      <div class="mutedSmall" id="toastSub"></div>
     </div>
   </div>
 
@@ -726,6 +973,7 @@
   const GENERATE_URL = BASE_URL + "/reseller/generate";
   const RESET_DEVICE_URL = BASE_URL + "/reseller/reset_device";
   const RENEW_URL = BASE_URL + "/reseller/renew";
+  const VALIDATE_TOKEN_URL = BASE_URL + "/reseller/validate_token";  // Endpoint para validação
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v3";
   const PREFIX = "PB";
@@ -738,6 +986,7 @@
   let SUPPORT_TELEGRAM = "@SuportePBooster";
 
   let currentDays = 35;
+  let validatedToken = null; // Armazena o token validado em memória
 
   function generateUsername() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -790,6 +1039,20 @@
     }
   }
 
+  function toggleGatePassword() {
+    const input = document.getElementById("gateToken");
+    const icon = document.getElementById("gateToggleIcon");
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
   function calculateExpirationDate(days) {
     const date = new Date();
     date.setDate(date.getDate() + days);
@@ -812,18 +1075,154 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    const saved = localStorage.getItem(TOKEN_KEY);
-    if(saved) {
-      document.getElementById("token").value = saved;
+  // ================= GATE LOGIC =================
+  function showGate(errorMsg = null) {
+    document.getElementById("mainApp").style.display = "none";
+    document.getElementById("gate").style.display = "flex";
+    document.body.style.alignItems = "center";
+    document.body.style.justifyContent = "center";
+    if (errorMsg) {
+      const errEl = document.getElementById("gateError");
+      document.getElementById("gateErrorMsg").textContent = errorMsg;
+      errEl.classList.add("show");
+      document.getElementById("gateCard").classList.add("shake");
+      setTimeout(() => document.getElementById("gateCard").classList.remove("shake"), 400);
+    } else {
+      document.getElementById("gateError").classList.remove("show");
     }
+  }
+
+  function showMainApp() {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("mainApp").style.display = "block";
+    document.body.style.alignItems = "flex-start";
+    document.body.style.justifyContent = "flex-start";
+    document.getElementById("gateError").classList.remove("show");
+  }
+
+  async function validateToken() {
+    const token = document.getElementById("gateToken").value.trim();
+    if (!token) {
+      showGateError("Por favor, insira o token.");
+      return;
+    }
+
+    const btn = document.getElementById("gateBtn");
+    btn.classList.add("loading");
+    btn.innerHTML = ""; // O texto some, fica só o spinner via CSS
+
+    try {
+      const resp = await fetch(VALIDATE_TOKEN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ token })
+      });
+
+      const data = await resp.json();
+
+      if (data.ok) {
+        // Sucesso
+        validatedToken = token;
+        const remember = document.getElementById("gateRemember").checked;
+        if (remember) {
+          localStorage.setItem(TOKEN_KEY, token);
+          sessionStorage.removeItem(TOKEN_KEY);
+        } else {
+          sessionStorage.setItem(TOKEN_KEY, token);
+          localStorage.removeItem(TOKEN_KEY);
+        }
+
+        // Preenche o campo de token no painel com o token validado
+        document.getElementById("token").value = token;
+
+        showMainApp();
+        toast("Acesso liberado", "success", "Bem-vindo ao painel ✅");
+        document.getElementById("gateToken").value = ""; // limpa campo por segurança
+      } else {
+        showGateError(data.error || "Token inválido ou expirado.");
+      }
+    } catch (error) {
+      showGateError("Erro de conexão. Verifique sua internet.");
+      console.error(error);
+    } finally {
+      btn.classList.remove("loading");
+      btn.innerHTML = '<i class="fas fa-shield-check"></i> Verificar Token';
+    }
+  }
+
+  function showGateError(msg) {
+    const errEl = document.getElementById("gateError");
+    document.getElementById("gateErrorMsg").textContent = msg;
+    errEl.classList.add("show");
+    document.getElementById("gateCard").classList.add("shake");
+    setTimeout(() => document.getElementById("gateCard").classList.remove("shake"), 400);
+  }
+
+  async function checkTokenOnLoad() {
+    // Verifica se há token armazenado (localStorage ou sessionStorage)
+    let storedToken = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+    if (!storedToken) {
+      showGate();
+      return;
+    }
+
+    // Tenta validar o token armazenado
+    try {
+      const resp = await fetch(VALIDATE_TOKEN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ token: storedToken })
+      });
+
+      const data = await resp.json();
+
+      if (data.ok) {
+        validatedToken = storedToken;
+        document.getElementById("token").value = storedToken;
+        showMainApp();
+        // Se o token estava no sessionStorage, mantém lá; se localStorage, mantém
+        // Garante que o campo de token esteja preenchido
+      } else {
+        // Token inválido ou expirado
+        localStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(TOKEN_KEY);
+        showGate("Token expirado ou inválido. Faça login novamente.");
+      }
+    } catch (error) {
+      // Erro de rede – mantém o token e mostra o gate com aviso
+      showGate("Não foi possível validar o token. Verifique sua conexão.");
+    }
+  }
+
+  function logout() {
+    if (confirm("Tem certeza que deseja sair? O token será removido.")) {
+      validatedToken = null;
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      document.getElementById("token").value = "";
+      showGate();
+      toast("Token removido", "success", "Você saiu do painel.");
+    }
+  }
+
+  // ================= FIM GATE LOGIC =================
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    await buscarConfiguracao();
+    // Inicia a verificação do token
+    checkTokenOnLoad();
+
+    // Configurações iniciais (só serão visíveis se o mainApp for mostrado)
     document.getElementById("username").value = generateUsername();
     document.getElementById("password").value = generatePassword();
     renderHistory();
-    await buscarConfiguracao();
+
     setInterval(buscarConfiguracao, 120000);
     document.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") generateLicense();
+      // Permite Enter no campo de token do gate para validar
+      if (e.key === "Enter" && document.getElementById("gate").style.display !== "none") {
+        validateToken();
+      }
     });
   });
 
@@ -839,14 +1238,21 @@
       toast("Digite um token antes de salvar", "warn", "Campo vazio");
       return;
     }
+    // Como o token já está validado, apenas armazena conforme preferência atual
+    // Se quiser forçar localStorage, pode fazer, mas respeitamos o estado atual do checkbox? 
+    // Vamos salvar em localStorage por padrão ao clicar em "Salvar Token".
     localStorage.setItem(TOKEN_KEY, token);
+    validatedToken = token;
     toast("Token salvo", "success", "Pronto ✅");
   }
 
   function confirmClearToken(){
     if(confirm("⚠️ Tem certeza que deseja limpar o token?\n\nEsta ação não pode ser desfeita.")) {
       localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
       document.getElementById("token").value = "";
+      validatedToken = null;
+      // Não faz logout, apenas limpa o campo
       toast("Token removido", "success", "Token excluído com sucesso");
     } else {
       toast("Operação cancelada", "ok", "Token mantido");
@@ -857,7 +1263,7 @@
   async function renewLicense() {
     const username = document.getElementById("renewUsername").value.trim();
     const days = parseInt(document.getElementById("renewDays").value) || 30;
-    const token = localStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
+    const token = validatedToken || localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
 
     if (!username) {
       toast("Informe o nome de usuário", "warn", "Campo obrigatório");
@@ -913,7 +1319,7 @@
   // ========== RESET DE DISPOSITIVO ==========
   async function resetDevice() {
     const username = document.getElementById("resetUsername").value.trim();
-    const token = localStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
+    const token = validatedToken || localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
 
     if (!username) {
       toast("Informe o nome de usuário", "warn", "Campo obrigatório");
@@ -962,7 +1368,7 @@
   async function generateLicense(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
-    let token = document.getElementById("token").value.trim();
+    let token = validatedToken || document.getElementById("token").value.trim();
 
     if(!username || !password || !token){
       toast("Preencha todos os campos", "warn", "Usuário, senha e token");
