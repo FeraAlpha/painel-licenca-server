@@ -168,6 +168,7 @@ RATE_LIMIT = {
     'verify_license': {'limit': 10, 'window': 300},
     'validate_token': {'limit': 20, 'window': 300},
     'kill_switch': {'limit': 60, 'window': 300},
+    'reseller_validate_token': {'limit': 20, 'window': 300},  # Nova rota
 }
 
 request_counts = defaultdict(list)
@@ -1720,6 +1721,28 @@ def carregar_revendedores():
 
 RESELLER_MAP = carregar_revendedores()
 
+# ==============================================================
+#  🆕 NOVA ROTA: VALIDAR TOKEN DO REVENDEDOR (TELA DE BLOQUEIO)
+# ==============================================================
+@app.route("/reseller/validate_token", methods=["POST"])
+def reseller_validate_token():
+    token = sanitize_input(request.form.get("token"))
+
+    if not token:
+        log_security("reseller_validate_missing_token")
+        return jsonify({"ok": False, "error": "Token não fornecido"}), 400
+
+    if token not in RESELLER_MAP:
+        log_security("reseller_validate_invalid_token", details={"token_attempt": token[:8] + "..."})
+        return jsonify({"ok": False, "error": "Token inválido ou expirado"}), 401
+
+    reseller_name = RESELLER_MAP[token]
+    log_security("reseller_validate_success", details={"reseller": reseller_name})
+    return jsonify({"ok": True}), 200
+
+# ==============================================================
+#  DEMAIS ROTAS DE REVENDEDOR
+# ==============================================================
 @app.route("/reseller/generate", methods=["POST"])
 def reseller_generate():
     token = sanitize_input(request.form.get("token"))
@@ -1885,7 +1908,7 @@ def reseller_reset_device():
     return jsonify({"ok": True, "message": f"Dispositivo do usuário {username} resetado com sucesso."}), 200
 
 # ==============================================================
-#  🆕 NOVA ROTA: RENOVAR LICENÇA (REVENDEDOR)
+#  🆕 ROTA: RENOVAR LICENÇA (REVENDEDOR)
 # ==============================================================
 @app.route("/reseller/renew", methods=["POST"])
 def reseller_renew():
