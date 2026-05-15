@@ -2488,6 +2488,17 @@
       "created_at": 1778822971,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBRKV5F6B2",
+      "password": "WZPK-Y44Y-7TSJ",
+      "key": "PB-1549D810",
+      "device_id": null,
+      "expires_at": 1779714039,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1778850039,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
