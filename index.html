@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Fera Alpha - Revendedor</title>
+  <title>Fera Alpha - Revendedor (Promoção Ativa)</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
@@ -48,7 +48,7 @@
     /* GATE (tela de bloqueio) */
     #gate {
       width: 100%;
-      max-width: 420px;
+      max-width: 480px;
       animation: fadeInUp 0.5s ease;
       display: flex;
       flex-direction: column;
@@ -100,6 +100,46 @@
       font-size: 13px;
       color: var(--muted);
       margin-bottom: 24px;
+    }
+
+    /* Banner promocional na tela de token */
+    .promo-banner {
+      background: linear-gradient(135deg, rgba(79,124,255,0.08), rgba(106,92,255,0.12));
+      border: 1px solid rgba(79,124,255,0.3);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+      backdrop-filter: blur(2px);
+    }
+    .promo-banner i {
+      color: var(--primary);
+      margin-right: 8px;
+    }
+    .promo-banner .promo-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .promo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .promo-item {
+      background: rgba(255,255,255,0.5);
+      border-radius: 14px;
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .promo-item span {
+      color: var(--primary2);
+      font-weight: 900;
     }
 
     .gate-input-group {
@@ -443,12 +483,12 @@
       box-shadow: 0 14px 30px rgba(79,124,255,.18);
     }
 
-    .daybtn[data-days="7"] {
+    .daybtn[data-days="10"] {
       background: linear-gradient(145deg, #fef7e0, #fee9b6);
       border-color: #ffb347;
       color: #b45f06;
     }
-    .daybtn[data-days="7"].active {
+    .daybtn[data-days="10"].active {
       background: linear-gradient(135deg, #ffb347, #ff8c00);
       color: white;
       border-color: transparent;
@@ -753,6 +793,22 @@
       <div class="gate-title">Fera Alpha</div>
       <div class="gate-subtitle">Painel do Revendedor</div>
 
+      <!-- BANNER PROMOCIONAL PROFISSIONAL -->
+      <div class="promo-banner">
+        <div class="promo-title">
+          <i class="fas fa-gift"></i> PROMOÇÃO ATIVADA
+        </div>
+        <div class="promo-grid">
+          <div class="promo-item">🎯 <span>10 dias</span> → R$10</div>
+          <div class="promo-item">🚀 <span>45 dias</span> → R$30</div>
+          <div class="promo-item">⚡ <span>75 dias</span> → R$50</div>
+          <div class="promo-item">🔥 <span>120 dias</span> → R$75</div>
+        </div>
+        <div style="font-size: 11px; text-align: center; margin-top: 10px; color: var(--primary);">
+          <i class="fas fa-check-circle"></i> Dias extras pelo mesmo valor!
+        </div>
+      </div>
+
       <div class="gate-input-group">
         <label><i class="fas fa-key"></i> Token de Acesso</label>
         <div class="gate-input-wrapper">
@@ -810,7 +866,7 @@
           <i class="fas fa-bolt"></i>
           <div>
             <h2>Gerar Licença</h2>
-            <div class="sub">35d (R$30) • 65d (R$50) • 110d (R$75) • 7d (R$10)</div>
+            <div class="sub">🔥 PROMOÇÃO: 10d (R$10) • 45d (R$30) • 75d (R$50) • 120d (R$75)</div>
           </div>
         </div>
       </div>
@@ -837,12 +893,12 @@
       </div>
 
       <div class="field">
-        <label><i class="fas fa-calendar-days"></i> Período</label>
+        <label><i class="fas fa-calendar-days"></i> Período (Promoção)</label>
         <div class="days">
-          <div class="daybtn active" data-days="35" onclick="setDays(35)">35 dias - R$30,00</div>
-          <div class="daybtn" data-days="65" onclick="setDays(65)">65 dias - R$50,00</div>
-          <div class="daybtn" data-days="110" onclick="setDays(110)">110 dias - R$75,00</div>
-          <div class="daybtn" data-days="7" onclick="setDays(7)">7 dias - R$10,00</div>
+          <div class="daybtn active" data-days="45" onclick="setDays(45)">45 dias - R$30,00</div>
+          <div class="daybtn" data-days="75" onclick="setDays(75)">75 dias - R$50,00</div>
+          <div class="daybtn" data-days="120" onclick="setDays(120)">120 dias - R$75,00</div>
+          <div class="daybtn" data-days="10" onclick="setDays(10)">10 dias - R$10,00</div>
         </div>
       </div>
 
@@ -955,6 +1011,7 @@
     <footer>
       <i class="fas fa-code-branch"></i> Versão 2.2.0 | 
       <i class="fab fa-telegram"></i> @SuportePBooster |
+      <i class="fab fa-whatsapp"></i> <a href="https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R" target="_blank" style="color: var(--primary); text-decoration: none;">Canal no WhatsApp</a> |
       <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
     </footer>
   </div>
@@ -973,20 +1030,23 @@
   const GENERATE_URL = BASE_URL + "/reseller/generate";
   const RESET_DEVICE_URL = BASE_URL + "/reseller/reset_device";
   const RENEW_URL = BASE_URL + "/reseller/renew";
-  const VALIDATE_TOKEN_URL = BASE_URL + "/reseller/validate_token";  // Endpoint para validação
+  const VALIDATE_TOKEN_URL = BASE_URL + "/reseller/validate_token";
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v3";
   const PREFIX = "PB";
   
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
 
+  // LINK DO CANAL DO WHATSAPP (adicionado)
+  const WHATSAPP_CHANNEL_LINK = "https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R";
+
   let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/6g66fzuudkhmgty/P-Booster_V2.2.2.apk/file";
   let LINK_SHIZUKU = "https://www.mediafire.com/file/zaupg0br4tlhfkt/Shizuku_13.5.4.apk/file";
   let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PRECISION BOOSTER V2";
   let SUPPORT_TELEGRAM = "@SuportePBooster";
 
-  let currentDays = 35;
-  let validatedToken = null; // Armazena o token validado em memória
+  let currentDays = 45;
+  let validatedToken = null;
 
   function generateUsername() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -1109,7 +1169,7 @@
 
     const btn = document.getElementById("gateBtn");
     btn.classList.add("loading");
-    btn.innerHTML = ""; // O texto some, fica só o spinner via CSS
+    btn.innerHTML = "";
 
     try {
       const resp = await fetch(VALIDATE_TOKEN_URL, {
@@ -1121,7 +1181,6 @@
       const data = await resp.json();
 
       if (data.ok) {
-        // Sucesso
         validatedToken = token;
         const remember = document.getElementById("gateRemember").checked;
         if (remember) {
@@ -1132,12 +1191,10 @@
           localStorage.removeItem(TOKEN_KEY);
         }
 
-        // Preenche o campo de token no painel com o token validado
         document.getElementById("token").value = token;
-
         showMainApp();
         toast("Acesso liberado", "success", "Bem-vindo ao painel ✅");
-        document.getElementById("gateToken").value = ""; // limpa campo por segurança
+        document.getElementById("gateToken").value = "";
       } else {
         showGateError(data.error || "Token inválido ou expirado.");
       }
@@ -1159,14 +1216,12 @@
   }
 
   async function checkTokenOnLoad() {
-    // Verifica se há token armazenado (localStorage ou sessionStorage)
     let storedToken = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
     if (!storedToken) {
       showGate();
       return;
     }
 
-    // Tenta validar o token armazenado
     try {
       const resp = await fetch(VALIDATE_TOKEN_URL, {
         method: "POST",
@@ -1180,16 +1235,12 @@
         validatedToken = storedToken;
         document.getElementById("token").value = storedToken;
         showMainApp();
-        // Se o token estava no sessionStorage, mantém lá; se localStorage, mantém
-        // Garante que o campo de token esteja preenchido
       } else {
-        // Token inválido ou expirado
         localStorage.removeItem(TOKEN_KEY);
         sessionStorage.removeItem(TOKEN_KEY);
         showGate("Token expirado ou inválido. Faça login novamente.");
       }
     } catch (error) {
-      // Erro de rede – mantém o token e mostra o gate com aviso
       showGate("Não foi possível validar o token. Verifique sua conexão.");
     }
   }
@@ -1209,17 +1260,14 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
     await buscarConfiguracao();
-    // Inicia a verificação do token
     checkTokenOnLoad();
 
-    // Configurações iniciais (só serão visíveis se o mainApp for mostrado)
     document.getElementById("username").value = generateUsername();
     document.getElementById("password").value = generatePassword();
     renderHistory();
 
     setInterval(buscarConfiguracao, 120000);
     document.addEventListener("keydown", (e) => {
-      // Permite Enter no campo de token do gate para validar
       if (e.key === "Enter" && document.getElementById("gate").style.display !== "none") {
         validateToken();
       }
@@ -1238,9 +1286,6 @@
       toast("Digite um token antes de salvar", "warn", "Campo vazio");
       return;
     }
-    // Como o token já está validado, apenas armazena conforme preferência atual
-    // Se quiser forçar localStorage, pode fazer, mas respeitamos o estado atual do checkbox? 
-    // Vamos salvar em localStorage por padrão ao clicar em "Salvar Token".
     localStorage.setItem(TOKEN_KEY, token);
     validatedToken = token;
     toast("Token salvo", "success", "Pronto ✅");
@@ -1252,7 +1297,6 @@
       sessionStorage.removeItem(TOKEN_KEY);
       document.getElementById("token").value = "";
       validatedToken = null;
-      // Não faz logout, apenas limpa o campo
       toast("Token removido", "success", "Token excluído com sucesso");
     } else {
       toast("Operação cancelada", "ok", "Token mantido");
@@ -1513,6 +1557,7 @@
     `;
   }
 
+  // ========== FUNÇÃO COPY MELHORADA COM WHATSAPP ==========
   function copyAllWithLink() {
     const box = document.getElementById("resultBox");
     if(!box || box.style.display === "none"){
@@ -1552,6 +1597,10 @@ ${LINK_APK}
 🔹 Shizuku (OBRIGATÓRIO):
 ${LINK_SHIZUKU}
 
+📢 FIQUE POR DENTRO DAS NOVIDADES:
+📱 Canal oficial no WhatsApp:
+${WHATSAPP_CHANNEL_LINK}
+
 ⚠️ IMPORTANTE:
 • Instale os DOIS aplicativos para o funcionamento correto
 • O Shizuku permite permissões avançadas no sistema
@@ -1590,7 +1639,7 @@ ${LINK_SHIZUKU}
     const username = values[0]?.innerText || "";
     const password = values[1]?.innerText || "";
     const days = values[2]?.innerText || "";
-    const texto = `✅ ACESSO ${NOME_APP}\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Links:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n⚠️ Instale os DOIS aplicativos!`;
+    const texto = `✅ ACESSO ${NOME_APP}\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Links:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n📢 Canal WhatsApp: ${WHATSAPP_CHANNEL_LINK}\n\n⚠️ Instale os DOIS aplicativos!`;
     copyToClipboard(texto);
     toast("Copiado", "success", "Credenciais + links ✅");
   }
@@ -1642,6 +1691,7 @@ ${LINK_SHIZUKU}
     `).join("");
   }
 
+  // ========== HISTÓRICO TAMBÉM COM WHATSAPP ==========
   function copyHistoryData(index){
     const history = getHistory();
     const item = history[index];
@@ -1666,6 +1716,10 @@ ${LINK_APK}
 
 🔹 Shizuku (OBRIGATÓRIO):
 ${LINK_SHIZUKU}
+
+📢 FIQUE POR DENTRO DAS NOVIDADES:
+📱 Canal oficial no WhatsApp:
+${WHATSAPP_CHANNEL_LINK}
 
 ⚠️ IMPORTANTE:
 • Instale os DOIS aplicativos para o funcionamento correto
