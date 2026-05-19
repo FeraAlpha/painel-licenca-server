@@ -2630,6 +2630,17 @@
       "created_at": 1779206026,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBH6PUYQAM",
+      "password": "SCK6-TB4H-FQVX",
+      "key": "PB-12685A66",
+      "device_id": null,
+      "expires_at": 1783094597,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1779206597,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
