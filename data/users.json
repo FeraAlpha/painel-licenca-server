@@ -2619,6 +2619,17 @@
       "created_at": 1779195915,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBHJQGVREG",
+      "password": "58PH-FAZN-V45C",
+      "key": "PB-8F306EAD",
+      "device_id": null,
+      "expires_at": 1780070026,
+      "reseller": "NINJA",
+      "created_at": 1779206026,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
