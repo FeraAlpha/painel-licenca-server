@@ -2652,6 +2652,17 @@
       "created_at": 1779293384,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB8N7HUGVZ",
+      "password": "P6TU-XRSP-UY8A",
+      "key": "PB-DD5147B5",
+      "device_id": null,
+      "expires_at": 1783199802,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1779311802,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
