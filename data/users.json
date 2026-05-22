@@ -2684,6 +2684,17 @@
       "created_at": 1779481472,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBFUVNN64G",
+      "password": "ZDRB-T2B4-GVFJ",
+      "key": "PB-61678387",
+      "device_id": null,
+      "expires_at": 1783378858,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1779490858,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
