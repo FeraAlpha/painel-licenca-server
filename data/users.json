@@ -2673,6 +2673,17 @@
       "created_at": 1779453896,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBZM8PVQEF",
+      "password": "JF7C-664V-H8HN",
+      "key": "PB-A58A8FA9",
+      "device_id": null,
+      "expires_at": 1785961472,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1779481472,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
