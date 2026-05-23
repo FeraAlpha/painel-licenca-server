@@ -2728,6 +2728,17 @@
       "created_at": 1779569044,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBFETJWTBM",
+      "password": "AGS4-QMZ9-89Z7",
+      "key": "PB-C10C64B7",
+      "device_id": null,
+      "expires_at": 1780434073,
+      "reseller": "NINJA",
+      "created_at": 1779570073,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
