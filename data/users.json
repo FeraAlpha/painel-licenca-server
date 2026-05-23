@@ -2706,6 +2706,17 @@
       "created_at": 1779504817,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBXSZ7AU7W",
+      "password": "TN57-23SH-96AT",
+      "key": "PB-EB13A8AC",
+      "device_id": null,
+      "expires_at": 1780431812,
+      "reseller": "JCGAMER",
+      "created_at": 1779567812,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
