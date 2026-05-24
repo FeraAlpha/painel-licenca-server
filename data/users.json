@@ -2772,6 +2772,17 @@
       "created_at": 1779599206,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB2DHE499M",
+      "password": "DVYG-X8Y6-BHK7",
+      "key": "PB-6F1BC79A",
+      "device_id": null,
+      "expires_at": 1783515955,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1779627955,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
