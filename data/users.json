@@ -2761,6 +2761,17 @@
       "created_at": 1779598601,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBW69WQYV5",
+      "password": "RGY6-H3M2-ZGYA",
+      "key": "PB-5E8796CC",
+      "device_id": null,
+      "expires_at": 1780463206,
+      "reseller": "P4NC4K3",
+      "created_at": 1779599206,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
