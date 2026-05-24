@@ -2077,7 +2077,7 @@
       "expires_at": 1786582669,
       "created_at": 1778201869,
       "status": "active",
-      "multi_device": true
+      "multi_device": false
     },
     {
       "username": "Alpha5437887",
