@@ -2794,17 +2794,6 @@
       "created_at": 1779654010,
       "status": "active",
       "multi_device": false
-    },
-    {
-      "username": "PBBMGZGMC4",
-      "password": "W9WG-SNUC-R3XP",
-      "key": "PB-141548C1",
-      "device_id": null,
-      "expires_at": 1783542454,
-      "reseller": "revendedor_super_fera_2025",
-      "created_at": 1779654454,
-      "status": "active",
-      "multi_device": false
     }
   ]
 }
