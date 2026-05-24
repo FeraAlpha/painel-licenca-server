@@ -2783,6 +2783,17 @@
       "created_at": 1779627955,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBDWT3SPWB",
+      "password": "EGUA-96X7-8XRB",
+      "key": "PB-55E1A8A1",
+      "device_id": null,
+      "expires_at": 1790022010,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1779654010,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
