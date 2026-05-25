@@ -176,7 +176,7 @@
       "username": "P4NC4K3",
       "password": "Teste",
       "key": "FERA-92D983DA",
-      "device_id": "2300115ca51173b05a642bc6d93c64f4fb7cdbee07d866fbbee171fac69ea674",
+      "device_id": null,
       "expires_at": 1782319785,
       "status": "active",
       "multi_device": false
