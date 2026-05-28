@@ -2904,6 +2904,17 @@
       "created_at": 1779992413,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBBM986AJJ",
+      "password": "TQ5M-WN2S-3JPB",
+      "key": "PB-80BC4449",
+      "device_id": null,
+      "expires_at": 1790363359,
+      "reseller": "WAGNER",
+      "created_at": 1779995359,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
