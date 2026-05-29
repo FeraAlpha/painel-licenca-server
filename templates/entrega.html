@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="format-detection" content="telephone=no">
-    <!-- Security headers via meta (CSP, X-Frame-Options) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src data: https:; font-src data:; frame-ancestors 'none';">
-    <meta name="X-Frame-Options" content="DENY">
-    <title>Precision Booster V2 · Acesso oficial</title>
+    <title>Precision Booster · Acesso</title>
     <style>
         * {
             margin: 0;
@@ -18,287 +14,298 @@
         }
 
         body {
-            background: radial-gradient(circle at 10% 20%, #0b1120, #03060c);
-            font-family: system-ui, -apple-system, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0e1219;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             padding: 24px 16px;
-            color: #eef2ff;
+            color: #e6edf5;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
-        /* container principal – efeito vidro fosco refinado */
-        .access-card {
-            max-width: 620px;
+        /* Watermark de fundo (discreto) */
+        .watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            font-size: 10px;
+            color: #2a3a55;
+            opacity: 0.4;
+            pointer-events: none;
+            font-family: monospace;
+            z-index: 0;
+            user-select: none;
+        }
+
+        .card {
+            max-width: 560px;
             width: 100%;
-            margin: 0 auto;
-            background: rgba(15, 23, 42, 0.82);
-            backdrop-filter: blur(18px);
-            border-radius: 48px;
-            padding: 32px 28px;
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 255, 200, 0.12);
-            transition: transform 0.2s ease;
-            border: 1px solid rgba(0, 255, 200, 0.2);
-        }
-
-        /* selo de segurança */
-        .security-seal {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 12px;
-        }
-        .badge {
-            background: rgba(0, 255, 200, 0.12);
-            backdrop-filter: blur(4px);
-            padding: 6px 14px;
-            border-radius: 60px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            color: #7ee0d0;
-            border: 0.5px solid rgba(0, 255, 200, 0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .badge::before {
-            content: "✓";
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        h1 {
-            font-size: 1.9rem;
-            text-align: center;
-            font-weight: 700;
-            background: linear-gradient(145deg, #ffffff, #88e0ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 24px;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        h1 span {
-            font-size: 1.7rem;
-        }
-
-        /* blocos de informação */
-        .info-block {
-            background: #0f172acc;
+            background: #171c26;
             border-radius: 32px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
-            border: 1px solid #2d3a5e;
-            transition: all 0.2s;
+            padding: 28px 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2a313e;
+            position: relative;
+            z-index: 1;
         }
-        .info-block:hover {
-            border-color: #3b4b74;
+
+        .logo {
+            text-align: center;
+            margin-bottom: 28px;
         }
-        .label {
+        .logo h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            color: #ffffff;
+        }
+        .logo p {
             font-size: 0.75rem;
+            color: #8e9aaf;
+            margin-top: 6px;
+        }
+
+        .field {
+            background: #0f131c;
+            border-radius: 20px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border: 1px solid #2a313e;
+        }
+        .field-label {
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 600;
-            color: #9ca9d0;
-            margin-bottom: 8px;
-            display: block;
+            color: #8e9aaf;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .credencial {
-            background: #01031480;
-            padding: 14px 18px;
-            border-radius: 24px;
+        .field-value {
             font-family: 'SF Mono', 'Fira Code', monospace;
             font-size: 1.2rem;
             font-weight: 500;
             word-break: break-all;
+            color: #ffffff;
+            background: #090c12;
+            padding: 10px 12px;
+            border-radius: 14px;
+            margin: 8px 0 4px;
             letter-spacing: 0.3px;
-            margin: 12px 0 16px 0;
-            border-left: 4px solid #1bc9a0;
-            color: #eef5ff;
         }
-        .expiry {
-            background: #1e293b70;
-            border-radius: 20px;
-            padding: 12px 16px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 12px;
+        .copy-btn {
+            background: #252e3c;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #b9c3db;
+            cursor: pointer;
+            transition: 0.15s;
         }
-        .expiry-icon {
-            font-size: 1.2rem;
+        .copy-btn:hover {
+            background: #3a4558;
+            color: white;
         }
 
-        /* botões estilo premium */
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin: 10px 0 6px;
+        .expiry-box {
+            background: #0f131c;
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+            border-left: 3px solid #4c9aff;
+            font-size: 0.85rem;
+            color: #b9c3db;
         }
+
         .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: linear-gradient(105deg, #0f2f3a, #0a1e2c);
-            padding: 14px 20px;
-            border-radius: 60px;
-            font-weight: 600;
-            text-decoration: none;
+            display: block;
+            background: #1f2a36;
+            text-align: center;
+            padding: 14px;
+            border-radius: 40px;
             color: white;
-            transition: all 0.2s;
-            border: 1px solid #2d5f6e;
-            backdrop-filter: blur(4px);
+            font-weight: 500;
+            text-decoration: none;
+            margin: 12px 0;
+            transition: 0.2s;
+            border: 1px solid #324153;
         }
         .btn-primary {
-            background: linear-gradient(105deg, #00b38f, #007a66);
-            border: none;
-            box-shadow: 0 5px 12px -5px #00b38f40;
+            background: #0f6b4a;
+            border-color: #1f8a62;
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.05);
-            box-shadow: 0 10px 20px -8px #00ffc340;
+            background: #128a5e;
         }
-        .btn-secondary {
-            background: #1f2a3fcc;
-            border-color: #4090b0;
+        .btn-whatsapp {
+            background: #075e54;
+            border-color: #128c7e;
         }
-        .btn-secondary:hover {
-            background: #2a3a55cc;
-            transform: translateY(-2px);
+        .btn-whatsapp:hover {
+            background: #0a6b5e;
         }
 
-        .warning {
-            background: #ffb34710;
-            border-left: 4px solid #ff9800;
-            border-radius: 24px;
-            padding: 16px 20px;
-            margin: 24px 0 20px;
-            font-size: 0.85rem;
-        }
-        .support-footer {
-            text-align: center;
+        .instructions {
+            background: #1a1f2a;
+            border-radius: 20px;
+            padding: 14px 18px;
+            margin: 16px 0;
             font-size: 0.75rem;
-            border-top: 1px dashed #2d3a5e;
-            padding-top: 20px;
-            margin-top: 8px;
-            color: #99a6cc;
         }
-        hr {
+
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c7a8e;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #252e3c;
+        }
+
+        /* Alerta de tentativa de print */
+        .print-alert {
             display: none;
-        }
-        .whatsapp-btn {
-            background: #075e54dd;
-            border-color: #25d366;
-        }
-
-        /* responsividade extra */
-        @media (max-width: 500px) {
-            .access-card {
-                padding: 24px 18px;
-            }
-            .credencial {
-                font-size: 1rem;
-                padding: 12px;
-            }
-            .btn {
-                padding: 12px 16px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* efeito de entrada suave */
-        .access-card {
-            animation: fadeSlideUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            background: #aa2e2ecc;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 24px;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-<div class="access-card">
-    <div class="security-seal">
-        <div class="badge">Canal seguro · Entrega exclusiva</div>
+
+<!-- Watermark dinâmica (parte do username) -->
+<div class="watermark" id="watermark"></div>
+
+<div class="card">
+    <div id="printAlert" class="print-alert">⚠️ Compartilhar esta tela viola os termos de uso. Seu acesso será registrado.</div>
+
+    <div class="logo">
+        <h1>PRECISION BOOSTER</h1>
+        <p>acesso oficial · licença pessoal</p>
     </div>
 
-    <h1>
-        <span>⚡</span> PRECISION BOOSTER V2 <span>⚡</span>
-    </h1>
-
-    <div class="info-block">
-        <span class="label">🔐 IDENTIFICAÇÃO ÚNICA</span>
-        <div class="credencial">{{ username }}</div>
-        <span class="label">🔒 CHAVE DE ATIVAÇÃO</span>
-        <div class="credencial">{{ senha }}</div>
-        <div class="expiry">
-            <span class="expiry-icon">⏱️</span>
-            <span>{{ expiracao_display }}</span>
+    <!-- Campo USUÁRIO com botão copiar -->
+    <div class="field">
+        <div class="field-label">
+            <span>USUÁRIO</span>
+            <button class="copy-btn" data-clipboard="{{ username }}">📋 Copiar</button>
         </div>
+        <div class="field-value" id="username-val">{{ username }}</div>
     </div>
 
-    <div class="btn-group">
-        <a href="{{ link_app }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer nofollow">
-            📲 <strong>PRECISION BOOSTER V2</strong> · APK
-        </a>
-        <a href="{{ link_shizuku }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer nofollow">
-            🔧 SHIZUKU (obrigatório)
-        </a>
+    <!-- Campo SENHA com botão copiar -->
+    <div class="field">
+        <div class="field-label">
+            <span>SENHA / CHAVE</span>
+            <button class="copy-btn" data-clipboard="{{ senha }}">📋 Copiar</button>
+        </div>
+        <div class="field-value" id="senha-val">{{ senha }}</div>
     </div>
 
-    <div class="warning">
-        <strong>⚠️ DIRETRIZES IMPORTANTES</strong><br>
-        • Instale os DOIS aplicativos para performance máxima.<br>
-        • Ative o Shizuku <strong>antes</strong> de abrir o Precision Booster.<br>
-        • Conta pessoal e intransferível. Sistema anti‑compartilhamento ativo.<br>
-        • Multi‑dispositivo apenas se autorizado pelo seu fornecedor.
+    <div class="expiry-box">
+        ⏱️ {{ expiracao_display }}
     </div>
 
-    <div class="btn-group">
-        <a href="{{ canal_whats }}" class="btn whatsapp-btn" target="_blank" rel="noopener noreferrer nofollow">
-            📱 CANAL OFICIAL NO WHATSAPP
-        </a>
+    <!-- Links de download (diretos do MediaFire, como antes) -->
+    <a href="{{ link_app }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">⬇️ Precision Booster V2 · APK</a>
+    <a href="{{ link_shizuku }}" class="btn" target="_blank" rel="noopener noreferrer">🔧 Shizuku (obrigatório)</a>
+
+    <div class="instructions">
+        <strong>📌 Instruções</strong><br>
+        • Instale os dois apps.<br>
+        • Ative o Shizuku antes de abrir o Precision Booster.<br>
+        • Conta pessoal – não compartilhe sua senha.<br>
+        • 1º reset gratuito, R$3 demais resets.
     </div>
 
-    <div class="support-footer">
-        🔒 Nunca compartilhe sua senha · 1º reset gratuito · demais R$3,00<br>
-        Suporte direto: <strong>@SuportePBooster</strong> (Telegram)
+    <a href="{{ canal_whats }}" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">📱 Canal oficial no WhatsApp</a>
+
+    <div class="footer">
+        Suporte: @SuportePBooster (Telegram)<br>
+        🔒 Sistema anti‑compartilhamento
     </div>
 </div>
 
-<!-- small anti-tamper / console warning (segurança adicional visual) -->
 <script>
     (function() {
-        // Previne abertura de links em popups maliciosos (segurança de navegação)
+        // 1. Watermark: exibe parte do username (primeiros 4 e últimos 4 caracteres)
+        const username = "{{ username }}";
+        if (username && username.length > 0) {
+            let watermarkText = username.length <= 8 ? username : username.slice(0,4) + '...' + username.slice(-4);
+            document.getElementById('watermark').innerText = watermarkText;
+        } else {
+            document.getElementById('watermark').innerText = "sessão válida";
+        }
+
+        // 2. Função copiar para área de transferência
+        function copyToClipboard(text, buttonElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = buttonElement.innerText;
+                buttonElement.innerText = '✓ Copiado!';
+                setTimeout(() => {
+                    buttonElement.innerText = originalText;
+                }, 1500);
+            }).catch(() => {
+                alert('Pressione e segure sobre o texto para copiar manualmente.');
+            });
+        }
+
+        // Aplica a ação de copiar a todos os botões .copy-btn
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const textToCopy = btn.getAttribute('data-clipboard');
+                if (textToCopy) {
+                    copyToClipboard(textToCopy, btn);
+                }
+            });
+        });
+
+        // 3. Detecção de tentativa de print (Ctrl+P / Cmd+P)
+        let printAttempt = false;
+        window.addEventListener('beforeprint', () => {
+            printAttempt = true;
+            const alertDiv = document.getElementById('printAlert');
+            if (alertDiv) alertDiv.style.display = 'block';
+            // Opcional: enviar um ping silencioso para o servidor (para estatística)
+            fetch('/ping', { method: 'POST', keepalive: true, body: JSON.stringify({ event: 'print_attempt', user: "{{ username }}" }) })
+                .catch(e => console.log);
+        });
+
+        // Captura também o atalho Ctrl+P
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+                e.preventDefault();
+                const alertDiv = document.getElementById('printAlert');
+                if (alertDiv) alertDiv.style.display = 'block';
+                alert('A impressão/captura de tela desta página foi registrada. Compartilhar viola os termos.');
+                return false;
+            }
+        });
+
+        // 4. Previne contexto de menu em áreas sensíveis (opcional, não bloqueia totalmente)
+        document.querySelectorAll('.field-value').forEach(el => {
+            el.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                alert('Utilize o botão "Copiar" para copiar suas credenciais com segurança.');
+            });
+        });
+
+        // 5. Log de acesso (apenas para informação - não armazena no servidor sem backend)
+        console.log("%c🔒 Acesso registrado para: {{ username }}", "color: #6fcf97; font-size: 11px;");
+
+        // 6. Segurança adicional: forçar rel="noopener" em todos os links externos
         document.querySelectorAll('a[target="_blank"]').forEach(link => {
             link.setAttribute('rel', 'noopener noreferrer');
-        });
-        // Detecção de console aberta? apenas mensagem educativa.
-        if (window.console && window.console.log) {
-            console.log("%c🔒 Precision Booster V2 · Área restrita", "color: #1bc9a0; font-size: 12px;");
-            console.log("%c⚠️ Esta página contém dados pessoais. Não compartilhe o link.", "color: #ffaa44; font-size: 11px;");
-        }
-        // pequeno bloqueio de seleção de texto em elementos sensíveis? (não impede acessibilidade)
-        let creds = document.querySelectorAll('.credencial');
-        creds.forEach(el => {
-            el.style.userSelect = 'all';
-            el.style.cursor = 'text';
         });
     })();
 </script>
