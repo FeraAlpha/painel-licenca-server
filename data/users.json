@@ -3046,6 +3046,17 @@
       "created_at": 1780057317,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBT7AQZJ4W",
+      "password": "J6DM-JLFP-XYWV",
+      "key": "PB-E91F701D",
+      "device_id": null,
+      "expires_at": 1780927553,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780063553,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
