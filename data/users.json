@@ -3035,6 +3035,17 @@
       "created_at": 1780056656,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB3Q9NGQXJ",
+      "password": "6NZQ-PL6G-FKCE",
+      "key": "PB-3DA2C908",
+      "device_id": null,
+      "expires_at": 1780921317,
+      "reseller": "JCGAMER",
+      "created_at": 1780057317,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
