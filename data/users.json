@@ -3200,6 +3200,16 @@
       "created_at": 1780086581,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "VIP864",
+      "password": "Cliente864",
+      "key": "FERA-06C62C4C",
+      "device_id": null,
+      "expires_at": 1780694988,
+      "created_at": 1780090188,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
