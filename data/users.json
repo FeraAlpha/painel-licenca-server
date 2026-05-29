@@ -3101,6 +3101,17 @@
       "created_at": 1780069034,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBLACVHBTX",
+      "password": "XRPK-LRYU-4A9Z",
+      "key": "PB-EAFD0B9C",
+      "device_id": null,
+      "expires_at": 1780936940,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780072940,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
