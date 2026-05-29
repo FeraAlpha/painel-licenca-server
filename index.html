@@ -1009,7 +1009,7 @@
     </div>
 
     <footer>
-      <i class="fas fa-code-branch"></i> Versão 2.2.0 | 
+      <i class="fas fa-code-branch"></i> Versão 2.3.0 | 
       <i class="fab fa-telegram"></i> @SuportePBooster |
       <i class="fab fa-whatsapp"></i> <a href="https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R" target="_blank" style="color: var(--primary); text-decoration: none;">Canal no WhatsApp</a> |
       <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
@@ -1036,8 +1036,6 @@
   const PREFIX = "PB";
   
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
-
-  // LINK DO CANAL DO WHATSAPP (adicionado)
   const WHATSAPP_CHANNEL_LINK = "https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R";
 
   let LINK_APK = localStorage.getItem('LINK_APK_CACHE') || "https://www.mediafire.com/file/6g66fzuudkhmgty/P-Booster_V2.2.2.apk/file";
@@ -1409,6 +1407,7 @@
     }
   }
 
+  // ========== GERAR LICENÇA (COM LINK DE ENTREGA) ==========
   async function generateLicense(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -1505,10 +1504,12 @@
     }
   }
 
-  function showMiniResult({ title, username, password, days, key, status, prefix, createdAtLabel }){
+  // ========== EXIBE RESULTADO COM LINK DE ENTREGA ==========
+  function showMiniResult({ title, username, password, days, key, prefix, status, createdAtLabel }){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
     const expirationDate = calculateExpirationDate(parseInt(days));
+    const deliveryLink = `https://painel-licenca-server.onrender.com/entregar/${encodeURIComponent(username)}`;
 
     box.innerHTML = `
       <div class="resultTitle">
@@ -1546,6 +1547,21 @@
         </div>
       </div>
       ${key ? `<div class="keybox" id="licenseKeyBox">🔑 KEY: ${escapeHtml(key)}</div>` : ""}
+      
+      <!-- NOVO BLOCO: LINK DE ENTREGA -->
+      <div class="keybox" style="background:#0f131c; border-color:#4f7cff; margin-top:16px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i class="fas fa-link"></i> <strong>Link para enviar ao cliente:</strong>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="text" readonly value="${deliveryLink}" id="deliveryLinkInput" style="flex:1; background:#090c12; border:1px solid #2a313e; border-radius:14px; padding:10px; font-size:13px; color:#eef;">
+          <button class="btn-mini" onclick="copyDeliveryLink()"><i class="fas fa-copy"></i> Copiar link</button>
+        </div>
+        <div class="mutedSmall" style="margin-top:8px;">
+          ⚡ O cliente clica e já vê usuário, senha e downloads. <strong>Envie apenas este link!</strong>
+        </div>
+      </div>
+
       <div class="rowbtns two" style="margin-top:12px;">
         <button class="btn btn-soft" type="button" onclick="copyUserPassDays()">
           <i class="fas fa-copy"></i> Credenciais
@@ -1557,14 +1573,40 @@
     `;
   }
 
-  // ========== FUNÇÃO COPY MELHORADA COM WHATSAPP ==========
+  // Função para copiar o link de entrega
+  function copyDeliveryLink() {
+    const input = document.getElementById("deliveryLinkInput");
+    if (input) {
+      input.select();
+      document.execCommand("copy");
+      toast("Link copiado!", "success", "Envie esta única mensagem para o cliente ✅");
+    } else {
+      toast("Erro ao copiar", "warn", "Tente novamente");
+    }
+  }
+
+  // ========== FUNÇÕES DE CÓPIA (já existentes, adaptadas) ==========
+  function copyUserPassDays(){
+    const box = document.getElementById("resultBox");
+    if(!box || box.style.display === "none"){
+      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
+      return;
+    }
+    const values = box.querySelectorAll(".metaGrid .metaValue");
+    const username = values[0]?.innerText || "";
+    const password = values[1]?.innerText || "";
+    const days = values[2]?.innerText || "";
+    const texto = `✅ ACESSO ${NOME_APP}\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Links:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n📢 Canal WhatsApp: ${WHATSAPP_CHANNEL_LINK}\n\n⚠️ Instale os DOIS aplicativos!`;
+    copyToClipboard(texto);
+    toast("Copiado", "success", "Credenciais + links ✅");
+  }
+
   function copyAllWithLink() {
     const box = document.getElementById("resultBox");
     if(!box || box.style.display === "none"){
       toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
       return;
     }
-
     try {
       const metaItems = box.querySelectorAll('.metaItem');
       let username = "", password = "", days = "";
@@ -1629,21 +1671,6 @@ ${WHATSAPP_CHANNEL_LINK}
     }
   }
 
-  function copyUserPassDays(){
-    const box = document.getElementById("resultBox");
-    if(!box || box.style.display === "none"){
-      toast("Nenhum resultado", "warn", "Gere uma licença primeiro");
-      return;
-    }
-    const values = box.querySelectorAll(".metaGrid .metaValue");
-    const username = values[0]?.innerText || "";
-    const password = values[1]?.innerText || "";
-    const days = values[2]?.innerText || "";
-    const texto = `✅ ACESSO ${NOME_APP}\n\n👤 Usuário: ${username}\n🔑 Senha: ${password}\n⏱️ Dias: ${days}\n\n📲 Links:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n📢 Canal WhatsApp: ${WHATSAPP_CHANNEL_LINK}\n\n⚠️ Instale os DOIS aplicativos!`;
-    copyToClipboard(texto);
-    toast("Copiado", "success", "Credenciais + links ✅");
-  }
-
   function getHistory(){
     try{
       const raw = localStorage.getItem(HISTORY_KEY);
@@ -1691,7 +1718,6 @@ ${WHATSAPP_CHANNEL_LINK}
     `).join("");
   }
 
-  // ========== HISTÓRICO TAMBÉM COM WHATSAPP ==========
   function copyHistoryData(index){
     const history = getHistory();
     const item = history[index];
