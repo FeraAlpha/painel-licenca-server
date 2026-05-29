@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, make_response
+from flask import Flask, request, jsonify, render_template, redirect, url_for, make_response, abort
 import json, os, time, base64, sqlite3, requests, hashlib, hmac, threading, atexit, re, secrets
 import jwt
 from Crypto.PublicKey import RSA
@@ -760,6 +760,38 @@ def ping():
         "timestamp": datetime.now().isoformat(),
         "version": "2.1"
     }), 200
+
+# ==============================================================
+# 🆕 PÁGINA DE ENTREGA PARA O CLIENTE (sem textão no WhatsApp)
+# ==============================================================
+@app.route("/entregar/<username>")
+def pagina_entrega(username):
+    username = sanitize_input(username, max_length=50)
+    data = load_users()
+    users = data.get("users", [])
+    user = next((u for u in users if u.get("username") == username), None)
+    if not user:
+        abort(404)
+
+    # Trata a expiração
+    expires_at = user.get("expires_at", 0)
+    if expires_at == UNLIMITED_EXPIRY:
+        expiracao_display = "🚀 Licença Vitalícia (nunca expira)"
+    else:
+        expiracao_display = f"⏱️ Expira em: {datetime.fromtimestamp(expires_at).strftime('%d/%m/%Y')}"
+
+    # Links fixos do seu aplicativo (substitua se quiser usar variáveis de ambiente)
+    link_app = "https://www.mediafire.com/file/6g66fzuudkhmgty/P-Booster_V2.2.2.apk/file"
+    link_shizuku = "https://www.mediafire.com/file/zaupg0br4tlhfkt/Shizuku_13.5.4.apk/file"
+    canal_whats = "https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R"
+
+    return render_template("entrega.html",
+                          username=user.get("username"),
+                          senha=user.get("password"),
+                          expiracao_display=expiracao_display,
+                          link_app=link_app,
+                          link_shizuku=link_shizuku,
+                          canal_whats=canal_whats)
 
 # ------------------------------
 #   KILL SWITCH — endpoint publico (app consulta no startup + heartbeat)
