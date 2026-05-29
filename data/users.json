@@ -3134,6 +3134,17 @@
       "created_at": 1780075521,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBRDX9VTUN",
+      "password": "XAPV-3P4T-7VBD",
+      "key": "PB-AAAACE2A",
+      "device_id": null,
+      "expires_at": 1780939528,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780075528,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
