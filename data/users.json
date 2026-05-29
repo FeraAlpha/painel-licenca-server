@@ -3068,6 +3068,17 @@
       "created_at": 1780064683,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB5ANKFQFX",
+      "password": "SS24-NFKP-PBCL",
+      "key": "PB-C0B89EF2",
+      "device_id": null,
+      "expires_at": 1780928799,
+      "reseller": "WAGNER",
+      "created_at": 1780064799,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
