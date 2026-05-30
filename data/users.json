@@ -3232,6 +3232,17 @@
       "created_at": 1780094539,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBKQ9ZNQMP",
+      "password": "VRJS-2PAK-Q7HJ",
+      "key": "PB-B0D740E6",
+      "device_id": null,
+      "expires_at": 1783988224,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780100224,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
