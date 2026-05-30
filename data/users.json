@@ -3243,6 +3243,17 @@
       "created_at": 1780100224,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBVM2YYG7T",
+      "password": "VX5D-4UHG-6M76",
+      "key": "PB-5E1E6EC4",
+      "device_id": null,
+      "expires_at": 1780967985,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780103985,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
