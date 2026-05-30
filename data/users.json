@@ -3375,6 +3375,17 @@
       "created_at": 1780167651,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB5U4UNGE2",
+      "password": "UDG7-R8MM-SYEZ",
+      "key": "PB-5165E8E3",
+      "device_id": null,
+      "expires_at": 1781031654,
+      "reseller": "NINJA",
+      "created_at": 1780167654,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
