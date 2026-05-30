@@ -3331,6 +3331,17 @@
       "created_at": 1780107135,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBFDU4QUCY",
+      "password": "3PLN-ECVZ-6Y4A",
+      "key": "PB-F6E07242",
+      "device_id": null,
+      "expires_at": 1784030421,
+      "reseller": "JCGAMER",
+      "created_at": 1780142421,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
