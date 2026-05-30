@@ -3353,6 +3353,17 @@
       "created_at": 1780142598,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBXW6Y5P2S",
+      "password": "S85M-WFLL-ZFPJ",
+      "key": "PB-B883F4D9",
+      "device_id": null,
+      "expires_at": 1790528074,
+      "reseller": "JCGAMER",
+      "created_at": 1780160074,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
