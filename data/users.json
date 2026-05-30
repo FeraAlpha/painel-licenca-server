@@ -3287,6 +3287,17 @@
       "created_at": 1780104271,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB64KLNPHV",
+      "password": "S3TL-2WET-42CL",
+      "key": "PB-BEDCE09E",
+      "device_id": null,
+      "expires_at": 1780969064,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780105064,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
