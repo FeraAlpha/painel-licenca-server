@@ -3265,6 +3265,17 @@
       "created_at": 1780104036,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB97QN98VW",
+      "password": "5P5K-NMDK-GGL6",
+      "key": "PB-6E03496A",
+      "device_id": null,
+      "expires_at": 1780968165,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780104165,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
