@@ -3364,6 +3364,17 @@
       "created_at": 1780160074,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBNUP3HY5B",
+      "password": "TCY7-N99J-M5KU",
+      "key": "PB-639E4DF6",
+      "device_id": null,
+      "expires_at": 1781031651,
+      "reseller": "NINJA",
+      "created_at": 1780167651,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
