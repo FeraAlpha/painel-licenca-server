@@ -3506,6 +3506,17 @@
       "created_at": 1780252275,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB6RM4Y9UC",
+      "password": "QH9J-937S-62TH",
+      "key": "PB-1A40AC2C",
+      "device_id": null,
+      "expires_at": 1781118396,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780254396,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
