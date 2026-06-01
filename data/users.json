@@ -3539,6 +3539,17 @@
       "created_at": 1780326916,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBXAZATJ6V",
+      "password": "D2Z4-Z8V4-KKPC",
+      "key": "PB-AC61F574",
+      "device_id": null,
+      "expires_at": 1784218623,
+      "reseller": "JCGAMER",
+      "created_at": 1780330623,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
