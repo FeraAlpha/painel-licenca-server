@@ -3660,6 +3660,17 @@
       "created_at": 1780433556,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB2HB57J7Q",
+      "password": "UPXD-UWJK-9KXL",
+      "key": "PB-09508AA1",
+      "device_id": null,
+      "expires_at": 1784323532,
+      "reseller": "WAGNER",
+      "created_at": 1780435532,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
