@@ -1,313 +1,568 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Precision Booster · Acesso</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Precision Booster · Acesso</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background: #0e1219;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 24px 16px;
-            color: #e6edf5;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+    :root {
+      --bg: #070b14;
+      --card: #0c111c;
+      --field: #080c16;
+      --border: rgba(255,255,255,0.08);
+      --border-green: rgba(0,255,160,0.18);
+      --green: rgb(0,255,160);
+      --cyan: rgb(0,200,255);
+      --text: #e6edf5;
+      --muted: rgba(255,255,255,0.35);
+      --dim: rgba(255,255,255,0.18);
+    }
 
-        /* Watermark de fundo (discreto) */
-        .watermark {
-            position: fixed;
-            bottom: 12px;
-            right: 12px;
-            font-size: 10px;
-            color: #2a3a55;
-            opacity: 0.4;
-            pointer-events: none;
-            font-family: monospace;
-            z-index: 0;
-            user-select: none;
-        }
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 70% 50% at 15% 10%, rgba(0,255,160,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 85% 80%, rgba(0,200,255,0.05) 0%, transparent 60%),
+        linear-gradient(rgba(0,255,160,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,160,0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+    }
 
-        .card {
-            max-width: 560px;
-            width: 100%;
-            background: #171c26;
-            border-radius: 32px;
-            padding: 28px 24px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid #2a313e;
-            position: relative;
-            z-index: 1;
-        }
+    /* Glow blobs */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(100px);
+    }
+    body::before { width: 380px; height: 380px; top: -80px; left: -80px; background: rgba(0,255,160,0.04); }
+    body::after  { width: 320px; height: 320px; bottom: -80px; right: -40px; background: rgba(0,200,255,0.04); }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-        .logo h1 {
-            font-size: 1.7rem;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            color: #ffffff;
-        }
-        .logo p {
-            font-size: 0.75rem;
-            color: #8e9aaf;
-            margin-top: 6px;
-        }
+    /* Watermark */
+    .watermark {
+      position: fixed; bottom: 12px; right: 16px;
+      font-family: monospace; font-size: 9px;
+      color: rgba(255,255,255,0.06);
+      pointer-events: none; user-select: none;
+      letter-spacing: 0.2em; z-index: 0;
+    }
 
-        .field {
-            background: #0f131c;
-            border-radius: 20px;
-            padding: 14px 18px;
-            margin-bottom: 20px;
-            border: 1px solid #2a313e;
-        }
-        .field-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #8e9aaf;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .field-value {
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 1.2rem;
-            font-weight: 500;
-            word-break: break-all;
-            color: #ffffff;
-            background: #090c12;
-            padding: 10px 12px;
-            border-radius: 14px;
-            margin: 8px 0 4px;
-            letter-spacing: 0.3px;
-        }
-        .copy-btn {
-            background: #252e3c;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: #b9c3db;
-            cursor: pointer;
-            transition: 0.15s;
-        }
-        .copy-btn:hover {
-            background: #3a4558;
-            color: white;
-        }
+    /* Card */
+    .card {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 480px;
+      background: var(--card);
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      overflow: hidden;
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card-accent-top {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,160,0.5), transparent);
+    }
+    .card-accent-bottom {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,200,255,0.3), transparent);
+    }
+    .card-inner {
+      padding: 28px 24px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
 
-        .expiry-box {
-            background: #0f131c;
-            border-radius: 20px;
-            padding: 12px 18px;
-            margin-bottom: 24px;
-            border-left: 3px solid #4c9aff;
-            font-size: 0.85rem;
-            color: #b9c3db;
-        }
+    /* Header */
+    .header {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      padding-top: 4px;
+      animation: fadeUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .logo-icon {
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(0,255,160,0.12), rgba(0,200,255,0.08));
+      border: 1px solid rgba(255,255,255,0.09);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(0,255,160,0.2);
+    }
+    .logo-title {
+      font-size: 1.25rem; font-weight: 700;
+      letter-spacing: 0.08em; color: #fff;
+    }
+    .logo-title span { color: var(--green); text-shadow: 0 0 12px rgba(0,255,160,0.6); }
+    .logo-sub {
+      font-size: 11px; color: rgba(255,255,255,0.28);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,255,160,0.1); border: 1px solid rgba(0,255,160,0.28);
+      color: var(--green); border-radius: 999px;
+      padding: 4px 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.15em;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+      animation: pulseDot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.75); }
+    }
 
-        .btn {
-            display: block;
-            background: #1f2a36;
-            text-align: center;
-            padding: 14px;
-            border-radius: 40px;
-            color: white;
-            font-weight: 500;
-            text-decoration: none;
-            margin: 12px 0;
-            transition: 0.2s;
-            border: 1px solid #324153;
-        }
-        .btn-primary {
-            background: #0f6b4a;
-            border-color: #1f8a62;
-        }
-        .btn-primary:hover {
-            background: #128a5e;
-        }
-        .btn-whatsapp {
-            background: #075e54;
-            border-color: #128c7e;
-        }
-        .btn-whatsapp:hover {
-            background: #0a6b5e;
-        }
+    /* Separator */
+    .sep {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,160,0.16), rgba(0,200,255,0.14), transparent);
+    }
 
-        .instructions {
-            background: #1a1f2a;
-            border-radius: 20px;
-            padding: 14px 18px;
-            margin: 16px 0;
-            font-size: 0.75rem;
-        }
+    /* Credential Field */
+    .field {
+      background: var(--field);
+      border: 1px solid var(--border-green);
+      border-radius: 16px;
+      padding: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .field:hover { border-color: rgba(0,255,160,0.32); box-shadow: 0 0 16px rgba(0,255,160,0.06); }
+    .field-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .field-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .field-actions { display: flex; gap: 8px; }
+    .field-value {
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 1.1rem; font-weight: 500; color: #fff;
+      background: rgba(0,0,0,0.3); padding: 12px 14px;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+      letter-spacing: 0.04em; user-select: none;
+      transition: filter 0.3s;
+    }
+    .field-value.masked {
+      filter: blur(6px);
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.4);
+    }
 
-        .footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #6c7a8e;
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid #252e3c;
-        }
+    /* Buttons */
+    .btn-sm {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 999px;
+      font-size: 11px; font-weight: 500;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5); cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .btn-sm:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); }
+    .btn-sm.copied {
+      background: rgba(0,255,160,0.12); border-color: rgba(0,255,160,0.45);
+      color: var(--green);
+    }
 
-        /* Alerta de tentativa de print */
-        .print-alert {
-            display: none;
-            background: #aa2e2ecc;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 24px;
-            margin-bottom: 20px;
-            font-size: 0.8rem;
-        }
-    </style>
+    /* Expiry / Countdown */
+    .expiry-box {
+      border-radius: 16px; padding: 16px;
+      border: 1px solid rgba(0,200,255,0.16); background: rgba(0,200,255,0.04);
+      animation: fadeUp 0.45s 0.18s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .expiry-box.urgent { border-color: rgba(255,170,0,0.38); background: rgba(255,170,0,0.05); }
+    .expiry-box.expired { border-color: rgba(255,70,70,0.38); background: rgba(255,70,70,0.05); }
+    .expiry-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .expiry-sublabel { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; }
+    .expiry-sublabel.normal { color: rgba(0,200,255,0.55); }
+    .expiry-sublabel.urgent { color: rgba(255,170,0,0.65); }
+    .expiry-plano { font-size: 10px; color: rgba(255,255,255,0.28); }
+    .countdown {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .cnt-unit { text-align: center; }
+    .cnt-val {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 1.6rem; font-weight: 700; color: #fff;
+      line-height: 1; letter-spacing: -0.02em;
+    }
+    .cnt-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.15em; color: rgba(255,255,255,0.28); margin-top: 4px; }
+    .cnt-sep { font-family: monospace; font-size: 1.4rem; color: rgba(255,255,255,0.18); margin-bottom: 16px; }
+    .expired-msg {
+      display: flex; align-items: center; gap: 8px; color: rgba(255,90,90,0.9);
+      font-size: 14px; font-weight: 600;
+    }
+
+    /* Section label */
+    .section-lbl {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: rgba(255,255,255,0.22);
+      margin-bottom: 2px;
+    }
+
+    /* Download buttons */
+    .btn-download {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 18px;
+      text-decoration: none; color: #fff;
+      border: 1px solid rgba(0,255,160,0.28);
+      background: linear-gradient(135deg, rgba(0,255,160,0.14), rgba(0,200,255,0.1));
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      margin-bottom: 8px;
+      animation: fadeUp 0.45s 0.22s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .btn-download:hover {
+      background: linear-gradient(135deg, rgba(0,255,160,0.24), rgba(0,200,255,0.18));
+      border-color: rgba(0,255,160,0.5); box-shadow: 0 0 20px rgba(0,255,160,0.12);
+      transform: translateY(-1px);
+    }
+    .btn-download:active { transform: translateY(0); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.65);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16);
+      box-shadow: none; transform: translateY(-1px);
+    }
+    .btn-icon {
+      width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,255,160,0.12); border: 1px solid rgba(0,255,160,0.18);
+    }
+    .btn-icon.sec { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+    .btn-text { flex: 1; }
+    .btn-title { font-size: 14px; font-weight: 600; }
+    .btn-sub { font-size: 10px; color: rgba(255,255,255,0.38); margin-top: 1px; }
+    .btn-chevron { opacity: 0.25; flex-shrink: 0; }
+
+    /* WhatsApp */
+    .btn-whatsapp {
+      background: linear-gradient(135deg, rgba(37,211,102,0.16), rgba(18,140,126,0.12));
+      border-color: rgba(37,211,102,0.28); margin-bottom: 0;
+    }
+    .btn-whatsapp:hover { background: linear-gradient(135deg, rgba(37,211,102,0.26), rgba(18,140,126,0.2)); border-color: rgba(37,211,102,0.48); box-shadow: 0 0 20px rgba(37,211,102,0.1); }
+    .btn-icon.whats { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.2); }
+
+    /* Instructions */
+    .instructions {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      animation: fadeUp 0.45s 0.26s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .instr-row { display: flex; align-items: flex-start; gap: 10px; }
+    .instr-num {
+      flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(0,255,160,0.09); border: 1px solid rgba(0,255,160,0.2);
+      color: rgba(0,255,160,0.7); font-size: 9px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .instr-text { font-size: 12px; color: rgba(255,255,255,0.42); line-height: 1.6; }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding-bottom: 4px;
+      animation: fadeUp 0.45s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .footer p { font-size: 10px; color: rgba(255,255,255,0.2); }
+    .footer em { font-style: normal; color: rgba(255,255,255,0.32); font-weight: 500; }
+    .footer .anti { font-size: 10px; color: rgba(255,255,255,0.1); letter-spacing: 0.15em; margin-top: 4px; }
+
+    /* Print overlay */
+    @media print {
+      body > * { display: none !important; }
+      .print-block { display: flex !important; }
+    }
+    .print-block {
+      display: none; position: fixed; inset: 0; background: #000;
+      align-items: center; justify-content: center; z-index: 9999;
+    }
+    .print-block p { color: #fff; font-size: 1.2rem; font-weight: 700; }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .card-inner { padding: 20px 16px; }
+      .cnt-val { font-size: 1.35rem; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Watermark dinâmica (parte do username) -->
+<div class="print-block"><p>Impressão bloqueada</p></div>
 <div class="watermark" id="watermark"></div>
 
 <div class="card">
-    <div id="printAlert" class="print-alert">⚠️ Compartilhar esta tela viola os termos de uso. Seu acesso será registrado.</div>
+  <div class="card-accent-top"></div>
+  <div class="card-inner">
 
-    <div class="logo">
-        <h1>PRECISION BOOSTER</h1>
-        <p>acesso oficial · licença pessoal</p>
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="rgb(0,255,160)" stroke-width="1.5" opacity="0.85"/>
+          <circle cx="12" cy="12" r="4" fill="rgb(0,255,160)" opacity="0.9"/>
+          <line x1="12" y1="2"  x2="12" y2="6"  stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="12" y1="18" x2="12" y2="22" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="2"  y1="12" x2="6"  y2="12" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="18" y1="12" x2="22" y2="12" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-title">PRECISION <span>BOOSTER</span></div>
+        <div class="logo-sub">acesso oficial · licença pessoal</div>
+      </div>
+      <div class="badge">
+        <div class="badge-dot"></div>
+        LICENÇA ATIVA
+      </div>
     </div>
 
-    <!-- Campo USUÁRIO com botão copiar -->
-    <div class="field">
-        <div class="field-label">
-            <span>USUÁRIO</span>
-            <button class="copy-btn" data-clipboard="{{ username }}">📋 Copiar</button>
+    <div class="sep"></div>
+
+    <!-- CAMPO USUÁRIO -->
+    <div class="field" style="animation-delay:0.08s">
+      <div class="field-head">
+        <span class="field-label">Usuário</span>
+        <div class="field-actions">
+          <button class="btn-sm" onclick="copyField('usr-val', this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+          </button>
         </div>
-        <div class="field-value" id="username-val">{{ username }}</div>
+      </div>
+      <div class="field-value" id="usr-val">{{ username }}</div>
     </div>
 
-    <!-- Campo SENHA com botão copiar -->
-    <div class="field">
-        <div class="field-label">
-            <span>SENHA / CHAVE</span>
-            <button class="copy-btn" data-clipboard="{{ senha }}">📋 Copiar</button>
+    <!-- CAMPO SENHA -->
+    <div class="field" style="animation-delay:0.13s">
+      <div class="field-head">
+        <span class="field-label">Senha / Chave</span>
+        <div class="field-actions">
+          <button class="btn-sm" id="reveal-btn" onclick="toggleReveal()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Revelar
+          </button>
+          <button class="btn-sm" onclick="copyField('pwd-val', this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+          </button>
         </div>
-        <div class="field-value" id="senha-val">{{ senha }}</div>
+      </div>
+      <div class="field-value masked" id="pwd-val" data-real="{{ senha }}">{{ senha }}</div>
     </div>
 
-    <div class="expiry-box">
-        ⏱️ {{ expiracao_display }}
+    <!-- EXPIRAÇÃO / COUNTDOWN -->
+    <div class="expiry-box" id="expiry-box">
+      <div class="expiry-head">
+        <span class="expiry-sublabel normal" id="expiry-sublabel">Expira em</span>
+        <span class="expiry-plano">{{ expiracao_display }}</span>
+      </div>
+      <div class="countdown" id="countdown">
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-d">--</div><div class="cnt-lbl">DIAS</div></div>
+        <div class="cnt-sep">:</div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-h">--</div><div class="cnt-lbl">HORAS</div></div>
+        <div class="cnt-sep">:</div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-m">--</div><div class="cnt-lbl">MIN</div></div>
+        <div class="cnt-sep">:</div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-s">--</div><div class="cnt-lbl">SEG</div></div>
+      </div>
+      <div class="expired-msg" id="expired-msg" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Acesso expirado
+      </div>
     </div>
 
-    <!-- Links de download (diretos do MediaFire, como antes) -->
-    <a href="{{ link_app }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">⬇️ Precision Booster V2 · APK</a>
-    <a href="{{ link_shizuku }}" class="btn" target="_blank" rel="noopener noreferrer">🔧 Shizuku (obrigatório)</a>
+    <div class="sep"></div>
 
+    <!-- DOWNLOADS -->
+    <div style="animation: fadeUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both;">
+      <div class="section-lbl">Downloads</div>
+      <a href="{{ link_app }}" class="btn-download" target="_blank" rel="noopener noreferrer">
+        <div class="btn-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgb(0,255,160)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="btn-text">
+          <div class="btn-title">Precision Booster V2</div>
+          <div class="btn-sub">Aplicativo principal · APK</div>
+        </div>
+        <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      <a href="{{ link_shizuku }}" class="btn-download btn-secondary" target="_blank" rel="noopener noreferrer">
+        <div class="btn-icon sec">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div class="btn-text">
+          <div class="btn-title" style="color:rgba(255,255,255,0.7)">Shizuku</div>
+          <div class="btn-sub">Obrigatório para funcionar</div>
+        </div>
+        <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+
+    <!-- INSTRUÇÕES -->
     <div class="instructions">
-        <strong>📌 Instruções</strong><br>
-        • Instale os dois apps.<br>
-        • Ative o Shizuku antes de abrir o Precision Booster.<br>
-        • Conta pessoal – não compartilhe sua senha.<br>
-        • 1º reset gratuito, R$3 demais resets.
+      <div class="section-lbl">Instruções</div>
+      <div class="instr-row"><div class="instr-num">1</div><div class="instr-text">Instale os dois apps antes de abrir o Precision Booster.</div></div>
+      <div class="instr-row"><div class="instr-num">2</div><div class="instr-text">Ative o Shizuku via ADB ou modo de serviço de acessibilidade.</div></div>
+      <div class="instr-row"><div class="instr-num">3</div><div class="instr-text">Conta pessoal — não compartilhe sua senha com ninguém.</div></div>
+      <div class="instr-row"><div class="instr-num">4</div><div class="instr-text">1° reset gratuito · resets adicionais custam R$3,00.</div></div>
     </div>
 
-    <a href="{{ canal_whats }}" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">📱 Canal oficial no WhatsApp</a>
+    <!-- WHATSAPP -->
+    <a href="{{ canal_whats }}" class="btn-download btn-whatsapp" target="_blank" rel="noopener noreferrer" style="animation-delay:0.28s">
+      <div class="btn-icon whats">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="rgb(37,211,102)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+      </div>
+      <div class="btn-text">
+        <div class="btn-title">Canal Oficial no WhatsApp</div>
+        <div class="btn-sub" style="color:rgba(255,255,255,0.38)">Atualizações e novidades</div>
+      </div>
+      <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
 
+    <div class="sep"></div>
+
+    <!-- FOOTER -->
     <div class="footer">
-        Suporte: @SuportePBooster (Telegram)<br>
-        🔒 Sistema anti‑compartilhamento
+      <p>Suporte: <em>@SuportePBooster</em> · Telegram</p>
+      <p class="anti">SISTEMA ANTI-COMPARTILHAMENTO ATIVO</p>
     </div>
+
+  </div>
+  <div class="card-accent-bottom"></div>
 </div>
 
 <script>
-    (function() {
-        // 1. Watermark: exibe parte do username (primeiros 4 e últimos 4 caracteres)
-        const username = "{{ username }}";
-        if (username && username.length > 0) {
-            let watermarkText = username.length <= 8 ? username : username.slice(0,4) + '...' + username.slice(-4);
-            document.getElementById('watermark').innerText = watermarkText;
-        } else {
-            document.getElementById('watermark').innerText = "sessão válida";
-        }
+(function () {
+  /* ── Watermark ── */
+  var u = "{{ username }}";
+  document.getElementById("watermark").textContent =
+    u.length <= 8 ? u : u.slice(0, 4) + "···" + u.slice(-4);
 
-        // 2. Função copiar para área de transferência
-        function copyToClipboard(text, buttonElement) {
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = buttonElement.innerText;
-                buttonElement.innerText = '✓ Copiado!';
-                setTimeout(() => {
-                    buttonElement.innerText = originalText;
-                }, 1500);
-            }).catch(() => {
-                alert('Pressione e segure sobre o texto para copiar manualmente.');
-            });
-        }
+  /* ── Revelar / ocultar senha ── */
+  var revealed = false;
+  window.toggleReveal = function () {
+    revealed = !revealed;
+    var el  = document.getElementById("pwd-val");
+    var btn = document.getElementById("reveal-btn");
+    if (revealed) {
+      el.textContent = el.getAttribute("data-real");
+      el.classList.remove("masked");
+      btn.innerHTML =
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>' +
+        '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>' +
+        '<line x1="1" y1="1" x2="23" y2="23"/></svg> Ocultar';
+    } else {
+      var real = el.getAttribute("data-real") || "";
+      el.textContent = "•".repeat(Math.min(real.length, 14));
+      el.classList.add("masked");
+      btn.innerHTML =
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revelar';
+    }
+  };
 
-        // Aplica a ação de copiar a todos os botões .copy-btn
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const textToCopy = btn.getAttribute('data-clipboard');
-                if (textToCopy) {
-                    copyToClipboard(textToCopy, btn);
-                }
-            });
-        });
+  /* ── Copiar ── */
+  window.copyField = function (id, btn) {
+    var text = id === "pwd-val"
+      ? document.getElementById("pwd-val").getAttribute("data-real")
+      : document.getElementById(id).textContent.trim();
+    navigator.clipboard.writeText(text).then(function () {
+      var orig = btn.innerHTML;
+      btn.innerHTML =
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+        '<polyline points="20 6 9 17 4 12"/></svg> Copiado!';
+      btn.classList.add("copied");
+      setTimeout(function () { btn.innerHTML = orig; btn.classList.remove("copied"); }, 2000);
+    }).catch(function () {
+      alert("Pressione e segure sobre o texto para copiar manualmente.");
+    });
+  };
 
-        // 3. Detecção de tentativa de print (Ctrl+P / Cmd+P)
-        let printAttempt = false;
-        window.addEventListener('beforeprint', () => {
-            printAttempt = true;
-            const alertDiv = document.getElementById('printAlert');
-            if (alertDiv) alertDiv.style.display = 'block';
-            // Opcional: enviar um ping silencioso para o servidor (para estatística)
-            fetch('/ping', { method: 'POST', keepalive: true, body: JSON.stringify({ event: 'print_attempt', user: "{{ username }}" }) })
-                .catch(e => console.log);
-        });
+  /* ── Countdown (preencha expiracao_iso no backend, ex: "2025-09-01T23:59:59") ── */
+  var expiracaoIso = "{{ expiracao_iso }}"; // variável extra — veja instruções abaixo
+  if (expiracaoIso && expiracaoIso !== "{{ expiracao_iso }}") {
+    var target = new Date(expiracaoIso).getTime();
+    function tick() {
+      var diff = target - Date.now();
+      var box = document.getElementById("expiry-box");
+      var sub = document.getElementById("expiry-sublabel");
+      if (diff <= 0) {
+        document.getElementById("countdown").style.display = "none";
+        document.getElementById("expired-msg").style.display = "flex";
+        box.classList.add("expired");
+        sub.style.display = "none";
+        clearInterval(timer);
+        return;
+      }
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      document.getElementById("cnt-d").textContent = String(d).padStart(2, "0");
+      document.getElementById("cnt-h").textContent = String(h).padStart(2, "0");
+      document.getElementById("cnt-m").textContent = String(m).padStart(2, "0");
+      document.getElementById("cnt-s").textContent = String(s).padStart(2, "0");
+      if (d < 3) { box.classList.add("urgent"); sub.classList.replace("normal", "urgent"); }
+    }
+    tick();
+    var timer = setInterval(tick, 1000);
+  } else {
+    /* Sem ISO → esconde contador, mostra só o texto */
+    document.getElementById("expiry-box").innerHTML =
+      '<div style="display:flex;align-items:center;gap:8px">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(0,200,255)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+      '<span style="font-size:13px;color:rgba(255,255,255,0.55)">{{ expiracao_display }}</span>' +
+      '</div>';
+  }
 
-        // Captura também o atalho Ctrl+P
-        window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
-                e.preventDefault();
-                const alertDiv = document.getElementById('printAlert');
-                if (alertDiv) alertDiv.style.display = 'block';
-                alert('A impressão/captura de tela desta página foi registrada. Compartilhar viola os termos.');
-                return false;
-            }
-        });
+  /* ── Bloqueio de print / screenshot ── */
+  window.addEventListener("beforeprint", function () {
+    alert("Impressão registrada. Compartilhar viola os Termos de Uso.");
+  });
+  window.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && ["p","P","s","S"].includes(e.key)) {
+      e.preventDefault();
+      alert("Captura registrada. Compartilhar viola os Termos de Uso.");
+    }
+  });
 
-        // 4. Previne contexto de menu em áreas sensíveis (opcional, não bloqueia totalmente)
-        document.querySelectorAll('.field-value').forEach(el => {
-            el.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                alert('Utilize o botão "Copiar" para copiar suas credenciais com segurança.');
-            });
-        });
+  /* ── Bloquear context-menu na senha ── */
+  document.getElementById("pwd-val").addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+    alert("Use o botão Copiar para copiar com segurança.");
+  });
 
-        // 5. Log de acesso (apenas para informação - não armazena no servidor sem backend)
-        console.log("%c🔒 Acesso registrado para: {{ username }}", "color: #6fcf97; font-size: 11px;");
-
-        // 6. Segurança adicional: forçar rel="noopener" em todos os links externos
-        document.querySelectorAll('a[target="_blank"]').forEach(link => {
-            link.setAttribute('rel', 'noopener noreferrer');
-        });
-    })();
+  /* ── Log discreto ── */
+  console.log("%c🔒 Acesso registrado", "color:#00ffa0;font-size:11px");
+})();
 </script>
 </body>
 </html>
