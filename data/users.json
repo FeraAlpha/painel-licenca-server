@@ -3671,6 +3671,17 @@
       "created_at": 1780435532,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB7QNURAAL",
+      "password": "MN3D-MU2N-28VS",
+      "key": "PB-5CD5F0A2",
+      "device_id": null,
+      "expires_at": 1781314948,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780450948,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
