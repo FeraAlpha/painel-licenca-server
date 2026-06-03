@@ -3726,6 +3726,17 @@
       "created_at": 1780456424,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBKZ3S9PHY",
+      "password": "Z2LZ-YWRG-ZWTM",
+      "key": "PB-176259B5",
+      "device_id": null,
+      "expires_at": 1781351512,
+      "reseller": "WAGNER",
+      "created_at": 1780487512,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
