@@ -597,92 +597,79 @@
       display:none;
       margin-top:14px;
       border-radius:var(--radius);
-      padding:16px;
+      padding:20px;
       border:1px solid rgba(79,124,255,.28);
       background: rgba(79,124,255,.08);
     }
-    .resultTitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-      font-size:14px;
-    }
-    .resultTitle i{color:var(--primary)}
 
-    .metaGrid{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+    /* Estilo simplificado para o link de entrega */
+    .delivery-simple {
+      text-align: center;
     }
-    .metaItem{
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(79,124,255,.20);
-      background: rgba(255,255,255,.65);
+    .delivery-icon {
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 16px;
     }
-    .metaLabel{
-      font-size:11px;
-      color:var(--muted);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      font-weight:800;
+    .delivery-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--text);
     }
-    .metaLabel i{color:var(--primary)}
-    .metaValue{
-      margin-top:6px;
-      font-weight:900;
-      color:var(--text);
-      word-break:break-word;
-    }
-
-    .keybox{
-      margin-top:12px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid rgba(79,124,255,.35);
-      background: rgba(255,255,255,.85);
-      font-weight:900;
-      color: var(--primary2);
-      word-break:break-all;
-    }
-
-    .delivery-link-box {
+    .delivery-link-container {
       background: linear-gradient(135deg, #0f131c, #131a2a);
-      border: 1px solid #4f7cff;
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 16px;
+      border: 2px solid #4f7cff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
     }
-
-    .delivery-link-box .link-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      color: #4f7cff;
-      font-weight: 800;
-      font-size: 13px;
+    .delivery-link-label {
+      font-size: 12px;
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-align: left;
     }
-
-    .link-copy-container {
+    .delivery-link-value {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
-
-    .link-copy-container input {
+    .delivery-link-value input {
       flex: 1;
       background: #090c12;
       border: 1px solid #2a313e;
       border-radius: 12px;
-      padding: 10px;
-      font-size: 12px;
+      padding: 12px;
+      font-size: 13px;
       color: #eef;
       font-family: monospace;
+      text-align: center;
+    }
+    .copy-btn {
+      padding: 12px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--primary2);
+      transform: translateY(-1px);
+    }
+    .info-text {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+    .info-text i {
+      color: var(--primary);
+      margin-right: 4px;
     }
 
     .history{
@@ -829,7 +816,6 @@
       <div class="gate-title">Fera Alpha</div>
       <div class="gate-subtitle">Painel do Revendedor</div>
 
-      <!-- BANNER PROMOCIONAL PROFISSIONAL -->
       <div class="promo-banner">
         <div class="promo-title">
           <i class="fas fa-gift"></i> PROMOÇÃO ATIVADA
@@ -1045,7 +1031,7 @@
     </div>
 
     <footer>
-      <i class="fas fa-code-branch"></i> Versão 2.4.0 | 
+      <i class="fas fa-code-branch"></i> Versão 2.5.0 | 
       <i class="fab fa-telegram"></i> @SuportePBooster |
       <i class="fab fa-whatsapp"></i> <a href="https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R" target="_blank" style="color: var(--primary); text-decoration: none;">Canal no WhatsApp</a> |
       <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
@@ -1063,12 +1049,13 @@
 
 <script>
   const BASE_URL = "https://painel-licenca-server.onrender.com";
+  const DELIVERY_DOMAIN = "https://www.acessoprecision.com.br";
   const GENERATE_URL = BASE_URL + "/reseller/generate";
   const RESET_DEVICE_URL = BASE_URL + "/reseller/reset_device";
   const RENEW_URL = BASE_URL + "/reseller/renew";
   const VALIDATE_TOKEN_URL = BASE_URL + "/reseller/validate_token";
   const TOKEN_KEY = "feraalpha_revendedor_token";
-  const HISTORY_KEY = "feraalpha_history_v4";
+  const HISTORY_KEY = "feraalpha_history_v5";
   const PREFIX = "PB";
   
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
@@ -1434,7 +1421,7 @@
     }
   }
 
-  // ========== GERAR LICENÇA (AGORA SÓ MOSTRA O LINK DE ENTREGA) ==========
+  // ========== GERAR LICENÇA (SÓ MOSTRA O LINK NO DOMÍNIO CORRETO) ==========
   async function generateLicense(){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -1492,16 +1479,14 @@
         createdAtLabel: timeStr
       };
 
-      // Salva no histórico
       pushHistory(payload);
       renderHistory();
       
-      // Exibe apenas o link de entrega
+      // Exibe APENAS o link de entrega no domínio correto
       showDeliveryLinkOnly(payload);
       
-      toast("Login criado com sucesso!", "success", "Copie o link e envie para o cliente ✅");
+      toast("Login gerado com sucesso!", "success", "Copie o link e envie para o cliente ✅");
 
-      // Gera novos dados para o próximo login
       document.getElementById("username").value = generateUsername();
       document.getElementById("password").value = generatePassword();
 
@@ -1513,56 +1498,38 @@
     }
   }
 
-  // Função que exibe APENAS o link de entrega (estilo acessoprecision)
+  // Função que exibe APENAS o link de entrega - estilo simples
   function showDeliveryLinkOnly({ username, days, createdAtLabel }){
     const box = document.getElementById("resultBox");
     box.style.display = "block";
-    const deliveryLink = `${BASE_URL}/entregar/${encodeURIComponent(username)}`;
+    // Link no domínio correto: https://www.acessoprecision.com.br/entregar/PBXXXXX
+    const deliveryLink = `${DELIVERY_DOMAIN}/entregar/${encodeURIComponent(username)}`;
     
     box.innerHTML = `
-      <div class="resultTitle">
-        <i class="fas fa-link"></i>
-        <span>✅ LINK DE ENTREGA GERADO!</span>
-      </div>
-      
-      <div class="delivery-link-box">
-        <div class="link-header">
-          <i class="fas fa-share-alt"></i>
-          <span>ENVIE ESTE LINK PARA O SEU CLIENTE:</span>
+      <div class="delivery-simple">
+        <div class="delivery-icon">
+          <i class="fas fa-link"></i>
         </div>
-        <div class="link-copy-container">
-          <input type="text" readonly value="${deliveryLink}" id="deliveryLinkInput" style="flex:1;">
-          <button class="btn-mini" onclick="copyDeliveryLink()">
-            <i class="fas fa-copy"></i> Copiar
-          </button>
+        <div class="delivery-title">
+          ✅ LINK GERADO COM SUCESSO!
         </div>
-        <div class="mutedSmall" style="margin-top:12px;">
-          <i class="fas fa-info-circle"></i> O cliente clica no link e resgata automaticamente usuário, senha e downloads.
+        
+        <div class="delivery-link-container">
+          <div class="delivery-link-label">
+            <i class="fas fa-share-alt"></i> LINK PARA ENVIAR AO CLIENTE:
+          </div>
+          <div class="delivery-link-value">
+            <input type="text" readonly value="${deliveryLink}" id="deliveryLinkInput">
+            <button class="copy-btn" onclick="copyDeliveryLink()">
+              <i class="fas fa-copy"></i> Copiar
+            </button>
+          </div>
         </div>
-      </div>
-      
-      <div class="metaGrid" style="margin-top:12px;">
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-user"></i> Usuário</div>
-          <div class="metaValue">${escapeHtml(username)}</div>
+        
+        <div class="info-text">
+          <i class="fas fa-info-circle"></i> Envie apenas este link para o cliente. 
+          Ele terá acesso às credenciais e downloads na página de entrega.
         </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-calendar-days"></i> Dias</div>
-          <div class="metaValue">${escapeHtml(days)} dias</div>
-        </div>
-        <div class="metaItem">
-          <div class="metaLabel"><i class="fas fa-clock"></i> Gerado em</div>
-          <div class="metaValue">${escapeHtml(createdAtLabel)}</div>
-        </div>
-      </div>
-      
-      <div class="rowbtns two" style="margin-top:12px;">
-        <button class="btn btn-soft" type="button" onclick="copyOnlyLink()">
-          <i class="fas fa-copy"></i> Copiar só o link
-        </button>
-        <button class="btn btn-primary" type="button" onclick="copyLinkWithMessage()">
-          <i class="fas fa-comment"></i> Link + Mensagem
-        </button>
       </div>
     `;
   }
@@ -1574,41 +1541,10 @@
       input.select();
       document.execCommand("copy");
       toast("Link copiado!", "success", "Envie para o cliente ✅");
-    } else {
-      toast("Erro ao copiar", "warn", "Tente novamente");
     }
   }
 
-  // Copiar apenas o link
-  function copyOnlyLink() {
-    const input = document.getElementById("deliveryLinkInput");
-    if (input) {
-      input.select();
-      document.execCommand("copy");
-      toast("Link copiado!", "success", "Cole e envie para o cliente");
-    }
-  }
-
-  // Copiar link com mensagem padrão
-  function copyLinkWithMessage() {
-    const input = document.getElementById("deliveryLinkInput");
-    if (input) {
-      const link = input.value;
-      const message = `🎯 ACESSO LIBERADO - ${NOME_APP} 🎯\n\n✅ Clique no link abaixo para resgatar seu acesso:\n\n${link}\n\n📲 Após resgatar, instale os aplicativos:\n🔹 ${NOME_APP}: ${LINK_APK}\n🔹 Shizuku: ${LINK_SHIZUKU}\n\n📢 Canal no WhatsApp: ${WHATSAPP_CHANNEL_LINK}\n\n⚠️ Instale os DOIS aplicativos para o funcionamento correto!`;
-      copyToClipboard(message);
-      toast("Link + mensagem copiados!", "success", "Envie para o cliente");
-    }
-  }
-
-  // ========== FUNÇÕES DE CÓPIA ORIGINAIS (adaptadas para compatibilidade) ==========
-  function copyUserPassDays(){
-    toast("Nova versão", "warn", "Use o link de entrega gerado acima");
-  }
-
-  function copyAllWithLink(){
-    toast("Nova versão", "warn", "Use o link de entrega gerado acima");
-  }
-
+  // ========== FUNÇÕES DO HISTÓRICO ==========
   function getHistory(){
     try{
       const raw = localStorage.getItem(HISTORY_KEY);
@@ -1632,7 +1568,7 @@
     if(!list) return;
     const history = getHistory();
     if(history.length === 0){
-      list.innerHTML = `<div class="empty">Nenhum login gerado ainda. Assim que você gerar, aparece aqui ✅</div>`;
+      list.innerHTML = `<div class="empty">Nenhum login gerado ainda.</div>`;
       return;
     }
     list.innerHTML = history.map((h, idx) => `
@@ -1646,7 +1582,7 @@
         </div>
         <div class="hRight">
           <button class="btn-mini" onclick="copyHistoryLink(${idx})">
-            <i class="fas fa-link"></i>
+            <i class="fas fa-link"></i> Link
           </button>
           <button class="btn-mini" onclick="useHistory(${idx})">
             <i class="fas fa-eye"></i>
@@ -1656,7 +1592,6 @@
     `).join("");
   }
 
-  // Copiar link do histórico
   function copyHistoryLink(index){
     const history = getHistory();
     const item = history[index];
@@ -1664,7 +1599,7 @@
       toast("Erro ao copiar", "warn", "Registro não encontrado");
       return;
     }
-    const link = `${BASE_URL}/entregar/${encodeURIComponent(item.username)}`;
+    const link = `${DELIVERY_DOMAIN}/entregar/${encodeURIComponent(item.username)}`;
     copyToClipboard(link);
     toast("Link copiado!", "success", "Envie para o cliente");
   }
@@ -1674,7 +1609,7 @@
     const item = history[index];
     if(!item) return;
     showDeliveryLinkOnly(item);
-    toast("Link de entrega carregado", "success", "Copie e envie para o cliente ✅");
+    toast("Link de entrega carregado", "success", "Copie e envie ✅");
   }
 
   function copyToClipboard(text){
