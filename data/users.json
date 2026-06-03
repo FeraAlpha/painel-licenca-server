@@ -3682,6 +3682,17 @@
       "created_at": 1780450948,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBL4MQYDWP",
+      "password": "TTTA-7RGV-9QD7",
+      "key": "PB-804E8608",
+      "device_id": null,
+      "expires_at": 1781316392,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780452392,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
