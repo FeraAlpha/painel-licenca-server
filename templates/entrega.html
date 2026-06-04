@@ -364,17 +364,13 @@
       <div class="field-head">
         <span class="field-label">Senha / Chave</span>
         <div class="field-actions">
-          <button class="btn-sm" id="reveal-btn" onclick="toggleReveal()">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Revelar
-          </button>
           <button class="btn-sm" onclick="copyField('pwd-val', this)">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copiar
           </button>
         </div>
       </div>
-      <div class="field-value masked" id="pwd-val" data-real="{{ senha }}">{{ senha }}</div>
+      <div class="field-value" id="pwd-val" data-real="{{ senha }}">{{ senha }}</div>
     </div>
 
     <!-- EXPIRAÇÃO / COUNTDOWN -->
