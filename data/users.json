@@ -2453,6 +2453,17 @@
       "created_at": 1780675838,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB72LHTQRL",
+      "password": "FA7M-5QWR-FU8Q",
+      "key": "PB-F4F70CDF",
+      "device_id": null,
+      "expires_at": 1781540404,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780676404,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
