@@ -2442,6 +2442,17 @@
       "created_at": 1780670385,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBL4FQ366R",
+      "password": "LPCJ-KDRT-5TKU",
+      "key": "PB-93465CAE",
+      "device_id": null,
+      "expires_at": 1784563838,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780675838,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
