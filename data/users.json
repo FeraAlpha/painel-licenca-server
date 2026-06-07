@@ -2650,6 +2650,17 @@
       "created_at": 1780841192,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBXCSHTRXF",
+      "password": "DMGS-LHZ4-AUYM",
+      "key": "PB-66D75164",
+      "device_id": null,
+      "expires_at": 1781705721,
+      "reseller": "NINJA",
+      "created_at": 1780841721,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
