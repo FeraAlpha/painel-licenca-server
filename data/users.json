@@ -2584,6 +2584,17 @@
       "created_at": 1780796025,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB8DCDD947",
+      "password": "TSF2-AHEE-NW67",
+      "key": "PB-953CEC0B",
+      "device_id": null,
+      "expires_at": 1781703821,
+      "reseller": "NINJA",
+      "created_at": 1780839821,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
