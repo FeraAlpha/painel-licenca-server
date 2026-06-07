@@ -2661,6 +2661,17 @@
       "created_at": 1780841721,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB3MRDG996",
+      "password": "QUWV-P3RB-BEJY",
+      "key": "PB-41A87C42",
+      "device_id": null,
+      "expires_at": 1781709447,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780845447,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
