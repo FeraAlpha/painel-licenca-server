@@ -2595,6 +2595,17 @@
       "created_at": 1780839821,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBQTCAHCBZ",
+      "password": "N96C-S4TS-XVL5",
+      "key": "PB-DF2DCE13",
+      "device_id": null,
+      "expires_at": 1781703957,
+      "reseller": "NINJA",
+      "created_at": 1780839957,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
