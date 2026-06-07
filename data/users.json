@@ -2661,6 +2661,17 @@
       "created_at": 1780841721,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB4FVU4UHC",
+      "password": "L2F8-EDV3-VQQZ",
+      "key": "PB-CD364DFE",
+      "device_id": null,
+      "expires_at": 1784743379,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1780855379,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
