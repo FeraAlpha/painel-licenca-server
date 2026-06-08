@@ -2727,6 +2727,17 @@
       "created_at": 1780962517,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBHD8DDQVA",
+      "password": "7TUR-XRZM-Z2YZ",
+      "key": "PB-9AFB06DD",
+      "device_id": null,
+      "expires_at": 1781827198,
+      "reseller": "NINJA",
+      "created_at": 1780963198,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
