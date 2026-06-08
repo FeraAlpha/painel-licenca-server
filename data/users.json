@@ -188,7 +188,7 @@
       "device_id": null,
       "expires_at": 1791235955,
       "status": "active",
-      "multi_device": false
+      "multi_device": true
     },
     {
       "username": "jcs22",
