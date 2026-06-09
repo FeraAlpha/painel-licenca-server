@@ -2760,6 +2760,17 @@
       "created_at": 1780966149,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB3SWAVAG6",
+      "password": "RJ9W-8LBK-KD5Y",
+      "key": "PB-A7E80544",
+      "device_id": null,
+      "expires_at": 1781865270,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781001270,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
