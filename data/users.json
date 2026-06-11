@@ -2870,6 +2870,17 @@
       "created_at": 1781210816,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB5S98HKJX",
+      "password": "SGMU-972C-AR6Z",
+      "key": "PB-C30F2694",
+      "device_id": null,
+      "expires_at": 1785106589,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781218589,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
