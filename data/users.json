@@ -1239,7 +1239,7 @@
       "username": "PBYXHLJ7DL",
       "password": "HAL3-H54F-8QFM",
       "key": "PB-E9E84E00",
-      "device_id": "381464b86c8e841f5b819480083e0232e33c93b028b508611401fcb5c1f115ab",
+      "device_id": null,
       "expires_at": 1782954216,
       "reseller": "ANJO",
       "created_at": 1779066216,
