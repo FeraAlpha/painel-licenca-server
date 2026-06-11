@@ -2848,6 +2848,17 @@
       "created_at": 1781092650,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBHPRHKKXY",
+      "password": "E98X-62X6-NZNE",
+      "key": "PB-AADE6ED5",
+      "device_id": null,
+      "expires_at": 1785025267,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781137267,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
