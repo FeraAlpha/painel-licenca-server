@@ -5,502 +5,351 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Precision Booster · Acesso</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg:      #05050f;
-      --card:    #09091a;
-      --field:   #0b0b1e;
-      --amber:   #f5a623;
-      --a10:     rgba(245,166,35,0.10);
-      --a18:     rgba(245,166,35,0.18);
-      --a30:     rgba(245,166,35,0.30);
-      --a50:     rgba(245,166,35,0.50);
-      --ok:      #34c97a;
-      --danger:  #ff4d4d;
-      --ice:     #d8e4f2;
-      --muted:   rgba(216,228,242,0.38);
-      --line:    rgba(216,228,242,0.07);
-      --line-a:  rgba(245,166,35,0.16);
-      --mono:    'Space Mono', monospace;
-      --sans:    'Space Grotesk', sans-serif;
+      --bg: #070b14;
+      --card: #0c111c;
+      --field: #080c16;
+      --border: rgba(255,255,255,0.08);
+      --border-green: rgba(0,255,160,0.18);
+      --green: rgb(0,255,160);
+      --cyan: rgb(0,200,255);
+      --text: #e6edf5;
+      --muted: rgba(255,255,255,0.35);
+      --dim: rgba(255,255,255,0.18);
     }
 
     body {
       background: var(--bg);
       background-image:
-        radial-gradient(ellipse 60% 50% at 15% 8%,  rgba(245,166,35,0.055) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 60% at 88% 88%,  rgba(120,80,245,0.04)  0%, transparent 65%);
+        radial-gradient(ellipse 70% 50% at 15% 10%, rgba(0,255,160,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 85% 80%, rgba(0,200,255,0.05) 0%, transparent 60%),
+        linear-gradient(rgba(0,255,160,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,160,0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
       min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 40px 16px;
-      font-family: var(--sans);
-      color: var(--ice);
-      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
     }
 
-    /* ── floating particles ── */
-    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .particle {
-      position: absolute;
-      width: 2px; height: 2px; border-radius: 50%;
-      background: var(--amber);
-      opacity: 0;
-      animation: floatP var(--dur) var(--delay) ease-in-out infinite;
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(100px);
     }
-    @keyframes floatP {
-      0%   { opacity: 0;    transform: translateY(0)      scale(1);   }
-      20%  { opacity: 0.35; }
-      80%  { opacity: 0.2;  }
-      100% { opacity: 0;    transform: translateY(-120px) scale(0.4); }
-    }
+    body::before { width: 380px; height: 380px; top: -80px; left: -80px; background: rgba(0,255,160,0.04); }
+    body::after  { width: 320px; height: 320px; bottom: -80px; right: -40px; background: rgba(0,200,255,0.04); }
 
-    /* ── watermark ── */
     .watermark {
       position: fixed; bottom: 12px; right: 16px;
-      font-family: var(--mono); font-size: 9px;
-      color: rgba(255,255,255,0.05);
-      pointer-events: none; user-select: none; letter-spacing: 0.2em; z-index: 0;
+      font-family: monospace; font-size: 9px;
+      color: rgba(255,255,255,0.06);
+      pointer-events: none; user-select: none;
+      letter-spacing: 0.2em; z-index: 0;
     }
 
-    /* ── print block ── */
-    @media print { body > * { display: none !important; } .print-block { display: flex !important; } }
-    .print-block {
-      display: none; position: fixed; inset: 0; background: #000;
-      align-items: center; justify-content: center; z-index: 9999;
-    }
-    .print-block p { color: #fff; font-size: 1.2rem; font-weight: 700; font-family: var(--mono); }
-
-    /* ── CARD ── */
     .card {
       position: relative; z-index: 1;
       width: 100%; max-width: 480px;
       background: var(--card);
-      /* dot-grid texture */
-      background-image:
-        radial-gradient(circle, rgba(245,166,35,0.06) 1px, transparent 1px);
-      background-size: 28px 28px;
-      background-color: var(--card);
-      border: 1px solid var(--line-a);
-      border-radius: 6px;
-      box-shadow:
-        0 40px 100px rgba(0,0,0,0.8),
-        0 0 0 1px rgba(245,166,35,0.05),
-        0 0 40px rgba(245,166,35,0.03);
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
       overflow: hidden;
-      animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
     }
-    /* pulsing card glow synced with badge */
-    .card { animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both, cardGlow 3s 1s ease-in-out infinite; }
-    @keyframes cardIn  { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes cardGlow {
-      0%,100% { box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(245,166,35,0.05), 0 0 30px rgba(245,166,35,0.03); }
-      50%      { box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(245,166,35,0.12), 0 0 55px rgba(245,166,35,0.07); }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-
-    /* spinning border gradient overlay */
-    .card-border-spin {
-      position: absolute; inset: -1px; border-radius: 7px;
-      background: conic-gradient(from 0deg, transparent 0%, rgba(245,166,35,0.45) 10%, transparent 20%);
-      animation: borderSpin 4s linear infinite;
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask-composite: exclude; -webkit-mask-composite: destination-out;
-      padding: 1px; pointer-events: none; z-index: 2;
-    }
-    @keyframes borderSpin { to { transform: rotate(360deg); } }
-
-    .card-top-line {
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, var(--amber) 35%, rgba(245,166,35,0.25) 100%);
-      position: relative; z-index: 3;
-    }
-    .card-bot-line {
+    .card-accent-top {
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--a30), transparent);
+      background: linear-gradient(90deg, transparent, rgba(0,255,160,0.5), transparent);
+    }
+    .card-accent-bottom {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,200,255,0.3), transparent);
     }
     .card-inner {
-      padding: 28px 22px;
-      display: flex; flex-direction: column; gap: 18px;
-      position: relative; z-index: 1;
+      padding: 28px 24px;
+      display: flex; flex-direction: column; gap: 20px;
     }
 
-    /* ── HEADER ── */
     .header {
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
-      padding-top: 6px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      padding-top: 4px;
       animation: fadeUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both;
     }
-
-    /* HUD — radar scan */
-    .hud-ring {
-      position: relative; width: 86px; height: 86px; flex-shrink: 0;
-    }
-    .hud-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .hud-ring .r-outer { animation: rotCW  14s linear infinite; }
-    .hud-ring .r-inner { animation: rotCCW  9s linear infinite; }
-    @keyframes rotCW  { to { transform: rotate(360deg);  } }
-    @keyframes rotCCW { to { transform: rotate(-360deg); } }
-
-    /* scan line */
-    .hud-scan {
-      position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
-    }
-    .hud-scan::after {
-      content: "";
-      position: absolute; left: 50%; top: 0;
-      width: 50%; height: 100%;
-      background: conic-gradient(from -5deg at 0% 50%, rgba(245,166,35,0.0) 0deg, rgba(245,166,35,0.22) 30deg, rgba(245,166,35,0.0) 60deg);
-      transform-origin: left center;
-      animation: scanRot 3s linear infinite;
-    }
-    @keyframes scanRot { to { transform: rotate(360deg); } }
-
-    .hud-dot {
-      position: absolute; inset: 0;
+    .logo-icon {
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(0,255,160,0.12), rgba(0,200,255,0.08));
+      border: 1px solid rgba(255,255,255,0.09);
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(0,255,160,0.2);
     }
-    .hud-dot::after {
-      content: "";
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--amber);
-      box-shadow: 0 0 10px var(--amber), 0 0 28px rgba(245,166,35,0.55);
-      animation: dotPulse 2s ease-in-out infinite;
-    }
-    @keyframes dotPulse {
-      0%,100% { transform: scale(1);    opacity: 1;    }
-      50%      { transform: scale(0.7); opacity: 0.4;  }
-    }
-
     .logo-title {
-      font-family: var(--mono); font-size: 1.15rem; font-weight: 700;
-      letter-spacing: 0.22em; color: #fff; text-align: center;
+      font-size: 1.25rem; font-weight: 700;
+      letter-spacing: 0.08em; color: #fff;
     }
-    .logo-title span { color: var(--amber); text-shadow: 0 0 18px rgba(245,166,35,0.6); }
+    .logo-title span { color: var(--green); text-shadow: 0 0 12px rgba(0,255,160,0.6); }
     .logo-sub {
-      font-size: 10px; letter-spacing: 0.22em;
-      color: rgba(255,255,255,0.25); text-transform: uppercase;
-      margin-top: 3px; text-align: center;
+      font-size: 11px; color: rgba(255,255,255,0.28);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px;
     }
-
     .badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      background: rgba(52,201,122,0.08); border: 1px solid rgba(52,201,122,0.28);
-      color: var(--ok); border-radius: 3px;
-      padding: 5px 14px; font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.18em;
-      animation: badgeGlow 3s ease-in-out infinite;
-    }
-    @keyframes badgeGlow {
-      0%,100% { box-shadow: none; border-color: rgba(52,201,122,0.28); }
-      50%      { box-shadow: 0 0 12px rgba(52,201,122,0.18); border-color: rgba(52,201,122,0.55); }
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,255,160,0.1); border: 1px solid rgba(0,255,160,0.28);
+      color: var(--green); border-radius: 999px;
+      padding: 4px 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.15em;
     }
     .badge-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--ok);
+      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
       animation: pulseDot 1.8s ease-in-out infinite;
     }
     @keyframes pulseDot {
-      0%,100% { opacity:1; transform:scale(1);    }
-      50%      { opacity:0.3; transform:scale(0.7); }
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.75); }
     }
 
-    /* ── SEPARATOR ── */
     .sep {
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--a18), rgba(245,166,35,0.06), transparent);
+      background: linear-gradient(90deg, transparent, rgba(0,255,160,0.16), rgba(0,200,255,0.14), transparent);
     }
 
-    /* ── FIELDS ── */
     .field {
       background: var(--field);
-      border: 1px solid var(--line-a);
-      border-radius: 6px; padding: 16px;
-      transition: border-color 0.25s, box-shadow 0.25s;
-      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
-      position: relative; overflow: hidden;
+      border: 1px solid var(--border-green);
+      border-radius: 16px;
+      padding: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .field::before {
-      content: ""; position: absolute; top: 0; left: 0;
-      width: 34px; height: 2px; background: var(--amber); opacity: 0.65;
-    }
-    /* animated border gradient on hover */
-    .field::after {
-      content: ""; position: absolute; inset: -1px; border-radius: 7px;
-      background: conic-gradient(from 0deg, transparent 0%, rgba(245,166,35,0.5) 10%, transparent 20%);
-      animation: borderSpin 3s linear infinite;
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask-composite: exclude; -webkit-mask-composite: destination-out;
-      padding: 1px; pointer-events: none;
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .field:hover::after { opacity: 1; }
-    .field:hover { border-color: var(--a50); box-shadow: 0 0 22px rgba(245,166,35,0.07); }
-
+    .field:hover { border-color: rgba(0,255,160,0.32); box-shadow: 0 0 16px rgba(0,255,160,0.06); }
     .field-head {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
     }
     .field-label {
-      font-family: var(--mono); font-size: 9px; font-weight: 700;
-      letter-spacing: 0.25em; text-transform: uppercase; color: var(--a50);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
     }
     .field-actions { display: flex; gap: 8px; }
     .field-value {
-      font-family: var(--mono); font-size: 1.05rem; font-weight: 700; color: #fff;
-      background: rgba(0,0,0,0.4); padding: 11px 13px;
-      border-radius: 4px; border: 1px solid rgba(255,255,255,0.04);
-      letter-spacing: 0.06em; user-select: none; transition: filter 0.35s;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 1.1rem; font-weight: 500; color: #fff;
+      background: rgba(0,0,0,0.3); padding: 12px 14px;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+      letter-spacing: 0.04em; user-select: none;
+      transition: filter 0.3s;
     }
-    .field-value.masked { filter: blur(6px); color: rgba(255,255,255,0.3); }
-    /* typewriter cursor shown when revealing */
-    .field-value.typing::after {
-      content: "|"; color: var(--amber); animation: blink 0.6s step-end infinite;
+    .field-value.masked {
+      filter: blur(6px);
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.4);
     }
-    @keyframes blink { 50% { opacity: 0; } }
 
-    /* ── BUTTONS small ── */
     .btn-sm {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 5px 11px; border-radius: 3px;
-      font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
-      color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.15s;
+      padding: 5px 11px; border-radius: 999px;
+      font-size: 11px; font-weight: 500;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5); cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
-    .btn-sm:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.18); color: var(--ice); }
-    .btn-sm.copied { background: var(--a10); border-color: var(--a50); color: var(--amber); }
+    .btn-sm:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); }
+    .btn-sm.copied {
+      background: rgba(0,255,160,0.12); border-color: rgba(0,255,160,0.45);
+      color: var(--green);
+    }
 
-    /* ── EXPIRY BOX ── */
     .expiry-box {
-      border-radius: 6px; padding: 16px;
-      border: 1px solid var(--a18);
-      background: rgba(245,166,35,0.04);
-      animation: fadeUp 0.4s 0.18s cubic-bezier(0.22,1,0.36,1) both;
+      border-radius: 16px; padding: 16px;
+      border: 1px solid rgba(0,200,255,0.16); background: rgba(0,200,255,0.04);
+      animation: fadeUp 0.45s 0.18s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .expiry-box.urgent  { border-color: rgba(255,170,0,0.40); background: rgba(255,170,0,0.06); }
-    .expiry-box.expired { border-color: rgba(255,70,70,0.40);  background: rgba(255,70,70,0.06); }
-
+    .expiry-box.urgent { border-color: rgba(255,170,0,0.38); background: rgba(255,170,0,0.05); }
+    .expiry-box.expired { border-color: rgba(255,70,70,0.38); background: rgba(255,70,70,0.05); }
     .expiry-head {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
     }
-    .expiry-sublabel {
-      font-family: var(--mono); font-size: 9px; font-weight: 700;
-      letter-spacing: 0.22em; text-transform: uppercase;
+    .expiry-sublabel { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; }
+    .expiry-sublabel.normal { color: rgba(0,200,255,0.55); }
+    .expiry-sublabel.urgent { color: rgba(255,170,0,0.65); }
+    .expiry-plano { font-size: 10px; color: rgba(255,255,255,0.28); }
+    .countdown {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
     }
-    .expiry-sublabel.normal { color: var(--a50); }
-    .expiry-sublabel.urgent { color: rgba(255,170,0,0.75); }
-    .expiry-plano { font-family: var(--mono); font-size: 10px; color: var(--muted); }
-
-    .countdown { display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .cnt-unit  { text-align: center; }
-
-    /* flip animation on change */
+    .cnt-unit { text-align: center; }
     .cnt-val {
-      font-family: var(--mono); font-size: 1.85rem; font-weight: 700; color: var(--amber);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 1.6rem; font-weight: 700; color: #fff;
       line-height: 1; letter-spacing: -0.02em;
-      text-shadow: 0 0 22px rgba(245,166,35,0.45);
-      display: inline-block;
-      transition: transform 0.12s ease-in, opacity 0.12s ease-in;
     }
-    .cnt-val.flip-out { transform: rotateX(90deg); opacity: 0; }
-    .cnt-lbl {
-      font-family: var(--mono); font-size: 8px; font-weight: 700;
-      letter-spacing: 0.2em; color: rgba(255,255,255,0.22); margin-top: 5px;
-    }
-    .cnt-sep {
-      font-family: var(--mono); font-size: 1.5rem;
-      color: var(--a30); margin-bottom: 16px;
-    }
+    .cnt-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.15em; color: rgba(255,255,255,0.28); margin-top: 4px; }
+    .cnt-sep { font-family: monospace; font-size: 1.4rem; color: rgba(255,255,255,0.18); margin-bottom: 16px; }
     .expired-msg {
-      display: flex; align-items: center; gap: 8px;
-      color: rgba(255,90,90,0.9); font-family: var(--mono);
-      font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
+      display: flex; align-items: center; gap: 8px; color: rgba(255,90,90,0.9);
+      font-size: 14px; font-weight: 600;
     }
 
-    /* ── progress bar ── */
-    .expiry-progress { margin-top: 14px; }
-    .progress-head {
-      display: flex; justify-content: space-between;
-      font-family: var(--mono); font-size: 8px; letter-spacing: 0.15em;
-      color: rgba(255,255,255,0.2); margin-bottom: 5px;
-    }
-    .progress-track {
-      height: 3px; background: rgba(255,255,255,0.06);
-      border-radius: 2px; overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%; border-radius: 2px;
-      background: linear-gradient(90deg, rgba(245,166,35,0.5), var(--amber));
-      transition: width 1s linear;
-      box-shadow: 0 0 8px rgba(245,166,35,0.5);
-    }
-
-    /* ── SECTION LABEL ── */
     .section-lbl {
-      font-family: var(--mono); font-size: 9px; font-weight: 700;
-      letter-spacing: 0.25em; text-transform: uppercase; color: var(--a50);
-      margin-bottom: 10px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .section-lbl::after {
-      content: ""; flex: 1; height: 1px;
-      background: linear-gradient(90deg, var(--line-a), transparent);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: rgba(255,255,255,0.22);
+      margin-bottom: 8px;
     }
 
-    /* ── DOWNLOAD BUTTONS ── */
     .btn-download {
       display: flex; align-items: center; gap: 12px;
-      padding: 13px 15px; border-radius: 6px;
+      padding: 14px 16px; border-radius: 18px;
       text-decoration: none; color: #fff;
-      border: 1px solid var(--a18);
-      background: var(--a10);
+      border: 1px solid rgba(0,255,160,0.28);
+      background: linear-gradient(135deg, rgba(0,255,160,0.14), rgba(0,200,255,0.1));
       transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
       margin-bottom: 8px;
-      position: relative; overflow: hidden;
+      animation: fadeUp 0.45s 0.22s cubic-bezier(0.22,1,0.36,1) both;
     }
-    /* left accent */
-    .btn-download::before {
-      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-      background: var(--amber); opacity: 0.75;
-      transition: opacity 0.2s;
-    }
-    /* shimmer effect */
-    .btn-download::after {
-      content: ""; position: absolute;
-      top: 0; left: -100%; width: 60%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-      transition: left 0.45s ease;
-    }
-    .btn-download:hover::after { left: 150%; }
     .btn-download:hover {
-      background: rgba(245,166,35,0.16);
-      border-color: var(--a50);
-      box-shadow: 0 0 24px rgba(245,166,35,0.1);
-      transform: translateX(2px);
+      background: linear-gradient(135deg, rgba(0,255,160,0.24), rgba(0,200,255,0.18));
+      border-color: rgba(0,255,160,0.5); box-shadow: 0 0 20px rgba(0,255,160,0.12);
+      transform: translateY(-1px);
     }
-    .btn-download:active { transform: translateX(0); }
+    .btn-download:active { transform: translateY(0); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.65);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16);
+      box-shadow: none; transform: translateY(-1px);
+    }
 
-    .btn-secondary { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); }
-    .btn-secondary::before { background: rgba(255,255,255,0.4); opacity: 0.28; }
-    .btn-secondary::after  { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent); }
-    .btn-secondary:hover   { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); box-shadow: none; transform: translateX(2px); }
-
-    .btn-youtube { background: rgba(255,50,50,0.08); border-color: rgba(255,50,50,0.22); margin-bottom: 0; }
-    .btn-youtube::before { background: #ff3030; }
-    .btn-youtube::after  { background: linear-gradient(90deg, transparent, rgba(255,80,80,0.07), transparent); }
-    .btn-youtube:hover   { background: rgba(255,50,50,0.16); border-color: rgba(255,50,50,0.45); box-shadow: 0 0 24px rgba(255,50,50,0.1); }
-
-    .btn-whatsapp { background: rgba(37,211,102,0.07); border-color: rgba(37,211,102,0.20); margin-bottom: 0; }
-    .btn-whatsapp::before { background: #25d366; }
-    .btn-whatsapp::after  { background: linear-gradient(90deg, transparent, rgba(37,211,102,0.07), transparent); }
-    .btn-whatsapp:hover   { background: rgba(37,211,102,0.14); border-color: rgba(37,211,102,0.42); box-shadow: 0 0 24px rgba(37,211,102,0.1); }
+    /* YouTube button */
+    .btn-youtube {
+      background: linear-gradient(135deg, rgba(255,60,60,0.13), rgba(180,0,0,0.09));
+      border-color: rgba(255,60,60,0.28);
+      margin-bottom: 0;
+    }
+    .btn-youtube:hover {
+      background: linear-gradient(135deg, rgba(255,60,60,0.24), rgba(180,0,0,0.18));
+      border-color: rgba(255,60,60,0.5);
+      box-shadow: 0 0 20px rgba(255,60,60,0.12);
+      transform: translateY(-1px);
+    }
 
     .btn-icon {
-      width: 34px; height: 34px; border-radius: 5px; flex-shrink: 0;
+      width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      background: var(--a10); border: 1px solid var(--a18);
+      background: rgba(0,255,160,0.12); border: 1px solid rgba(0,255,160,0.18);
     }
-    /* bounce on the icon */
-    .btn-download:not(.btn-secondary):not(.btn-youtube):not(.btn-whatsapp) .btn-icon svg {
-      animation: iconBounce 2.5s ease-in-out infinite;
-    }
-    @keyframes iconBounce {
-      0%,100% { transform: translateY(0);   }
-      50%      { transform: translateY(-3px); }
-    }
-    .btn-icon.sec   { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-    .btn-icon.yt    { background: rgba(255,50,50,0.12);   border-color: rgba(255,50,50,0.22); }
-    .btn-icon.whats { background: rgba(37,211,102,0.10);  border-color: rgba(37,211,102,0.20); }
-
+    .btn-icon.sec  { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+    .btn-icon.yt   { background: rgba(255,60,60,0.13);   border-color: rgba(255,60,60,0.22); }
+    .btn-icon.whats { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.2); }
     .btn-text { flex: 1; }
-    .btn-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
-    .btn-sub   { font-size: 10px; color: var(--muted); margin-top: 2px; }
-    .btn-chevron { opacity: 0.2; flex-shrink: 0; }
+    .btn-title { font-size: 14px; font-weight: 600; }
+    .btn-sub { font-size: 10px; color: rgba(255,255,255,0.38); margin-top: 1px; }
+    .btn-chevron { opacity: 0.25; flex-shrink: 0; }
 
-    /* ── INSTRUCTIONS ── */
-    .instructions {
-      background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 16px;
-      display: flex; flex-direction: column; gap: 11px;
-      animation: fadeUp 0.4s 0.24s cubic-bezier(0.22,1,0.36,1) both;
+    .btn-whatsapp {
+      background: linear-gradient(135deg, rgba(37,211,102,0.16), rgba(18,140,126,0.12));
+      border-color: rgba(37,211,102,0.28); margin-bottom: 0;
     }
-    .instr-row { display: flex; align-items: flex-start; gap: 11px; }
+    .btn-whatsapp:hover { background: linear-gradient(135deg, rgba(37,211,102,0.26), rgba(18,140,126,0.2)); border-color: rgba(37,211,102,0.48); box-shadow: 0 0 20px rgba(37,211,102,0.1); }
+
+    .instructions {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      animation: fadeUp 0.45s 0.26s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .instr-row { display: flex; align-items: flex-start; gap: 10px; }
     .instr-num {
-      flex-shrink: 0; width: 19px; height: 19px; border-radius: 3px;
-      background: var(--a10); border: 1px solid var(--a18);
-      color: var(--amber); font-family: var(--mono); font-size: 9px; font-weight: 700;
+      flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(0,255,160,0.09); border: 1px solid rgba(0,255,160,0.2);
+      color: rgba(0,255,160,0.7); font-size: 9px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; margin-top: 1px;
     }
-    .instr-text { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .instr-text { font-size: 12px; color: rgba(255,255,255,0.42); line-height: 1.6; }
 
-    /* ── FOOTER ── */
     .footer {
-      text-align: center; padding-bottom: 2px;
-      animation: fadeUp 0.4s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+      text-align: center; padding-bottom: 4px;
+      animation: fadeUp 0.45s 0.3s cubic-bezier(0.22,1,0.36,1) both;
     }
     .footer p { font-size: 10px; color: rgba(255,255,255,0.2); }
-    .footer em { font-style: normal; font-family: var(--mono); color: var(--a50); font-size: 10px; }
-    .footer .anti { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.08); letter-spacing: 0.18em; margin-top: 5px; }
+    .footer em { font-style: normal; color: rgba(255,255,255,0.32); font-weight: 500; }
+    .footer .anti { font-size: 10px; color: rgba(255,255,255,0.1); letter-spacing: 0.15em; margin-top: 4px; }
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media print {
+      body > * { display: none !important; }
+      .print-block { display: flex !important; }
+    }
+    .print-block {
+      display: none; position: fixed; inset: 0; background: #000;
+      align-items: center; justify-content: center; z-index: 9999;
+    }
+    .print-block p { color: #fff; font-size: 1.2rem; font-weight: 700; }
 
-    /* ── RESPONSIVE ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 400px) {
-      .card-inner { padding: 20px 14px; }
-      .cnt-val { font-size: 1.45rem; }
-      .logo-title { font-size: 1rem; }
+      .card-inner { padding: 20px 16px; }
+      .cnt-val { font-size: 1.35rem; }
     }
   </style>
 </head>
 <body>
 
-<div class="print-block"><p>// IMPRESSÃO BLOQUEADA</p></div>
+<div class="print-block"><p>Impressão bloqueada</p></div>
 <div class="watermark" id="watermark"></div>
 
-<!-- particles -->
-<div class="particles" id="particles"></div>
-
 <div class="card">
-  <div class="card-border-spin"></div>
-  <div class="card-top-line"></div>
+  <div class="card-accent-top"></div>
   <div class="card-inner">
 
     <!-- HEADER -->
     <div class="header">
-      <div class="hud-ring">
-        <svg class="r-outer" viewBox="0 0 86 86" fill="none">
-          <circle cx="43" cy="43" r="40" stroke="rgba(245,166,35,0.20)" stroke-width="1" stroke-dasharray="5 7"/>
+      <div class="logo-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="rgb(0,255,160)" stroke-width="1.5" opacity="0.85"/>
+          <circle cx="12" cy="12" r="4" fill="rgb(0,255,160)" opacity="0.9"/>
+          <line x1="12" y1="2"  x2="12" y2="6"  stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="12" y1="18" x2="12" y2="22" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="2"  y1="12" x2="6"  y2="12" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <line x1="18" y1="12" x2="22" y2="12" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
         </svg>
-        <svg class="r-inner" viewBox="0 0 86 86" fill="none">
-          <circle cx="43" cy="43" r="30" stroke="rgba(245,166,35,0.28)" stroke-width="1" stroke-dasharray="2 9"/>
-        </svg>
-        <svg viewBox="0 0 86 86" fill="none" style="position:absolute;inset:0;width:100%;height:100%">
-          <circle cx="43" cy="43" r="19" stroke="rgba(245,166,35,0.14)" stroke-width="1"/>
-          <line x1="43" y1="26" x2="43" y2="34" stroke="rgba(245,166,35,0.45)" stroke-width="1.2"/>
-          <line x1="43" y1="52" x2="43" y2="60" stroke="rgba(245,166,35,0.45)" stroke-width="1.2"/>
-          <line x1="26" y1="43" x2="34" y2="43" stroke="rgba(245,166,35,0.45)" stroke-width="1.2"/>
-          <line x1="52" y1="43" x2="60" y2="43" stroke="rgba(245,166,35,0.45)" stroke-width="1.2"/>
-        </svg>
-        <div class="hud-scan"></div>
-        <div class="hud-dot"></div>
       </div>
       <div>
         <div class="logo-title">PRECISION <span>BOOSTER</span></div>
         <div class="logo-sub">acesso oficial · licença pessoal</div>
       </div>
-      <div class="badge"><div class="badge-dot"></div>LICENÇA ATIVA</div>
+      <div class="badge">
+        <div class="badge-dot"></div>
+        LICENÇA ATIVA
+      </div>
     </div>
 
     <div class="sep"></div>
 
-    <!-- USUÁRIO -->
+    <!-- CAMPO USUÁRIO -->
     <div class="field" style="animation-delay:0.08s">
       <div class="field-head">
         <span class="field-label">Usuário</span>
         <div class="field-actions">
-          <button class="btn-sm" onclick="copyField('usr-val',this)">
+          <button class="btn-sm" onclick="copyField('usr-val', this)">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copiar
           </button>
@@ -509,25 +358,21 @@
       <div class="field-value" id="usr-val">{{ username }}</div>
     </div>
 
-    <!-- SENHA -->
+    <!-- CAMPO SENHA -->
     <div class="field" style="animation-delay:0.13s">
       <div class="field-head">
         <span class="field-label">Senha / Chave</span>
         <div class="field-actions">
-          <button class="btn-sm" id="reveal-btn" onclick="toggleReveal()">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Revelar
-          </button>
-          <button class="btn-sm" onclick="copyField('pwd-val',this)">
+          <button class="btn-sm" onclick="copyField('pwd-val', this)">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copiar
           </button>
         </div>
       </div>
-      <div class="field-value masked" id="pwd-val" data-real="{{ senha }}">{{ senha }}</div>
+      <div class="field-value" id="pwd-val" data-real="{{ senha }}">{{ senha }}</div>
     </div>
 
-    <!-- EXPIRAÇÃO -->
+    <!-- EXPIRAÇÃO / COUNTDOWN -->
     <div class="expiry-box" id="expiry-box">
       <div class="expiry-head">
         <span class="expiry-sublabel normal" id="expiry-sublabel">Expira em</span>
@@ -542,28 +387,20 @@
         <div class="cnt-sep">:</div>
         <div class="cnt-unit"><div class="cnt-val" id="cnt-s">--</div><div class="cnt-lbl">SEG</div></div>
       </div>
-      <div class="expiry-progress" id="expiry-progress" style="display:none">
-        <div class="progress-head">
-          <span>TEMPO RESTANTE</span>
-          <span id="pct-label">--%</span>
-        </div>
-        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      </div>
       <div class="expired-msg" id="expired-msg" style="display:none">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        ACESSO EXPIRADO
+        Acesso expirado
       </div>
     </div>
 
     <div class="sep"></div>
 
     <!-- DOWNLOADS -->
-    <div style="animation: fadeUp 0.4s 0.20s cubic-bezier(0.22,1,0.36,1) both;">
+    <div style="animation: fadeUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both;">
       <div class="section-lbl">Downloads</div>
-
       <a href="{{ link_app }}" class="btn-download" target="_blank" rel="noopener noreferrer">
         <div class="btn-icon">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgb(245,166,35)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgb(0,255,160)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </div>
         <div class="btn-text">
           <div class="btn-title">Precision Booster V2</div>
@@ -571,7 +408,6 @@
         </div>
         <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
-
       <a href="{{ link_shizuku }}" class="btn-download btn-secondary" target="_blank" rel="noopener noreferrer">
         <div class="btn-icon sec">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
@@ -583,6 +419,7 @@
         <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
+      <!-- TUTORIAL YOUTUBE -->
       <a href="https://youtu.be/OqzvvS9HA1A" class="btn-download btn-youtube" target="_blank" rel="noopener noreferrer">
         <div class="btn-icon yt">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="rgb(255,80,80)"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -605,13 +442,13 @@
     </div>
 
     <!-- WHATSAPP -->
-    <a href="{{ canal_whats }}" class="btn-download btn-whatsapp" target="_blank" rel="noopener noreferrer" style="animation: fadeUp 0.4s 0.28s cubic-bezier(0.22,1,0.36,1) both;">
+    <a href="{{ canal_whats }}" class="btn-download btn-whatsapp" target="_blank" rel="noopener noreferrer" style="animation-delay:0.28s">
       <div class="btn-icon whats">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="rgb(37,211,102)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
       </div>
       <div class="btn-text">
         <div class="btn-title">Canal Oficial no WhatsApp</div>
-        <div class="btn-sub">Atualizações e novidades</div>
+        <div class="btn-sub" style="color:rgba(255,255,255,0.38)">Atualizações e novidades</div>
       </div>
       <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </a>
@@ -625,147 +462,105 @@
     </div>
 
   </div>
-  <div class="card-bot-line"></div>
+  <div class="card-accent-bottom"></div>
 </div>
 
 <script>
 (function () {
-
-  /* ── Watermark ── */
   var u = "{{ username }}";
   document.getElementById("watermark").textContent =
-    u.length <= 8 ? u : u.slice(0,4) + "···" + u.slice(-4);
+    u.length <= 8 ? u : u.slice(0, 4) + "···" + u.slice(-4);
 
-  /* ── Particles ── */
-  var container = document.getElementById("particles");
-  var count = 6;
-  for (var i = 0; i < count; i++) {
-    var p = document.createElement("div");
-    p.className = "particle";
-    p.style.setProperty("--dur",   (7 + Math.random() * 8) + "s");
-    p.style.setProperty("--delay", (Math.random() * 6)      + "s");
-    p.style.left = (10 + Math.random() * 80) + "%";
-    p.style.top  = (20 + Math.random() * 70) + "%";
-    p.style.width = p.style.height = (Math.random() > 0.5 ? "2px" : "1px");
-    container.appendChild(p);
-  }
-
-  /* ── Reveal com typewriter ── */
   var revealed = false;
   window.toggleReveal = function () {
     revealed = !revealed;
     var el  = document.getElementById("pwd-val");
     var btn = document.getElementById("reveal-btn");
-    var real = el.getAttribute("data-real") || "";
     if (revealed) {
+      el.textContent = el.getAttribute("data-real");
       el.classList.remove("masked");
-      el.textContent = "";
-      el.classList.add("typing");
-      var i = 0;
-      var tw = setInterval(function () {
-        el.textContent = real.slice(0, ++i);
-        if (i >= real.length) { clearInterval(tw); el.classList.remove("typing"); }
-      }, 45);
-      btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Ocultar';
+      btn.innerHTML =
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>' +
+        '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>' +
+        '<line x1="1" y1="1" x2="23" y2="23"/></svg> Ocultar';
     } else {
+      var real = el.getAttribute("data-real") || "";
       el.textContent = "•".repeat(Math.min(real.length, 14));
       el.classList.add("masked");
-      btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revelar';
+      btn.innerHTML =
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revelar';
     }
   };
 
-  /* ── Copiar ── */
   window.copyField = function (id, btn) {
     var text = id === "pwd-val"
       ? document.getElementById("pwd-val").getAttribute("data-real")
       : document.getElementById(id).textContent.trim();
     navigator.clipboard.writeText(text).then(function () {
       var orig = btn.innerHTML;
-      btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copiado!';
+      btn.innerHTML =
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+        '<polyline points="20 6 9 17 4 12"/></svg> Copiado!';
       btn.classList.add("copied");
       setTimeout(function () { btn.innerHTML = orig; btn.classList.remove("copied"); }, 2000);
-    }).catch(function () { alert("Pressione e segure sobre o texto para copiar manualmente."); });
+    }).catch(function () {
+      alert("Pressione e segure sobre o texto para copiar manualmente.");
+    });
   };
 
-  /* ── Countdown com flip + progress bar ── */
-  var expiracaoIso  = "{{ expiracao_iso }}";
-  var expiracaoFull = "{{ expiracao_full_iso }}"; // ISO da data inicial do plano para calcular % — opcional
-
-  if (expiracaoIso && expiracaoIso.indexOf("{{") === -1) {
+  var expiracaoIso = "{{ expiracao_iso }}";
+  if (expiracaoIso && expiracaoIso !== "{{ expiracao_iso }}") {
     var target = new Date(expiracaoIso).getTime();
-    var totalMs = expiracaoFull && expiracaoFull.indexOf("{{") === -1
-      ? target - new Date(expiracaoFull).getTime()
-      : null;
-
-    document.getElementById("expiry-progress").style.display = "";
-
-    var prev = { d:"--", h:"--", m:"--", s:"--" };
-
-    function flipVal(id, newVal) {
-      var el = document.getElementById(id);
-      if (el.textContent === newVal) return;
-      el.classList.add("flip-out");
-      setTimeout(function () {
-        el.textContent = newVal;
-        el.classList.remove("flip-out");
-      }, 120);
-    }
-
     function tick() {
       var diff = target - Date.now();
       var box = document.getElementById("expiry-box");
       var sub = document.getElementById("expiry-sublabel");
       if (diff <= 0) {
         document.getElementById("countdown").style.display = "none";
-        document.getElementById("expiry-progress").style.display = "none";
         document.getElementById("expired-msg").style.display = "flex";
-        box.classList.add("expired"); sub.style.display = "none";
-        clearInterval(timer); return;
+        box.classList.add("expired");
+        sub.style.display = "none";
+        clearInterval(timer);
+        return;
       }
       var d = Math.floor(diff / 86400000);
       var h = Math.floor((diff % 86400000) / 3600000);
-      var m = Math.floor((diff % 3600000)  / 60000);
-      var s = Math.floor((diff % 60000)    / 1000);
-      flipVal("cnt-d", String(d).padStart(2,"0"));
-      flipVal("cnt-h", String(h).padStart(2,"0"));
-      flipVal("cnt-m", String(m).padStart(2,"0"));
-      flipVal("cnt-s", String(s).padStart(2,"0"));
-
-      /* progress bar */
-      var pct = totalMs ? Math.max(0, Math.min(100, (diff / totalMs) * 100)) : null;
-      if (pct !== null) {
-        document.getElementById("progress-fill").style.width = pct.toFixed(1) + "%";
-        document.getElementById("pct-label").textContent = pct.toFixed(0) + "%";
-      } else {
-        /* fallback: just show days as rough % of 30d plan */
-        var fallback = Math.max(0, Math.min(100, (diff / (30 * 86400000)) * 100));
-        document.getElementById("progress-fill").style.width = fallback.toFixed(1) + "%";
-        document.getElementById("pct-label").textContent = fallback.toFixed(0) + "%";
-      }
-
-      if (d < 3) { box.classList.add("urgent"); sub.classList.replace("normal","urgent"); }
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      document.getElementById("cnt-d").textContent = String(d).padStart(2, "0");
+      document.getElementById("cnt-h").textContent = String(h).padStart(2, "0");
+      document.getElementById("cnt-m").textContent = String(m).padStart(2, "0");
+      document.getElementById("cnt-s").textContent = String(s).padStart(2, "0");
+      if (d < 3) { box.classList.add("urgent"); sub.classList.replace("normal", "urgent"); }
     }
     tick();
     var timer = setInterval(tick, 1000);
   } else {
     document.getElementById("expiry-box").innerHTML =
       '<div style="display:flex;align-items:center;gap:8px">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,166,35,0.7)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
-      '<span style="font-size:13px;font-family:\'Space Mono\',monospace;color:rgba(255,255,255,0.5)">{{ expiracao_display }}</span></div>';
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(0,200,255)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+      '<span style="font-size:13px;color:rgba(255,255,255,0.55)">{{ expiracao_display }}</span>' +
+      '</div>';
   }
 
-  /* ── Anti-print ── */
-  window.addEventListener("beforeprint", function () { alert("Impressão registrada. Compartilhar viola os Termos de Uso."); });
+  window.addEventListener("beforeprint", function () {
+    alert("Impressão registrada. Compartilhar viola os Termos de Uso.");
+  });
   window.addEventListener("keydown", function (e) {
     if ((e.ctrlKey || e.metaKey) && ["p","P","s","S"].includes(e.key)) {
-      e.preventDefault(); alert("Captura registrada. Compartilhar viola os Termos de Uso.");
+      e.preventDefault();
+      alert("Captura registrada. Compartilhar viola os Termos de Uso.");
     }
   });
+
   document.getElementById("pwd-val").addEventListener("contextmenu", function (e) {
-    e.preventDefault(); alert("Use o botão Copiar para copiar com segurança.");
+    e.preventDefault();
+    alert("Use o botão Copiar para copiar com segurança.");
   });
 
-  console.log("%c// ACESSO REGISTRADO", "color:#f5a623;font-family:monospace;font-size:11px");
+  console.log("%c🔒 Acesso registrado", "color:#00ffa0;font-size:11px");
 })();
 </script>
 </body>
