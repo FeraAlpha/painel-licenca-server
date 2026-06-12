@@ -242,15 +242,12 @@
       font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
       font-size: 1.05rem; font-weight: 500; color: var(--white);
       letter-spacing: 0.03em; word-break: break-all;
-      transition: filter 0.3s;
     }
-    .cred-value.masked { filter: blur(7px); color: var(--muted); user-select: none; }
 
-    /* Strength bar */
+    /* Strength bar — sempre visível na senha */
     .strength-bar-wrap {
-      margin-top: 10px; display: none; align-items: center; gap: 8px;
+      margin-top: 10px; display: flex; align-items: center; gap: 8px;
     }
-    .strength-bar-wrap.visible { display: flex; }
     .strength-track {
       flex: 1; height: 3px; background: var(--dim); border-radius: 99px; overflow: hidden;
     }
@@ -274,6 +271,34 @@
     }
     .btn-xs:hover { background: rgba(240,168,48,0.1); border-color: var(--border-gold); color: var(--gold); }
     .btn-xs.copied { background: rgba(240,168,48,0.14); border-color: rgba(240,168,48,0.4); color: var(--gold); }
+    .btn-xs.copied svg { display: none; }
+
+    /* ── SECURITY INFO ── */
+    .sec-info {
+      background: var(--raised); border: 1px solid var(--border);
+      border-radius: 14px; padding: 11px 16px;
+    }
+    .sec-row {
+      display: flex; align-items: center; gap: 0;
+    }
+    .sec-item {
+      flex: 1; display: flex; flex-direction: column; gap: 4px;
+    }
+    .sec-item:last-child { align-items: flex-end; }
+    .sec-divider {
+      width: 1px; height: 28px;
+      background: var(--border); margin: 0 14px; flex-shrink: 0;
+    }
+    .sec-label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 8px; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .sec-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px; font-weight: 600;
+      color: rgba(221,227,240,0.55); letter-spacing: 0.06em;
+    }
 
     /* ── EXPIRY ── */
     .expiry-wrap {
@@ -535,7 +560,7 @@
             <span class="cred-label">Usuário</span>
           </div>
           <div class="cred-actions">
-            <button class="btn-xs" onclick="copyField('usr-val','Usuário copiado')">
+            <button class="btn-xs" id="copy-usr-btn" onclick="copyField('usr-val','Usuário copiado','copy-usr-btn')">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               Copiar
             </button>
@@ -544,7 +569,7 @@
         <div class="cred-value" id="usr-val">{{ username }}</div>
       </div>
 
-      <!-- SENHA -->
+      <!-- SENHA — sempre visível -->
       <div class="cred-block" style="animation-delay:0.12s">
         <div class="cred-top">
           <div class="cred-meta">
@@ -552,17 +577,13 @@
             <span class="lic-id" id="lic-id-badge"></span>
           </div>
           <div class="cred-actions">
-            <button class="btn-xs" id="reveal-btn" onclick="toggleReveal()">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              Revelar
-            </button>
-            <button class="btn-xs" onclick="copyField('pwd-val','Senha copiada com segurança')">
+            <button class="btn-xs" id="copy-pwd-btn" onclick="copyField('pwd-val','Senha copiada com segurança','copy-pwd-btn')">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               Copiar
             </button>
           </div>
         </div>
-        <div class="cred-value masked" id="pwd-val" data-real="{{ senha }}">••••••••••••</div>
+        <div class="cred-value" id="pwd-val">{{ senha }}</div>
         <div class="strength-bar-wrap" id="strength-wrap">
           <div class="strength-track"><div class="strength-fill" id="strength-fill"></div></div>
           <span class="strength-lbl" id="strength-lbl">FORTE</span>
@@ -607,6 +628,29 @@
       <div class="expired-msg" id="expired-msg">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Acesso expirado — entre em contato com o suporte
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SECURITY INFO: hash + último acesso -->
+    <div class="sec-info" style="animation: fadeUp 0.45s 0.19s cubic-bezier(0.22,1,0.36,1) both;">
+      <div class="sec-row">
+        <div class="sec-item">
+          <span class="sec-label">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Dispositivo
+          </span>
+          <span class="sec-value" id="device-hash">—</span>
+        </div>
+        <div class="sec-divider"></div>
+        <div class="sec-item">
+          <span class="sec-label">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Último acesso
+          </span>
+          <span class="sec-value" id="last-access">—</span>
+        </div>
       </div>
     </div>
 
@@ -741,44 +785,65 @@
     toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
   }
 
-  /* ── REVEAL ── */
-  var revealed = false;
-  window.toggleReveal = function () {
-    revealed = !revealed;
-    var el  = document.getElementById("pwd-val");
-    var btn = document.getElementById("reveal-btn");
-    var sw  = document.getElementById("strength-wrap");
-    if (revealed) {
-      el.textContent = el.getAttribute("data-real");
-      el.classList.remove("masked");
-      sw.classList.add("visible");
-      btn.innerHTML =
-        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-        '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>' +
-        '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>' +
-        '<line x1="1" y1="1" x2="23" y2="23"/></svg> Ocultar';
-    } else {
-      el.textContent = "••••••••••••";
-      el.classList.add("masked");
-      sw.classList.remove("visible");
-      btn.innerHTML =
-        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-        '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revelar';
-    }
-  };
-
   /* ── COPY ── */
-  window.copyField = function (id, toastMsg) {
-    var text = id === "pwd-val"
-      ? document.getElementById("pwd-val").getAttribute("data-real")
-      : document.getElementById(id).textContent.trim();
+  window.copyField = function (id, toastMsg, btnId) {
+    var text = document.getElementById(id).textContent.trim();
     navigator.clipboard.writeText(text).then(function () {
       if (navigator.vibrate) navigator.vibrate(30);
       showToast(toastMsg || "Copiado!");
+      if (btnId) {
+        var btn = document.getElementById(btnId);
+        if (!btn) return;
+        var orig = btn.innerHTML;
+        btn.classList.add("copied");
+        btn.innerHTML =
+          '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copiado';
+        setTimeout(function () {
+          btn.classList.remove("copied");
+          btn.innerHTML = orig;
+        }, 2000);
+      }
     }).catch(function () {
       alert("Pressione e segure sobre o texto para copiar manualmente.");
     });
   };
+
+  /* ── DEVICE HASH ── */
+  (function () {
+    var ua = navigator.userAgent;
+    var w  = screen.width;
+    var h  = screen.height;
+    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    var raw = ua + w + h + tz;
+    var n = 0;
+    for (var i = 0; i < raw.length; i++) n = ((n << 5) - n + raw.charCodeAt(i)) | 0;
+    var hex = Math.abs(n).toString(16).toUpperCase().padStart(8, "0");
+    var fp  = hex.slice(0,4) + "·" + hex.slice(4,8);
+    document.getElementById("device-hash").textContent = fp;
+  })();
+
+  /* ── ÚLTIMO ACESSO ── */
+  (function () {
+    var KEY = "pb_last_access";
+    var prev = null;
+    try { prev = localStorage.getItem(KEY); } catch(e){}
+
+    var el = document.getElementById("last-access");
+    if (prev) {
+      var d = new Date(parseInt(prev, 10));
+      var months2 = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+      var isToday = d.toDateString() === new Date().toDateString();
+      var pad = function(n){ return String(n).padStart(2,"0"); };
+      var timeStr = pad(d.getHours()) + ":" + pad(d.getMinutes());
+      el.textContent = isToday
+        ? "hoje às " + timeStr
+        : d.getDate() + " " + months2[d.getMonth()] + " · " + timeStr;
+    } else {
+      el.textContent = "primeiro acesso";
+    }
+
+    try { localStorage.setItem(KEY, Date.now().toString()); } catch(e){}
+  })();
 
   /* ── ACCORDION ── */
   window.toggleInstr = function (btn) {
@@ -791,12 +856,11 @@
 
   /* ── COUNTDOWN + PROGRESS ── */
   var expiracaoIso = "{{ expiracao_iso }}";
-  var activationIso = "{{ ativacao_iso }}"; // opcional — fallback: 30 dias antes da expiração
+  var activationIso = "{{ ativacao_iso }}";
 
   if (expiracaoIso && expiracaoIso !== "{{ expiracao_iso }}") {
     var target = new Date(expiracaoIso).getTime();
 
-    // start: usa ativacao_iso se disponível, senão assume 30 dias de plano
     var planDays = 30;
     var start = (activationIso && activationIso !== "{{ ativacao_iso }}")
       ? new Date(activationIso).getTime()
@@ -827,7 +891,6 @@
         document.getElementById("expired-msg").style.display = "flex";
         box.classList.add("expired");
         lbl.textContent = "Expirado";
-        // dramatic red pulse
         var card = document.getElementById("main-card");
         card.classList.add("warning-pulse");
         clearInterval(timer);
@@ -844,7 +907,6 @@
       flipEl("cnt-m", String(m).padStart(2,"0"));
       flipEl("cnt-s", String(s).padStart(2,"0"));
 
-      // Progress bar
       var elapsed = Date.now() - start;
       var pct = Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
       var remaining = 100 - pct;
