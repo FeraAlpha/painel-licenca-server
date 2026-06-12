@@ -9,26 +9,22 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #070b14;
-      --card: #0c111c;
-      --field: #080c16;
-      --border: rgba(255,255,255,0.08);
-      --border-green: rgba(0,255,160,0.18);
-      --green: rgb(0,255,160);
-      --cyan: rgb(0,200,255);
-      --text: #e6edf5;
-      --muted: rgba(255,255,255,0.35);
-      --dim: rgba(255,255,255,0.18);
+      --bg:       #060810;
+      --surface:  #0b0f1a;
+      --raised:   #0f1422;
+      --gold:     #F0A830;
+      --gold-dim: rgba(240,168,48,0.18);
+      --gold-glow:rgba(240,168,48,0.08);
+      --white:    #ffffff;
+      --text:     #dde3f0;
+      --muted:    rgba(221,227,240,0.38);
+      --dim:      rgba(221,227,240,0.12);
+      --border:   rgba(255,255,255,0.06);
+      --border-gold: rgba(240,168,48,0.22);
     }
 
     body {
       background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 70% 50% at 15% 10%, rgba(0,255,160,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at 85% 80%, rgba(0,200,255,0.05) 0%, transparent 60%),
-        linear-gradient(rgba(0,255,160,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,160,0.025) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -36,260 +32,326 @@
       padding: 40px 16px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       color: var(--text);
+      overflow-x: hidden;
     }
 
+    /* Ambient glow blobs */
     body::before, body::after {
       content: "";
       position: fixed;
       border-radius: 50%;
       pointer-events: none;
+      filter: blur(120px);
       z-index: 0;
-      filter: blur(100px);
     }
-    body::before { width: 380px; height: 380px; top: -80px; left: -80px; background: rgba(0,255,160,0.04); }
-    body::after  { width: 320px; height: 320px; bottom: -80px; right: -40px; background: rgba(0,200,255,0.04); }
+    body::before {
+      width: 500px; height: 320px;
+      top: -60px; left: -80px;
+      background: rgba(240,168,48,0.055);
+    }
+    body::after {
+      width: 400px; height: 400px;
+      bottom: -100px; right: -60px;
+      background: rgba(80,120,255,0.04);
+    }
 
+    /* ── WATERMARK ── */
     .watermark {
-      position: fixed; bottom: 12px; right: 16px;
+      position: fixed; bottom: 14px; right: 18px;
       font-family: monospace; font-size: 9px;
-      color: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.05);
       pointer-events: none; user-select: none;
-      letter-spacing: 0.2em; z-index: 0;
+      letter-spacing: 0.25em; z-index: 0;
     }
 
+    /* ── CARD ── */
     .card {
       position: relative; z-index: 1;
-      width: 100%; max-width: 480px;
-      background: var(--card);
-      border-radius: 28px;
+      width: 100%; max-width: 460px;
+      background: var(--surface);
+      border-radius: 24px;
       border: 1px solid var(--border);
-      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 40px 100px rgba(0,0,0,0.7),
+        0 0 60px rgba(240,168,48,0.04);
+      animation: cardIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
       overflow: hidden;
-      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
     }
     @keyframes cardIn {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .card-accent-top {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,255,160,0.5), transparent);
-    }
-    .card-accent-bottom {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,200,255,0.3), transparent);
-    }
-    .card-inner {
-      padding: 28px 24px;
-      display: flex; flex-direction: column; gap: 20px;
+      from { opacity: 0; transform: translateY(28px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
+    /* Gold sidebar stripe */
+    .card-stripe {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg,
+        transparent 0%,
+        rgba(240,168,48,0.9) 20%,
+        rgba(240,168,48,0.6) 50%,
+        rgba(240,168,48,0.3) 80%,
+        transparent 100%
+      );
+      border-radius: 0 2px 2px 0;
+    }
+
+    .card-inner {
+      padding: 32px 28px 28px 32px;
+      display: flex; flex-direction: column; gap: 22px;
+    }
+
+    /* ── HEADER ── */
     .header {
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-      padding-top: 4px;
-      animation: fadeUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      animation: fadeUp 0.5s 0.06s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .logo-icon {
-      width: 56px; height: 56px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(0,255,160,0.12), rgba(0,200,255,0.08));
-      border: 1px solid rgba(255,255,255,0.09);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 20px rgba(0,255,160,0.2);
+    .header-left { display: flex; flex-direction: column; gap: 6px; }
+    .logo-eyebrow {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--gold);
+      opacity: 0.75;
     }
-    .logo-title {
-      font-size: 1.25rem; font-weight: 700;
-      letter-spacing: 0.08em; color: #fff;
+    .logo-name {
+      font-size: 1.55rem; font-weight: 800;
+      letter-spacing: -0.01em; color: var(--white);
+      line-height: 1;
     }
-    .logo-title span { color: var(--green); text-shadow: 0 0 12px rgba(0,255,160,0.6); }
+    .logo-name em {
+      font-style: normal; color: var(--gold);
+      text-shadow: 0 0 18px rgba(240,168,48,0.45);
+    }
     .logo-sub {
-      font-size: 11px; color: rgba(255,255,255,0.28);
-      letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px;
+      font-size: 10px; color: var(--muted);
+      letter-spacing: 0.06em; margin-top: 2px;
     }
-    .badge {
+    .header-badge {
+      flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    }
+    .badge-active {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(0,255,160,0.1); border: 1px solid rgba(0,255,160,0.28);
-      color: var(--green); border-radius: 999px;
-      padding: 4px 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.15em;
+      background: rgba(240,168,48,0.1);
+      border: 1px solid rgba(240,168,48,0.3);
+      color: var(--gold); border-radius: 999px;
+      padding: 4px 11px; font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
     }
     .badge-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
-      animation: pulseDot 1.8s ease-in-out infinite;
+      width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
     }
-    @keyframes pulseDot {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.4; transform: scale(0.75); }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
     }
 
-    .sep {
+    /* ── DIVIDER ── */
+    .divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,255,160,0.16), rgba(0,200,255,0.14), transparent);
+      background: linear-gradient(90deg, var(--gold-dim), rgba(255,255,255,0.04), transparent);
     }
 
-    .field {
-      background: var(--field);
-      border: 1px solid var(--border-green);
-      border-radius: 16px;
-      padding: 16px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+    /* ── CREDENTIAL FIELDS ── */
+    .fields { display: flex; flex-direction: column; gap: 12px; }
+
+    .cred-block {
+      background: var(--raised);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      transition: border-color 0.2s;
       animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .field:hover { border-color: rgba(0,255,160,0.32); box-shadow: 0 0 16px rgba(0,255,160,0.06); }
-    .field-head {
+    .cred-block:hover { border-color: var(--border-gold); }
+
+    .cred-top {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
-    .field-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+    .cred-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
       text-transform: uppercase; color: var(--muted);
     }
-    .field-actions { display: flex; gap: 8px; }
-    .field-value {
+    .cred-actions { display: flex; gap: 6px; }
+
+    .cred-value {
       font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-      font-size: 1.1rem; font-weight: 500; color: #fff;
-      background: rgba(0,0,0,0.3); padding: 12px 14px;
-      border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
-      letter-spacing: 0.04em; user-select: none;
-      transition: filter 0.3s;
+      font-size: 1.05rem; font-weight: 500; color: var(--white);
+      letter-spacing: 0.03em; word-break: break-all;
     }
-    .field-value.masked {
-      filter: blur(6px);
-      letter-spacing: 0.25em;
-      color: rgba(255,255,255,0.4);
+    .cred-value.masked {
+      filter: blur(7px);
+      color: var(--muted);
+      user-select: none;
     }
 
-    .btn-sm {
+    /* ── SMALL BUTTONS ── */
+    .btn-xs {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 5px 11px; border-radius: 999px;
-      font-size: 11px; font-weight: 500;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.5); cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 10px; font-weight: 600;
+      background: var(--dim); border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted); cursor: pointer;
+      transition: all 0.15s; letter-spacing: 0.04em;
     }
-    .btn-sm:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); }
-    .btn-sm.copied {
-      background: rgba(0,255,160,0.12); border-color: rgba(0,255,160,0.45);
-      color: var(--green);
-    }
+    .btn-xs:hover { background: rgba(240,168,48,0.1); border-color: var(--border-gold); color: var(--gold); }
+    .btn-xs.copied { background: rgba(240,168,48,0.14); border-color: rgba(240,168,48,0.4); color: var(--gold); }
 
-    .expiry-box {
-      border-radius: 16px; padding: 16px;
-      border: 1px solid rgba(0,200,255,0.16); background: rgba(0,200,255,0.04);
-      animation: fadeUp 0.45s 0.18s cubic-bezier(0.22,1,0.36,1) both;
+    /* ── EXPIRY / COUNTDOWN ── */
+    .expiry-wrap {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: var(--raised);
+      padding: 16px;
+      animation: fadeUp 0.45s 0.16s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .expiry-box.urgent { border-color: rgba(255,170,0,0.38); background: rgba(255,170,0,0.05); }
-    .expiry-box.expired { border-color: rgba(255,70,70,0.38); background: rgba(255,70,70,0.05); }
+    .expiry-wrap.urgent { border-color: rgba(255,165,0,0.3); background: rgba(255,140,0,0.04); }
+    .expiry-wrap.expired { border-color: rgba(255,60,60,0.3); background: rgba(255,60,60,0.04); }
+
     .expiry-head {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
-    .expiry-sublabel { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; }
-    .expiry-sublabel.normal { color: rgba(0,200,255,0.55); }
-    .expiry-sublabel.urgent { color: rgba(255,170,0,0.65); }
-    .expiry-plano { font-size: 10px; color: rgba(255,255,255,0.28); }
+    .expiry-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .expiry-plan {
+      font-size: 10px; color: var(--muted);
+      background: var(--dim); border-radius: 999px;
+      padding: 2px 9px; letter-spacing: 0.05em;
+    }
+
     .countdown {
-      display: flex; align-items: center; justify-content: center; gap: 12px;
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
     }
-    .cnt-unit { text-align: center; }
+    .cnt-unit {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px 8px;
+      text-align: center;
+    }
     .cnt-val {
       font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 1.6rem; font-weight: 700; color: #fff;
-      line-height: 1; letter-spacing: -0.02em;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--white); line-height: 1;
+      letter-spacing: -0.02em;
     }
-    .cnt-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.15em; color: rgba(255,255,255,0.28); margin-top: 4px; }
-    .cnt-sep { font-family: monospace; font-size: 1.4rem; color: rgba(255,255,255,0.18); margin-bottom: 16px; }
+    .urgent .cnt-val { color: #FFB020; }
+    .expired .cnt-val { color: #FF5050; }
+    .cnt-lbl {
+      font-size: 8px; font-weight: 700; letter-spacing: 0.18em;
+      color: var(--muted); margin-top: 5px; text-transform: uppercase;
+    }
     .expired-msg {
-      display: flex; align-items: center; gap: 8px; color: rgba(255,90,90,0.9);
-      font-size: 14px; font-weight: 600;
+      display: none; align-items: center; gap: 8px;
+      color: rgba(255,80,80,0.9); font-size: 13px; font-weight: 600;
     }
 
+    /* ── SECTION LABEL ── */
     .section-lbl {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
-      text-transform: uppercase; color: rgba(255,255,255,0.22);
-      margin-bottom: 8px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 10px;
     }
 
-    .btn-download {
+    /* ── ACTION BUTTONS ── */
+    .action-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .action-btn {
       display: flex; align-items: center; gap: 12px;
-      padding: 14px 16px; border-radius: 18px;
-      text-decoration: none; color: #fff;
-      border: 1px solid rgba(0,255,160,0.28);
-      background: linear-gradient(135deg, rgba(0,255,160,0.14), rgba(0,200,255,0.1));
-      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-      margin-bottom: 8px;
-      animation: fadeUp 0.45s 0.22s cubic-bezier(0.22,1,0.36,1) both;
+      padding: 12px 14px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: var(--raised);
+      transition: all 0.18s;
+      animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .btn-download:hover {
-      background: linear-gradient(135deg, rgba(0,255,160,0.24), rgba(0,200,255,0.18));
-      border-color: rgba(0,255,160,0.5); box-shadow: 0 0 20px rgba(0,255,160,0.12);
-      transform: translateY(-1px);
-    }
-    .btn-download:active { transform: translateY(0); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.09);
-      color: rgba(255,255,255,0.65);
-    }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16);
-      box-shadow: none; transform: translateY(-1px);
+    .action-btn:hover {
+      transform: translateX(2px);
     }
 
-    /* YouTube button */
-    .btn-youtube {
-      background: linear-gradient(135deg, rgba(255,60,60,0.13), rgba(180,0,0,0.09));
-      border-color: rgba(255,60,60,0.28);
-      margin-bottom: 0;
+    /* Primary = app download */
+    .action-btn.primary {
+      border-color: var(--border-gold);
+      background: linear-gradient(120deg, rgba(240,168,48,0.1), rgba(240,168,48,0.04));
     }
-    .btn-youtube:hover {
-      background: linear-gradient(135deg, rgba(255,60,60,0.24), rgba(180,0,0,0.18));
-      border-color: rgba(255,60,60,0.5);
-      box-shadow: 0 0 20px rgba(255,60,60,0.12);
-      transform: translateY(-1px);
+    .action-btn.primary:hover {
+      border-color: rgba(240,168,48,0.5);
+      box-shadow: 0 0 24px rgba(240,168,48,0.1);
     }
 
-    .btn-icon {
-      width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    /* YouTube */
+    .action-btn.yt { }
+    .action-btn.yt:hover { border-color: rgba(255,60,60,0.4); background: rgba(255,60,60,0.05); }
+
+    /* WhatsApp */
+    .action-btn.wa { }
+    .action-btn.wa:hover { border-color: rgba(37,211,102,0.4); background: rgba(37,211,102,0.05); }
+
+    .action-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(0,255,160,0.12); border: 1px solid rgba(0,255,160,0.18);
+      background: var(--dim);
+      border: 1px solid var(--border);
     }
-    .btn-icon.sec  { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
-    .btn-icon.yt   { background: rgba(255,60,60,0.13);   border-color: rgba(255,60,60,0.22); }
-    .btn-icon.whats { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.2); }
-    .btn-text { flex: 1; }
-    .btn-title { font-size: 14px; font-weight: 600; }
-    .btn-sub { font-size: 10px; color: rgba(255,255,255,0.38); margin-top: 1px; }
-    .btn-chevron { opacity: 0.25; flex-shrink: 0; }
+    .action-btn.primary .action-icon { background: rgba(240,168,48,0.12); border-color: rgba(240,168,48,0.18); }
+    .action-btn.yt .action-icon      { background: rgba(255,60,60,0.1);   border-color: rgba(255,60,60,0.15); }
+    .action-btn.wa .action-icon      { background: rgba(37,211,102,0.1);  border-color: rgba(37,211,102,0.15); }
 
-    .btn-whatsapp {
-      background: linear-gradient(135deg, rgba(37,211,102,0.16), rgba(18,140,126,0.12));
-      border-color: rgba(37,211,102,0.28); margin-bottom: 0;
-    }
-    .btn-whatsapp:hover { background: linear-gradient(135deg, rgba(37,211,102,0.26), rgba(18,140,126,0.2)); border-color: rgba(37,211,102,0.48); box-shadow: 0 0 20px rgba(37,211,102,0.1); }
+    .action-text { flex: 1; min-width: 0; }
+    .action-title { font-size: 13px; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .action-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-    .instructions {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px; padding: 16px;
-      display: flex; flex-direction: column; gap: 10px;
-      animation: fadeUp 0.45s 0.26s cubic-bezier(0.22,1,0.36,1) both;
+    .action-btn.primary .action-title { color: var(--gold); }
+
+    .chevron { opacity: 0.2; flex-shrink: 0; }
+
+    /* ── INSTRUCTIONS ── */
+    .instr-grid {
+      display: flex; flex-direction: column; gap: 9px;
+      animation: fadeUp 0.45s 0.24s cubic-bezier(0.22,1,0.36,1) both;
     }
     .instr-row { display: flex; align-items: flex-start; gap: 10px; }
     .instr-num {
-      flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
-      background: rgba(0,255,160,0.09); border: 1px solid rgba(0,255,160,0.2);
-      color: rgba(0,255,160,0.7); font-size: 9px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+      flex-shrink: 0;
+      width: 20px; height: 20px; border-radius: 6px;
+      background: var(--gold-dim); border: 1px solid rgba(240,168,48,0.22);
+      color: rgba(240,168,48,0.75); font-size: 9px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px; letter-spacing: 0;
     }
-    .instr-text { font-size: 12px; color: rgba(255,255,255,0.42); line-height: 1.6; }
+    .instr-text { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .instr-text strong { color: rgba(221,227,240,0.65); font-weight: 600; }
 
+    /* ── FOOTER ── */
     .footer {
-      text-align: center; padding-bottom: 4px;
-      animation: fadeUp 0.45s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding-top: 2px;
+      animation: fadeUp 0.45s 0.28s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .footer p { font-size: 10px; color: rgba(255,255,255,0.2); }
-    .footer em { font-style: normal; color: rgba(255,255,255,0.32); font-weight: 500; }
-    .footer .anti { font-size: 10px; color: rgba(255,255,255,0.1); letter-spacing: 0.15em; margin-top: 4px; }
+    .footer-support { font-size: 11px; color: var(--muted); }
+    .footer-support strong { color: rgba(221,227,240,0.55); font-weight: 600; }
+    .footer-anti { font-size: 9px; color: rgba(255,255,255,0.08); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px; }
 
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 420px) {
+      .card-inner { padding: 24px 20px 22px 24px; }
+      .logo-name { font-size: 1.35rem; }
+      .cnt-val { font-size: 1.25rem; }
+    }
+
+    /* Print block */
     @media print {
       body > * { display: none !important; }
       .print-block { display: flex !important; }
@@ -299,16 +361,6 @@
       align-items: center; justify-content: center; z-index: 9999;
     }
     .print-block p { color: #fff; font-size: 1.2rem; font-weight: 700; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 400px) {
-      .card-inner { padding: 20px 16px; }
-      .cnt-val { font-size: 1.35rem; }
-    }
   </style>
 </head>
 <body>
@@ -317,160 +369,177 @@
 <div class="watermark" id="watermark"></div>
 
 <div class="card">
-  <div class="card-accent-top"></div>
+  <div class="card-stripe"></div>
   <div class="card-inner">
 
     <!-- HEADER -->
     <div class="header">
-      <div class="logo-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="rgb(0,255,160)" stroke-width="1.5" opacity="0.85"/>
-          <circle cx="12" cy="12" r="4" fill="rgb(0,255,160)" opacity="0.9"/>
-          <line x1="12" y1="2"  x2="12" y2="6"  stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-          <line x1="12" y1="18" x2="12" y2="22" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-          <line x1="2"  y1="12" x2="6"  y2="12" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-          <line x1="18" y1="12" x2="22" y2="12" stroke="rgb(0,255,160)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-        </svg>
+      <div class="header-left">
+        <div class="logo-eyebrow">Acesso Oficial · Licença Pessoal</div>
+        <div class="logo-name">PRECISION <em>BOOSTER</em></div>
+        <div class="logo-sub">Sensibilidade de precisão para Free Fire</div>
       </div>
-      <div>
-        <div class="logo-title">PRECISION <span>BOOSTER</span></div>
-        <div class="logo-sub">acesso oficial · licença pessoal</div>
-      </div>
-      <div class="badge">
-        <div class="badge-dot"></div>
-        LICENÇA ATIVA
-      </div>
-    </div>
-
-    <div class="sep"></div>
-
-    <!-- CAMPO USUÁRIO -->
-    <div class="field" style="animation-delay:0.08s">
-      <div class="field-head">
-        <span class="field-label">Usuário</span>
-        <div class="field-actions">
-          <button class="btn-sm" onclick="copyField('usr-val', this)">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar
-          </button>
+      <div class="header-badge">
+        <div class="badge-active">
+          <div class="badge-dot"></div>
+          ATIVA
         </div>
       </div>
-      <div class="field-value" id="usr-val">{{ username }}</div>
     </div>
 
-    <!-- CAMPO SENHA -->
-    <div class="field" style="animation-delay:0.13s">
-      <div class="field-head">
-        <span class="field-label">Senha / Chave</span>
-        <div class="field-actions">
-          <button class="btn-sm" onclick="copyField('pwd-val', this)">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar
-          </button>
+    <div class="divider"></div>
+
+    <!-- CREDENTIALS -->
+    <div class="fields">
+
+      <!-- USUÁRIO -->
+      <div class="cred-block" style="animation-delay:0.08s">
+        <div class="cred-top">
+          <span class="cred-label">Usuário</span>
+          <div class="cred-actions">
+            <button class="btn-xs" onclick="copyField('usr-val',this)">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar
+            </button>
+          </div>
         </div>
+        <div class="cred-value" id="usr-val">{{ username }}</div>
       </div>
-      <div class="field-value" id="pwd-val" data-real="{{ senha }}">{{ senha }}</div>
+
+      <!-- SENHA -->
+      <div class="cred-block" style="animation-delay:0.12s">
+        <div class="cred-top">
+          <span class="cred-label">Senha / Chave</span>
+          <div class="cred-actions">
+            <button class="btn-xs" id="reveal-btn" onclick="toggleReveal()">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Revelar
+            </button>
+            <button class="btn-xs" onclick="copyField('pwd-val',this)">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar
+            </button>
+          </div>
+        </div>
+        <div class="cred-value masked" id="pwd-val" data-real="{{ senha }}">••••••••••••</div>
+      </div>
+
     </div>
 
-    <!-- EXPIRAÇÃO / COUNTDOWN -->
-    <div class="expiry-box" id="expiry-box">
+    <!-- EXPIRY -->
+    <div class="expiry-wrap" id="expiry-box">
       <div class="expiry-head">
-        <span class="expiry-sublabel normal" id="expiry-sublabel">Expira em</span>
-        <span class="expiry-plano">{{ expiracao_display }}</span>
+        <span class="expiry-label" id="expiry-sublabel">Tempo restante</span>
+        <span class="expiry-plan">{{ expiracao_display }}</span>
       </div>
       <div class="countdown" id="countdown">
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-d">--</div><div class="cnt-lbl">DIAS</div></div>
-        <div class="cnt-sep">:</div>
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-h">--</div><div class="cnt-lbl">HORAS</div></div>
-        <div class="cnt-sep">:</div>
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-m">--</div><div class="cnt-lbl">MIN</div></div>
-        <div class="cnt-sep">:</div>
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-s">--</div><div class="cnt-lbl">SEG</div></div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-d">--</div><div class="cnt-lbl">Dias</div></div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-h">--</div><div class="cnt-lbl">Horas</div></div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-m">--</div><div class="cnt-lbl">Min</div></div>
+        <div class="cnt-unit"><div class="cnt-val" id="cnt-s">--</div><div class="cnt-lbl">Seg</div></div>
       </div>
-      <div class="expired-msg" id="expired-msg" style="display:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Acesso expirado
+      <div class="expired-msg" id="expired-msg">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Acesso expirado — entre em contato com o suporte
       </div>
     </div>
 
-    <div class="sep"></div>
+    <div class="divider"></div>
 
     <!-- DOWNLOADS -->
     <div style="animation: fadeUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both;">
-      <div class="section-lbl">Downloads</div>
-      <a href="{{ link_app }}" class="btn-download" target="_blank" rel="noopener noreferrer">
-        <div class="btn-icon">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgb(0,255,160)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </div>
-        <div class="btn-text">
-          <div class="btn-title">Precision Booster V2</div>
-          <div class="btn-sub">Aplicativo principal · APK</div>
-        </div>
-        <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-      <a href="{{ link_shizuku }}" class="btn-download btn-secondary" target="_blank" rel="noopener noreferrer">
-        <div class="btn-icon sec">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <div class="btn-text">
-          <div class="btn-title" style="color:rgba(255,255,255,0.7)">Shizuku</div>
-          <div class="btn-sub">Obrigatório para funcionar</div>
-        </div>
-        <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
+      <div class="section-lbl">Downloads & Recursos</div>
+      <div class="action-list">
 
-      <!-- TUTORIAL YOUTUBE -->
-      <a href="https://youtu.be/OqzvvS9HA1A" class="btn-download btn-youtube" target="_blank" rel="noopener noreferrer">
-        <div class="btn-icon yt">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="rgb(255,80,80)"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        </div>
-        <div class="btn-text">
-          <div class="btn-title">Como usar o Precision Booster</div>
-          <div class="btn-sub">Tutorial completo · YouTube</div>
-        </div>
-        <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
+        <a href="{{ link_app }}" class="action-btn primary" target="_blank" rel="noopener noreferrer" style="animation-delay:0.18s">
+          <div class="action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0A830" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title">Precision Booster V2</div>
+            <div class="action-sub">Aplicativo principal · APK</div>
+          </div>
+          <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+        <a href="{{ link_shizuku }}" class="action-btn" target="_blank" rel="noopener noreferrer" style="animation-delay:0.21s">
+          <div class="action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title" style="color:var(--text)">Shizuku</div>
+            <div class="action-sub">Obrigatório para funcionar</div>
+          </div>
+          <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+        <a href="https://youtu.be/OqzvvS9HA1A" class="action-btn yt" target="_blank" rel="noopener noreferrer" style="animation-delay:0.24s">
+          <div class="action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,80,80,0.9)"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title" style="color:var(--text)">Tutorial de instalação</div>
+            <div class="action-sub">Como usar o Precision Booster · YouTube</div>
+          </div>
+          <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+        <a href="{{ canal_whats }}" class="action-btn wa" target="_blank" rel="noopener noreferrer" style="animation-delay:0.27s">
+          <div class="action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(37,211,102,0.9)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title" style="color:var(--text)">Canal Oficial no WhatsApp</div>
+            <div class="action-sub">Atualizações e novidades</div>
+          </div>
+          <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+      </div>
     </div>
+
+    <div class="divider"></div>
 
     <!-- INSTRUÇÕES -->
-    <div class="instructions">
-      <div class="section-lbl">Instruções</div>
-      <div class="instr-row"><div class="instr-num">1</div><div class="instr-text">Instale os dois apps antes de abrir o Precision Booster.</div></div>
-      <div class="instr-row"><div class="instr-num">2</div><div class="instr-text">Ative o Shizuku via ADB ou modo de serviço de acessibilidade.</div></div>
-      <div class="instr-row"><div class="instr-num">3</div><div class="instr-text">Conta pessoal — não compartilhe sua senha com ninguém.</div></div>
-      <div class="instr-row"><div class="instr-num">4</div><div class="instr-text">1° reset gratuito · resets adicionais custam R$3,00.</div></div>
+    <div>
+      <div class="section-lbl">Instruções de uso</div>
+      <div class="instr-grid">
+        <div class="instr-row">
+          <div class="instr-num">1</div>
+          <div class="instr-text">Instale o <strong>Shizuku e o Precision Booster</strong> antes de abrir o app.</div>
+        </div>
+        <div class="instr-row">
+          <div class="instr-num">2</div>
+          <div class="instr-text">Ative o Shizuku via <strong>ADB</strong> ou modo de serviço de acessibilidade.</div>
+        </div>
+        <div class="instr-row">
+          <div class="instr-num">3</div>
+          <div class="instr-text">Esta licença é <strong>pessoal e intransferível</strong> — não compartilhe sua senha.</div>
+        </div>
+        <div class="instr-row">
+          <div class="instr-num">4</div>
+          <div class="instr-text"><strong>1° reset gratuito</strong> · resets adicionais custam R$3,00.</div>
+        </div>
+      </div>
     </div>
-
-    <!-- WHATSAPP -->
-    <a href="{{ canal_whats }}" class="btn-download btn-whatsapp" target="_blank" rel="noopener noreferrer" style="animation-delay:0.28s">
-      <div class="btn-icon whats">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="rgb(37,211,102)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-      </div>
-      <div class="btn-text">
-        <div class="btn-title">Canal Oficial no WhatsApp</div>
-        <div class="btn-sub" style="color:rgba(255,255,255,0.38)">Atualizações e novidades</div>
-      </div>
-      <svg class="btn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-    </a>
-
-    <div class="sep"></div>
 
     <!-- FOOTER -->
     <div class="footer">
-      <p>Suporte: <em>@SuportePBooster</em> · Telegram</p>
-      <p class="anti">SISTEMA ANTI-COMPARTILHAMENTO ATIVO</p>
+      <div class="footer-support">Suporte: <strong>@SuportePBooster</strong> · Telegram</div>
+      <div class="footer-anti">Sistema anti-compartilhamento ativo</div>
     </div>
 
   </div>
-  <div class="card-accent-bottom"></div>
 </div>
 
 <script>
 (function () {
+  /* Watermark */
   var u = "{{ username }}";
   document.getElementById("watermark").textContent =
-    u.length <= 8 ? u : u.slice(0, 4) + "···" + u.slice(-4);
+    u.length <= 8 ? u : u.slice(0,4) + "···" + u.slice(-4);
 
+  /* Reveal toggle */
   var revealed = false;
   window.toggleReveal = function () {
     revealed = !revealed;
@@ -480,20 +549,20 @@
       el.textContent = el.getAttribute("data-real");
       el.classList.remove("masked");
       btn.innerHTML =
-        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
         '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>' +
         '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>' +
         '<line x1="1" y1="1" x2="23" y2="23"/></svg> Ocultar';
     } else {
-      var real = el.getAttribute("data-real") || "";
-      el.textContent = "•".repeat(Math.min(real.length, 14));
+      el.textContent = "••••••••••••";
       el.classList.add("masked");
       btn.innerHTML =
-        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
         '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revelar';
     }
   };
 
+  /* Copy */
   window.copyField = function (id, btn) {
     var text = id === "pwd-val"
       ? document.getElementById("pwd-val").getAttribute("data-real")
@@ -501,7 +570,7 @@
     navigator.clipboard.writeText(text).then(function () {
       var orig = btn.innerHTML;
       btn.innerHTML =
-        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
         '<polyline points="20 6 9 17 4 12"/></svg> Copiado!';
       btn.classList.add("copied");
       setTimeout(function () { btn.innerHTML = orig; btn.classList.remove("copied"); }, 2000);
@@ -510,18 +579,20 @@
     });
   };
 
+  /* Countdown */
   var expiracaoIso = "{{ expiracao_iso }}";
   if (expiracaoIso && expiracaoIso !== "{{ expiracao_iso }}") {
     var target = new Date(expiracaoIso).getTime();
     function tick() {
       var diff = target - Date.now();
       var box = document.getElementById("expiry-box");
-      var sub = document.getElementById("expiry-sublabel");
+      var lbl = document.getElementById("expiry-sublabel");
       if (diff <= 0) {
         document.getElementById("countdown").style.display = "none";
-        document.getElementById("expired-msg").style.display = "flex";
+        var em = document.getElementById("expired-msg");
+        em.style.display = "flex";
         box.classList.add("expired");
-        sub.style.display = "none";
+        lbl.textContent = "Expirado";
         clearInterval(timer);
         return;
       }
@@ -529,38 +600,41 @@
       var h = Math.floor((diff % 86400000) / 3600000);
       var m = Math.floor((diff % 3600000) / 60000);
       var s = Math.floor((diff % 60000) / 1000);
-      document.getElementById("cnt-d").textContent = String(d).padStart(2, "0");
-      document.getElementById("cnt-h").textContent = String(h).padStart(2, "0");
-      document.getElementById("cnt-m").textContent = String(m).padStart(2, "0");
-      document.getElementById("cnt-s").textContent = String(s).padStart(2, "0");
-      if (d < 3) { box.classList.add("urgent"); sub.classList.replace("normal", "urgent"); }
+      document.getElementById("cnt-d").textContent = String(d).padStart(2,"0");
+      document.getElementById("cnt-h").textContent = String(h).padStart(2,"0");
+      document.getElementById("cnt-m").textContent = String(m).padStart(2,"0");
+      document.getElementById("cnt-s").textContent = String(s).padStart(2,"0");
+      if (d < 3) {
+        box.classList.add("urgent");
+        lbl.textContent = "Expira em breve";
+      }
     }
     tick();
     var timer = setInterval(tick, 1000);
   } else {
     document.getElementById("expiry-box").innerHTML =
       '<div style="display:flex;align-items:center;gap:8px">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(0,200,255)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
-      '<span style="font-size:13px;color:rgba(255,255,255,0.55)">{{ expiracao_display }}</span>' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(240,168,48,0.7)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+      '<span style="font-size:12px;color:var(--muted)">{{ expiracao_display }}</span>' +
       '</div>';
   }
 
+  /* Anti-print / anti-save */
   window.addEventListener("beforeprint", function () {
     alert("Impressão registrada. Compartilhar viola os Termos de Uso.");
   });
   window.addEventListener("keydown", function (e) {
     if ((e.ctrlKey || e.metaKey) && ["p","P","s","S"].includes(e.key)) {
       e.preventDefault();
-      alert("Captura registrada. Compartilhar viola os Termos de Uso.");
+      alert("Ação bloqueada. Compartilhar viola os Termos de Uso.");
     }
   });
-
   document.getElementById("pwd-val").addEventListener("contextmenu", function (e) {
     e.preventDefault();
     alert("Use o botão Copiar para copiar com segurança.");
   });
 
-  console.log("%c🔒 Acesso registrado", "color:#00ffa0;font-size:11px");
+  console.log("%c🔒 Acesso registrado · Precision Booster", "color:#F0A830;font-size:11px");
 })();
 </script>
 </body>
