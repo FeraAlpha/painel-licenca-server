@@ -9,57 +9,94 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg:       #060810;
-      --surface:  #0b0f1a;
-      --raised:   #0f1422;
-      --gold:     #F0A830;
-      --gold-dim: rgba(240,168,48,0.18);
-      --gold-glow:rgba(240,168,48,0.08);
-      --white:    #ffffff;
-      --text:     #dde3f0;
-      --muted:    rgba(221,227,240,0.38);
-      --dim:      rgba(221,227,240,0.12);
-      --border:   rgba(255,255,255,0.06);
+      --bg:        #060810;
+      --surface:   #0b0f1a;
+      --raised:    #0f1422;
+      --gold:      #F0A830;
+      --gold-dim:  rgba(240,168,48,0.15);
+      --gold-glow: rgba(240,168,48,0.08);
+      --white:     #ffffff;
+      --text:      #dde3f0;
+      --muted:     rgba(221,227,240,0.38);
+      --dim:       rgba(221,227,240,0.10);
+      --border:    rgba(255,255,255,0.06);
       --border-gold: rgba(240,168,48,0.22);
     }
 
     body {
       background: var(--bg);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       padding: 40px 16px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       color: var(--text);
       overflow-x: hidden;
     }
-
-    /* Ambient glow blobs */
     body::before, body::after {
-      content: "";
-      position: fixed;
-      border-radius: 50%;
-      pointer-events: none;
-      filter: blur(120px);
-      z-index: 0;
+      content: ""; position: fixed; border-radius: 50%;
+      pointer-events: none; filter: blur(130px); z-index: 0;
     }
-    body::before {
-      width: 500px; height: 320px;
-      top: -60px; left: -80px;
-      background: rgba(240,168,48,0.055);
+    body::before { width: 520px; height: 340px; top: -80px; left: -100px; background: rgba(240,168,48,0.05); }
+    body::after  { width: 420px; height: 420px; bottom: -120px; right: -80px; background: rgba(80,120,255,0.035); }
+
+    /* ── SKELETON ── */
+    #skeleton {
+      position: fixed; inset: 0; z-index: 100;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
     }
-    body::after {
-      width: 400px; height: 400px;
-      bottom: -100px; right: -60px;
-      background: rgba(80,120,255,0.04);
+    .sk-card {
+      width: 100%; max-width: 460px; padding: 32px 28px 28px 32px;
+      background: var(--surface); border-radius: 24px;
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 20px;
     }
+    .sk-row { display: flex; align-items: center; justify-content: space-between; }
+    .sk-block {
+      border-radius: 8px; background: var(--raised);
+      position: relative; overflow: hidden;
+    }
+    .sk-block::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer {
+      from { transform: translateX(-100%); }
+      to   { transform: translateX(100%); }
+    }
+    .sk-h24 { height: 24px; }
+    .sk-h14 { height: 14px; }
+    .sk-h10 { height: 10px; }
+    .sk-h56 { height: 56px; }
+    .sk-h42 { height: 42px; }
+    .sk-w40 { width: 40%; }
+    .sk-w60 { width: 60%; }
+    .sk-w25 { width: 25%; }
+    .sk-w80 { width: 80%; }
+    .sk-full { width: 100%; }
+    .sk-pill { border-radius: 999px; }
+    .sk-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--raised); border: 1px solid var(--border-gold);
+      color: var(--gold); border-radius: 999px;
+      padding: 10px 20px; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(240,168,48,0.12);
+      opacity: 0; pointer-events: none; z-index: 200;
+      transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── WATERMARK ── */
     .watermark {
       position: fixed; bottom: 14px; right: 18px;
       font-family: monospace; font-size: 9px;
-      color: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.04);
       pointer-events: none; user-select: none;
       letter-spacing: 0.25em; z-index: 0;
     }
@@ -72,30 +109,35 @@
       border-radius: 24px;
       border: 1px solid var(--border);
       box-shadow:
-        0 0 0 1px rgba(255,255,255,0.03),
-        0 40px 100px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(255,255,255,0.025),
+        0 40px 100px rgba(0,0,0,0.72),
         0 0 60px rgba(240,168,48,0.04);
       animation: cardIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
       overflow: hidden;
+      transition: box-shadow 0.4s;
+    }
+    .card.warning-pulse {
+      animation: warnPulse 1s ease-in-out 3;
+    }
+    @keyframes warnPulse {
+      0%,100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.025), 0 40px 100px rgba(0,0,0,0.72); }
+      50%      { box-shadow: 0 0 0 2px rgba(255,60,60,0.5), 0 0 40px rgba(255,60,60,0.15); }
     }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(28px) scale(0.98); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Gold sidebar stripe */
+    /* Gold stripe */
     .card-stripe {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
       background: linear-gradient(180deg,
         transparent 0%,
         rgba(240,168,48,0.9) 20%,
-        rgba(240,168,48,0.6) 50%,
-        rgba(240,168,48,0.3) 80%,
+        rgba(240,168,48,0.55) 55%,
+        rgba(240,168,48,0.25) 82%,
         transparent 100%
       );
-      border-radius: 0 2px 2px 0;
     }
 
     .card-inner {
@@ -106,46 +148,64 @@
     /* ── HEADER ── */
     .header {
       display: flex; align-items: flex-start; justify-content: space-between;
-      animation: fadeUp 0.5s 0.06s cubic-bezier(0.22,1,0.36,1) both;
+      animation: fadeUp 0.5s 0.05s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .header-left { display: flex; flex-direction: column; gap: 6px; }
+    .header-left { display: flex; flex-direction: column; gap: 5px; }
     .logo-eyebrow {
       font-size: 9px; font-weight: 700; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--gold);
-      opacity: 0.75;
+      text-transform: uppercase; color: var(--gold); opacity: 0.7;
     }
     .logo-name {
       font-size: 1.55rem; font-weight: 800;
-      letter-spacing: -0.01em; color: var(--white);
-      line-height: 1;
+      letter-spacing: -0.01em; color: var(--white); line-height: 1;
     }
-    .logo-name em {
-      font-style: normal; color: var(--gold);
-      text-shadow: 0 0 18px rgba(240,168,48,0.45);
+    .logo-shimmer {
+      font-style: normal;
+      background: linear-gradient(90deg, #F0A830 0%, #ffe0a0 45%, #F0A830 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShimmer 3s linear infinite;
+      text-shadow: none;
+      filter: drop-shadow(0 0 10px rgba(240,168,48,0.4));
     }
-    .logo-sub {
-      font-size: 10px; color: var(--muted);
-      letter-spacing: 0.06em; margin-top: 2px;
+    @keyframes textShimmer {
+      from { background-position: 200% center; }
+      to   { background-position: -200% center; }
     }
-    .header-badge {
-      flex-shrink: 0;
-      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-    }
+    .logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 0.05em; margin-top: 2px; }
+
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
     .badge-active {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(240,168,48,0.1);
-      border: 1px solid rgba(240,168,48,0.3);
+      background: rgba(240,168,48,0.1); border: 1px solid rgba(240,168,48,0.28);
       color: var(--gold); border-radius: 999px;
       padding: 4px 11px; font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
     }
     .badge-dot {
       width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
-      animation: pulse 2s ease-in-out infinite;
+      animation: pulseDot 2s ease-in-out infinite;
     }
-    @keyframes pulse {
-      0%,100% { opacity: 1; }
-      50%      { opacity: 0.3; }
+    @keyframes pulseDot { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
+    .badge-verified {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 9px; color: var(--muted); letter-spacing: 0.06em;
+      position: relative; cursor: default;
     }
+    .badge-verified svg { color: var(--gold); }
+    .tooltip {
+      position: absolute; bottom: calc(100% + 6px); right: 0;
+      background: var(--raised); border: 1px solid var(--border-gold);
+      color: var(--text); font-size: 10px; font-weight: 500;
+      padding: 5px 10px; border-radius: 8px; white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+      transform: translateY(4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+    .badge-verified:hover .tooltip { opacity: 1; transform: translateY(0); }
 
     /* ── DIVIDER ── */
     .divider {
@@ -153,61 +213,76 @@
       background: linear-gradient(90deg, var(--gold-dim), rgba(255,255,255,0.04), transparent);
     }
 
-    /* ── CREDENTIAL FIELDS ── */
+    /* ── CREDENTIALS ── */
     .fields { display: flex; flex-direction: column; gap: 12px; }
 
     .cred-block {
-      background: var(--raised);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      transition: border-color 0.2s;
+      background: var(--raised); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
       animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .cred-block:hover { border-color: var(--border-gold); }
-
+    .cred-block:hover { border-color: var(--border-gold); box-shadow: 0 0 18px rgba(240,168,48,0.04); }
     .cred-top {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 8px;
     }
+    .cred-meta { display: flex; align-items: center; gap: 8px; }
     .cred-label {
       font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
       text-transform: uppercase; color: var(--muted);
     }
+    .lic-id {
+      font-family: monospace; font-size: 9px;
+      color: rgba(240,168,48,0.45); letter-spacing: 0.08em;
+      background: var(--gold-dim); border-radius: 4px; padding: 1px 6px;
+    }
     .cred-actions { display: flex; gap: 6px; }
-
     .cred-value {
       font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
       font-size: 1.05rem; font-weight: 500; color: var(--white);
       letter-spacing: 0.03em; word-break: break-all;
+      transition: filter 0.3s;
     }
-    .cred-value.masked {
-      filter: blur(7px);
-      color: var(--muted);
-      user-select: none;
+    .cred-value.masked { filter: blur(7px); color: var(--muted); user-select: none; }
+
+    /* Strength bar */
+    .strength-bar-wrap {
+      margin-top: 10px; display: none; align-items: center; gap: 8px;
     }
+    .strength-bar-wrap.visible { display: flex; }
+    .strength-track {
+      flex: 1; height: 3px; background: var(--dim); border-radius: 99px; overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #F0A830, #ffe080);
+      width: 82%;
+      box-shadow: 0 0 8px rgba(240,168,48,0.4);
+      transition: width 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .strength-lbl { font-size: 9px; color: rgba(240,168,48,0.6); font-weight: 600; letter-spacing: 0.1em; }
 
     /* ── SMALL BUTTONS ── */
     .btn-xs {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 4px 10px; border-radius: 999px;
       font-size: 10px; font-weight: 600;
-      background: var(--dim); border: 1px solid rgba(255,255,255,0.08);
+      background: var(--dim); border: 1px solid rgba(255,255,255,0.07);
       color: var(--muted); cursor: pointer;
       transition: all 0.15s; letter-spacing: 0.04em;
     }
     .btn-xs:hover { background: rgba(240,168,48,0.1); border-color: var(--border-gold); color: var(--gold); }
     .btn-xs.copied { background: rgba(240,168,48,0.14); border-color: rgba(240,168,48,0.4); color: var(--gold); }
 
-    /* ── EXPIRY / COUNTDOWN ── */
+    /* ── EXPIRY ── */
     .expiry-wrap {
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: var(--raised);
-      padding: 16px;
+      border-radius: 14px; border: 1px solid var(--border);
+      background: var(--raised); padding: 16px;
       animation: fadeUp 0.45s 0.16s cubic-bezier(0.22,1,0.36,1) both;
+      transition: border-color 0.3s, background 0.3s;
     }
-    .expiry-wrap.urgent { border-color: rgba(255,165,0,0.3); background: rgba(255,140,0,0.04); }
+    .expiry-wrap.urgent { border-color: rgba(255,150,0,0.3); background: rgba(255,130,0,0.04); }
     .expiry-wrap.expired { border-color: rgba(255,60,60,0.3); background: rgba(255,60,60,0.04); }
 
     .expiry-head {
@@ -224,28 +299,59 @@
       padding: 2px 9px; letter-spacing: 0.05em;
     }
 
-    .countdown {
-      display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
-    }
+    /* Countdown grid with flip */
+    .countdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
     .cnt-unit {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 8px 8px;
-      text-align: center;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 8px 8px; text-align: center;
+      perspective: 300px;
+    }
+    .cnt-flip-wrap {
+      position: relative; height: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
     }
     .cnt-val {
       font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 1.5rem; font-weight: 700;
-      color: var(--white); line-height: 1;
-      letter-spacing: -0.02em;
+      font-size: 1.5rem; font-weight: 700; color: var(--white);
+      line-height: 1; letter-spacing: -0.02em;
+      display: block;
+      transition: transform 0.12s, opacity 0.12s;
     }
-    .urgent .cnt-val { color: #FFB020; }
+    .cnt-val.flipping {
+      animation: flip 0.22s cubic-bezier(0.4,0,0.6,1);
+    }
+    @keyframes flip {
+      0%   { transform: translateY(0)   scaleY(1);   opacity: 1; }
+      40%  { transform: translateY(-6px) scaleY(0.6); opacity: 0.4; }
+      60%  { transform: translateY(6px)  scaleY(0.6); opacity: 0.4; }
+      100% { transform: translateY(0)   scaleY(1);   opacity: 1; }
+    }
+    .urgent .cnt-val  { color: #FFB020; }
     .expired .cnt-val { color: #FF5050; }
     .cnt-lbl {
       font-size: 8px; font-weight: 700; letter-spacing: 0.18em;
-      color: var(--muted); margin-top: 5px; text-transform: uppercase;
+      color: var(--muted); margin-top: 6px; text-transform: uppercase;
     }
+
+    /* Progress bar */
+    .progress-wrap { margin-top: 14px; }
+    .progress-head {
+      display: flex; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .progress-lbl { font-size: 9px; color: var(--muted); letter-spacing: 0.08em; }
+    .progress-pct { font-size: 9px; font-weight: 700; color: rgba(240,168,48,0.7); }
+    .progress-track {
+      height: 4px; background: var(--dim); border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #F0A830 0%, #ffe080 100%);
+      box-shadow: 0 0 10px rgba(240,168,48,0.35);
+      transition: width 1s cubic-bezier(0.22,1,0.36,1);
+    }
+    .progress-fill.low { background: linear-gradient(90deg, #FF6030, #FFB020); }
+
     .expired-msg {
       display: none; align-items: center; gap: 8px;
       color: rgba(255,80,80,0.9); font-size: 13px; font-weight: 600;
@@ -254,104 +360,99 @@
     /* ── SECTION LABEL ── */
     .section-lbl {
       font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 10px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
     }
 
     /* ── ACTION BUTTONS ── */
     .action-list { display: flex; flex-direction: column; gap: 8px; }
-
     .action-btn {
       display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      text-decoration: none;
-      color: var(--text);
-      border: 1px solid var(--border);
-      background: var(--raised);
+      padding: 12px 14px; border-radius: 14px;
+      text-decoration: none; color: var(--text);
+      border: 1px solid var(--border); background: var(--raised);
       transition: all 0.18s;
       animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .action-btn:hover {
-      transform: translateX(2px);
-    }
-
-    /* Primary = app download */
+    .action-btn:hover { transform: translateX(3px); }
     .action-btn.primary {
       border-color: var(--border-gold);
       background: linear-gradient(120deg, rgba(240,168,48,0.1), rgba(240,168,48,0.04));
     }
-    .action-btn.primary:hover {
-      border-color: rgba(240,168,48,0.5);
-      box-shadow: 0 0 24px rgba(240,168,48,0.1);
-    }
-
-    /* YouTube */
-    .action-btn.yt { }
-    .action-btn.yt:hover { border-color: rgba(255,60,60,0.4); background: rgba(255,60,60,0.05); }
-
-    /* WhatsApp */
-    .action-btn.wa { }
-    .action-btn.wa:hover { border-color: rgba(37,211,102,0.4); background: rgba(37,211,102,0.05); }
-
+    .action-btn.primary:hover { border-color: rgba(240,168,48,0.5); box-shadow: 0 0 28px rgba(240,168,48,0.1); }
+    .action-btn.yt:hover  { border-color: rgba(255,60,60,0.4);   background: rgba(255,60,60,0.05); }
+    .action-btn.wa:hover  { border-color: rgba(37,211,102,0.4);  background: rgba(37,211,102,0.05); }
     .action-icon {
       width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      background: var(--dim);
-      border: 1px solid var(--border);
+      background: var(--dim); border: 1px solid var(--border);
     }
     .action-btn.primary .action-icon { background: rgba(240,168,48,0.12); border-color: rgba(240,168,48,0.18); }
     .action-btn.yt .action-icon      { background: rgba(255,60,60,0.1);   border-color: rgba(255,60,60,0.15); }
     .action-btn.wa .action-icon      { background: rgba(37,211,102,0.1);  border-color: rgba(37,211,102,0.15); }
-
     .action-text { flex: 1; min-width: 0; }
     .action-title { font-size: 13px; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .action-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
-
     .action-btn.primary .action-title { color: var(--gold); }
+    .chevron { opacity: 0.18; flex-shrink: 0; }
 
-    .chevron { opacity: 0.2; flex-shrink: 0; }
-
-    /* ── INSTRUCTIONS ── */
-    .instr-grid {
-      display: flex; flex-direction: column; gap: 9px;
+    /* ── INSTRUCTIONS (accordion) ── */
+    .instr-accordion {
+      border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
       animation: fadeUp 0.45s 0.24s cubic-bezier(0.22,1,0.36,1) both;
     }
+    .instr-toggle {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 16px; background: var(--raised);
+      cursor: pointer; border: none; color: var(--text);
+      font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--muted); transition: background 0.15s;
+    }
+    .instr-toggle:hover { background: rgba(240,168,48,0.04); }
+    .instr-chevron {
+      color: var(--muted); transition: transform 0.25s;
+    }
+    .instr-chevron.open { transform: rotate(180deg); }
+    .instr-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.22,1,0.36,1), padding 0.3s;
+      background: var(--raised);
+    }
+    .instr-body.open { max-height: 300px; }
+    .instr-inner { padding: 4px 16px 14px; display: flex; flex-direction: column; gap: 9px; }
     .instr-row { display: flex; align-items: flex-start; gap: 10px; }
     .instr-num {
-      flex-shrink: 0;
-      width: 20px; height: 20px; border-radius: 6px;
-      background: var(--gold-dim); border: 1px solid rgba(240,168,48,0.22);
-      color: rgba(240,168,48,0.75); font-size: 9px; font-weight: 800;
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px;
+      background: var(--gold-dim); border: 1px solid rgba(240,168,48,0.2);
+      color: rgba(240,168,48,0.7); font-size: 9px; font-weight: 800;
       display: flex; align-items: center; justify-content: center;
-      margin-top: 1px; letter-spacing: 0;
+      margin-top: 1px;
     }
     .instr-text { font-size: 12px; color: var(--muted); line-height: 1.65; }
-    .instr-text strong { color: rgba(221,227,240,0.65); font-weight: 600; }
+    .instr-text strong { color: rgba(221,227,240,0.62); font-weight: 600; }
 
     /* ── FOOTER ── */
     .footer {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      padding-top: 2px;
+      text-align: center;
       animation: fadeUp 0.45s 0.28s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .footer-support { font-size: 11px; color: var(--muted); }
-    .footer-support strong { color: rgba(221,227,240,0.55); font-weight: 600; }
-    .footer-anti { font-size: 9px; color: rgba(255,255,255,0.08); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px; }
+    .footer-anti {
+      font-size: 9px; color: rgba(255,255,255,0.07);
+      letter-spacing: 0.2em; text-transform: uppercase;
+    }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    @media (max-width: 420px) {
-      .card-inner { padding: 24px 20px 22px 24px; }
-      .logo-name { font-size: 1.35rem; }
-      .cnt-val { font-size: 1.25rem; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
-
-    /* Print block */
+    @media (max-width: 420px) {
+      .card-inner { padding: 24px 18px 22px 22px; }
+      .logo-name  { font-size: 1.3rem; }
+      .cnt-val    { font-size: 1.25rem; }
+    }
     @media print {
       body > * { display: none !important; }
       .print-block { display: flex !important; }
@@ -368,7 +469,37 @@
 <div class="print-block"><p>Impressão bloqueada</p></div>
 <div class="watermark" id="watermark"></div>
 
-<div class="card">
+<!-- TOAST -->
+<div id="toast">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Copiado para a área de transferência</span>
+</div>
+
+<!-- SKELETON -->
+<div id="skeleton">
+  <div class="sk-card">
+    <div class="sk-row">
+      <div style="display:flex;flex-direction:column;gap:8px;width:55%">
+        <div class="sk-block sk-h10 sk-pill" style="width:50%"></div>
+        <div class="sk-block sk-h24" style="width:85%;border-radius:8px"></div>
+        <div class="sk-block sk-h10 sk-pill" style="width:65%"></div>
+      </div>
+      <div class="sk-block sk-pill" style="width:62px;height:24px"></div>
+    </div>
+    <div class="sk-block sk-h56 sk-full" style="border-radius:14px"></div>
+    <div class="sk-block sk-h56 sk-full" style="border-radius:14px"></div>
+    <div class="sk-block sk-full" style="border-radius:14px;height:90px"></div>
+    <div class="sk-grid4">
+      <div class="sk-block sk-h42" style="border-radius:10px"></div>
+      <div class="sk-block sk-h42" style="border-radius:10px"></div>
+      <div class="sk-block sk-h42" style="border-radius:10px"></div>
+      <div class="sk-block sk-h42" style="border-radius:10px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card" id="main-card" style="opacity:0">
   <div class="card-stripe"></div>
   <div class="card-inner">
 
@@ -376,13 +507,18 @@
     <div class="header">
       <div class="header-left">
         <div class="logo-eyebrow">Acesso Oficial · Licença Pessoal</div>
-        <div class="logo-name">PRECISION <em>BOOSTER</em></div>
+        <div class="logo-name">PRECISION <em class="logo-shimmer">BOOSTER</em></div>
         <div class="logo-sub">Sensibilidade de precisão para Free Fire</div>
       </div>
-      <div class="header-badge">
+      <div class="header-right">
         <div class="badge-active">
           <div class="badge-dot"></div>
           ATIVA
+        </div>
+        <div class="badge-verified">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Verificada
+          <div class="tooltip" id="verify-tooltip">Verificada em —</div>
         </div>
       </div>
     </div>
@@ -395,9 +531,11 @@
       <!-- USUÁRIO -->
       <div class="cred-block" style="animation-delay:0.08s">
         <div class="cred-top">
-          <span class="cred-label">Usuário</span>
+          <div class="cred-meta">
+            <span class="cred-label">Usuário</span>
+          </div>
           <div class="cred-actions">
-            <button class="btn-xs" onclick="copyField('usr-val',this)">
+            <button class="btn-xs" onclick="copyField('usr-val','Usuário copiado')">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               Copiar
             </button>
@@ -409,19 +547,26 @@
       <!-- SENHA -->
       <div class="cred-block" style="animation-delay:0.12s">
         <div class="cred-top">
-          <span class="cred-label">Senha / Chave</span>
+          <div class="cred-meta">
+            <span class="cred-label">Senha / Chave</span>
+            <span class="lic-id" id="lic-id-badge"></span>
+          </div>
           <div class="cred-actions">
             <button class="btn-xs" id="reveal-btn" onclick="toggleReveal()">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               Revelar
             </button>
-            <button class="btn-xs" onclick="copyField('pwd-val',this)">
+            <button class="btn-xs" onclick="copyField('pwd-val','Senha copiada com segurança')">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               Copiar
             </button>
           </div>
         </div>
         <div class="cred-value masked" id="pwd-val" data-real="{{ senha }}">••••••••••••</div>
+        <div class="strength-bar-wrap" id="strength-wrap">
+          <div class="strength-track"><div class="strength-fill" id="strength-fill"></div></div>
+          <span class="strength-lbl" id="strength-lbl">FORTE</span>
+        </div>
       </div>
 
     </div>
@@ -433,10 +578,31 @@
         <span class="expiry-plan">{{ expiracao_display }}</span>
       </div>
       <div class="countdown" id="countdown">
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-d">--</div><div class="cnt-lbl">Dias</div></div>
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-h">--</div><div class="cnt-lbl">Horas</div></div>
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-m">--</div><div class="cnt-lbl">Min</div></div>
-        <div class="cnt-unit"><div class="cnt-val" id="cnt-s">--</div><div class="cnt-lbl">Seg</div></div>
+        <div class="cnt-unit">
+          <div class="cnt-flip-wrap"><div class="cnt-val" id="cnt-d">--</div></div>
+          <div class="cnt-lbl">Dias</div>
+        </div>
+        <div class="cnt-unit">
+          <div class="cnt-flip-wrap"><div class="cnt-val" id="cnt-h">--</div></div>
+          <div class="cnt-lbl">Horas</div>
+        </div>
+        <div class="cnt-unit">
+          <div class="cnt-flip-wrap"><div class="cnt-val" id="cnt-m">--</div></div>
+          <div class="cnt-lbl">Min</div>
+        </div>
+        <div class="cnt-unit">
+          <div class="cnt-flip-wrap"><div class="cnt-val" id="cnt-s">--</div></div>
+          <div class="cnt-lbl">Seg</div>
+        </div>
+      </div>
+      <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-head">
+          <span class="progress-lbl">Vida da licença</span>
+          <span class="progress-pct" id="progress-pct">—</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
       </div>
       <div class="expired-msg" id="expired-msg">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -450,7 +616,6 @@
     <div style="animation: fadeUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both;">
       <div class="section-lbl">Downloads & Recursos</div>
       <div class="action-list">
-
         <a href="{{ link_app }}" class="action-btn primary" target="_blank" rel="noopener noreferrer" style="animation-delay:0.18s">
           <div class="action-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0A830" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -461,10 +626,9 @@
           </div>
           <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-
         <a href="{{ link_shizuku }}" class="action-btn" target="_blank" rel="noopener noreferrer" style="animation-delay:0.21s">
           <div class="action-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
           </div>
           <div class="action-text">
             <div class="action-title" style="color:var(--text)">Shizuku</div>
@@ -472,7 +636,6 @@
           </div>
           <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-
         <a href="https://youtu.be/OqzvvS9HA1A" class="action-btn yt" target="_blank" rel="noopener noreferrer" style="animation-delay:0.24s">
           <div class="action-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,80,80,0.9)"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -483,7 +646,6 @@
           </div>
           <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-
         <a href="{{ canal_whats }}" class="action-btn wa" target="_blank" rel="noopener noreferrer" style="animation-delay:0.27s">
           <div class="action-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(37,211,102,0.9)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
@@ -494,38 +656,41 @@
           </div>
           <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- INSTRUÇÕES -->
-    <div>
-      <div class="section-lbl">Instruções de uso</div>
-      <div class="instr-grid">
-        <div class="instr-row">
-          <div class="instr-num">1</div>
-          <div class="instr-text">Instale o <strong>Shizuku e o Precision Booster</strong> antes de abrir o app.</div>
-        </div>
-        <div class="instr-row">
-          <div class="instr-num">2</div>
-          <div class="instr-text">Ative o Shizuku via <strong>ADB</strong> ou modo de serviço de acessibilidade.</div>
-        </div>
-        <div class="instr-row">
-          <div class="instr-num">3</div>
-          <div class="instr-text">Esta licença é <strong>pessoal e intransferível</strong> — não compartilhe sua senha.</div>
-        </div>
-        <div class="instr-row">
-          <div class="instr-num">4</div>
-          <div class="instr-text"><strong>1° reset gratuito</strong> · resets adicionais custam R$3,00.</div>
+    <!-- INSTRUÇÕES (accordion) -->
+    <div class="instr-accordion">
+      <button class="instr-toggle" onclick="toggleInstr(this)" aria-expanded="false">
+        <span>Instruções de uso</span>
+        <svg class="instr-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="instr-body" id="instr-body">
+        <div class="instr-inner">
+          <div class="instr-row">
+            <div class="instr-num">1</div>
+            <div class="instr-text">Instale o <strong>Shizuku e o Precision Booster</strong> antes de abrir o app.</div>
+          </div>
+          <div class="instr-row">
+            <div class="instr-num">2</div>
+            <div class="instr-text">Ative o Shizuku via <strong>ADB</strong> ou modo de serviço de acessibilidade.</div>
+          </div>
+          <div class="instr-row">
+            <div class="instr-num">3</div>
+            <div class="instr-text">Esta licença é <strong>pessoal e intransferível</strong> — não compartilhe sua senha.</div>
+          </div>
+          <div class="instr-row">
+            <div class="instr-num">4</div>
+            <div class="instr-text"><strong>1° reset gratuito</strong> · resets adicionais custam R$3,00.</div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- FOOTER -->
     <div class="footer">
-      <div class="footer-support">Suporte: <strong>@SuportePBooster</strong> · Telegram</div>
       <div class="footer-anti">Sistema anti-compartilhamento ativo</div>
     </div>
 
@@ -534,20 +699,59 @@
 
 <script>
 (function () {
-  /* Watermark */
+
+  /* ── SKELETON ── */
+  setTimeout(function () {
+    var sk = document.getElementById("skeleton");
+    var card = document.getElementById("main-card");
+    sk.style.transition = "opacity 0.35s";
+    sk.style.opacity = "0";
+    card.style.transition = "opacity 0.35s";
+    card.style.opacity = "1";
+    setTimeout(function () { sk.style.display = "none"; }, 360);
+  }, 680);
+
+  /* ── WATERMARK ── */
   var u = "{{ username }}";
   document.getElementById("watermark").textContent =
     u.length <= 8 ? u : u.slice(0,4) + "···" + u.slice(-4);
 
-  /* Reveal toggle */
+  /* ── TOOLTIP DATA ── */
+  var now = new Date();
+  var months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  document.getElementById("verify-tooltip").textContent =
+    "Verificada em " + now.getDate() + " " + months[now.getMonth()] + ". " + now.getFullYear();
+
+  /* ── LICENSE ID BADGE ── */
+  var raw = "{{ senha }}";
+  if (raw && raw !== "{{ senha }}") {
+    var hash = 0;
+    for (var i = 0; i < raw.length; i++) hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0;
+    var id = "LIC-" + Math.abs(hash).toString(36).toUpperCase().slice(0,4) + "-" + now.getFullYear();
+    document.getElementById("lic-id-badge").textContent = id;
+  }
+
+  /* ── TOAST ── */
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    document.getElementById("toast-msg").textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  /* ── REVEAL ── */
   var revealed = false;
   window.toggleReveal = function () {
     revealed = !revealed;
     var el  = document.getElementById("pwd-val");
     var btn = document.getElementById("reveal-btn");
+    var sw  = document.getElementById("strength-wrap");
     if (revealed) {
       el.textContent = el.getAttribute("data-real");
       el.classList.remove("masked");
+      sw.classList.add("visible");
       btn.innerHTML =
         '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
         '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>' +
@@ -556,61 +760,113 @@
     } else {
       el.textContent = "••••••••••••";
       el.classList.add("masked");
+      sw.classList.remove("visible");
       btn.innerHTML =
         '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
         '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revelar';
     }
   };
 
-  /* Copy */
-  window.copyField = function (id, btn) {
+  /* ── COPY ── */
+  window.copyField = function (id, toastMsg) {
     var text = id === "pwd-val"
       ? document.getElementById("pwd-val").getAttribute("data-real")
       : document.getElementById(id).textContent.trim();
     navigator.clipboard.writeText(text).then(function () {
-      var orig = btn.innerHTML;
-      btn.innerHTML =
-        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
-        '<polyline points="20 6 9 17 4 12"/></svg> Copiado!';
-      btn.classList.add("copied");
-      setTimeout(function () { btn.innerHTML = orig; btn.classList.remove("copied"); }, 2000);
+      if (navigator.vibrate) navigator.vibrate(30);
+      showToast(toastMsg || "Copiado!");
     }).catch(function () {
       alert("Pressione e segure sobre o texto para copiar manualmente.");
     });
   };
 
-  /* Countdown */
+  /* ── ACCORDION ── */
+  window.toggleInstr = function (btn) {
+    var body = document.getElementById("instr-body");
+    var chev = btn.querySelector(".instr-chevron");
+    var open = body.classList.toggle("open");
+    chev.classList.toggle("open", open);
+    btn.setAttribute("aria-expanded", open);
+  };
+
+  /* ── COUNTDOWN + PROGRESS ── */
   var expiracaoIso = "{{ expiracao_iso }}";
+  var activationIso = "{{ ativacao_iso }}"; // opcional — fallback: 30 dias antes da expiração
+
   if (expiracaoIso && expiracaoIso !== "{{ expiracao_iso }}") {
     var target = new Date(expiracaoIso).getTime();
+
+    // start: usa ativacao_iso se disponível, senão assume 30 dias de plano
+    var planDays = 30;
+    var start = (activationIso && activationIso !== "{{ ativacao_iso }}")
+      ? new Date(activationIso).getTime()
+      : target - (planDays * 86400000);
+    var totalDuration = target - start;
+
+    var prevVals = { d: null, h: null, m: null, s: null };
+
+    function flipEl(id, newVal) {
+      var el = document.getElementById(id);
+      if (prevVals[id] !== newVal) {
+        el.classList.remove("flipping");
+        void el.offsetWidth;
+        el.classList.add("flipping");
+        el.textContent = newVal;
+        prevVals[id] = newVal;
+      }
+    }
+
     function tick() {
       var diff = target - Date.now();
-      var box = document.getElementById("expiry-box");
-      var lbl = document.getElementById("expiry-sublabel");
+      var box  = document.getElementById("expiry-box");
+      var lbl  = document.getElementById("expiry-sublabel");
+
       if (diff <= 0) {
         document.getElementById("countdown").style.display = "none";
-        var em = document.getElementById("expired-msg");
-        em.style.display = "flex";
+        document.getElementById("progress-wrap").style.display = "none";
+        document.getElementById("expired-msg").style.display = "flex";
         box.classList.add("expired");
         lbl.textContent = "Expirado";
+        // dramatic red pulse
+        var card = document.getElementById("main-card");
+        card.classList.add("warning-pulse");
         clearInterval(timer);
         return;
       }
+
       var d = Math.floor(diff / 86400000);
       var h = Math.floor((diff % 86400000) / 3600000);
       var m = Math.floor((diff % 3600000) / 60000);
       var s = Math.floor((diff % 60000) / 1000);
-      document.getElementById("cnt-d").textContent = String(d).padStart(2,"0");
-      document.getElementById("cnt-h").textContent = String(h).padStart(2,"0");
-      document.getElementById("cnt-m").textContent = String(m).padStart(2,"0");
-      document.getElementById("cnt-s").textContent = String(s).padStart(2,"0");
+
+      flipEl("cnt-d", String(d).padStart(2,"0"));
+      flipEl("cnt-h", String(h).padStart(2,"0"));
+      flipEl("cnt-m", String(m).padStart(2,"0"));
+      flipEl("cnt-s", String(s).padStart(2,"0"));
+
+      // Progress bar
+      var elapsed = Date.now() - start;
+      var pct = Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
+      var remaining = 100 - pct;
+      var fill = document.getElementById("progress-fill");
+      var pctEl = document.getElementById("progress-pct");
+      fill.style.width = remaining.toFixed(1) + "%";
+      pctEl.textContent = remaining.toFixed(0) + "% restante";
+      if (remaining < 20) fill.classList.add("low");
+
       if (d < 3) {
         box.classList.add("urgent");
         lbl.textContent = "Expira em breve";
+        if (d < 1) {
+          var card2 = document.getElementById("main-card");
+          card2.classList.add("warning-pulse");
+        }
       }
     }
+
     tick();
     var timer = setInterval(tick, 1000);
+
   } else {
     document.getElementById("expiry-box").innerHTML =
       '<div style="display:flex;align-items:center;gap:8px">' +
@@ -619,7 +875,7 @@
       '</div>';
   }
 
-  /* Anti-print / anti-save */
+  /* ── ANTI-PRINT / ANTI-SAVE ── */
   window.addEventListener("beforeprint", function () {
     alert("Impressão registrada. Compartilhar viola os Termos de Uso.");
   });
@@ -634,7 +890,7 @@
     alert("Use o botão Copiar para copiar com segurança.");
   });
 
-  console.log("%c🔒 Acesso registrado · Precision Booster", "color:#F0A830;font-size:11px");
+  console.log("%c🔒 Acesso registrado · Precision Booster", "color:#F0A830;font-size:11px;font-weight:bold");
 })();
 </script>
 </body>
