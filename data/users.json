@@ -2969,6 +2969,17 @@
       "created_at": 1781299125,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBMXEMQJ8T",
+      "password": "WF4U-7V5B-YRH5",
+      "key": "PB-5EF606ED",
+      "device_id": null,
+      "expires_at": 1782163133,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781299133,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
