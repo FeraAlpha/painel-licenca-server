@@ -2947,6 +2947,17 @@
       "created_at": 1781285404,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB9M5Z73W6",
+      "password": "U5CJ-EHY2-P9YV",
+      "key": "PB-20A86919",
+      "device_id": null,
+      "expires_at": 1782156134,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781292134,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
