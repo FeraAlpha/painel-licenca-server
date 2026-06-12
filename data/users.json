@@ -2958,6 +2958,17 @@
       "created_at": 1781292134,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBSVSM55EP",
+      "password": "DY5F-MAQC-C7C8",
+      "key": "PB-62E042AB",
+      "device_id": null,
+      "expires_at": 1782163125,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781299125,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
