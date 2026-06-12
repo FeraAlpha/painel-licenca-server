@@ -2892,6 +2892,17 @@
       "created_at": 1781227142,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB7R2WMQ2E",
+      "password": "4T8F-LE4U-ZMGV",
+      "key": "PB-CA5840E2",
+      "device_id": null,
+      "expires_at": 1785146982,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781258982,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
