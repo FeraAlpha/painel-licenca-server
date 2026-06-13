@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>Fera Alpha - Revendedor (Promoção Ativa)</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <style>
+    /* ===== VARIÁVEIS ORIGINAIS ===== */
     :root{
       --bg:#f6f7ff;
       --card:#ffffff;
@@ -24,12 +24,7 @@
       --error:#ef4444;
     }
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-    }
+    *{ margin:0; padding:0; box-sizing:border-box; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; }
 
     body{
       min-height:100vh;
@@ -39,864 +34,551 @@
         radial-gradient(900px 550px at 20% 0%, rgba(79,124,255,.14), transparent 60%),
         radial-gradient(900px 550px at 85% 15%, rgba(106,92,255,.12), transparent 60%),
         linear-gradient(180deg, rgba(255,255,255,1), rgba(246,247,255,1));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: padding 0.3s;
-    }
-
-    /* GATE (tela de bloqueio) */
-    #gate {
-      width: 100%;
-      max-width: 480px;
-      animation: fadeInUp 0.5s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .gate-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px 24px;
-      box-shadow: var(--shadow);
-      width: 100%;
-      text-align: center;
-      transition: transform 0.3s;
-    }
-
-    .gate-card.shake {
-      animation: shake 0.4s ease-in-out;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
-      20%, 40%, 60%, 80% { transform: translateX(6px); }
-    }
-
-    .gate-logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 28px;
-      margin: 0 auto 16px;
-      box-shadow: 0 14px 30px var(--glow);
-    }
-
-    .gate-title {
-      font-size: 20px;
-      font-weight: 900;
-      margin-bottom: 8px;
-    }
-
-    .gate-subtitle {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
-
-    /* Banner promocional na tela de token */
-    .promo-banner {
-      background: linear-gradient(135deg, rgba(79,124,255,0.08), rgba(106,92,255,0.12));
-      border: 1px solid rgba(79,124,255,0.3);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 24px;
-      text-align: left;
-      backdrop-filter: blur(2px);
-    }
-    .promo-banner i {
-      color: var(--primary);
-      margin-right: 8px;
-    }
-    .promo-banner .promo-title {
-      font-weight: 800;
-      font-size: 14px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .promo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .promo-item {
-      background: rgba(255,255,255,0.5);
-      border-radius: 14px;
-      padding: 8px 6px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .promo-item span {
-      color: var(--primary2);
-      font-weight: 900;
-    }
-
-    .gate-input-group {
-      margin-bottom: 16px;
-    }
-
-    .gate-input-group label {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .gate-input-group label i { color: var(--primary); }
-
-    .gate-input-wrapper {
-      position: relative;
-    }
-
-    .gate-input-wrapper input {
-      width: 100%;
-      padding: 13px 45px 13px 14px;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      transition: 0.2s;
-    }
-
-    .gate-input-wrapper input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79,124,255,.15);
-    }
-
-    .gate-input-wrapper .toggle-visibility {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 16px;
-      padding: 5px;
-    }
-
-    .gate-remember {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 20px;
-      cursor: pointer;
-    }
-
-    .gate-remember input {
-      accent-color: var(--primary);
-    }
-
-    .gate-btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 14px;
-      font-weight: 900;
-      font-size: 15px;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color: white;
-      box-shadow: 0 18px 40px rgba(79,124,255,.20);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: 0.2s;
-    }
-
-    .gate-btn:hover { transform: translateY(-2px); }
-
-    .gate-btn.loading {
-      pointer-events: none;
-      color: transparent;
-      position: relative;
-    }
-
-    .gate-btn.loading::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 0.8s linear infinite;
-    }
-
-    .gate-error {
-      color: var(--error);
-      font-size: 13px;
-      margin-top: 12px;
-      font-weight: 600;
-      display: none;
-    }
-
-    .gate-error.show { display: block; }
-
-    .gate-footer {
-      margin-top: 20px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .gate-footer i { color: var(--primary); }
-
-    /* MAIN APP (oculto por padrão) */
-    #mainApp {
-      width: 100%;
-      max-width: 720px;
-      display: none;
-      animation: fadeInUp 0.5s ease;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .topbar{
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:center;
+      transition:padding 0.3s;
+    }
+
+    @keyframes fadeInUp{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    @keyframes spin{ to{transform:rotate(360deg)} }
+    @keyframes shake{
+      0%,100%{transform:translateX(0)}
+      10%,30%,50%,70%,90%{transform:translateX(-6px)}
+      20%,40%,60%,80%{transform:translateX(6px)}
+    }
+
+    /* ===== GATE ===== */
+    #gate{
+      width:100%;
+      max-width:480px;
+      animation:fadeInUp 0.5s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+
+    .gate-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:32px 24px;
+      box-shadow:var(--shadow);
+      width:100%;
+      text-align:center;
+      transition:transform 0.3s;
+    }
+
+    .gate-card.shake{ animation:shake 0.4s ease-in-out; }
+
+    .gate-logo{
+      width:64px; height:64px;
+      border-radius:20px;
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-size:28px;
+      margin:0 auto 16px;
+      box-shadow:0 14px 30px var(--glow);
+    }
+
+    .gate-title{ font-size:20px; font-weight:900; margin-bottom:8px; }
+    .gate-subtitle{ font-size:13px; color:var(--muted); margin-bottom:24px; }
+
+    .promo-banner{
+      background:linear-gradient(135deg, rgba(79,124,255,0.08), rgba(106,92,255,0.12));
+      border:1px solid rgba(79,124,255,0.3);
+      border-radius:20px;
+      padding:16px;
+      margin-bottom:24px;
+      text-align:left;
+      backdrop-filter:blur(2px);
+    }
+    .promo-banner i{ color:var(--primary); margin-right:8px; }
+    .promo-banner .promo-title{ font-weight:800; font-size:14px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+    .promo-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .promo-item{ background:rgba(255,255,255,0.5); border-radius:14px; padding:8px 6px; text-align:center; font-size:12px; font-weight:700; }
+    .promo-item span{ color:var(--primary2); font-weight:900; }
+
+    .gate-input-group{ margin-bottom:16px; }
+    .gate-input-group label{ display:flex; align-items:center; justify-content:flex-start; gap:8px; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:6px; }
+    .gate-input-group label i{ color:var(--primary); }
+
+    .gate-input-wrapper{ position:relative; }
+    .gate-input-wrapper input{
+      width:100%; padding:13px 45px 13px 14px;
+      background:var(--card2); border:1px solid var(--border);
+      border-radius:14px; color:var(--text); font-size:14px;
+      outline:none; transition:0.2s;
+    }
+    .gate-input-wrapper input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,124,255,.15); }
+    .gate-input-wrapper .toggle-visibility{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; padding:5px;
+    }
+
+    .gate-remember{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin-bottom:20px; cursor:pointer; }
+    .gate-remember input{ accent-color:var(--primary); }
+
+    .gate-btn{
+      width:100%; padding:14px; border:none; border-radius:14px;
+      font-weight:900; font-size:15px; cursor:pointer;
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      color:white; box-shadow:0 18px 40px rgba(79,124,255,.20);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      transition:0.2s; position:relative;
+    }
+    .gate-btn:hover{ transform:translateY(-2px); }
+    .gate-btn.loading{ pointer-events:none; color:transparent; }
+    .gate-btn.loading::after{
+      content:''; position:absolute;
+      width:20px; height:20px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-radius:50%; border-top-color:white;
+      animation:spin 0.8s linear infinite;
+    }
+
+    .gate-error{ color:var(--error); font-size:13px; margin-top:12px; font-weight:600; display:none; }
+    .gate-error.show{ display:block; }
+    .gate-footer{ margin-top:20px; font-size:12px; color:var(--muted); }
+    .gate-footer i{ color:var(--primary); }
+
+    /* ===== MAIN APP ===== */
+    #mainApp{
+      width:100%; max-width:720px;
+      display:none;
+      animation:fadeInUp 0.5s ease;
+    }
+
+    /* TOPBAR */
+    .topbar{
+      display:flex; justify-content:space-between; align-items:center;
       padding:16px 18px;
       border:1px solid var(--border);
       border-radius:var(--radius);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      margin-bottom:18px;
+      background:var(--card);
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px
-    }
+    .brand{ display:flex; align-items:center; gap:12px; }
     .logo{
-      width:42px;height:42px;border-radius:14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      display:flex;align-items:center;justify-content:center;
-      color:white;
-      font-weight:900;
-      box-shadow: 0 12px 26px var(--glow);
+      width:42px; height:42px; border-radius:14px;
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-size:18px;
+      box-shadow:0 12px 26px var(--glow);
     }
-    .brand h1{
-      font-size:18px;
-      font-weight:900;
-      letter-spacing:.3px
-    }
-    .brand p{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px
-    }
+    .brand h1{ font-size:18px; font-weight:900; letter-spacing:.3px; }
+    .brand p{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .topbar-right{ display:flex; align-items:center; gap:8px; }
 
     .chip{
-      padding:8px 12px;
+      padding:8px 12px; border:1px solid var(--border);
+      border-radius:999px; color:var(--muted); font-size:12px;
+      display:flex; align-items:center; gap:8px;
+      background:var(--card2);
+    }
+    .chip i{ color:var(--primary); }
+
+    .logout-btn{
+      background:none; border:1px solid var(--border);
+      padding:8px 12px; border-radius:999px;
+      color:var(--muted); cursor:pointer; font-size:12px;
+      display:flex; align-items:center; gap:6px; transition:0.2s;
+    }
+    .logout-btn:hover{ background:rgba(239,68,68,0.1); border-color:var(--error); color:var(--error); }
+
+    /* TABS */
+    .tabs{
+      display:flex; gap:6px;
+      background:var(--card);
       border:1px solid var(--border);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background: var(--card2);
+      border-radius:var(--radius);
+      padding:6px;
+      margin-bottom:14px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      box-shadow:var(--shadow);
     }
-    .chip i{color:var(--primary)}
+    .tabs::-webkit-scrollbar{ display:none; }
 
-    .logout-btn {
-      background: none;
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 999px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-      margin-left: 10px;
+    .tab{
+      flex:1; min-width:90px;
+      padding:9px 12px; border-radius:12px;
+      border:none; background:none;
+      color:var(--muted); font-size:12px; font-weight:700;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:7px;
+      transition:0.18s; white-space:nowrap;
     }
-
-    .logout-btn:hover {
-      background: rgba(239,68,68,0.1);
-      border-color: var(--error);
-      color: var(--error);
+    .tab:hover{ color:var(--text); background:var(--card2); }
+    .tab.active{
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      color:white;
+      box-shadow:0 8px 20px var(--glow);
     }
+    .tab i{ font-size:12px; }
 
+    /* PANELS */
+    .panel{ display:none; }
+    .panel.active{ display:block; animation:fadeInUp 0.3s ease; }
+
+    /* CARD */
     .card{
-      background: var(--card);
+      background:var(--card);
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:18px;
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
     }
 
-    .card + .card{margin-top:14px;}
+    .cardhead{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+    .title{ display:flex; align-items:center; gap:10px; }
+    .title i{ color:var(--primary); font-size:16px; }
+    .title h2{ font-size:16px; font-weight:900; }
+    .title .sub{ font-size:12px; color:var(--muted); margin-top:2px; }
 
-    .cardhead{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px
-    }
 
-    .title{
-      display:flex;
-      align-items:center;
-      gap:10px
-    }
-    .title i{color:var(--primary)}
-    .title h2{
-      font-size:16px;
-      font-weight:900
-    }
-    .title .sub{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px
-    }
 
-    .field{margin-bottom:12px; position: relative;}
+    /* FIELDS */
+    .field{ margin-bottom:12px; position:relative; }
 
     label{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-      font-weight:700;
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:700;
     }
-    label i{color:var(--primary)}
+    label i{ color:var(--primary); }
 
     input{
-      width:100%;
-      padding:13px 14px;
-      background: var(--card2);
-      border:1px solid var(--border);
-      border-radius:14px;
-      color:var(--text);
-      outline:none;
-      font-size:14px;
-      transition:.2s;
+      width:100%; padding:13px 14px;
+      background:var(--card2); border:1px solid var(--border);
+      border-radius:14px; color:var(--text);
+      outline:none; font-size:14px; transition:.2s;
     }
-    input:focus{
-      border-color: rgba(79,124,255,.9);
-      box-shadow: 0 0 0 3px rgba(79,124,255,.15);
-    }
-    input::placeholder{color:#93a1b3}
+    input:focus{ border-color:rgba(79,124,255,.9); box-shadow:0 0 0 3px rgba(79,124,255,.15); }
+    input::placeholder{ color:#93a1b3; }
 
-    .password-wrapper {
-      position: relative;
+
+    .input-with-button{ display:flex; gap:8px; align-items:stretch; }
+    .input-with-button input{ flex:1; }
+
+    .btn-icon{
+      padding:0 14px; border-radius:14px;
+      border:1px solid var(--border); background:var(--card2);
+      color:var(--primary); cursor:pointer; font-size:16px;
+      transition:0.2s; white-space:nowrap; font-weight:700;
     }
-    .password-wrapper input {
-      padding-right: 45px;
-    }
-    .password-wrapper .toggle-password {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 5px;
-      line-height: 1;
-    }
-    .password-wrapper .toggle-password:hover {
-      color: var(--primary);
+    .btn-icon:hover{ background:var(--border); }
+
+    /* DAYS GRID */
+    .days-grid{
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:8px; margin-top:6px;
     }
 
-    .input-with-button {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
-    }
-    .input-with-button input {
-      flex: 1;
-    }
-    .btn-icon {
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: var(--card2);
-      color: var(--primary);
-      cursor: pointer;
-      font-size: 16px;
-      transition: 0.2s;
-      white-space: nowrap;
-      font-weight: 700;
-    }
-    .btn-icon:hover {
-      background: var(--border);
-    }
-
-    .days{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:8px;
-    }
     .daybtn{
-      flex:1 1 150px;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: var(--card2);
-      color:var(--muted);
-      cursor:pointer;
-      font-weight:900;
-      text-align:center;
-      transition:.2s;
-      user-select:none;
+      padding:12px 14px; border-radius:14px;
+      border:1px solid var(--border); background:var(--card2);
+      color:var(--muted); cursor:pointer; font-weight:900;
+      text-align:center; transition:.2s; user-select:none;
     }
-    .daybtn:hover{transform:translateY(-1px)}
+    .daybtn:hover{ transform:translateY(-1px); }
     .daybtn.active{
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color:white;
-      border-color: transparent;
-      box-shadow: 0 14px 30px rgba(79,124,255,.18);
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      color:white; border-color:transparent;
+      box-shadow:0 14px 30px rgba(79,124,255,.18);
     }
+    .daybtn .d-days{ font-size:15px; font-weight:900; margin-bottom:2px; }
+    .daybtn .d-price{ font-size:11px; opacity:0.8; }
+    .daybtn.active .d-days{ color:white; }
+    .daybtn.active .d-price{ color:rgba(255,255,255,0.85); }
 
-    .daybtn[data-days="10"] {
-      background: linear-gradient(145deg, #fef7e0, #fee9b6);
-      border-color: #ffb347;
-      color: #b45f06;
+    .daybtn.featured{
+      background:linear-gradient(145deg, #fef7e0, #fee9b6);
+      border-color:#ffb347; color:#b45f06;
     }
-    .daybtn[data-days="10"].active {
-      background: linear-gradient(135deg, #ffb347, #ff8c00);
-      color: white;
-      border-color: transparent;
+    .daybtn.featured .d-price{ color:#b45f06; opacity:0.75; }
+    .daybtn.featured.active{
+      background:linear-gradient(135deg, #ffb347, #ff8c00);
+      color:white; border-color:transparent;
     }
+    .daybtn.featured.active .d-days,
+    .daybtn.featured.active .d-price{ color:white; }
 
+    /* BUTTONS */
     .btn{
-      width:100%;
-      padding:14px 16px;
-      border:none;
-      border-radius:14px;
-      font-weight:900;
-      font-size:15px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      transition:.2s;
-      user-select:none;
-      white-space:nowrap;
+      width:100%; padding:14px 16px; border:none; border-radius:14px;
+      font-weight:900; font-size:15px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      transition:.2s; user-select:none; white-space:nowrap; position:relative;
     }
-
     .btn-primary{
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color:white;
-      box-shadow: 0 18px 40px rgba(79,124,255,.20);
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      color:white; box-shadow:0 18px 40px rgba(79,124,255,.20);
     }
-    .btn-primary:hover{transform:translateY(-2px)}
+    .btn-primary:hover{ transform:translateY(-2px); }
 
     .btn-soft{
-      background: var(--card2);
-      border:1px solid var(--border);
-      color:var(--text);
+      background:var(--card2); border:1px solid var(--border); color:var(--text);
     }
-    .btn-soft:hover{
-      background: rgba(240,243,255,.7);
-    }
+    .btn-soft:hover{ background:rgba(240,243,255,.7); }
 
     .btn-danger{
-      background: rgba(255,78,78,.10);
-      border:1px solid rgba(255,78,78,.25);
-      color:#d32f2f;
+      background:rgba(255,78,78,.10);
+      border:1px solid rgba(255,78,78,.25); color:#d32f2f;
     }
 
     .btn-success{
-      background: linear-gradient(135deg, var(--success), #0d9488);
-      color:white;
+      background:linear-gradient(135deg, var(--success), #0d9488); color:white;
+    }
+    .btn-success:hover{ transform:translateY(-1px); }
+
+    .btn.btn-loading{
+      color:transparent !important; pointer-events:none;
+    }
+    .btn.btn-loading::after{
+      content:''; position:absolute;
+      width:20px; height:20px; top:50%; left:50%;
+      margin-left:-10px; margin-top:-10px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-radius:50%; border-top-color:white;
+      animation:spin 0.8s linear infinite;
     }
 
-    .btn-loading {
-      color: transparent !important;
-      pointer-events: none;
-      position: relative;
-    }
-    .btn-loading::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 50%;
-      left: 50%;
-      margin-left: -10px;
-      margin-top: -10px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .rowbtns{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    .rowbtns .btn{ width:100%; padding:12px; }
+    .rowbtns.two .btn{ flex:1; min-width:160px; }
 
-    .rowbtns{
-      display:flex;
-      gap:10px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-    .rowbtns .btn{
-      width:100%;
-      padding:12px
-    }
+    /* LOADER */
+    .loader{ display:none; gap:10px; align-items:center; justify-content:center; margin-top:12px; color:var(--muted); font-size:13px; }
+    .spin{ width:18px; height:18px; border-radius:999px; border:3px solid rgba(15,23,42,.15); border-top-color:var(--primary); animation:spin 1s linear infinite; }
 
-    .rowbtns.two .btn{
-      flex:1;
-      min-width: 160px;
-    }
-
-    .loader{
-      display:none;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
-      margin-top:12px;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .spin{
-      width:18px;height:18px;
-      border-radius:999px;
-      border:3px solid rgba(15, 23, 42, .15);
-      border-top-color: var(--primary);
-      animation:spin 1s linear infinite;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
-
+    /* RESULT BOX */
     .resultBox{
-      display:none;
-      margin-top:14px;
-      border-radius:var(--radius);
-      padding:20px;
+      display:none; margin-top:14px;
+      border-radius:var(--radius); padding:20px;
       border:1px solid rgba(79,124,255,.28);
-      background: rgba(79,124,255,.08);
+      background:rgba(79,124,255,.08);
     }
 
-    /* Estilo simplificado para o link de entrega */
-    .delivery-simple {
-      text-align: center;
-    }
-    .delivery-icon {
-      font-size: 48px;
-      color: var(--primary);
-      margin-bottom: 16px;
-    }
-    .delivery-title {
-      font-size: 18px;
-      font-weight: 900;
-      margin-bottom: 20px;
-      color: var(--text);
-    }
-    .delivery-link-container {
-      background: linear-gradient(135deg, #0f131c, #131a2a);
-      border: 2px solid #4f7cff;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .delivery-link-label {
-      font-size: 12px;
-      color: var(--primary);
-      margin-bottom: 8px;
-      font-weight: 700;
-      text-align: left;
-    }
-    .delivery-link-value {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .delivery-link-value input {
-      flex: 1;
-      background: #090c12;
-      border: 1px solid #2a313e;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 13px;
-      color: #eef;
-      font-family: monospace;
-      text-align: center;
-    }
-    .copy-btn {
-      padding: 12px 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: 0.2s;
-    }
-    .copy-btn:hover {
-      background: var(--primary2);
-      transform: translateY(-1px);
-    }
-    .info-text {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 16px;
-    }
-    .info-text i {
-      color: var(--primary);
-      margin-right: 4px;
-    }
+    .delivery-simple{ text-align:center; }
+    .delivery-icon{ font-size:40px; color:var(--primary); margin-bottom:12px; }
+    .delivery-title{ font-size:17px; font-weight:900; margin-bottom:16px; color:var(--text); }
 
-    .history{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+    .delivery-link-container{
+      background:linear-gradient(135deg, #0f131c, #131a2a);
+      border:2px solid var(--primary);
+      border-radius:16px; padding:14px; margin-bottom:16px;
     }
+    .delivery-link-label{ font-size:12px; color:var(--primary); margin-bottom:8px; font-weight:700; text-align:left; }
+    .delivery-link-value{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .delivery-link-value input{
+      flex:1; background:#090c12; border:1px solid #2a313e;
+      border-radius:12px; padding:12px; font-size:13px;
+      color:#eef; font-family:monospace; text-align:center;
+    }
+    .delivery-link-value input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,124,255,.20); }
+
+    .copy-btn{
+      padding:12px 20px; background:var(--primary); color:white;
+      border:none; border-radius:12px; cursor:pointer; font-weight:700; transition:0.2s;
+    }
+    .copy-btn:hover{ background:var(--primary2); transform:translateY(-1px); }
+
+    .info-text{ font-size:12px; color:var(--muted); margin-top:12px; }
+    .info-text i{ color:var(--primary); margin-right:4px; }
+
+    /* HISTORY */
+    .history{ display:flex; flex-direction:column; gap:10px; }
 
     .hItem{
-      border:1px solid var(--border);
-      background: var(--card2);
-      border-radius:16px;
-      padding:12px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
+      border:1px solid var(--border); background:var(--card2);
+      border-radius:16px; padding:12px;
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
     }
-
-    .hLeft{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-
-    .hUser{
-      font-weight:900;
-      color:var(--text);
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 340px;
-    }
-
-    .hMeta{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-    }
-
+    .hLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .hUser{ font-weight:900; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:280px; }
+    .hMeta{ font-size:12px; color:var(--muted); display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
     .hBadge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.75);
-      border:1px solid rgba(79,124,255,.20);
-      font-size:12px;
-      font-weight:800;
-      color:var(--text);
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      background:rgba(255,255,255,.75); border:1px solid rgba(79,124,255,.20);
+      font-size:12px; font-weight:800; color:var(--text);
     }
-
-    .hBadge i{color:var(--primary);}
-
-    .hRight{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
+    .hBadge i{ color:var(--primary); }
+    .hRight{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
     .btn-mini{
-      padding:10px 12px;
-      font-size:13px;
-      border-radius:14px;
-      border:1px solid rgba(79,124,255,.18);
-      background: rgba(255,255,255,.8);
-      cursor:pointer;
-      font-weight:900;
-      color:var(--text);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      transition:.18s;
-      user-select:none;
+      padding:10px 12px; font-size:13px; border-radius:14px;
+      border:1px solid rgba(79,124,255,.18); background:rgba(255,255,255,.8);
+      cursor:pointer; font-weight:900; color:var(--text);
+      display:flex; gap:8px; align-items:center; transition:.18s; user-select:none;
     }
-    .btn-mini:hover{transform:translateY(-1px)}
-    .btn-mini i{color:var(--primary)}
+    .btn-mini:hover{ transform:translateY(-1px); }
+    .btn-mini i{ color:var(--primary); }
 
     .empty{
-      padding:12px;
-      border-radius:16px;
+      padding:12px; border-radius:16px;
       border:1px dashed rgba(79,124,255,.35);
-      background: rgba(79,124,255,.06);
-      color:var(--muted);
-      font-size:13px;
+      background:rgba(79,124,255,.06);
+      color:var(--muted); font-size:13px;
     }
 
+    /* TOKEN FIELD */
+    .token-eye-wrap{ position:relative; }
+    .token-eye-wrap input{ padding-right:45px; }
+    .token-eye-wrap .eye-btn{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:var(--muted);
+      cursor:pointer; font-size:16px; padding:5px;
+    }
+    .token-eye-wrap .eye-btn:hover{ color:var(--primary); }
+
+    .mutedSmall{ font-size:12px; color:var(--muted); }
+
+    /* TOAST */
     .toast{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:18px;
-      width:min(520px, 92vw);
-      background: rgba(255,255,255,.95);
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom:18px; width:min(520px, 92vw);
+      background:rgba(255,255,255,.95);
       border:1px solid var(--border);
-      backdrop-filter: blur(10px);
-      border-radius:16px;
-      padding:14px 16px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:flex-start;
-      color: var(--text);
-      box-shadow: var(--shadow);
-      opacity:0;
-      pointer-events:none;
-      transition:.22s;
-      z-index: 1000;
+      backdrop-filter:blur(10px);
+      border-radius:16px; padding:14px 16px;
+      display:flex; gap:10px; align-items:center;
+      color:var(--text); box-shadow:var(--shadow);
+      opacity:0; pointer-events:none; transition:.22s; z-index:1000;
     }
-    .toast.show{opacity:1;pointer-events:auto}
-    .toast i{color:var(--primary)}
-    .toast.warn i{color:var(--warning)}
-    .toast.success i{color:var(--success)}
-    .mutedSmall{font-size:12px;color:var(--muted)}
+    .toast.show{ opacity:1; pointer-events:auto; }
+    .toast i{ color:var(--primary); }
+    .toast.warn i{ color:var(--warning); }
+    .toast.success i{ color:var(--success); }
 
-    footer {
-      margin-top: 20px;
-      text-align: center;
-      padding: 16px;
-      font-size: 12px;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
+    /* FOOTER */
+    footer{
+      margin-top:4px; text-align:center; padding:16px;
+      font-size:12px; color:var(--muted);
+      border-top:1px solid var(--border);
     }
+    footer i{ color:var(--primary); }
 
-    footer i {
-      color: var(--primary);
+    @media(max-width:520px){
+      .days-grid{ grid-template-columns:1fr 1fr; }
+      .tab{ font-size:11px; padding:8px 8px; }
     }
   </style>
 </head>
-
 <body>
-  <!-- GATE (Tela de bloqueio) -->
-  <div id="gate">
-    <div class="gate-card" id="gateCard">
-      <div class="gate-logo"><i class="fas fa-dragon"></i></div>
-      <div class="gate-title">Fera Alpha</div>
-      <div class="gate-subtitle">Painel do Revendedor</div>
 
-      <div class="promo-banner">
-        <div class="promo-title">
-          <i class="fas fa-gift"></i> PROMOÇÃO ATIVADA
-        </div>
-        <div class="promo-grid">
-          <div class="promo-item">🎯 <span>10 dias</span> → R$10</div>
-          <div class="promo-item">🚀 <span>45 dias</span> → R$30</div>
-          <div class="promo-item">⚡ <span>75 dias</span> → R$50</div>
-          <div class="promo-item">🔥 <span>120 dias</span> → R$75</div>
-        </div>
-        <div style="font-size: 11px; text-align: center; margin-top: 10px; color: var(--primary);">
-          <i class="fas fa-check-circle"></i> Dias extras pelo mesmo valor!
-        </div>
+<!-- ===== GATE ===== -->
+<div id="gate">
+  <div class="gate-card" id="gateCard">
+    <div class="gate-logo"><i class="fas fa-dragon"></i></div>
+    <div class="gate-title">Fera Alpha</div>
+    <div class="gate-subtitle">Painel do Revendedor</div>
+
+    <div class="promo-banner">
+      <div class="promo-title"><i class="fas fa-gift"></i> PROMOÇÃO ATIVADA</div>
+      <div class="promo-grid">
+        <div class="promo-item">🎯 <span>10 dias</span> → R$10</div>
+        <div class="promo-item">🚀 <span>45 dias</span> → R$30</div>
+        <div class="promo-item">⚡ <span>75 dias</span> → R$50</div>
+        <div class="promo-item">🔥 <span>120 dias</span> → R$75</div>
       </div>
-
-      <div class="gate-input-group">
-        <label><i class="fas fa-key"></i> Token de Acesso</label>
-        <div class="gate-input-wrapper">
-          <input type="password" id="gateToken" placeholder="Digite seu token" autocomplete="off">
-          <button class="toggle-visibility" id="gateTogglePass" onclick="toggleGatePassword()">
-            <i class="fas fa-eye" id="gateToggleIcon"></i>
-          </button>
-        </div>
-      </div>
-
-      <label class="gate-remember">
-        <input type="checkbox" id="gateRemember"> Lembrar token neste dispositivo
-      </label>
-
-      <button class="gate-btn" id="gateBtn" onclick="validateToken()">
-        <i class="fas fa-shield-check"></i> Verificar Token
-      </button>
-
-      <div class="gate-error" id="gateError">
-        <i class="fas fa-circle-exclamation"></i> <span id="gateErrorMsg">Token inválido ou expirado</span>
-      </div>
-
-      <div class="gate-footer">
-        <i class="fab fa-telegram"></i> Não possui token? Contate o administrador via Telegram
+      <div style="font-size:11px;text-align:center;margin-top:10px;color:var(--primary);">
+        <i class="fas fa-check-circle"></i> Dias extras pelo mesmo valor!
       </div>
     </div>
-  </div>
 
-  <!-- MAIN APP (Painel principal) -->
-  <div id="mainApp">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo"><i class="fas fa-dragon"></i></div>
-        <div>
-          <h1>Fera Alpha</h1>
-          <p>Painel do Revendedor</p>
-        </div>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <div class="chip">
-          <i class="fas fa-shield-halved"></i>
-          <span>Revendedor</span>
-        </div>
-        <button class="logout-btn" onclick="logout()" title="Sair / Trocar token">
-          <i class="fas fa-right-from-bracket"></i> Sair
+    <div class="gate-input-group">
+      <label><i class="fas fa-key"></i> Token de Acesso</label>
+      <div class="gate-input-wrapper">
+        <input type="password" id="gateToken" placeholder="Digite seu token" autocomplete="off">
+        <button class="toggle-visibility" onclick="toggleGatePassword()">
+          <i class="fas fa-eye" id="gateToggleIcon"></i>
         </button>
       </div>
     </div>
 
-    <!-- GERAR LICENÇA -->
+    <label class="gate-remember">
+      <input type="checkbox" id="gateRemember"> Lembrar token neste dispositivo
+    </label>
+
+    <button class="gate-btn" id="gateBtn" onclick="validateToken()">
+      <i class="fas fa-shield-check"></i> Verificar Token
+    </button>
+
+    <div class="gate-error" id="gateError">
+      <i class="fas fa-circle-exclamation"></i> <span id="gateErrorMsg">Token inválido ou expirado</span>
+    </div>
+
+    <div class="gate-footer">
+      <i class="fab fa-telegram"></i> Não possui token? Contate o administrador via Telegram
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="mainApp">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo"><i class="fas fa-dragon"></i></div>
+      <div>
+        <h1>Fera Alpha</h1>
+        <p>Painel do Revendedor</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="chip"><i class="fas fa-shield-halved"></i><span>Revendedor</span></div>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('generate',this)">
+      <i class="fas fa-bolt"></i> Gerar
+    </button>
+    <button class="tab" onclick="switchTab('renew',this)">
+      <i class="fas fa-clock"></i> Renovar
+    </button>
+    <button class="tab" onclick="switchTab('reset',this)">
+      <i class="fas fa-rotate-left"></i> Resetar
+    </button>
+    <button class="tab" onclick="switchTab('history',this)">
+      <i class="fas fa-clock-rotate-left"></i> Histórico
+    </button>
+    <button class="tab" onclick="switchTab('token',this)">
+      <i class="fas fa-key"></i> Token
+    </button>
+  </div>
+
+  <!-- PANEL: GERAR -->
+  <div class="panel active" id="panel-generate">
     <div class="card">
       <div class="cardhead">
         <div class="title">
           <i class="fas fa-bolt"></i>
           <div>
             <h2>Gerar Licença</h2>
-            <div class="sub">🔥 PROMOÇÃO: 10d (R$10) • 45d (R$30) • 75d (R$50) • 120d (R$75)</div>
+            <div class="sub">Crie credenciais e envie o link ao cliente</div>
           </div>
         </div>
       </div>
 
+
+
       <div class="field">
         <label><i class="fas fa-user"></i> Usuário</label>
         <div class="input-with-button">
-          <input id="username" placeholder="PBXXXXXXXX" autocomplete="off" readonly>
+          <input id="username" placeholder="PBXXXXXXXX" autocomplete="off">
           <button class="btn-icon" onclick="regenerateUsername()" title="Gerar novo usuário"><i class="fas fa-arrows-rotate"></i></button>
         </div>
       </div>
@@ -904,41 +586,30 @@
       <div class="field">
         <label><i class="fas fa-lock"></i> Senha</label>
         <div class="input-with-button">
-          <div class="password-wrapper" style="flex:1;">
-            <input id="password" type="password" placeholder="XXXX-XXXX-XXXX" autocomplete="off" readonly>
-            <button class="toggle-password" id="togglePasswordBtn" onclick="togglePasswordVisibility()">
-              <i class="fas fa-eye" id="togglePasswordIcon"></i>
-            </button>
-          </div>
+          <input id="password" type="text" placeholder="XXXX-XXXX-XXXX" autocomplete="off" style="flex:1;">
           <button class="btn-icon" onclick="regeneratePassword()" title="Gerar nova senha"><i class="fas fa-arrows-rotate"></i></button>
         </div>
       </div>
 
       <div class="field">
         <label><i class="fas fa-calendar-days"></i> Período (Promoção)</label>
-        <div class="days">
-          <div class="daybtn active" data-days="45" onclick="setDays(45)">45 dias - R$30,00</div>
-          <div class="daybtn" data-days="75" onclick="setDays(75)">75 dias - R$50,00</div>
-          <div class="daybtn" data-days="120" onclick="setDays(120)">120 dias - R$75,00</div>
-          <div class="daybtn" data-days="10" onclick="setDays(10)">10 dias - R$10,00</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label><i class="fas fa-fingerprint"></i> Token do Revendedor</label>
-        <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
-
-        <div class="rowbtns two">
-          <button class="btn btn-soft" type="button" onclick="saveToken()">
-            <i class="fas fa-floppy-disk"></i> Salvar Token
-          </button>
-          <button class="btn btn-danger" type="button" onclick="confirmClearToken()">
-            <i class="fas fa-trash"></i> Limpar
-          </button>
-        </div>
-
-        <div class="mutedSmall" style="margin-top:8px">
-          <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
+        <div class="days-grid">
+          <div class="daybtn active" data-days="45" onclick="setDays(45)">
+            <div class="d-days">45 dias</div>
+            <div class="d-price">R$ 30,00</div>
+          </div>
+          <div class="daybtn" data-days="75" onclick="setDays(75)">
+            <div class="d-days">75 dias</div>
+            <div class="d-price">R$ 50,00</div>
+          </div>
+          <div class="daybtn" data-days="120" onclick="setDays(120)">
+            <div class="d-days">120 dias</div>
+            <div class="d-price">R$ 75,00</div>
+          </div>
+          <div class="daybtn featured" data-days="10" onclick="setDays(10)">
+            <div class="d-days">10 dias</div>
+            <div class="d-price">R$ 10,00 · Teste</div>
+          </div>
         </div>
       </div>
 
@@ -947,14 +618,15 @@
       </button>
 
       <div class="loader" id="loader">
-        <div class="spin"></div>
-        <span>Gerando licença...</span>
+        <div class="spin"></div><span>Gerando licença...</span>
       </div>
 
       <div class="resultBox" id="resultBox"></div>
     </div>
+  </div>
 
-    <!-- RENOVAR LOGIN -->
+  <!-- PANEL: RENOVAR -->
+  <div class="panel" id="panel-renew">
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -970,7 +642,6 @@
         <label><i class="fas fa-user"></i> Usuário (login existente)</label>
         <input id="renewUsername" placeholder="PBXXXXXXXX" autocomplete="off">
       </div>
-
       <div class="field">
         <label><i class="fas fa-calendar-plus"></i> Dias para adicionar</label>
         <input id="renewDays" type="number" min="1" max="365" value="30" placeholder="30">
@@ -980,15 +651,16 @@
         <i class="fas fa-sync-alt"></i> Renovar Licença
       </button>
 
-      <div class="loader" id="renewLoader" style="display:none;">
-        <div class="spin"></div>
-        <span>Renovando licença...</span>
+      <div class="loader" id="renewLoader">
+        <div class="spin"></div><span>Renovando licença...</span>
       </div>
 
       <div class="resultBox" id="renewResultBox"></div>
     </div>
+  </div>
 
-    <!-- RESETAR DISPOSITIVO -->
+  <!-- PANEL: RESETAR -->
+  <div class="panel" id="panel-reset">
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -1009,13 +681,14 @@
         <i class="fas fa-power-off"></i> Resetar Dispositivo
       </button>
 
-      <div class="loader" id="resetLoader" style="display:none;">
-        <div class="spin"></div>
-        <span>Resetando dispositivo...</span>
+      <div class="loader" id="resetLoader">
+        <div class="spin"></div><span>Resetando dispositivo...</span>
       </div>
     </div>
+  </div>
 
-    <!-- HISTÓRICO -->
+  <!-- PANEL: HISTÓRICO -->
+  <div class="panel" id="panel-history">
     <div class="card">
       <div class="cardhead">
         <div class="title">
@@ -1026,26 +699,63 @@
           </div>
         </div>
       </div>
-
       <div class="history" id="historyList"></div>
     </div>
-
-    <footer>
-      <i class="fas fa-code-branch"></i> Versão 2.5.0 | 
-      <i class="fab fa-telegram"></i> @SuportePBooster |
-      <i class="fab fa-whatsapp"></i> <a href="https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R" target="_blank" style="color: var(--primary); text-decoration: none;">Canal no WhatsApp</a> |
-      <i class="fas fa-shield-alt"></i> Fera Alpha © 2024
-    </footer>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast">
-    <i class="fas fa-circle-check"></i>
-    <div>
-      <div id="toastMsg" style="font-weight:900"></div>
-      <div class="mutedSmall" id="toastSub"></div>
+  <!-- PANEL: TOKEN -->
+  <div class="panel" id="panel-token">
+    <div class="card">
+      <div class="cardhead">
+        <div class="title">
+          <i class="fas fa-fingerprint"></i>
+          <div>
+            <h2>Token do Revendedor</h2>
+            <div class="sub">Fornecido pelo administrador</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><i class="fas fa-key"></i> Token</label>
+        <div class="token-eye-wrap">
+          <input id="token" type="password" placeholder="Seu token exclusivo" autocomplete="off">
+          <button class="eye-btn" onclick="toggleTokenVisibility()">
+            <i class="fas fa-eye" id="tokenEyeIcon"></i>
+          </button>
+        </div>
+
+        <div class="rowbtns two">
+          <button class="btn btn-soft" onclick="saveToken()">
+            <i class="fas fa-floppy-disk"></i> Salvar Token
+          </button>
+          <button class="btn btn-danger" onclick="confirmClearToken()">
+            <i class="fas fa-trash"></i> Limpar
+          </button>
+        </div>
+        <div class="mutedSmall" style="margin-top:8px;">
+          <i class="fas fa-circle-info"></i> Token fornecido pelo administrador
+        </div>
+      </div>
     </div>
   </div>
+
+  <footer>
+    <i class="fab fa-whatsapp"></i>
+    <a href="https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R" target="_blank"
+       style="color:var(--primary);text-decoration:none;">Canal no WhatsApp</a> |
+    <i class="fas fa-shield-alt"></i> Fera Alpha
+  </footer>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="fas fa-circle-check" id="toastIcon"></i>
+  <div>
+    <div id="toastMsg" style="font-weight:900;"></div>
+    <div class="mutedSmall" id="toastSub"></div>
+  </div>
+</div>
 
 <script>
   const BASE_URL = "https://painel-licenca-server.onrender.com";
@@ -1057,7 +767,6 @@
   const TOKEN_KEY = "feraalpha_revendedor_token";
   const HISTORY_KEY = "feraalpha_history_v5";
   const PREFIX = "PB";
-  
   const GITHUB_URL = "https://raw.githubusercontent.com/FeraAlpha/painel-licenca-servidor/main/update.json";
   const WHATSAPP_CHANNEL_LINK = "https://whatsapp.com/channel/0029VbCFUIM9xVJYOPL3Sl1R";
 
@@ -1065,597 +774,450 @@
   let LINK_SHIZUKU = "https://www.mediafire.com/file/zaupg0br4tlhfkt/Shizuku_13.5.4.apk/file";
   let NOME_APP = localStorage.getItem('NOME_APP_CACHE') || "PRECISION BOOSTER V2";
   let SUPPORT_TELEGRAM = "@SuportePBooster";
-
   let currentDays = 45;
   let validatedToken = null;
 
-  function generateUsername() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let sufixo = "";
-    for (let i = 0; i < 8; i++) {
-      sufixo += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return `PB${sufixo}`;
+  // ===== UTILS =====
+  function generateUsername(){
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let s="";
+    for(let i=0;i<8;i++) s+=chars.charAt(Math.floor(Math.random()*chars.length));
+    return `PB${s}`;
   }
 
-  function generatePassword() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let raw = "";
-    for (let i = 0; i < 12; i++) {
-      raw += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+  function generatePassword(){
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let raw="";
+    for(let i=0;i<12;i++) raw+=chars.charAt(Math.floor(Math.random()*chars.length));
     return `${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`;
   }
 
-  function regenerateUsername() {
-    document.getElementById("username").value = generateUsername();
-    toast("Usuário gerado", "success", "Novo usuário criado ✅");
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
   }
 
-  function regeneratePassword() {
-    document.getElementById("password").value = generatePassword();
-    toast("Senha gerada", "success", "Nova senha criada ✅");
+  function formatDateTime(d){
+    const p=n=>String(n).padStart(2,"0");
+    return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
   }
 
-  function togglePasswordVisibility() {
-    const pwdField = document.getElementById("password");
-    const icon = document.getElementById("togglePasswordIcon");
-    if (pwdField.type === "password") {
-      pwdField.type = "text";
-      icon.classList.remove("fa-eye");
-      icon.classList.add("fa-eye-slash");
-    } else {
-      pwdField.type = "password";
-      icon.classList.remove("fa-eye-slash");
-      icon.classList.add("fa-eye");
+  function copyToClipboard(text){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).catch(()=>fallbackCopy(text));
+    } else { fallbackCopy(text); }
+  }
+
+  function fallbackCopy(text){
+    const ta=document.createElement("textarea");
+    ta.value=text; ta.style.cssText="position:fixed;opacity:0;";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try{ document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  function toast(msg, type="ok", sub=""){
+    const t=document.getElementById("toast");
+    const icon=document.getElementById("toastIcon");
+    document.getElementById("toastMsg").textContent=msg;
+    document.getElementById("toastSub").textContent=sub;
+    icon.className="fas";
+    t.classList.remove("warn","success");
+    if(type==="warn"){ icon.classList.add("fa-triangle-exclamation"); t.classList.add("warn"); }
+    else if(type==="success"){ icon.classList.add("fa-circle-check"); t.classList.add("success"); }
+    else { icon.classList.add("fa-circle-check"); }
+    t.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer=setTimeout(()=>t.classList.remove("show"),2500);
+  }
+
+  // ===== TABS =====
+  function switchTab(name, el){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('panel-'+name).classList.add('active');
+  }
+
+  // ===== TOGGLES =====
+  function toggleGatePassword(){
+    const i=document.getElementById("gateToken");
+    const ic=document.getElementById("gateToggleIcon");
+    i.type=i.type==="password"?"text":"password";
+    ic.classList.toggle("fa-eye"); ic.classList.toggle("fa-eye-slash");
+  }
+
+  function toggleTokenVisibility(){
+    const i=document.getElementById("token");
+    const ic=document.getElementById("tokenEyeIcon");
+    i.type=i.type==="password"?"text":"password";
+    ic.classList.toggle("fa-eye"); ic.classList.toggle("fa-eye-slash");
+  }
+
+  function regenerateUsername(){
+    document.getElementById("username").value=generateUsername();
+    toast("Usuário gerado","success","Novo usuário criado ✅");
+  }
+
+  function regeneratePassword(){
+    document.getElementById("password").value=generatePassword();
+    toast("Senha gerada","success","Nova senha criada ✅");
+  }
+
+  function setDays(days){
+    currentDays=days;
+    document.querySelectorAll('.daybtn').forEach(b=>b.classList.remove('active'));
+    document.querySelector(`.daybtn[data-days="${days}"]`).classList.add('active');
+  }
+
+  // ===== GATE =====
+  async function buscarConfiguracao(){
+    try{
+      const r=await fetch(GITHUB_URL+'?t='+Date.now());
+      const c=await r.json();
+      LINK_APK=c.app?.link_download||LINK_APK;
+      NOME_APP=c.app?.nome_app||NOME_APP;
+      localStorage.setItem('LINK_APK_CACHE',LINK_APK);
+      localStorage.setItem('NOME_APP_CACHE',NOME_APP);
+    }catch(e){
+      LINK_APK=localStorage.getItem('LINK_APK_CACHE')||LINK_APK;
+      NOME_APP=localStorage.getItem('NOME_APP_CACHE')||NOME_APP;
     }
   }
 
-  function toggleGatePassword() {
-    const input = document.getElementById("gateToken");
-    const icon = document.getElementById("gateToggleIcon");
-    if (input.type === "password") {
-      input.type = "text";
-      icon.classList.remove("fa-eye");
-      icon.classList.add("fa-eye-slash");
-    } else {
-      input.type = "password";
-      icon.classList.remove("fa-eye-slash");
-      icon.classList.add("fa-eye");
-    }
-  }
-
-  function calculateExpirationDate(days) {
-    const date = new Date();
-    date.setDate(date.getDate() + days);
-    return date.toLocaleDateString('pt-BR');
-  }
-
-  async function buscarConfiguracao() {
-    try {
-      const response = await fetch(GITHUB_URL + '?t=' + Date.now());
-      const config = await response.json();
-      LINK_APK = config.app?.link_download || LINK_APK;
-      NOME_APP = config.app?.nome_app || NOME_APP;
-      localStorage.setItem('LINK_APK_CACHE', LINK_APK);
-      localStorage.setItem('NOME_APP_CACHE', NOME_APP);
-      return true;
-    } catch (error) {
-      LINK_APK = localStorage.getItem('LINK_APK_CACHE') || LINK_APK;
-      NOME_APP = localStorage.getItem('NOME_APP_CACHE') || NOME_APP;
-      return false;
-    }
-  }
-
-  // ================= GATE LOGIC =================
-  function showGate(errorMsg = null) {
-    document.getElementById("mainApp").style.display = "none";
-    document.getElementById("gate").style.display = "flex";
-    document.body.style.alignItems = "center";
-    document.body.style.justifyContent = "center";
-    if (errorMsg) {
-      const errEl = document.getElementById("gateError");
-      document.getElementById("gateErrorMsg").textContent = errorMsg;
-      errEl.classList.add("show");
-      document.getElementById("gateCard").classList.add("shake");
-      setTimeout(() => document.getElementById("gateCard").classList.remove("shake"), 400);
+  function showGate(errorMsg=null){
+    document.getElementById("mainApp").style.display="none";
+    document.getElementById("gate").style.display="flex";
+    document.body.style.alignItems="center";
+    document.body.style.justifyContent="center";
+    if(errorMsg){
+      document.getElementById("gateErrorMsg").textContent=errorMsg;
+      document.getElementById("gateError").classList.add("show");
+      const card=document.getElementById("gateCard");
+      card.classList.add("shake");
+      setTimeout(()=>card.classList.remove("shake"),400);
     } else {
       document.getElementById("gateError").classList.remove("show");
     }
   }
 
-  function showMainApp() {
-    document.getElementById("gate").style.display = "none";
-    document.getElementById("mainApp").style.display = "block";
-    document.body.style.alignItems = "flex-start";
-    document.body.style.justifyContent = "flex-start";
+  function showMainApp(){
+    document.getElementById("gate").style.display="none";
+    document.getElementById("mainApp").style.display="block";
+    document.body.style.alignItems="flex-start";
+    document.body.style.justifyContent="flex-start";
     document.getElementById("gateError").classList.remove("show");
   }
 
-  async function validateToken() {
-    const token = document.getElementById("gateToken").value.trim();
-    if (!token) {
-      showGateError("Por favor, insira o token.");
-      return;
-    }
+  function showGateError(msg){
+    document.getElementById("gateErrorMsg").textContent=msg;
+    document.getElementById("gateError").classList.add("show");
+    const card=document.getElementById("gateCard");
+    card.classList.add("shake");
+    setTimeout(()=>card.classList.remove("shake"),400);
+  }
 
-    const btn = document.getElementById("gateBtn");
-    btn.classList.add("loading");
-    btn.innerHTML = "";
+  async function validateToken(){
+    const token=document.getElementById("gateToken").value.trim();
+    if(!token){ showGateError("Por favor, insira o token."); return; }
 
-    try {
-      const resp = await fetch(VALIDATE_TOKEN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ token })
+    const btn=document.getElementById("gateBtn");
+    btn.classList.add("loading"); btn.innerHTML="";
+
+    try{
+      const resp=await fetch(VALIDATE_TOKEN_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:new URLSearchParams({token})
       });
-
-      const data = await resp.json();
-
-      if (data.ok) {
-        validatedToken = token;
-        const remember = document.getElementById("gateRemember").checked;
-        if (remember) {
-          localStorage.setItem(TOKEN_KEY, token);
-          sessionStorage.removeItem(TOKEN_KEY);
-        } else {
-          sessionStorage.setItem(TOKEN_KEY, token);
-          localStorage.removeItem(TOKEN_KEY);
-        }
-
-        document.getElementById("token").value = token;
+      const data=await resp.json();
+      if(data.ok){
+        validatedToken=token;
+        const remember=document.getElementById("gateRemember").checked;
+        if(remember){ localStorage.setItem(TOKEN_KEY,token); sessionStorage.removeItem(TOKEN_KEY); }
+        else{ sessionStorage.setItem(TOKEN_KEY,token); localStorage.removeItem(TOKEN_KEY); }
+        document.getElementById("token").value=token;
         showMainApp();
-        toast("Acesso liberado", "success", "Bem-vindo ao painel ✅");
-        document.getElementById("gateToken").value = "";
+        toast("Acesso liberado","success","Bem-vindo ao painel ✅");
+        document.getElementById("gateToken").value="";
       } else {
-        showGateError(data.error || "Token inválido ou expirado.");
+        showGateError(data.error||"Token inválido ou expirado.");
       }
-    } catch (error) {
+    }catch(e){
       showGateError("Erro de conexão. Verifique sua internet.");
-      console.error(error);
     } finally {
       btn.classList.remove("loading");
-      btn.innerHTML = '<i class="fas fa-shield-check"></i> Verificar Token';
+      btn.innerHTML='<i class="fas fa-shield-check"></i> Verificar Token';
     }
   }
 
-  function showGateError(msg) {
-    const errEl = document.getElementById("gateError");
-    document.getElementById("gateErrorMsg").textContent = msg;
-    errEl.classList.add("show");
-    document.getElementById("gateCard").classList.add("shake");
-    setTimeout(() => document.getElementById("gateCard").classList.remove("shake"), 400);
-  }
-
-  async function checkTokenOnLoad() {
-    let storedToken = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
-    if (!storedToken) {
-      showGate();
-      return;
-    }
-
-    try {
-      const resp = await fetch(VALIDATE_TOKEN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ token: storedToken })
+  async function checkTokenOnLoad(){
+    const stored=localStorage.getItem(TOKEN_KEY)||sessionStorage.getItem(TOKEN_KEY);
+    if(!stored){ showGate(); return; }
+    try{
+      const resp=await fetch(VALIDATE_TOKEN_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:new URLSearchParams({token:stored})
       });
-
-      const data = await resp.json();
-
-      if (data.ok) {
-        validatedToken = storedToken;
-        document.getElementById("token").value = storedToken;
+      const data=await resp.json();
+      if(data.ok){
+        validatedToken=stored;
+        document.getElementById("token").value=stored;
         showMainApp();
       } else {
-        localStorage.removeItem(TOKEN_KEY);
-        sessionStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY);
         showGate("Token expirado ou inválido. Faça login novamente.");
       }
-    } catch (error) {
+    }catch(e){
       showGate("Não foi possível validar o token. Verifique sua conexão.");
     }
   }
 
-  function logout() {
-    if (confirm("Tem certeza que deseja sair? O token será removido.")) {
-      validatedToken = null;
-      localStorage.removeItem(TOKEN_KEY);
-      sessionStorage.removeItem(TOKEN_KEY);
-      document.getElementById("token").value = "";
-      showGate();
-      toast("Token removido", "success", "Você saiu do painel.");
-    }
-  }
-
-  // ================= FIM GATE LOGIC =================
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    await buscarConfiguracao();
-    checkTokenOnLoad();
-
-    document.getElementById("username").value = generateUsername();
-    document.getElementById("password").value = generatePassword();
-    renderHistory();
-
-    setInterval(buscarConfiguracao, 120000);
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && document.getElementById("gate").style.display !== "none") {
-        validateToken();
-      }
-    });
-  });
-
-  function setDays(days){
-    currentDays = days;
-    document.querySelectorAll('.daybtn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.daybtn[data-days="${days}"]`).classList.add('active');
+  function logout(){
+    if(!confirm("Tem certeza que deseja sair? O token será removido.")) return;
+    validatedToken=null;
+    localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY);
+    document.getElementById("token").value="";
+    showGate();
+    toast("Token removido","success","Você saiu do painel.");
   }
 
   function saveToken(){
-    const token = document.getElementById("token").value.trim();
-    if(!token){
-      toast("Digite um token antes de salvar", "warn", "Campo vazio");
-      return;
-    }
-    localStorage.setItem(TOKEN_KEY, token);
-    validatedToken = token;
-    toast("Token salvo", "success", "Pronto ✅");
+    const token=document.getElementById("token").value.trim();
+    if(!token){ toast("Digite um token antes de salvar","warn","Campo vazio"); return; }
+    localStorage.setItem(TOKEN_KEY,token);
+    validatedToken=token;
+    toast("Token salvo","success","Pronto ✅");
   }
 
   function confirmClearToken(){
-    if(confirm("⚠️ Tem certeza que deseja limpar o token?\n\nEsta ação não pode ser desfeita.")) {
-      localStorage.removeItem(TOKEN_KEY);
-      sessionStorage.removeItem(TOKEN_KEY);
-      document.getElementById("token").value = "";
-      validatedToken = null;
-      toast("Token removido", "success", "Token excluído com sucesso");
-    } else {
-      toast("Operação cancelada", "ok", "Token mantido");
-    }
+    if(!confirm("⚠️ Tem certeza que deseja limpar o token?\n\nEsta ação não pode ser desfeita.")) return;
+    localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY);
+    document.getElementById("token").value="";
+    validatedToken=null;
+    toast("Token removido","success","Token excluído com sucesso");
   }
 
-  // ========== RENOVAR LICENÇA ==========
-  async function renewLicense() {
-    const username = document.getElementById("renewUsername").value.trim();
-    const days = parseInt(document.getElementById("renewDays").value) || 30;
-    const token = validatedToken || localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
-
-    if (!username) {
-      toast("Informe o nome de usuário", "warn", "Campo obrigatório");
-      return;
-    }
-    if (days < 1 || days > 365) {
-      toast("Dias inválidos", "warn", "Digite um valor entre 1 e 365");
-      return;
-    }
-    if (!token) {
-      toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro");
-      return;
-    }
-
-    if (!confirm(`⚠️ Adicionar ${days} dias ao usuário "${username}"?`)) return;
-
-    const loader = document.getElementById("renewLoader");
-    const btn = document.getElementById("renewBtn");
-    loader.style.display = "flex";
-    btn.disabled = true;
-    btn.classList.add("btn-loading");
-
-    try {
-      const resp = await fetch(RENEW_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ username, token, days: String(days) })
-      });
-
-      const data = await resp.json();
-      loader.style.display = "none";
-      btn.disabled = false;
-      btn.classList.remove("btn-loading");
-
-      if (data.ok) {
-        const box = document.getElementById("renewResultBox");
-        box.style.display = "block";
-        box.innerHTML = `<div class="resultTitle"><i class="fas fa-check-circle"></i> <span>${escapeHtml(data.message)}</span></div>`;
-        toast("Licença renovada com sucesso!", "success", `+${days} dias adicionados ✅`);
-        document.getElementById("renewUsername").value = "";
-      } else {
-        toast(data.error || "Erro ao renovar", "warn", "Tente novamente");
-      }
-    } catch (error) {
-      loader.style.display = "none";
-      btn.disabled = false;
-      btn.classList.remove("btn-loading");
-      toast("Erro de conexão", "warn", "Verifique sua internet");
-      console.error(error);
-    }
-  }
-
-  // ========== RESET DE DISPOSITIVO ==========
-  async function resetDevice() {
-    const username = document.getElementById("resetUsername").value.trim();
-    const token = validatedToken || localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || document.getElementById("token").value.trim();
-
-    if (!username) {
-      toast("Informe o nome de usuário", "warn", "Campo obrigatório");
-      return;
-    }
-    if (!token) {
-      toast("Token do revendedor não encontrado", "warn", "Salve o token primeiro");
-      return;
-    }
-
-    if (!confirm(`⚠️ Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele faça login em outro aparelho.`)) return;
-
-    const loader = document.getElementById("resetLoader");
-    const btn = document.getElementById("resetBtn");
-    loader.style.display = "flex";
-    btn.disabled = true;
-    btn.classList.add("btn-loading");
-
-    try {
-      const resp = await fetch(RESET_DEVICE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ username, token })
-      });
-
-      const data = await resp.json();
-      loader.style.display = "none";
-      btn.disabled = false;
-      btn.classList.remove("btn-loading");
-
-      if (data.ok) {
-        toast("Dispositivo resetado com sucesso!", "success", "Login liberado ✅");
-        document.getElementById("resetUsername").value = "";
-      } else {
-        toast(data.error || "Erro ao resetar", "warn", "Tente novamente");
-      }
-    } catch (error) {
-      loader.style.display = "none";
-      btn.disabled = false;
-      btn.classList.remove("btn-loading");
-      toast("Erro de conexão", "warn", "Verifique sua internet");
-      console.error(error);
-    }
-  }
-
-  // ========== GERAR LICENÇA (SÓ MOSTRA O LINK NO DOMÍNIO CORRETO) ==========
+  // ===== GERAR LICENÇA =====
   async function generateLicense(){
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    let token = validatedToken || document.getElementById("token").value.trim();
+    const username=document.getElementById("username").value.trim();
+    const password=document.getElementById("password").value.trim();
+    const token=validatedToken||document.getElementById("token").value.trim();
 
-    if(!username || !password || !token){
-      toast("Preencha todos os campos", "warn", "Usuário, senha e token");
-      return;
+    if(!username||!password||!token){
+      toast("Preencha todos os campos","warn","Usuário, senha e token"); return;
     }
 
-    document.getElementById("loader").style.display = "flex";
-    document.getElementById("generateBtn").disabled = true;
+    const btn=document.getElementById("generateBtn");
+    btn.disabled=true; btn.classList.add("btn-loading");
+    document.getElementById("loader").style.display="flex";
 
     try{
-      const resp = await fetch(GENERATE_URL, {
+      const resp=await fetch(GENERATE_URL,{
         method:"POST",
         headers:{"Content-Type":"application/x-www-form-urlencoded"},
-        body: new URLSearchParams({
-          username,
-          password,
-          expire_days: String(currentDays),
-          token,
-          prefix: PREFIX
-        })
+        body:new URLSearchParams({username,password,expire_days:String(currentDays),token,prefix:PREFIX})
       });
 
-      const raw = await resp.text();
-      let key = null;
-      try{
-        const data = JSON.parse(raw);
-        if(data && data.ok && data.key) key = data.key;
-      }catch(e){
-        key = null;
-      }
-      if(!key){
-        const match = raw.match(/PB[-_A-Z0-9]{6,}/i);
-        if(match) key = match[0];
-      }
+      const raw=await resp.text();
+      let key=null;
+      try{ const data=JSON.parse(raw); if(data?.ok&&data?.key) key=data.key; }catch(e){}
+      if(!key){ const m=raw.match(/PB[-_A-Z0-9]{6,}/i); if(m) key=m[0]; }
 
-      document.getElementById("loader").style.display = "none";
-      document.getElementById("generateBtn").disabled = false;
+      btn.disabled=false; btn.classList.remove("btn-loading");
+      document.getElementById("loader").style.display="none";
 
-      const now = new Date();
-      const timeStr = formatDateTime(now);
-
-      const payload = {
-        title: "Login criado com sucesso!",
-        username,
-        password,
-        days: currentDays,
-        key,
-        prefix: PREFIX,
-        status: "OK",
-        createdAt: now.toISOString(),
-        createdAtLabel: timeStr
-      };
-
-      pushHistory(payload);
-      renderHistory();
-      
-      // Exibe APENAS o link de entrega no domínio correto
+      const now=new Date();
+      const payload={title:"Login criado com sucesso!",username,password,days:currentDays,key,prefix:PREFIX,status:"OK",createdAt:now.toISOString(),createdAtLabel:formatDateTime(now)};
+      pushHistory(payload); renderHistory();
       showDeliveryLinkOnly(payload);
-      
-      toast("Login gerado com sucesso!", "success", "Copie o link e envie para o cliente ✅");
+      toast("Login gerado com sucesso!","success","Copie o link e envie para o cliente ✅");
 
-      document.getElementById("username").value = generateUsername();
-      document.getElementById("password").value = generatePassword();
+      document.getElementById("username").value=generateUsername();
+      document.getElementById("password").value=generatePassword();
 
     }catch(err){
-      document.getElementById("loader").style.display = "none";
-      document.getElementById("generateBtn").disabled = false;
-      console.error(err);
-      toast("Erro ao gerar licença", "warn", "Tente novamente");
+      btn.disabled=false; btn.classList.remove("btn-loading");
+      document.getElementById("loader").style.display="none";
+      toast("Erro ao gerar licença","warn","Tente novamente");
     }
   }
 
-  // Função que exibe APENAS o link de entrega - estilo simples
-  function showDeliveryLinkOnly({ username, days, createdAtLabel }){
-    const box = document.getElementById("resultBox");
-    box.style.display = "block";
-    // Link no domínio correto: https://www.acessoprecision.com.br/entregar/PBXXXXX
-    const deliveryLink = `${DELIVERY_DOMAIN}/entregar/${encodeURIComponent(username)}`;
-    
-    box.innerHTML = `
+  function showDeliveryLinkOnly({username}){
+    const box=document.getElementById("resultBox");
+    box.style.display="block";
+    const deliveryLink=`${DELIVERY_DOMAIN}/entregar/${encodeURIComponent(username)}`;
+    box.innerHTML=`
       <div class="delivery-simple">
-        <div class="delivery-icon">
-          <i class="fas fa-link"></i>
-        </div>
-        <div class="delivery-title">
-          ✅ LINK GERADO COM SUCESSO!
-        </div>
-        
+        <div class="delivery-icon"><i class="fas fa-link"></i></div>
+        <div class="delivery-title">✅ LINK GERADO COM SUCESSO!</div>
         <div class="delivery-link-container">
-          <div class="delivery-link-label">
-            <i class="fas fa-share-alt"></i> LINK PARA ENVIAR AO CLIENTE:
-          </div>
+          <div class="delivery-link-label"><i class="fas fa-share-alt"></i> LINK PARA ENVIAR AO CLIENTE:</div>
           <div class="delivery-link-value">
-            <input type="text" readonly value="${deliveryLink}" id="deliveryLinkInput">
-            <button class="copy-btn" onclick="copyDeliveryLink()">
-              <i class="fas fa-copy"></i> Copiar
-            </button>
+            <input type="text" readonly value="${escapeHtml(deliveryLink)}" id="deliveryLinkInput">
+            <button class="copy-btn" onclick="copyDeliveryLink()"><i class="fas fa-copy"></i> Copiar</button>
           </div>
         </div>
-        
         <div class="info-text">
-          <i class="fas fa-info-circle"></i> Envie apenas este link para o cliente. 
+          <i class="fas fa-info-circle"></i> Envie apenas este link para o cliente.
           Ele terá acesso às credenciais e downloads na página de entrega.
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
-  // Função para copiar o link de entrega
-  function copyDeliveryLink() {
-    const input = document.getElementById("deliveryLinkInput");
-    if (input) {
-      input.select();
-      document.execCommand("copy");
-      toast("Link copiado!", "success", "Envie para o cliente ✅");
+  function copyDeliveryLink(){
+    const input=document.getElementById("deliveryLinkInput");
+    if(input){ input.select(); document.execCommand("copy"); }
+    toast("Link copiado!","success","Envie para o cliente ✅");
+  }
+
+  // ===== RENOVAR =====
+  async function renewLicense(){
+    const username=document.getElementById("renewUsername").value.trim();
+    const days=parseInt(document.getElementById("renewDays").value)||30;
+    const token=validatedToken||localStorage.getItem(TOKEN_KEY)||sessionStorage.getItem(TOKEN_KEY)||document.getElementById("token").value.trim();
+
+    if(!username){ toast("Informe o nome de usuário","warn","Campo obrigatório"); return; }
+    if(days<1||days>365){ toast("Dias inválidos","warn","Digite um valor entre 1 e 365"); return; }
+    if(!token){ toast("Token do revendedor não encontrado","warn","Salve o token primeiro"); return; }
+    if(!confirm(`⚠️ Adicionar ${days} dias ao usuário "${username}"?`)) return;
+
+    const btn=document.getElementById("renewBtn");
+    const loader=document.getElementById("renewLoader");
+    btn.disabled=true; btn.classList.add("btn-loading");
+    loader.style.display="flex";
+
+    try{
+      const resp=await fetch(RENEW_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:new URLSearchParams({username,token,days:String(days)})
+      });
+      const data=await resp.json();
+      btn.disabled=false; btn.classList.remove("btn-loading");
+      loader.style.display="none";
+
+      if(data.ok){
+        const box=document.getElementById("renewResultBox");
+        box.style.display="block";
+        box.innerHTML=`<div style="color:var(--success);font-weight:700;"><i class="fas fa-check-circle"></i> ${escapeHtml(data.message)}</div>`;
+        toast("Licença renovada com sucesso!","success",`+${days} dias adicionados ✅`);
+        document.getElementById("renewUsername").value="";
+      } else {
+        toast(data.error||"Erro ao renovar","warn","Tente novamente");
+      }
+    }catch(e){
+      btn.disabled=false; btn.classList.remove("btn-loading");
+      loader.style.display="none";
+      toast("Erro de conexão","warn","Verifique sua internet");
     }
   }
 
-  // ========== FUNÇÕES DO HISTÓRICO ==========
+  // ===== RESETAR =====
+  async function resetDevice(){
+    const username=document.getElementById("resetUsername").value.trim();
+    const token=validatedToken||localStorage.getItem(TOKEN_KEY)||sessionStorage.getItem(TOKEN_KEY)||document.getElementById("token").value.trim();
+
+    if(!username){ toast("Informe o nome de usuário","warn","Campo obrigatório"); return; }
+    if(!token){ toast("Token do revendedor não encontrado","warn","Salve o token primeiro"); return; }
+    if(!confirm(`⚠️ Tem certeza que deseja resetar o dispositivo do usuário "${username}"?\n\nIsso permitirá que ele faça login em outro aparelho.`)) return;
+
+    const btn=document.getElementById("resetBtn");
+    const loader=document.getElementById("resetLoader");
+    btn.disabled=true; btn.classList.add("btn-loading");
+    loader.style.display="flex";
+
+    try{
+      const resp=await fetch(RESET_DEVICE_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:new URLSearchParams({username,token})
+      });
+      const data=await resp.json();
+      btn.disabled=false; btn.classList.remove("btn-loading");
+      loader.style.display="none";
+
+      if(data.ok){
+        toast("Dispositivo resetado com sucesso!","success","Login liberado ✅");
+        document.getElementById("resetUsername").value="";
+      } else {
+        toast(data.error||"Erro ao resetar","warn","Tente novamente");
+      }
+    }catch(e){
+      btn.disabled=false; btn.classList.remove("btn-loading");
+      loader.style.display="none";
+      toast("Erro de conexão","warn","Verifique sua internet");
+    }
+  }
+
+  // ===== HISTÓRICO =====
   function getHistory(){
     try{
-      const raw = localStorage.getItem(HISTORY_KEY);
+      const raw=localStorage.getItem(HISTORY_KEY);
       if(!raw) return [];
-      const arr = JSON.parse(raw);
-      if(!Array.isArray(arr)) return [];
-      return arr;
-    }catch(e){
-      return [];
-    }
+      const arr=JSON.parse(raw);
+      return Array.isArray(arr)?arr:[];
+    }catch(e){ return []; }
   }
 
   function pushHistory(item){
-    const history = getHistory();
-    history.unshift(item);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
+    const h=getHistory(); h.unshift(item);
+    localStorage.setItem(HISTORY_KEY,JSON.stringify(h.slice(0,10)));
   }
 
   function renderHistory(){
-    const list = document.getElementById("historyList");
+    const list=document.getElementById("historyList");
     if(!list) return;
-    const history = getHistory();
-    if(history.length === 0){
-      list.innerHTML = `<div class="empty">Nenhum login gerado ainda.</div>`;
-      return;
-    }
-    list.innerHTML = history.map((h, idx) => `
+    const h=getHistory();
+    if(!h.length){ list.innerHTML=`<div class="empty">Nenhum login gerado ainda.</div>`; return; }
+    list.innerHTML=h.map((item,idx)=>`
       <div class="hItem">
         <div class="hLeft">
-          <div class="hUser">${escapeHtml(h.username || "cliente")}</div>
+          <div class="hUser">${escapeHtml(item.username||"cliente")}</div>
           <div class="hMeta">
-            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(h.days)} dias</span>
-            <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(h.createdAtLabel || "")}</span>
+            <span class="hBadge"><i class="fas fa-calendar-days"></i>${escapeHtml(String(item.days))} dias</span>
+            <span class="hBadge"><i class="fas fa-clock"></i>${escapeHtml(item.createdAtLabel||"")}</span>
           </div>
         </div>
         <div class="hRight">
-          <button class="btn-mini" onclick="copyHistoryLink(${idx})">
-            <i class="fas fa-link"></i> Link
-          </button>
-          <button class="btn-mini" onclick="useHistory(${idx})">
-            <i class="fas fa-eye"></i>
-          </button>
+          <button class="btn-mini" onclick="copyHistoryLink(${idx})"><i class="fas fa-link"></i> Link</button>
+          <button class="btn-mini" onclick="useHistory(${idx})"><i class="fas fa-eye"></i></button>
         </div>
-      </div>
-    `).join("");
+      </div>`).join("");
   }
 
   function copyHistoryLink(index){
-    const history = getHistory();
-    const item = history[index];
-    if(!item){
-      toast("Erro ao copiar", "warn", "Registro não encontrado");
-      return;
-    }
-    const link = `${DELIVERY_DOMAIN}/entregar/${encodeURIComponent(item.username)}`;
+    const item=getHistory()[index];
+    if(!item){ toast("Erro ao copiar","warn","Registro não encontrado"); return; }
+    const link=`${DELIVERY_DOMAIN}/entregar/${encodeURIComponent(item.username)}`;
     copyToClipboard(link);
-    toast("Link copiado!", "success", "Envie para o cliente");
+    toast("Link copiado!","success","Envie para o cliente");
   }
 
   function useHistory(index){
-    const history = getHistory();
-    const item = history[index];
+    const item=getHistory()[index];
     if(!item) return;
+    // Vai para a aba Gerar e mostra o link
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelector('.tab[onclick*="generate"]').classList.add('active');
+    document.getElementById('panel-generate').classList.add('active');
     showDeliveryLinkOnly(item);
-    toast("Link de entrega carregado", "success", "Copie e envie ✅");
+    toast("Link de entrega carregado","success","Copie e envie ✅");
   }
 
-  function copyToClipboard(text){
-    if(navigator.clipboard && window.isSecureContext){
-      navigator.clipboard.writeText(text).catch(()=> fallbackCopy(text));
-    }else{
-      fallbackCopy(text);
-    }
-  }
-
-  function fallbackCopy(text){
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try{ document.execCommand("copy"); } catch(e){}
-    document.body.removeChild(ta);
-  }
-
-  function toast(msg, type="ok", sub=""){
-    const t = document.getElementById("toast");
-    const m = document.getElementById("toastMsg");
-    const s = document.getElementById("toastSub");
-    m.textContent = msg;
-    s.textContent = sub;
-    t.classList.remove("warn", "success");
-    if(type === "warn") t.classList.add("warn");
-    if(type === "success") t.classList.add("success");
-    t.classList.add("show");
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2500);
-  }
-
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  function formatDateTime(d){
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
+  // ===== INIT =====
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    await buscarConfiguracao();
+    checkTokenOnLoad();
+    document.getElementById("username").value=generateUsername();
+    document.getElementById("password").value=generatePassword();
+    renderHistory();
+    setInterval(buscarConfiguracao,120000);
+    document.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter" && document.getElementById("gate").style.display!=="none") validateToken();
+    });
+  });
 </script>
 </body>
 </html>
