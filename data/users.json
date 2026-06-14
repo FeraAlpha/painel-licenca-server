@@ -3035,6 +3035,17 @@
       "created_at": 1781450009,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PB5B98UBKW",
+      "password": "PLLS-CTEL-2RTC",
+      "key": "PB-9BC85DCC",
+      "device_id": null,
+      "expires_at": 1782320103,
+      "reseller": "NINJA",
+      "created_at": 1781456103,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
