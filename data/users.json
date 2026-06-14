@@ -3057,6 +3057,17 @@
       "created_at": 1781456117,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "PBNPMBFBNZ",
+      "password": "KZN5-HHFA-BVDJ",
+      "key": "PB-074A2628",
+      "device_id": null,
+      "expires_at": 1782326892,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781462892,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
