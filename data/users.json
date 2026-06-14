@@ -3013,6 +3013,17 @@
       "created_at": 1781444934,
       "status": "active",
       "multi_device": false
+    },
+    {
+      "username": "Fera8380",
+      "password": "Alpha1410",
+      "key": "PB-E83C1C4B",
+      "device_id": null,
+      "expires_at": 1785333905,
+      "reseller": "revendedor_super_fera_2025",
+      "created_at": 1781445905,
+      "status": "active",
+      "multi_device": false
     }
   ]
 }
